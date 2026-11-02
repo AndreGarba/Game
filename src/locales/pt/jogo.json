@@ -1,0 +1,29 @@
+{
+  "titulo": "Hora do Banho",
+  "subtitulo": "Fuja do tutor. Banho, hoje não!",
+  "comoJogarTeclado": "Espaço ou ↑ para pular · ↓ para abaixar",
+  "comoJogarToque": "Toque ou deslize para cima para pular · deslize para baixo para abaixar",
+  "dica": "Lama te deixa mais lento. Lenços te limpam.",
+  "correr": "Correr",
+  "deNovo": "Correr de novo",
+  "pausado": "Pausado",
+  "continuar": "Continuar",
+  "girarCelular": "Gire o celular para ver mais da pista",
+  "hud": {
+    "metros": "{{valor}} m",
+    "tutor": "Tutor",
+    "sujeira": "Sujeira"
+  },
+  "fim": {
+    "pego": "O tutor te pegou! Hora do banho 🛁",
+    "batida": "Bateu! O tutor te alcançou 🛁",
+    "queda": "Splash! Caiu na água… banho tomado 🛁",
+    "tempoEsgotado": "Fim da corrida",
+    "pontos": "Pontos",
+    "distancia": "Distância",
+    "ossos": "Ossinhos",
+    "ossosOuro": "Ossinhos de ouro",
+    "recorde": "Recorde: {{valor}}",
+    "novoRecorde": "Novo recorde!"
+  }
+}

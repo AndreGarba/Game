@@ -1,0 +1,161 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`golden master do motor > partidas com logs fixos 1`] = `
+[
+  {
+    "distancia": 55,
+    "lencos": 1,
+    "motivo": "batida",
+    "ossos": 0,
+    "ossosOuro": 0,
+    "pontos": 55,
+    "seed": 1,
+    "ticks": 404,
+    "versaoRegras": "r1",
+  },
+  {
+    "distancia": 39,
+    "lencos": 0,
+    "motivo": "batida",
+    "ossos": 0,
+    "ossosOuro": 0,
+    "pontos": 39,
+    "seed": 2,
+    "ticks": 288,
+    "versaoRegras": "r1",
+  },
+  {
+    "distancia": 39,
+    "lencos": 0,
+    "motivo": "batida",
+    "ossos": 0,
+    "ossosOuro": 0,
+    "pontos": 39,
+    "seed": 3,
+    "ticks": 288,
+    "versaoRegras": "r1",
+  },
+  {
+    "distancia": 39,
+    "lencos": 0,
+    "motivo": "batida",
+    "ossos": 0,
+    "ossosOuro": 0,
+    "pontos": 39,
+    "seed": 99,
+    "ticks": 288,
+    "versaoRegras": "r1",
+  },
+]
+`;
+
+exports[`golden master do motor > pista gerada para a seed 1 1`] = `
+[
+  [
+    "lenco",
+    "lenco",
+    40.5,
+    0,
+    0.45,
+    0,
+  ],
+  [
+    "teto",
+    "placa",
+    56.14354395401942,
+    1.2,
+    0.6,
+    100,
+  ],
+  [
+    "solido",
+    "lixeira",
+    75.68268614814974,
+    0.7,
+    0,
+    0.9,
+  ],
+  [
+    "solido",
+    "carro",
+    92.59436960245289,
+    3.8,
+    0,
+    1.2,
+  ],
+  [
+    "osso",
+    "osso",
+    93.29436960245289,
+    0,
+    1.7,
+    0,
+  ],
+  [
+    "osso",
+    "osso",
+    94.49436960245289,
+    0,
+    1.7,
+    0,
+  ],
+  [
+    "osso",
+    "osso",
+    95.69436960245288,
+    0,
+    1.7,
+    0,
+  ],
+  [
+    "teto",
+    "placa",
+    111.53389034605908,
+    1.2,
+    0.6,
+    100,
+  ],
+  [
+    "osso",
+    "osso",
+    128.31283811781012,
+    0,
+    0.45,
+    0,
+  ],
+  [
+    "osso",
+    "osso",
+    129.5128381178101,
+    0,
+    0.45,
+    0,
+  ],
+  [
+    "osso",
+    "osso",
+    130.71283811781012,
+    0,
+    0.45,
+    0,
+  ],
+  [
+    "solido",
+    "lixeira",
+    147.32609213853965,
+    0.7,
+    0,
+    0.9,
+  ],
+]
+`;
+
+exports[`golden master do motor > rng 1`] = `
+[
+  0.45540769933722913,
+  0.30849614599719644,
+  0.6611574492417276,
+  0.6184752183035016,
+  0.15228010178543627,
+]
+`;

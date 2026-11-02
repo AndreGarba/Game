@@ -1,0 +1,46 @@
+/* Tokens provisórios até o design system existir. Token novo nasce aqui, nunca solto no CSS
+   de uma tela. */
+:root {
+  --cor-fundo: #7cc6f2;
+  --cor-superficie: #ffffff;
+  --cor-superficie-translucida: rgba(255, 255, 255, 0.86);
+  --cor-texto: #1f2a37;
+  --cor-texto-suave: #4b5768;
+  --cor-destaque: #f76b15;
+  --cor-destaque-texto: #ffffff;
+  --cor-ouro: #e0a100;
+  --cor-lama: #7a5532;
+  --cor-perigo: #e5484d;
+  --cor-ok: #30a46c;
+  --cor-trilho: rgba(31, 42, 55, 0.15);
+  --cor-veu: rgba(15, 23, 42, 0.45);
+
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-6: 24px;
+  --espaco-8: 32px;
+
+  --raio-2: 8px;
+  --raio-4: 16px;
+  --raio-total: 999px;
+
+  --fonte: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --texto-1: 12px;
+  --texto-2: 14px;
+  --texto-3: 16px;
+  --texto-4: 20px;
+  --texto-5: 28px;
+  --texto-6: 40px;
+
+  --tamanho-icone-animado: 64px;
+
+  --sombra-1: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.25);
+
+  --safe-topo: env(safe-area-inset-top, 0px);
+  --safe-base: env(safe-area-inset-bottom, 0px);
+  --safe-esquerda: env(safe-area-inset-left, 0px);
+  --safe-direita: env(safe-area-inset-right, 0px);
+}

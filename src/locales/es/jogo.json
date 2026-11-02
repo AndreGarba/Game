@@ -1,0 +1,29 @@
+{
+  "titulo": "Hora del Baño",
+  "subtitulo": "Huye de tu dueño. ¡Hoy no hay baño!",
+  "comoJogarTeclado": "Espacio o ↑ para saltar · ↓ para agacharte",
+  "comoJogarToque": "Toca o desliza hacia arriba para saltar · desliza hacia abajo para agacharte",
+  "dica": "El barro te hace más lento. Los pañuelos te limpian.",
+  "correr": "Correr",
+  "deNovo": "Correr otra vez",
+  "pausado": "En pausa",
+  "continuar": "Continuar",
+  "girarCelular": "Gira el móvil para ver más de la pista",
+  "hud": {
+    "metros": "{{valor}} m",
+    "tutor": "Dueño",
+    "sujeira": "Suciedad"
+  },
+  "fim": {
+    "pego": "¡Tu dueño te atrapó! Hora del baño 🛁",
+    "batida": "¡Choque! Tu dueño te alcanzó 🛁",
+    "queda": "¡Splash! Al agua… baño hecho 🛁",
+    "tempoEsgotado": "Fin de la carrera",
+    "pontos": "Puntos",
+    "distancia": "Distancia",
+    "ossos": "Huesitos",
+    "ossosOuro": "Huesitos de oro",
+    "recorde": "Récord: {{valor}}",
+    "novoRecorde": "¡Nuevo récord!"
+  }
+}

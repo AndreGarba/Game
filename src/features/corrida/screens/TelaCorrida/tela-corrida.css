@@ -1,0 +1,234 @@
+.tela-corrida {
+  position: relative;
+  width: 100%;
+  height: var(--altura-tela, 100svh);
+  overflow: hidden;
+}
+
+.tela-corrida__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.tela-corrida__hud {
+  position: absolute;
+  inset: 0;
+  padding: calc(var(--espaco-3) + var(--safe-topo)) calc(var(--espaco-4) + var(--safe-direita)) 0
+    calc(var(--espaco-4) + var(--safe-esquerda));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--espaco-4);
+  pointer-events: none;
+}
+
+.tela-corrida__placar {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espaco-4);
+  padding: var(--espaco-2) var(--espaco-4);
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie-translucida);
+  box-shadow: var(--sombra-1);
+  font-size: var(--texto-3);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-corrida__metros {
+  font-size: var(--texto-4);
+  font-weight: 800;
+}
+
+.tela-corrida__medidores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie-translucida);
+  box-shadow: var(--sombra-1);
+  font-size: var(--texto-1);
+  font-weight: 700;
+}
+
+.tela-corrida__medidor {
+  display: grid;
+  grid-template-columns: 56px 96px;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.tela-corrida__trilho {
+  height: var(--espaco-2);
+  border-radius: var(--raio-total);
+  background: var(--cor-trilho);
+  overflow: hidden;
+}
+
+/* Barra cheia = tutor longe. Esvazia conforme ele se aproxima. */
+.tela-corrida__barra-vantagem {
+  height: 100%;
+  width: calc(var(--progresso, 1) * 100%);
+  border-radius: inherit;
+  background: var(--cor-ok);
+  transition: width 0.1s linear;
+}
+
+.tela-corrida__pontos-sujeira {
+  display: flex;
+  gap: var(--espaco-1);
+}
+
+.tela-corrida__pontos-sujeira > span {
+  width: var(--espaco-3);
+  height: var(--espaco-3);
+  border-radius: var(--raio-total);
+}
+
+.tela-corrida__limpo {
+  background: var(--cor-trilho);
+}
+
+.tela-corrida__sujo {
+  background: var(--cor-lama);
+}
+
+.tela-corrida__veu {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-4);
+  background: var(--cor-veu);
+}
+
+.tela-corrida__cartao {
+  width: min(420px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: var(--espaco-6);
+  border-radius: var(--raio-4);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-2);
+  text-align: center;
+}
+
+.tela-corrida__titulo {
+  margin: 0 0 var(--espaco-2);
+  font-size: var(--texto-5);
+}
+
+.tela-corrida__titulo-fim {
+  margin: 0 0 var(--espaco-3);
+  font-size: var(--texto-4);
+}
+
+.tela-corrida__subtitulo {
+  margin: 0 0 var(--espaco-4);
+  font-size: var(--texto-3);
+  font-weight: 700;
+}
+
+.tela-corrida__instrucao {
+  margin: 0 0 var(--espaco-2);
+  font-size: var(--texto-2);
+  color: var(--cor-texto-suave);
+}
+
+.tela-corrida__pontos {
+  margin: 0;
+  font-size: var(--texto-6);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-corrida__rotulo {
+  margin: 0 0 var(--espaco-2);
+  font-size: var(--texto-2);
+  color: var(--cor-texto-suave);
+}
+
+.tela-corrida__novo-recorde {
+  margin: 0 0 var(--espaco-2);
+  font-weight: 800;
+  color: var(--cor-ouro);
+}
+
+.tela-corrida__detalhes {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espaco-1) var(--espaco-4);
+  margin: var(--espaco-3) 0 var(--espaco-4);
+  font-size: var(--texto-2);
+  text-align: left;
+}
+
+.tela-corrida__detalhes dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-corrida__botao {
+  margin-top: var(--espaco-3);
+  padding: var(--espaco-3) var(--espaco-8);
+  border: 0;
+  border-radius: var(--raio-total);
+  background: var(--cor-destaque);
+  color: var(--cor-destaque-texto);
+  font-size: var(--texto-4);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--sombra-1);
+}
+
+.tela-corrida__botao:focus-visible {
+  outline: 3px solid var(--cor-texto);
+  outline-offset: 3px;
+}
+
+.tela-corrida__recorde {
+  margin: var(--espaco-3) 0 0;
+  font-size: var(--texto-2);
+  color: var(--cor-texto-suave);
+}
+
+.tela-corrida__girar {
+  display: none;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin: var(--espaco-4) 0 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-2);
+  background: var(--cor-fundo);
+  text-align: left;
+}
+
+.tela-corrida__girar-animacao {
+  flex: none;
+  width: var(--tamanho-icone-animado);
+  height: var(--tamanho-icone-animado);
+}
+
+.tela-corrida__girar-texto {
+  margin: 0;
+  font-size: var(--texto-2);
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+/* Mesma consulta de AnimacaoGirarCelular.tsx: lá decide se baixa o player, aqui se mostra o aviso. */
+@media (orientation: portrait) and (pointer: coarse) {
+  .tela-corrida__girar {
+    display: flex;
+  }
+
+  .tela-corrida__medidor {
+    grid-template-columns: 48px 64px;
+  }
+}

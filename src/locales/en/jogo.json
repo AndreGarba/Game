@@ -1,0 +1,29 @@
+{
+  "titulo": "Bath Time",
+  "subtitulo": "Run from your owner. No bath today!",
+  "comoJogarTeclado": "Space or ↑ to jump · ↓ to duck",
+  "comoJogarToque": "Tap or swipe up to jump · swipe down to duck",
+  "dica": "Mud slows you down. Tissues clean you up.",
+  "correr": "Run",
+  "deNovo": "Run again",
+  "pausado": "Paused",
+  "continuar": "Continue",
+  "girarCelular": "Turn your phone sideways to see more of the track",
+  "hud": {
+    "metros": "{{valor}} m",
+    "tutor": "Owner",
+    "sujeira": "Dirt"
+  },
+  "fim": {
+    "pego": "Your owner caught you! Bath time 🛁",
+    "batida": "Bonk! Your owner caught up 🛁",
+    "queda": "Splash! Into the water… bath taken 🛁",
+    "tempoEsgotado": "Run over",
+    "pontos": "Score",
+    "distancia": "Distance",
+    "ossos": "Bones",
+    "ossosOuro": "Golden bones",
+    "recorde": "Best: {{valor}}",
+    "novoRecorde": "New best!"
+  }
+}
