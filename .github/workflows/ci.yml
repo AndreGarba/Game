@@ -1,0 +1,35 @@
+# Mesmas checagens que o CLAUDE.md exige antes de abrir PR. O nome do job ("verificar")
+# é o que o ruleset da main exige em "Require status checks": renomear aqui quebra a regra.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Push novo no mesmo PR cancela a rodada anterior, que já ficou velha.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 24: os scripts de simulação rodam .ts direto, sem compilar.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:all
+      - run: npm run build
