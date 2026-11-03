@@ -8,7 +8,11 @@
   "deNovo": "Correr otra vez",
   "pausado": "En pausa",
   "continuar": "Continuar",
-  "girarCelular": "Gira el móvil para ver más de la pista",
+  "orientacao": {
+    "titulo": "Gira el móvil",
+    "texto": "En horizontal ves más de la pista y los obstáculos llegan con más tiempo.",
+    "continuarEmPe": "Jugar en vertical"
+  },
   "abertura": {
     "marca": "GAS Games",
     "pularToque": "Toca para saltar la intro",

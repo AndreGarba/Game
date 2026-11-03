@@ -198,36 +198,7 @@
   color: var(--cor-texto-suave);
 }
 
-.tela-corrida__girar {
-  display: none;
-  align-items: center;
-  gap: var(--espaco-3);
-  margin: var(--espaco-4) 0 0;
-  padding: var(--espaco-2) var(--espaco-3);
-  border-radius: var(--raio-2);
-  background: var(--cor-fundo);
-  text-align: left;
-}
-
-.tela-corrida__girar-animacao {
-  flex: none;
-  width: var(--tamanho-icone-animado);
-  height: var(--tamanho-icone-animado);
-}
-
-.tela-corrida__girar-texto {
-  margin: 0;
-  font-size: var(--texto-2);
-  font-weight: 700;
-  color: var(--cor-texto);
-}
-
-/* Mesma consulta de AnimacaoGirarCelular.tsx: lá decide se baixa o player, aqui se mostra o aviso. */
 @media (orientation: portrait) and (pointer: coarse) {
-  .tela-corrida__girar {
-    display: flex;
-  }
-
   .tela-corrida__medidor {
     grid-template-columns: 48px 64px;
   }

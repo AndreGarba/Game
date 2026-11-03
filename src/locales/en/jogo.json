@@ -8,7 +8,11 @@
   "deNovo": "Run again",
   "pausado": "Paused",
   "continuar": "Continue",
-  "girarCelular": "Turn your phone sideways to see more of the track",
+  "orientacao": {
+    "titulo": "Turn your phone",
+    "texto": "Sideways you see more of the track, and obstacles give you more time.",
+    "continuarEmPe": "Play upright"
+  },
   "abertura": {
     "marca": "GAS Games",
     "pularToque": "Tap to skip the intro",

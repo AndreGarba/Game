@@ -1,0 +1,48 @@
+.tela-girar-celular {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-4);
+  height: var(--altura-tela, 100svh);
+  padding: calc(var(--espaco-6) + var(--safe-topo)) var(--espaco-6) calc(var(--espaco-6) + var(--safe-base));
+  background: var(--cor-fundo);
+  text-align: center;
+}
+
+.tela-girar-celular__animacao {
+  width: var(--tamanho-animacao-destaque);
+  height: var(--tamanho-animacao-destaque);
+}
+
+.tela-girar-celular__titulo {
+  margin: 0;
+  font-size: var(--texto-5);
+  font-weight: 800;
+}
+
+.tela-girar-celular__texto {
+  max-width: 28ch;
+  margin: 0;
+  font-size: var(--texto-3);
+  font-weight: 700;
+  color: var(--cor-texto-suave);
+}
+
+/* Secundário de propósito: o caminho principal é girar, não tocar. */
+.tela-girar-celular__botao {
+  margin-top: var(--espaco-4);
+  padding: var(--espaco-3) var(--espaco-6);
+  border: 2px solid var(--cor-texto);
+  border-radius: var(--raio-total);
+  background: transparent;
+  color: var(--cor-texto);
+  font-size: var(--texto-3);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tela-girar-celular__botao:focus-visible {
+  outline: 3px solid var(--cor-texto);
+  outline-offset: 3px;
+}

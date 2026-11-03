@@ -10,7 +10,6 @@ import {
   type ResultadoPartida,
 } from '../../../../engine/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
-import { AnimacaoGirarCelular } from '../../AnimacaoGirarCelular.tsx'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import { desenharCena } from '../../desenho/desenharCena.ts'
 import { useControlesCorrida } from '../../useControlesCorrida.ts'
@@ -186,10 +185,6 @@ export function TelaCorrida() {
             {lerRecorde() > 0 && (
               <p className="tela-corrida__recorde">{t('fim.recorde', { valor: numero(lerRecorde()) })}</p>
             )}
-            <div className="tela-corrida__girar">
-              <AnimacaoGirarCelular className="tela-corrida__girar-animacao" />
-              <p className="tela-corrida__girar-texto">{t('girarCelular')}</p>
-            </div>
           </div>
         </div>
       )}
