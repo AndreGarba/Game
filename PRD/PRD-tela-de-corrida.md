@@ -17,7 +17,7 @@ início ao fim de uma partida e de volta para a próxima.
 ## 2. Fluxo
 
 ```
-Início ──Correr──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
+Abertura GAS Games ──fim ou toque──▶ Início ──Correr──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
                      │  ▲
      app em 2º plano │  │ Continuar
                      ▼  │
@@ -26,6 +26,7 @@ Início ──Correr──▶ Corrida ──batida/queda/pego──▶ Fim ─�
 
 | Fase | Conteúdo |
 | --- | --- |
+| Abertura | Animação do logo da GAS Games (~6,7 s), tela própria (`features/abertura`). Toque, clique ou tecla pulam. O jogo baixa enquanto ela toca. Som só se o navegador deixar tocar sem toque prévio; com movimento reduzido, mostra o logo pronto por 1,5 s. |
 | Início | Título, frase, como jogar (teclado ou toque, conforme o aparelho), dica da lama e dos lenços, botão **Correr**, recorde. Em celular em pé, aviso animado para girar o aparelho. |
 | Corrida | Canvas em tela cheia + placar. |
 | Pausa | Automática quando o app vai para segundo plano. Botão **Continuar**. |

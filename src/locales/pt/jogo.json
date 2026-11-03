@@ -9,6 +9,11 @@
   "pausado": "Pausado",
   "continuar": "Continuar",
   "girarCelular": "Gire o celular para ver mais da pista",
+  "abertura": {
+    "marca": "GAS Games",
+    "pularToque": "Toque para pular a abertura",
+    "pularTeclado": "Clique ou aperte qualquer tecla para pular a abertura"
+  },
   "hud": {
     "metros": "{{valor}} m",
     "tutor": "Tutor",

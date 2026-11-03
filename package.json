@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "oxlint src scripts tests",
+    "lint": "oxlint src scripts tests --ignore-pattern src/features/abertura/logoGas/gas-logo.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:all": "vitest run",

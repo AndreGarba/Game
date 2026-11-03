@@ -9,6 +9,11 @@
   "pausado": "Paused",
   "continuar": "Continue",
   "girarCelular": "Turn your phone sideways to see more of the track",
+  "abertura": {
+    "marca": "GAS Games",
+    "pularToque": "Tap to skip the intro",
+    "pularTeclado": "Click or press any key to skip the intro"
+  },
   "hud": {
     "metros": "{{valor}} m",
     "tutor": "Owner",

@@ -1,0 +1,46 @@
+.tela-abertura {
+  position: relative;
+  width: 100%;
+  height: var(--altura-tela, 100svh);
+  overflow: hidden;
+  /* Primeiro quadro da animação: evita um clarão de outra cor enquanto o script baixa. */
+  background: var(--cor-abertura-fundo);
+}
+
+.tela-abertura__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* O fundo vai do claro ao roxo e ao escuro: o selo escuro translúcido lê nos três. */
+.tela-abertura__pular {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--espaco-6) + var(--safe-base));
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-4);
+  border-radius: var(--raio-total);
+  background: var(--cor-veu);
+  color: var(--cor-destaque-texto);
+  font-size: var(--texto-2);
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  opacity: 0;
+  animation: tela-abertura-aparecer 0.4s ease-out 1.2s forwards;
+}
+
+@keyframes tela-abertura-aparecer {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tela-abertura__pular {
+    display: none;
+  }
+}
