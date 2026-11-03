@@ -17,7 +17,7 @@ início ao fim de uma partida e de volta para a próxima.
 ## 2. Fluxo
 
 ```
-Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "Jogar na vertical"──▶ Home ──Jogar──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
+Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "Jogar na vertical"──▶ Home ──Jogar──▶ História ──toque ou Pular──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
                      │  ▲
      app em 2º plano │  │ Continuar
                      ▼  │
@@ -28,6 +28,7 @@ Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "
 | --- | --- |
 | Abertura | Animação do logo da GAS Games (~6,7 s), tela própria (`features/abertura`). Toque, clique ou tecla pulam. O jogo baixa enquanto ela toca. Som só se o navegador deixar tocar sem toque prévio; com movimento reduzido, mostra o logo pronto por 1,5 s. |
 | Gire o celular | Só em celular em pé, logo depois da abertura (`features/orientacao`). Animação Lottie do celular girando, título e motivo. Girar avança sozinho; **Jogar na vertical** segue em pé, porque o jogo funciona nas duas orientações. Já deitado ou sem toque, a tela não aparece. |
+| História | Frame Story do Figma (7954:8586), `features/historia`: página de HQ com 4 quadros (Pipoca sonhando com churrasco → tutor chama para o banho → "não mesmo!" → foge pela porta). Um quadro de cada vez, a cada 1,8 s, com estouro e clarão; o balão estoura logo depois. Toque (ou Espaço/Enter) adianta o quadro; com a página completa, toque vai para a corrida (trava de 0,7 s contra toque acidental). **Pular** (ou Esc) vai direto. Falas traduzidas, na fonte Luckiest Guy. Com movimento reduzido, a página aparece inteira. |
 | Home | Frame Home do Figma "Hora do banho" (7953:8401): azulejos, espuma, logo "A Hora do Banho" e botão **JOGAR** (`features/home`). Jogar (ou Espaço/Enter) começa a corrida direto. Efeitos em Three.js (`features/home/efeitos`): gotas que escorrem pelos azulejos aos trancos, refratando a imagem, gotas paradas que surgem e evaporam, e vapor subindo da espuma. Sem WebGL, ou enquanto o Three.js baixa, ficam as imagens estáticas; com movimento reduzido, um quadro parado. Substitui o antigo cartão de início, que tinha como jogar, a dica da lama e o recorde: esses textos ficaram sem lugar na tela por enquanto. |
 | Corrida | Canvas em tela cheia + placar. |
 | Pausa | Automática quando o app vai para segundo plano. Botão **Continuar**. |

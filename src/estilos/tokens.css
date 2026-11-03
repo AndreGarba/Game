@@ -14,6 +14,8 @@
   --cor-ok: #30a46c;
   --cor-trilho: rgba(31, 42, 55, 0.15);
   --cor-veu: rgba(15, 23, 42, 0.45);
+  /* Preto de HQ: fundo da página da história, divisórias e texto dos balões. */
+  --cor-hq-preto: #000000;
   /* Figma: Grayscale/gray-700. */
   --cinza-700: #0f131b;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */
@@ -31,6 +33,8 @@
   --raio-total: 999px;
 
   --fonte: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Letreiro de HQ dos balões (Figma: Luckiest Guy), servida pelo próprio app via @fontsource. */
+  --fonte-hq: 'Luckiest Guy', var(--fonte);
   --texto-1: 12px;
   --texto-2: 14px;
   --texto-3: 16px;

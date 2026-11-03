@@ -8,6 +8,14 @@
   "deNovo": "Correr de novo",
   "pausado": "Pausado",
   "continuar": "Continuar",
+  "historia": {
+    "sonho": "Churrasco",
+    "chamado": "Pipoca...\ntá na hora do banho",
+    "recusa": "não mesmo!",
+    "grito": "Volte\naqui!!!",
+    "pular": "Pular",
+    "continuar": "Toque para correr"
+  },
   "home": {
     "jogar": "Jogar"
   },

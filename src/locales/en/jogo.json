@@ -8,6 +8,14 @@
   "deNovo": "Run again",
   "pausado": "Paused",
   "continuar": "Continue",
+  "historia": {
+    "sonho": "Barbecue",
+    "chamado": "Pipoca...\nit's bath time",
+    "recusa": "no way!",
+    "grito": "Come\nback!!!",
+    "pular": "Skip",
+    "continuar": "Tap to run"
+  },
   "home": {
     "jogar": "Play"
   },
