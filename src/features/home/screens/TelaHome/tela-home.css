@@ -1,0 +1,96 @@
+/*
+ * Medidas do frame Home do Figma (780 × 360, paisagem), em proporção da tela: cqh é 1% da altura
+ * e cqw 1% da largura deste contêiner. Assim a composição vale para qualquer celular deitado; em pé,
+ * o min() impede logo e botão de passarem da largura.
+ */
+.tela-home {
+  container-type: size;
+  position: relative;
+  height: var(--altura-tela, 100svh);
+  overflow: hidden;
+  background: var(--cinza-700);
+}
+
+.tela-home__azulejos,
+.tela-home__espuma {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Mesmo corte vertical do Figma: os azulejos sobram quase todos embaixo, a espuma quase toda em cima. */
+.tela-home__azulejos {
+  object-position: 50% 10%;
+}
+
+.tela-home__espuma {
+  object-position: 50% 78%;
+}
+
+/* Mesmos azulejos e espuma, agora com gotas e vapor: cobre as imagens estáticas quando fica pronto. */
+.tela-home__efeitos {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+}
+
+.tela-home__efeitos--prontos {
+  opacity: 1;
+}
+
+.tela-home__titulo {
+  position: absolute;
+  top: 7.8cqh;
+  left: calc(50% + 1cqh);
+  width: min(88.1cqh, 90cqw);
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+.tela-home__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tela-home__jogar {
+  position: absolute;
+  top: 68cqh;
+  left: calc(50% + 1cqh);
+  width: min(45.6cqh, 60cqw);
+  aspect-ratio: 164 / 56;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: hidden;
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition: transform 0.08s ease-out;
+}
+
+.tela-home__jogar:active {
+  transform: translateX(-50%) scale(0.94);
+}
+
+.tela-home__jogar:focus-visible {
+  outline: 3px solid var(--cor-destaque-texto);
+  outline-offset: 3px;
+}
+
+/* Recorte do JOGAR na folha de botões, com as porcentagens do Figma. */
+.tela-home__jogar-sprite {
+  position: absolute;
+  top: 0;
+  left: -2.69%;
+  width: 205.38%;
+  height: 455.68%;
+  max-width: none;
+  pointer-events: none;
+}

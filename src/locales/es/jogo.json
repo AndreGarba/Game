@@ -8,11 +8,34 @@
   "deNovo": "Correr otra vez",
   "pausado": "En pausa",
   "continuar": "Continuar",
-  "girarCelular": "Gira el móvil para ver más de la pista",
+  "historia": {
+    "sonho": "Asado",
+    "chamado": "Pipoca...\nhora del baño",
+    "recusa": "¡ni loco!",
+    "grito": "¡¡¡Vuelve\naquí!!!",
+    "pular": "Saltar",
+    "continuar": "Toca para correr"
+  },
+  "home": {
+    "jogar": "Jugar"
+  },
+  "orientacao": {
+    "titulo": "Gira el móvil",
+    "texto": "En horizontal ves más de la pista y los obstáculos llegan con más tiempo.",
+    "continuarEmPe": "Jugar en vertical"
+  },
+  "abertura": {
+    "marca": "GAS Games",
+    "pularToque": "Toca para saltar la intro",
+    "pularTeclado": "Haz clic o pulsa cualquier tecla para saltar la intro"
+  },
   "hud": {
     "metros": "{{valor}} m",
     "tutor": "Dueño",
-    "sujeira": "Suciedad"
+    "sujeira": "Suciedad",
+    "distancia": "Distancia: {{valor}} m",
+    "velocidade": "Velocidad: {{valor}} km/h",
+    "pausar": "Pausar"
   },
   "fim": {
     "pego": "¡Tu dueño te atrapó! Hora del baño 🛁",

@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 
-// Mesma condição do CSS que mostra o aviso: só celular em pé precisa da animação.
+// Só celular em pé precisa do aviso: no computador e no tablet deitado a pista já cabe.
 const CONSULTA_RETRATO = '(orientation: portrait) and (pointer: coarse)'
 
 // Quadro em que a seta já está desenhada e o celular está no meio do giro: sozinho, explica o gesto.
 const QUADRO_PARADO = 36
 
-function useRetratoNoToque() {
-  const [retrato, setRetrato] = useState(() => typeof matchMedia === 'function' && matchMedia(CONSULTA_RETRATO).matches)
+export function retratoNoToque() {
+  return typeof matchMedia === 'function' && matchMedia(CONSULTA_RETRATO).matches
+}
+
+export function useRetratoNoToque() {
+  const [retrato, setRetrato] = useState(retratoNoToque)
   useEffect(() => {
     if (typeof matchMedia !== 'function') return
     const consulta = matchMedia(CONSULTA_RETRATO)
@@ -20,11 +24,10 @@ function useRetratoNoToque() {
 
 export function AnimacaoGirarCelular({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const retrato = useRetratoNoToque()
 
   useEffect(() => {
     const container = containerRef.current
-    if (!retrato || !container) return
+    if (!container) return
     let cancelado = false
     let destruir: (() => void) | undefined
 
@@ -49,7 +52,7 @@ export function AnimacaoGirarCelular({ className }: { className?: string }) {
       cancelado = true
       destruir?.()
     }
-  }, [retrato])
+  }, [])
 
   return <div ref={containerRef} className={className} aria-hidden="true" />
 }

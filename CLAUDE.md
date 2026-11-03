@@ -364,6 +364,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | Camada | Como |
 | --- | --- |
 | Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
+| História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.
 Verificação manual: abrir a camada, ler `history.length`, chamar `history.back()`.
