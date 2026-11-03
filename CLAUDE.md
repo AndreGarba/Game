@@ -32,7 +32,9 @@ lançamento: **a definir**.
 - **Lint:** oxlint
 - **PWA:** `vite-plugin-pwa`, `registerType: 'autoUpdate'`
 - **Cascas das lojas:** `android/` (TWA) e `ios/` (WKWebView). Ver
-  [Lojas e anúncios](#lojas-e-anúncios).
+  [Lojas e anúncios](#lojas-e-anúncios). Hoje `android/` é uma casca **Capacitor de teste**, que
+  embute o `dist/` no APK para jogar sem site publicado (`android/README.md`). A TWA da loja ainda
+  não existe.
 
 Comunicação e nomes de arquivo/função em **português**. Comentário explica *por quê*, não *o quê*.
 
