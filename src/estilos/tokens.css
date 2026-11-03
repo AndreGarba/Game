@@ -16,6 +16,8 @@
   --cor-veu: rgba(15, 23, 42, 0.45);
   /* Preto de HQ: fundo da página da história, divisórias e texto dos balões. */
   --cor-hq-preto: #000000;
+  /* Creme do fundo dos selos do HUD (amostrado da arte), para cobrir os zeros desenhados. */
+  --cor-hud-creme: #fdf3e3;
   /* Figma: Grayscale/gray-700. */
   --cinza-700: #0f131b;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */

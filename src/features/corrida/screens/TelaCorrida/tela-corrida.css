@@ -1,4 +1,5 @@
 .tela-corrida {
+  container-type: size;
   position: relative;
   width: 100%;
   height: var(--altura-tela, 100svh);
@@ -13,37 +14,102 @@
   cursor: pointer;
 }
 
+/*
+ * HUD do Figma (frame 780 × 360). --u é 1/360 da altura da tela, como o frame; em tela mais estreita
+ * que o frame (16:9, em pé) passa a valer pela largura, para os selos não se atropelarem.
+ */
 .tela-corrida__hud {
+  --u: min(1cqh, calc(100cqw / 780 * 360 / 100));
   position: absolute;
   inset: 0;
-  padding: calc(var(--espaco-3) + var(--safe-topo)) calc(var(--espaco-4) + var(--safe-direita)) 0
-    calc(var(--espaco-4) + var(--safe-esquerda));
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--espaco-4);
   pointer-events: none;
 }
 
-.tela-corrida__placar {
+.tela-corrida__selo {
+  position: absolute;
+  top: calc(var(--u) * 22 / 3.6 + var(--safe-topo));
+  height: calc(var(--u) * 48 / 3.6);
+}
+
+.tela-corrida__selo img,
+.tela-corrida__pausa img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tela-corrida__selo--distancia {
+  left: calc(var(--u) * 33 / 3.6 + var(--safe-esquerda));
+  width: calc(var(--u) * 121.946 / 3.6);
+}
+
+.tela-corrida__selo--velocidade {
+  left: calc(var(--u) * 162.95 / 3.6 + var(--safe-esquerda));
+  width: calc(var(--u) * 125.268 / 3.6);
+}
+
+/* Placa da cor do selo sobre os zeros desenhados na arte; o valor ao vivo vai em cima dela. */
+.tela-corrida__valor {
+  position: absolute;
   display: flex;
-  align-items: baseline;
-  gap: var(--espaco-4);
-  padding: var(--espaco-2) var(--espaco-4);
-  border-radius: var(--raio-total);
-  background: var(--cor-superficie-translucida);
-  box-shadow: var(--sombra-1);
-  font-size: var(--texto-3);
-  font-weight: 700;
+  align-items: center;
+  justify-content: flex-end;
+  border-radius: calc(var(--u) * 1 / 3.6);
+  background: var(--cor-hud-creme);
+  color: var(--cor-hq-preto);
+  font-family: var(--fonte-hq);
+  font-size: calc(var(--u) * 21 / 3.6);
+  line-height: 1;
   font-variant-numeric: tabular-nums;
+  transform: skewX(-8deg);
 }
 
-.tela-corrida__metros {
-  font-size: var(--texto-4);
-  font-weight: 800;
+.tela-corrida__valor--distancia {
+  left: 39.8%;
+  top: 40.5%;
+  width: 37%;
+  height: 36.4%;
 }
 
+.tela-corrida__valor--velocidade {
+  left: 45.2%;
+  top: 38.9%;
+  width: 20.8%;
+  height: 39.6%;
+}
+
+.tela-corrida__pausa {
+  position: absolute;
+  top: calc(var(--u) * 22 / 3.6 + var(--safe-topo));
+  right: calc(var(--u) * 28 / 3.6 + var(--safe-direita));
+  width: calc(var(--u) * 59 / 3.6);
+  height: calc(var(--u) * 48 / 3.6);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.08s ease-out;
+}
+
+.tela-corrida__pausa:active {
+  transform: scale(0.9);
+}
+
+.tela-corrida__pausa:disabled {
+  visibility: hidden;
+}
+
+.tela-corrida__pausa:focus-visible {
+  outline: 3px solid var(--cor-destaque-texto);
+  outline-offset: 3px;
+}
+
+/* Tutor, sujeira e ossinhos não estão no frame: ficam no cartão de antes, abaixo da pausa. */
 .tela-corrida__medidores {
+  position: absolute;
+  top: calc(var(--u) * 76 / 3.6 + var(--safe-topo));
+  right: calc(var(--u) * 28 / 3.6 + var(--safe-direita));
   display: flex;
   flex-direction: column;
   gap: var(--espaco-2);
@@ -53,6 +119,13 @@
   box-shadow: var(--sombra-1);
   font-size: var(--texto-1);
   font-weight: 700;
+}
+
+.tela-corrida__ossos {
+  display: flex;
+  gap: var(--espaco-3);
+  font-size: var(--texto-2);
+  font-variant-numeric: tabular-nums;
 }
 
 .tela-corrida__medidor {

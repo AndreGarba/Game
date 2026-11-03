@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import { lerRecorde, registrarPlacar } from '../../../../data/recorde.ts'
 import {
+  multiplicadorSujeira,
   resultado as resultadoDaPartida,
   SUJEIRA_MAX,
   VANTAGEM_MAX,
+  velocidadeBase,
   type Acao,
   type EstadoPartida,
   type ResultadoPartida,
@@ -12,7 +14,9 @@ import {
 import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import { desenharCena } from '../../desenho/desenharCena.ts'
+import { IMAGENS_HUD } from '../../imagens/index.ts'
 import { useControlesCorrida } from '../../useControlesCorrida.ts'
+import '@fontsource/luckiest-guy/latin-400.css'
 import './tela-corrida.css'
 
 // Não há fase de início: a home é o início, e quem chega aqui já apertou Jogar.
@@ -20,6 +24,7 @@ type Fase = 'correndo' | 'pausado' | 'fim'
 
 interface Hud {
   metros: number
+  kmh: number
   ossos: number
   ossosOuro: number
   sujeira: number
@@ -35,6 +40,8 @@ interface Fim {
 function hudDe(estado: EstadoPartida): Hud {
   return {
     metros: Math.floor(estado.cachorro.x),
+    // A velocidade em que o cachorro corre de fato: a base do trecho freada pela lama.
+    kmh: Math.round(velocidadeBase(estado.cachorro.x) * multiplicadorSujeira(estado.sujeira) * 3.6),
     ossos: estado.ossos,
     ossosOuro: estado.ossosOuro,
     sujeira: estado.sujeira,
@@ -117,6 +124,12 @@ export function TelaCorrida() {
     mudarFase('correndo')
   }, [mudarFase])
 
+  const pausar = useCallback(() => {
+    if (faseRef.current !== 'correndo') return
+    controladorRef.current?.pausar()
+    mudarFase('pausado')
+  }, [mudarFase])
+
   const enviar = useCallback(
     (acao: Acao) => {
       if (faseRef.current === 'correndo') controladorRef.current?.enviar(acao)
@@ -139,6 +152,9 @@ export function TelaCorrida() {
   }, [correr, continuar])
 
   const numero = (n: number) => n.toLocaleString(localeAtual())
+  // Placar de fliperama, como os zeros da arte: 0042 m, 07 km/h.
+  const digitos = (n: number, casas: number) =>
+    n.toLocaleString(localeAtual(), { minimumIntegerDigits: casas, useGrouping: false })
 
   return (
     <div className="tela-corrida">
@@ -146,12 +162,23 @@ export function TelaCorrida() {
 
       {hud && (
         <div className="tela-corrida__hud" aria-live="off">
-          <div className="tela-corrida__placar">
-            <span className="tela-corrida__metros">{t('hud.metros', { valor: numero(hud.metros) })}</span>
-            <span>🦴 {numero(hud.ossos)}</span>
-            <span>🏅 {numero(hud.ossosOuro)}</span>
+          {/* Selos do Figma (frame 7960:8725) com os zeros da arte cobertos pelo valor ao vivo. */}
+          <div className="tela-corrida__selo tela-corrida__selo--distancia" role="img" aria-label={t('hud.distancia', { valor: numero(hud.metros) })}>
+            <img src={IMAGENS_HUD.distancia} alt="" draggable={false} />
+            <span className="tela-corrida__valor tela-corrida__valor--distancia">{digitos(hud.metros, 4)}</span>
           </div>
+          <div className="tela-corrida__selo tela-corrida__selo--velocidade" role="img" aria-label={t('hud.velocidade', { valor: numero(hud.kmh) })}>
+            <img src={IMAGENS_HUD.velocidade} alt="" draggable={false} />
+            <span className="tela-corrida__valor tela-corrida__valor--velocidade">{digitos(hud.kmh, 2)}</span>
+          </div>
+          <button className="tela-corrida__pausa" onClick={pausar} aria-label={t('hud.pausar')} disabled={fase !== 'correndo'}>
+            <img src={IMAGENS_HUD.pausa} alt="" draggable={false} />
+          </button>
           <div className="tela-corrida__medidores">
+            <div className="tela-corrida__ossos">
+              <span>🦴 {numero(hud.ossos)}</span>
+              <span>🏅 {numero(hud.ossosOuro)}</span>
+            </div>
             <div className="tela-corrida__medidor">
               <span>{t('hud.tutor')}</span>
               <div className="tela-corrida__trilho">

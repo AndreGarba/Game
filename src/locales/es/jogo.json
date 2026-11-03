@@ -32,7 +32,10 @@
   "hud": {
     "metros": "{{valor}} m",
     "tutor": "Dueño",
-    "sujeira": "Suciedad"
+    "sujeira": "Suciedad",
+    "distancia": "Distancia: {{valor}} m",
+    "velocidade": "Velocidad: {{valor}} km/h",
+    "pausar": "Pausar"
   },
   "fim": {
     "pego": "¡Tu dueño te atrapó! Hora del baño 🛁",

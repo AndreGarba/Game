@@ -94,10 +94,18 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
 
 ## 6. Placar (HUD)
 
-- Esquerda: metros, ossinhos e ossinhos de ouro.
-- Direita: barra **Tutor** (cheia = longe, esvazia quando ele se aproxima) e 5 bolinhas de
-  **Sujeira**.
-- Respeita a área segura do iPhone (notch).
+- Selos do Figma (frame 7960:8725), recortados da folha de sprites do HUD: **Distância** em metros
+  e **Velocidade** em km/h no alto à esquerda, botão de **pausa** no alto à direita. A arte traz
+  zeros desenhados ("0000 m", "00 km/h"): uma placa creme cobre os zeros e o valor ao vivo vai por
+  cima, na fonte Luckiest Guy, com zeros à esquerda como placar de fliperama.
+- Velocidade = a do motor de fato: `velocidadeBase(x) × multiplicadorSujeira(sujeira)`, em km/h
+  (de 29 a 72). A lama baixa o número na hora.
+- O botão de pausa abre a mesma pausa de quando o app vai para segundo plano, e some enquanto o
+  jogo está pausado.
+- Tutor, sujeira e ossinhos não estão no frame. Decisão do André: continuam no cartão de antes,
+  abaixo da pausa (barra **Tutor**, cheia = longe; 5 bolinhas de **Sujeira**; 🦴 e 🏅).
+- Medidas em 1/360 da altura, como o frame; em tela mais estreita que o frame, pela largura.
+  Respeita a área segura do iPhone (notch).
 
 ## 7. Idiomas
 

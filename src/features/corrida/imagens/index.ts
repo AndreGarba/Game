@@ -1,23 +1,30 @@
-// Arte do cenário: Figma "Hora do banho", frame 7960:8725. Mesma resolução, em WebP.
+// Arte da corrida: Figma "Hora do banho", frame 7960:8725, em WebP. Cenário na resolução original;
+// peças do HUD recortadas da folha de sprites nas mesmas regiões que o frame usa.
 import calcada from './calcada.webp'
 import casas from './casas.webp'
 import ceu from './ceu.webp'
+import distancia from './hud-distancia.webp'
+import pausa from './hud-pausa.webp'
+import velocidade from './hud-velocidade.webp'
 
 export const IMAGENS_CENARIO = { ceu, casas, calcada }
+export const IMAGENS_HUD = { distancia, velocidade, pausa }
 
 type ArteCenario = Record<keyof typeof IMAGENS_CENARIO, HTMLImageElement>
 
 let arte: ArteCenario | null = null
 
+function criar(src: string) {
+  const imagem = new Image()
+  imagem.src = src
+  return imagem
+}
+
 /** Cria as imagens uma vez; chamar cedo (na abertura) faz a corrida já abrir com a arte pronta. */
 export function preCarregarImagensCenario(): ArteCenario {
   if (!arte) {
-    const criar = (src: string) => {
-      const imagem = new Image()
-      imagem.src = src
-      return imagem
-    }
     arte = { ceu: criar(ceu), casas: criar(casas), calcada: criar(calcada) }
+    Object.values(IMAGENS_HUD).forEach(criar)
   }
   return arte
 }
