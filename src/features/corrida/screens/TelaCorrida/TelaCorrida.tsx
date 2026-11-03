@@ -15,7 +15,8 @@ import { desenharCena } from '../../desenho/desenharCena.ts'
 import { useControlesCorrida } from '../../useControlesCorrida.ts'
 import './tela-corrida.css'
 
-type Fase = 'inicio' | 'correndo' | 'pausado' | 'fim'
+// Não há fase de início: a home é o início, e quem chega aqui já apertou Jogar.
+type Fase = 'correndo' | 'pausado' | 'fim'
 
 interface Hud {
   metros: number
@@ -41,14 +42,12 @@ function hudDe(estado: EstadoPartida): Hud {
   }
 }
 
-const toqueNaTela = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
-
 export function TelaCorrida() {
   const { t } = useTranslation()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const controladorRef = useRef<ControladorCorrida | null>(null)
-  const faseRef = useRef<Fase>('inicio')
-  const [fase, setFase] = useState<Fase>('inicio')
+  const faseRef = useRef<Fase>('correndo')
+  const [fase, setFase] = useState<Fase>('correndo')
   const [hud, setHud] = useState<Hud | null>(null)
   const [fim, setFim] = useState<Fim | null>(null)
 
@@ -89,6 +88,8 @@ export function TelaCorrida() {
     })
     controladorRef.current = controlador
     controlador.ligar()
+    controlador.iniciar()
+    mudarFase('correndo')
 
     const aoMudarVisibilidade = () => {
       if (document.hidden && faseRef.current === 'correndo') {
@@ -128,7 +129,7 @@ export function TelaCorrida() {
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       if (evento.code !== 'Space' && evento.code !== 'Enter') return
-      if (faseRef.current === 'inicio' || faseRef.current === 'fim') correr()
+      if (faseRef.current === 'fim') correr()
       else if (faseRef.current === 'pausado') continuar()
       else return
       evento.preventDefault()
@@ -143,7 +144,7 @@ export function TelaCorrida() {
     <div className="tela-corrida">
       <canvas ref={canvasRef} className="tela-corrida__canvas" />
 
-      {hud && fase !== 'inicio' && (
+      {hud && (
         <div className="tela-corrida__hud" aria-live="off">
           <div className="tela-corrida__placar">
             <span className="tela-corrida__metros">{t('hud.metros', { valor: numero(hud.metros) })}</span>
@@ -168,23 +169,6 @@ export function TelaCorrida() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {fase === 'inicio' && (
-        <div className="tela-corrida__veu">
-          <div className="tela-corrida__cartao">
-            <h1 className="tela-corrida__titulo">🐕 {t('titulo')} 🛁</h1>
-            <p className="tela-corrida__subtitulo">{t('subtitulo')}</p>
-            <p className="tela-corrida__instrucao">{toqueNaTela ? t('comoJogarToque') : t('comoJogarTeclado')}</p>
-            <p className="tela-corrida__instrucao">{t('dica')}</p>
-            <button className="tela-corrida__botao" onClick={correr} autoFocus>
-              {t('correr')}
-            </button>
-            {lerRecorde() > 0 && (
-              <p className="tela-corrida__recorde">{t('fim.recorde', { valor: numero(lerRecorde()) })}</p>
-            )}
           </div>
         </div>
       )}

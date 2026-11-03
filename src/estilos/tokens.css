@@ -14,6 +14,8 @@
   --cor-ok: #30a46c;
   --cor-trilho: rgba(31, 42, 55, 0.15);
   --cor-veu: rgba(15, 23, 42, 0.45);
+  /* Figma: Grayscale/gray-700. */
+  --cinza-700: #0f131b;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */
   --cor-abertura-fundo: #f8f7fa;
 

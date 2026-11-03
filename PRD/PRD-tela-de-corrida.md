@@ -17,7 +17,7 @@ início ao fim de uma partida e de volta para a próxima.
 ## 2. Fluxo
 
 ```
-Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "Jogar na vertical"──▶ Início ──Correr──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
+Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "Jogar na vertical"──▶ Home ──Jogar──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
                      │  ▲
      app em 2º plano │  │ Continuar
                      ▼  │
@@ -28,7 +28,7 @@ Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "
 | --- | --- |
 | Abertura | Animação do logo da GAS Games (~6,7 s), tela própria (`features/abertura`). Toque, clique ou tecla pulam. O jogo baixa enquanto ela toca. Som só se o navegador deixar tocar sem toque prévio; com movimento reduzido, mostra o logo pronto por 1,5 s. |
 | Gire o celular | Só em celular em pé, logo depois da abertura (`features/orientacao`). Animação Lottie do celular girando, título e motivo. Girar avança sozinho; **Jogar na vertical** segue em pé, porque o jogo funciona nas duas orientações. Já deitado ou sem toque, a tela não aparece. |
-| Início | Título, frase, como jogar (teclado ou toque, conforme o aparelho), dica da lama e dos lenços, botão **Correr**, recorde. O aviso de girar saiu daqui e virou a tela anterior. |
+| Home | Frame Home do Figma "Hora do banho" (7953:8401): azulejos, espuma, logo "A Hora do Banho" e botão **JOGAR** (`features/home`). Jogar (ou Espaço/Enter) começa a corrida direto. Substitui o antigo cartão de início, que tinha como jogar, a dica da lama e o recorde: esses textos ficaram sem lugar na tela por enquanto. |
 | Corrida | Canvas em tela cheia + placar. |
 | Pausa | Automática quando o app vai para segundo plano. Botão **Continuar**. |
 | Fim | Motivo do fim, pontos, distância, ossinhos, ossinhos de ouro, recorde ou "Novo recorde!", botão **Correr de novo**. |

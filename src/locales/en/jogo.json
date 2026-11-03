@@ -8,6 +8,9 @@
   "deNovo": "Run again",
   "pausado": "Paused",
   "continuar": "Continue",
+  "home": {
+    "jogar": "Play"
+  },
   "orientacao": {
     "titulo": "Turn your phone",
     "texto": "Sideways you see more of the track, and obstacles give you more time.",

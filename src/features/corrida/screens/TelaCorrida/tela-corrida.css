@@ -127,17 +127,7 @@
   font-size: var(--texto-4);
 }
 
-.tela-corrida__subtitulo {
-  margin: 0 0 var(--espaco-4);
-  font-size: var(--texto-3);
-  font-weight: 700;
-}
 
-.tela-corrida__instrucao {
-  margin: 0 0 var(--espaco-2);
-  font-size: var(--texto-2);
-  color: var(--cor-texto-suave);
-}
 
 .tela-corrida__pontos {
   margin: 0;

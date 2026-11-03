@@ -8,6 +8,9 @@
   "deNovo": "Correr otra vez",
   "pausado": "En pausa",
   "continuar": "Continuar",
+  "home": {
+    "jogar": "Jugar"
+  },
   "orientacao": {
     "titulo": "Gira el móvil",
     "texto": "En horizontal ves más de la pista y los obstáculos llegan con más tiempo.",
