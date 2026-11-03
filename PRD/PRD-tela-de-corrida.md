@@ -124,7 +124,9 @@ vale só na sessão. Quando houver conta e ranking, passa a ser só um cache.
    no CLAUDE.md, seção Voltar nativo).
 2. Testar em celular real: sensação de velocidade, tamanho dos obstáculos em tela vertical,
    resposta do toque.
-3. PWA (instalar como app e funcionar offline).
+3. ~~PWA~~ feito no branch `feat/pwa`: instala como app (tela cheia, deitado) e roda offline depois
+   da primeira abertura. Falta o deploy em HTTPS para o botão Instalar aparecer sem flag, e um
+   ícone de verdade (o atual é provisório: logo sobre os azulejos da home).
 4. Envio da partida para o ranking.
 5. Som e música.
 6. Design system: as cores do canvas estão em `desenho/paleta.ts` e as da interface em tokens
