@@ -62,10 +62,14 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 - **Câmera:** cachorro a 28% da largura. Mostra cerca de 18 m de pista. Em tela vertical, a escala
   é limitada pela largura e o chão sobe para a cena ficar no meio.
-- **Falso 3D em 3 camadas:** fundo (silhuetas, 15% da velocidade), meio (prédios com janelas ou
-  árvores, 45%) e pista (100%). Cores e paisagem mudam por cenário.
-- **Chão** com marcas a cada 2 m, para dar sensação de velocidade. Vãos desenhados como água (rio
-  e lago) ou buraco com cone.
+- **Falso 3D em 3 camadas, com a arte do Figma** (frame 7960:8725, `features/corrida/imagens`):
+  céu com sol e cidade ao fundo (parado: o sol repetido viraria dois), fileira de casas (45% da
+  velocidade, cópias alternadas espelhadas porque as bordas da arte não emendam) e calçada (presa
+  à pista, 100%). O chão fica na altura da calçada do Figma (322 de 360). A mesma arte vale para
+  os quatro cenários até existir arte de parque, rio e centro. Enquanto a arte carrega, vale o
+  cenário vetorial antigo, com cores por cenário.
+- **Calçada:** as faixas de sombra da arte andam com a pista e dão a sensação de velocidade. Vãos
+  desenhados como água (rio e lago) ou buraco com cone.
 - **Obstáculos** desenhados em vetor, cada um com forma própria (carro com rodas e vidro, ônibus,
   banco, chafariz, toldo listrado, galho com folhas, placa amarela...).
 - **Coletáveis:** ossinho 🦴, ossinho de ouro 🏅 com brilho, lenço 🧻.

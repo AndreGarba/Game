@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react'
 import { TelaAbertura } from './features/abertura/screens/TelaAbertura/TelaAbertura.tsx'
+import { preCarregarImagensCenario } from './features/corrida/imagens/index.ts'
 import { preCarregarImagensHistoria } from './features/historia/imagens/index.ts'
 import { TelaHistoria } from './features/historia/screens/TelaHistoria/TelaHistoria.tsx'
 import { preCarregarImagensHome } from './features/home/imagens/index.ts'
@@ -9,8 +10,8 @@ import { TelaGirarCelular } from './features/orientacao/screens/TelaGirarCelular
 
 type Tela = 'abertura' | 'girarCelular' | 'home' | 'historia' | 'corrida'
 
-// Tudo que vem depois da abertura baixa enquanto ela toca (arte da home e da história, Three.js
-// dos efeitos, a corrida): quando o logo termina, as telas seguintes abrem prontas.
+// Tudo que vem depois da abertura baixa enquanto ela toca (arte da home, da história e do
+// cenário, Three.js dos efeitos, a corrida): quando o logo termina, as telas seguintes abrem prontas.
 const importarCorrida = () => import('./features/corrida/screens/TelaCorrida/TelaCorrida.tsx')
 const TelaCorrida = lazy(() => importarCorrida().then((m) => ({ default: m.TelaCorrida })))
 
@@ -21,6 +22,7 @@ export function App() {
     preCarregarImagensHome()
     void import('./features/home/efeitos/cenaAgua.ts')
     preCarregarImagensHistoria()
+    preCarregarImagensCenario()
     void importarCorrida()
   }, [])
 
