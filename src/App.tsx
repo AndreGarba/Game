@@ -7,7 +7,7 @@ import { TelaGirarCelular } from './features/orientacao/screens/TelaGirarCelular
 
 type Tela = 'abertura' | 'girarCelular' | 'home' | 'corrida'
 
-// A corrida e a arte da home baixam enquanto a abertura toca: quando o logo termina, está tudo pronto.
+// A corrida, a arte da home e o Three.js dos efeitos baixam enquanto a abertura toca: quando o logo termina, está tudo pronto.
 const importarCorrida = () => import('./features/corrida/screens/TelaCorrida/TelaCorrida.tsx')
 const TelaCorrida = lazy(() => importarCorrida().then((m) => ({ default: m.TelaCorrida })))
 
@@ -16,6 +16,7 @@ export function App() {
 
   useEffect(() => {
     preCarregarImagensHome()
+    void import('./features/home/efeitos/cenaAgua.ts')
     void importarCorrida()
   }, [])
 
