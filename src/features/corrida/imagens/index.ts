@@ -1,6 +1,7 @@
 // Arte da corrida. Cenário da cidade em 7 camadas de parallax, geradas por IA a partir da
 // referência de arte do jogo e preparadas por `scripts/arte/preparar_camada.py` (recorte, emenda
 // horizontal e WebP). Peças do HUD vêm do Figma "Hora do banho", frame 7960:8725.
+import cachorroCorrendo from './cachorro-correndo.webp'
 import ceu from './cidade/ceu.webp'
 import skyline from './cidade/skyline.webp'
 import bairro from './cidade/bairro.webp'
@@ -65,8 +66,15 @@ export const CAMADAS_CIDADE: readonly Camada[] = [
   { src: pista, parallax: PLANO_FRENTE, topo: 247, altura: 125 },
 ]
 
+// Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave), recortados de
+// PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
+// PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
+// `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 413, altura: 320, pes: 11 } as const
+
 let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
+let cachorro: HTMLImageElement | null = null
 
 function criar(src: string) {
   const imagem = new Image()
@@ -80,8 +88,15 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     arte = CAMADAS_CIDADE.map((c) => criar(c.src))
     sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
     Object.values(IMAGENS_HUD).forEach(criar)
+    cachorro = criar(cachorroCorrendo)
   }
   return arte
+}
+
+/** A folha do cachorro, ou null enquanto não carregou (o canvas desenha o cachorro vetorial). */
+export function spriteCachorroPronto(): HTMLImageElement | null {
+  preCarregarImagensCenario()
+  return cachorro && cachorro.complete && cachorro.naturalWidth > 0 ? cachorro : null
 }
 
 /** As camadas, ou null enquanto alguma não carregou (o canvas desenha o cenário vetorial). */
