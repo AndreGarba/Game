@@ -15,7 +15,7 @@ export const IMAGENS_HUD = { distancia, velocidade, pausa }
 // PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
 // PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
-export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 489, altura: 320, pes: 11 } as const
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 413, altura: 320, pes: 11 } as const
 
 type ArteCenario = Record<keyof typeof IMAGENS_CENARIO, HTMLImageElement>
 

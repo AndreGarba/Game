@@ -4,8 +4,11 @@
 #        src/features/corrida/imagens/cachorro-correndo.webp [altura_saida] [previa.png]
 # Precisa de Pillow e numpy. Imprime as medidas para SPRITE_CACHORRO_CORRENDO.
 #
-# Cada cachorro é uma mancha conectada de alfa. A posição dele dentro da sua célula é mantida:
-# o quique e o avanço do galope que a arte desenhou continuam na animação.
+# Cada cachorro é uma mancha conectada de alfa. Na horizontal, todos os quadros são alinhados pelo
+# tronco (parte de cima da mancha: corpo e cabeça, sem as patas): a IA desenha o cachorro
+# escorregando para trás dentro da célula ao longo do ciclo, e na volta ao quadro 1 isso vira um
+# tranco para a frente. Na vertical a posição original fica: é o quique do galope e o contato das
+# patas com o chão.
 import sys
 import numpy as np
 from PIL import Image
@@ -68,13 +71,21 @@ mascaras = [np.zeros((H, W), bool) for _ in range(total)]
 for rid, i in dono.items():
     mascaras[i] |= rotulo == rid
 
-# Caixa comum: união das caixas de cada cachorro, em coordenadas da sua célula.
-esq, dir_, topo, base = celula, 0, H, 0
+# Âncora horizontal de cada quadro: centro do tronco (55% de cima da altura do cachorro).
+ancoras = []
+for mk in mascaras:
+    ys, xs = np.where(mk)
+    topo_i, base_i = ys.min(), ys.max()
+    tronco = ys < topo_i + (base_i - topo_i) * 0.55
+    ancoras.append(xs[tronco].mean())
+print('deslocamento do tronco antes (px):', [round(a - i * celula - (ancoras[0]), 1) for i, a in enumerate(ancoras)])
+
+# Caixa comum, em coordenadas relativas à âncora de cada quadro.
+esq, dir_, topo, base = 0, 0, H, 0
 for i, mk in enumerate(mascaras):
     ys, xs = np.where(mk)
-    x0 = i * celula
-    esq = min(esq, xs.min() - x0)
-    dir_ = max(dir_, xs.max() + 1 - x0)
+    esq = min(esq, xs.min() - ancoras[i])
+    dir_ = max(dir_, xs.max() + 1 - ancoras[i])
     topo = min(topo, ys.min())
     base = max(base, ys.max() + 1)
 margem = 6
@@ -86,7 +97,7 @@ escala = altura_saida / aq
 lq_s, aq_s = round(lq * escala), altura_saida
 folha = Image.new('RGBA', (lq_s * total, aq_s), (0, 0, 0, 0))
 for i, mk in enumerate(mascaras):
-    x0 = int(round(i * celula)) + esq
+    x0 = int(round(ancoras[i])) + esq
     q = np.zeros((aq, lq, 4), np.uint8)
     # recorte com limites, preenchendo fora da imagem com transparente
     sx0, sx1 = max(0, x0), min(W, x0 + lq)
