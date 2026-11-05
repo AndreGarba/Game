@@ -2,8 +2,9 @@ import { SPRITE_TUTOR_CORRENDO as FOLHA } from '../imagens/index.ts'
 
 // Tutor da arte (folha de 10 quadros correndo). (x, base) em pixels CSS: o ponto dos pés.
 
-// Altura do quadro inteiro no mundo, em metros (o tutor em si fica perto de 1,8 m).
-const ALTURA_QUADRO_M = 1.95
+// Altura do quadro inteiro no mundo, em metros. É só desenho: o tutor não tem caixa de colisão.
+// 3,51 = 1,95 × 1,8: ajustado a olho para casar com o cenário de cidade.
+const ALTURA_QUADRO_M = 3.51
 // No ar: o quadro com os dois pés fora do chão.
 const QUADRO_NO_AR = 3
 

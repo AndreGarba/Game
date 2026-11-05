@@ -6,7 +6,8 @@ import { SPRITE_CACHORRO_CORRENDO as FOLHA } from '../imagens/index.ts'
 
 // Altura do quadro inteiro no mundo, em metros. O quadro tem folga para o quique do galope, então
 // o cachorro em si fica um pouco menor que isto.
-const ALTURA_QUADRO_M = 1.2
+// 1,32 = 1,2 × 1,1: ajustado a olho para casar com o cenário de cidade.
+const ALTURA_QUADRO_M = 1.32
 // Quanto o desenho fica à frente do centro da caixa: a cabeça é a parte que bate.
 const AVANCO_M = 0.05
 // Um ciclo de passos (2π de fase) percorre os quadros da folha uma vez.
