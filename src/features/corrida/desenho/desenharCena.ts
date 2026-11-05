@@ -5,8 +5,9 @@ import {
   type Elemento,
 } from '../../../engine/index.ts'
 import type { PontoRastro, QuadroCorrida } from '../controladorCorrida.ts'
-import { arteCenarioPronta } from '../imagens/index.ts'
+import { arteCenarioPronta, spriteCachorroPronto } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
+import { desenharCachorroSprite } from './cachorroSprite.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
@@ -438,9 +439,16 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
     ctx.ellipse(cx, base, ppm * 0.5, ppm * 0.1, 0, 0, Math.PI * 2)
     ctx.fill()
   }
+  const poseCachorro = { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0, sujeira: estado.sujeira }
+  // Folha de sprites da arte; enquanto ela não carrega, o cachorro vetorial.
+  const sprite = spriteCachorroPronto()
+  if (sprite) {
+    desenharCachorroSprite(ctx, sprite, cx, base, ppm, { ...poseCachorro, vy: c.vy })
+    return
+  }
   ctx.save()
   ctx.translate(cx, base)
   ctx.scale(ppm, -ppm)
-  desenharCachorro(ctx, { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0, sujeira: estado.sujeira })
+  desenharCachorro(ctx, poseCachorro)
   ctx.restore()
 }
