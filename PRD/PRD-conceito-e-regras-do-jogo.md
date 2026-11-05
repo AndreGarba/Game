@@ -107,6 +107,21 @@ poças, linhas de ossinhos e lenços.
 
 ## 5. Referência de balanceamento
 
+**r6 (05/11/2026):** carro, tora, chafariz e banca ganham **contorno** (`src/engine/perfis.ts`),
+medido no sprite. Em cima deles, o cachorro segue a forma: no carro, pousa no porta-malas, sobe o
+vidro traseiro até o teto (2,6 m), desce o para-brisa até o capô e cai no fim. A traseira é parede:
+quem chega pelo chão sem pular bate. Os outros sólidos continuam caixas. 30 partidas do bot, até
+5 minutos cada:
+
+| | r5 | r6 |
+| --- | --- | --- |
+| Distância (mediana) | 3.635 m | 3.635 m |
+| Pontos (mediana) | 5.851 | 5.826 |
+| Ossinhos de ouro (mediana) | 9,5 | 7,5 |
+| Fim | 22 pegos, 8 no limite | 22 pegos, 8 no limite |
+
+Sem batida, queda ou divergência de replay.
+
 **r5 (05/11/2026):** obstáculos em tamanho real, na régua do tutor (a arte dele mede 3,2 m no
 jogo e representa 1,8 m, então 1 m real = 1,79 m do jogo): carro 7,8 × 2,6 m, cavalete
 3,8 × 1,79 m, caixa 1,27 × 1,07 m, tora 1,66 × 0,81 m, canteiro 4,5 × 0,81 m, chafariz 5,4 × 1,07 m

@@ -3,6 +3,7 @@
 export * from './constantes.ts'
 export { SEQUENCIA_CENARIOS, cenarioEm } from './cenarios.ts'
 export { nivelEm } from './gerador.ts'
+export { alturaSuperficie, temPerfil } from './perfis.ts'
 export { velocidadeBase, multiplicadorSujeira, alturaCachorro } from './fisica.ts'
 export {
   criarPartida,
