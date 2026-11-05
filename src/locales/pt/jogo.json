@@ -8,11 +8,34 @@
   "deNovo": "Correr de novo",
   "pausado": "Pausado",
   "continuar": "Continuar",
-  "girarCelular": "Gire o celular para ver mais da pista",
+  "historia": {
+    "sonho": "Churrasco",
+    "chamado": "Pipoca...\ntá na hora do banho",
+    "recusa": "não mesmo!",
+    "grito": "Volte\naqui!!!",
+    "pular": "Pular",
+    "continuar": "Toque para correr"
+  },
+  "home": {
+    "jogar": "Jogar"
+  },
+  "orientacao": {
+    "titulo": "Gire o celular",
+    "texto": "Na horizontal você vê mais da pista e os obstáculos chegam com mais tempo.",
+    "continuarEmPe": "Jogar na vertical"
+  },
+  "abertura": {
+    "marca": "GAS Games",
+    "pularToque": "Toque para pular a abertura",
+    "pularTeclado": "Clique ou aperte qualquer tecla para pular a abertura"
+  },
   "hud": {
     "metros": "{{valor}} m",
     "tutor": "Tutor",
-    "sujeira": "Sujeira"
+    "sujeira": "Sujeira",
+    "distancia": "Distância: {{valor}} m",
+    "velocidade": "Velocidade: {{valor}} km/h",
+    "pausar": "Pausar"
   },
   "fim": {
     "pego": "O tutor te pegou! Hora do banho 🛁",

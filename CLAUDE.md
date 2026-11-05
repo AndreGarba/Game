@@ -32,7 +32,9 @@ lançamento: **a definir**.
 - **Lint:** oxlint
 - **PWA:** `vite-plugin-pwa`, `registerType: 'autoUpdate'`
 - **Cascas das lojas:** `android/` (TWA) e `ios/` (WKWebView). Ver
-  [Lojas e anúncios](#lojas-e-anúncios).
+  [Lojas e anúncios](#lojas-e-anúncios). Hoje `android/` é uma casca **Capacitor de teste**, que
+  embute o `dist/` no APK para jogar sem site publicado (`android/README.md`). A TWA da loja ainda
+  não existe.
 
 Comunicação e nomes de arquivo/função em **português**. Comentário explica *por quê*, não *o quê*.
 
@@ -364,6 +366,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | Camada | Como |
 | --- | --- |
 | Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
+| História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.
 Verificação manual: abrir a camada, ler `history.length`, chamar `history.back()`.

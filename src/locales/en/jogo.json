@@ -8,11 +8,34 @@
   "deNovo": "Run again",
   "pausado": "Paused",
   "continuar": "Continue",
-  "girarCelular": "Turn your phone sideways to see more of the track",
+  "historia": {
+    "sonho": "Barbecue",
+    "chamado": "Pipoca...\nit's bath time",
+    "recusa": "no way!",
+    "grito": "Come\nback!!!",
+    "pular": "Skip",
+    "continuar": "Tap to run"
+  },
+  "home": {
+    "jogar": "Play"
+  },
+  "orientacao": {
+    "titulo": "Turn your phone",
+    "texto": "Sideways you see more of the track, and obstacles give you more time.",
+    "continuarEmPe": "Play upright"
+  },
+  "abertura": {
+    "marca": "GAS Games",
+    "pularToque": "Tap to skip the intro",
+    "pularTeclado": "Click or press any key to skip the intro"
+  },
   "hud": {
     "metros": "{{valor}} m",
     "tutor": "Owner",
-    "sujeira": "Dirt"
+    "sujeira": "Dirt",
+    "distancia": "Distance: {{valor}} m",
+    "velocidade": "Speed: {{valor}} km/h",
+    "pausar": "Pause"
   },
   "fim": {
     "pego": "Your owner caught you! Bath time 🛁",

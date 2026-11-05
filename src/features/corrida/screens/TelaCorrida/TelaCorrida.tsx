@@ -2,25 +2,30 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import { lerRecorde, registrarPlacar } from '../../../../data/recorde.ts'
 import {
+  multiplicadorSujeira,
   resultado as resultadoDaPartida,
   SUJEIRA_MAX,
   VANTAGEM_MAX,
+  velocidadeBase,
   type Acao,
   type EstadoPartida,
   type ResultadoPartida,
 } from '../../../../engine/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
-import { AnimacaoGirarCelular } from '../../AnimacaoGirarCelular.tsx'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import type { Cachorro3d } from '../../desenho/cachorro3d/index.ts'
 import { desenharCena } from '../../desenho/desenharCena.ts'
+import { IMAGENS_HUD } from '../../imagens/index.ts'
 import { useControlesCorrida } from '../../useControlesCorrida.ts'
+import '@fontsource/luckiest-guy/latin-400.css'
 import './tela-corrida.css'
 
-type Fase = 'inicio' | 'correndo' | 'pausado' | 'fim'
+// Não há fase de início: a home é o início, e quem chega aqui já apertou Jogar.
+type Fase = 'correndo' | 'pausado' | 'fim'
 
 interface Hud {
   metros: number
+  kmh: number
   ossos: number
   ossosOuro: number
   sujeira: number
@@ -36,6 +41,8 @@ interface Fim {
 function hudDe(estado: EstadoPartida): Hud {
   return {
     metros: Math.floor(estado.cachorro.x),
+    // A velocidade em que o cachorro corre de fato: a base do trecho freada pela lama.
+    kmh: Math.round(velocidadeBase(estado.cachorro.x) * multiplicadorSujeira(estado.sujeira) * 3.6),
     ossos: estado.ossos,
     ossosOuro: estado.ossosOuro,
     sujeira: estado.sujeira,
@@ -43,14 +50,12 @@ function hudDe(estado: EstadoPartida): Hud {
   }
 }
 
-const toqueNaTela = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
-
 export function TelaCorrida() {
   const { t } = useTranslation()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const controladorRef = useRef<ControladorCorrida | null>(null)
-  const faseRef = useRef<Fase>('inicio')
-  const [fase, setFase] = useState<Fase>('inicio')
+  const faseRef = useRef<Fase>('correndo')
+  const [fase, setFase] = useState<Fase>('correndo')
   const [hud, setHud] = useState<Hud | null>(null)
   const [fim, setFim] = useState<Fim | null>(null)
 
@@ -103,6 +108,8 @@ export function TelaCorrida() {
     })
     controladorRef.current = controlador
     controlador.ligar()
+    controlador.iniciar()
+    mudarFase('correndo')
 
     const aoMudarVisibilidade = () => {
       if (document.hidden && faseRef.current === 'correndo') {
@@ -132,6 +139,12 @@ export function TelaCorrida() {
     mudarFase('correndo')
   }, [mudarFase])
 
+  const pausar = useCallback(() => {
+    if (faseRef.current !== 'correndo') return
+    controladorRef.current?.pausar()
+    mudarFase('pausado')
+  }, [mudarFase])
+
   const enviar = useCallback(
     (acao: Acao) => {
       if (faseRef.current === 'correndo') controladorRef.current?.enviar(acao)
@@ -144,7 +157,7 @@ export function TelaCorrida() {
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       if (evento.code !== 'Space' && evento.code !== 'Enter') return
-      if (faseRef.current === 'inicio' || faseRef.current === 'fim') correr()
+      if (faseRef.current === 'fim') correr()
       else if (faseRef.current === 'pausado') continuar()
       else return
       evento.preventDefault()
@@ -154,19 +167,33 @@ export function TelaCorrida() {
   }, [correr, continuar])
 
   const numero = (n: number) => n.toLocaleString(localeAtual())
+  // Placar de fliperama, como os zeros da arte: 0042 m, 07 km/h.
+  const digitos = (n: number, casas: number) =>
+    n.toLocaleString(localeAtual(), { minimumIntegerDigits: casas, useGrouping: false })
 
   return (
     <div className="tela-corrida">
       <canvas ref={canvasRef} className="tela-corrida__canvas" />
 
-      {hud && fase !== 'inicio' && (
+      {hud && (
         <div className="tela-corrida__hud" aria-live="off">
-          <div className="tela-corrida__placar">
-            <span className="tela-corrida__metros">{t('hud.metros', { valor: numero(hud.metros) })}</span>
-            <span>🦴 {numero(hud.ossos)}</span>
-            <span>🏅 {numero(hud.ossosOuro)}</span>
+          {/* Selos do Figma (frame 7960:8725) com os zeros da arte cobertos pelo valor ao vivo. */}
+          <div className="tela-corrida__selo tela-corrida__selo--distancia" role="img" aria-label={t('hud.distancia', { valor: numero(hud.metros) })}>
+            <img src={IMAGENS_HUD.distancia} alt="" draggable={false} />
+            <span className="tela-corrida__valor tela-corrida__valor--distancia">{digitos(hud.metros, 4)}</span>
           </div>
+          <div className="tela-corrida__selo tela-corrida__selo--velocidade" role="img" aria-label={t('hud.velocidade', { valor: numero(hud.kmh) })}>
+            <img src={IMAGENS_HUD.velocidade} alt="" draggable={false} />
+            <span className="tela-corrida__valor tela-corrida__valor--velocidade">{digitos(hud.kmh, 2)}</span>
+          </div>
+          <button className="tela-corrida__pausa" onClick={pausar} aria-label={t('hud.pausar')} disabled={fase !== 'correndo'}>
+            <img src={IMAGENS_HUD.pausa} alt="" draggable={false} />
+          </button>
           <div className="tela-corrida__medidores">
+            <div className="tela-corrida__ossos">
+              <span>🦴 {numero(hud.ossos)}</span>
+              <span>🏅 {numero(hud.ossosOuro)}</span>
+            </div>
             <div className="tela-corrida__medidor">
               <span>{t('hud.tutor')}</span>
               <div className="tela-corrida__trilho">
@@ -183,27 +210,6 @@ export function TelaCorrida() {
                   <span key={i} className={i < hud.sujeira ? 'tela-corrida__sujo' : 'tela-corrida__limpo'} />
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {fase === 'inicio' && (
-        <div className="tela-corrida__veu">
-          <div className="tela-corrida__cartao">
-            <h1 className="tela-corrida__titulo">🐕 {t('titulo')} 🛁</h1>
-            <p className="tela-corrida__subtitulo">{t('subtitulo')}</p>
-            <p className="tela-corrida__instrucao">{toqueNaTela ? t('comoJogarToque') : t('comoJogarTeclado')}</p>
-            <p className="tela-corrida__instrucao">{t('dica')}</p>
-            <button className="tela-corrida__botao" onClick={correr} autoFocus>
-              {t('correr')}
-            </button>
-            {lerRecorde() > 0 && (
-              <p className="tela-corrida__recorde">{t('fim.recorde', { valor: numero(lerRecorde()) })}</p>
-            )}
-            <div className="tela-corrida__girar">
-              <AnimacaoGirarCelular className="tela-corrida__girar-animacao" />
-              <p className="tela-corrida__girar-texto">{t('girarCelular')}</p>
             </div>
           </div>
         </div>

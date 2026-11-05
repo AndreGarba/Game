@@ -5,6 +5,7 @@ import {
   type Elemento,
 } from '../../../engine/index.ts'
 import type { PontoRastro, QuadroCorrida } from '../controladorCorrida.ts'
+import { arteCenarioPronta } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import type { Cachorro3d } from './cachorro3d/index.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
@@ -58,6 +59,66 @@ function emoji(ctx: CanvasRenderingContext2D, texto: string, x: number, y: numbe
   ctx.restore()
 }
 
+/*
+ * Cenário do Figma (frame 7960:8725, 780 × 360), em unidades do frame. A escala sai da linha do
+ * chão: a arte vai do topo da tela até a calçada, como no design. Em paisagem dá altura/360; em pé,
+ * com o chão no meio da tela, a arte encolhe junto.
+ */
+const FRAME_ALTURA = 360
+const METROS_NA_ALTURA = 7
+// Onde a calçada encontra as casas, medido na arte.
+const LINHA_CHAO = 322
+const CEU = { x: -7, largura: 794, altura: 447 }
+const CASAS = { y: -18, largura: 781, altura: 440 }
+const CALCADA = { y: -20, largura: 784, altura: 441 }
+// Cor da base da calçada, para o que sobrar abaixo da arte em tela de pé.
+const CALCADA_BASE = 'rgb(190, 164, 152)'
+
+function desenharCenarioArte(
+  ctx: CanvasRenderingContext2D,
+  cam: Camera,
+  xCamera: number,
+  arte: NonNullable<ReturnType<typeof arteCenarioPronta>>,
+) {
+  const escala = cam.chaoY / LINHA_CHAO
+
+  // Céu parado: tem sol, que repetido viraria dois. Cobre a largura toda mesmo em tela mais larga
+  // que o frame.
+  const escalaCeu = Math.max(escala, cam.largura / (CEU.largura + CEU.x))
+  ctx.drawImage(arte.ceu, CEU.x * escalaCeu, 0, CEU.largura * escalaCeu, CEU.altura * escalaCeu)
+
+  // Calçada presa ao mundo, como os obstáculos: a arte emenda sozinha, então só repete.
+  const larguraCalcada = CALCADA.largura * escala
+  const deslocCalcada = ((cam.x0 * cam.ppm) % larguraCalcada + larguraCalcada) % larguraCalcada
+  const yCalcada = CALCADA.y * escala
+  for (let x = -deslocCalcada; x < cam.largura; x += larguraCalcada) {
+    ctx.drawImage(arte.calcada, x, yCalcada, larguraCalcada, CALCADA.altura * escala)
+  }
+  const baseCalcada = yCalcada + CALCADA.altura * escala
+  if (baseCalcada < cam.altura) {
+    ctx.fillStyle = CALCADA_BASE
+    ctx.fillRect(0, baseCalcada - 1, cam.largura, cam.altura - baseCalcada + 1)
+  }
+
+  // Casas no meio do parallax. As bordas da arte não emendam: uma cópia sim, outra espelhada.
+  const larguraCasas = CASAS.largura * escala
+  const deslocCasas = xCamera * cam.ppm * PARALLAX_MEIO
+  const yCasas = CASAS.y * escala
+  for (let i = Math.floor(deslocCasas / larguraCasas); i * larguraCasas - deslocCasas < cam.largura; i++) {
+    const x = i * larguraCasas - deslocCasas
+    if (i % 2 === 0) {
+      ctx.drawImage(arte.casas, x, yCasas, larguraCasas, CASAS.altura * escala)
+    } else {
+      ctx.save()
+      ctx.translate(x + larguraCasas, yCasas)
+      ctx.scale(-1, 1)
+      ctx.drawImage(arte.casas, 0, 0, larguraCasas, CASAS.altura * escala)
+      ctx.restore()
+    }
+  }
+}
+
+/** Cenário vetorial: vale só nos primeiros quadros, enquanto a arte do Figma ainda carrega. */
 function desenharFundo(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: number) {
   const paleta = PALETA_CENARIO[cenarioEm(xCamera)]
   const ceu = ctx.createLinearGradient(0, 0, 0, cam.chaoY)
@@ -343,15 +404,20 @@ export function desenharCena(
   const y = quadro.yAnterior + (c.y - quadro.yAnterior) * alfa
 
   // Paisagem: mostra uns 18 m de pista; em retrato a escala é limitada pela largura.
-  const ppm = Math.min(altura / 7, largura / 18)
-  // Em tela vertical a escala é limitada pela largura e sobraria céu demais: o chão sobe para
-  // deixar a cena no meio da tela.
-  const chaoY = Math.min(altura * 0.78, altura / 2 + 3.5 * ppm)
+  const ppm = Math.min(altura / METROS_NA_ALTURA, largura / 18)
+  // Chão na altura da calçada do Figma. Em tela vertical a escala é limitada pela largura e
+  // sobraria céu demais: o chão sobe para deixar a cena no meio da tela.
+  const chaoY = Math.min((altura * LINHA_CHAO) / FRAME_ALTURA, altura / 2 + 3.5 * ppm)
   const cam: Camera = { ppm, x0: x - (largura * POSICAO_CACHORRO) / ppm, chaoY, largura, altura }
   const xFim = cam.x0 + largura / ppm
 
-  desenharFundo(ctx, cam, x)
-  desenharChao(ctx, cam, x)
+  const arte = arteCenarioPronta()
+  if (arte) {
+    desenharCenarioArte(ctx, cam, x, arte)
+  } else {
+    desenharFundo(ctx, cam, x)
+    desenharChao(ctx, cam, x)
+  }
 
   const visiveis = estado.elementos.filter((e) => e.x + e.largura > cam.x0 - 1 && e.x < xFim + 1)
   for (const e of visiveis) if (e.tipo === 'vao') desenharVao(ctx, cam, e)

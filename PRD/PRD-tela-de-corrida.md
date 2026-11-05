@@ -17,7 +17,7 @@ início ao fim de uma partida e de volta para a próxima.
 ## 2. Fluxo
 
 ```
-Início ──Correr──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
+Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "Jogar na vertical"──▶ Home ──Jogar──▶ História ──toque ou Pular──▶ Corrida ──batida/queda/pego──▶ Fim ──Correr de novo──▶ Corrida
                      │  ▲
      app em 2º plano │  │ Continuar
                      ▼  │
@@ -26,7 +26,10 @@ Início ──Correr──▶ Corrida ──batida/queda/pego──▶ Fim ─�
 
 | Fase | Conteúdo |
 | --- | --- |
-| Início | Título, frase, como jogar (teclado ou toque, conforme o aparelho), dica da lama e dos lenços, botão **Correr**, recorde. Em celular em pé, aviso animado para girar o aparelho. |
+| Abertura | Animação do logo da GAS Games (~6,7 s), tela própria (`features/abertura`). Toque, clique ou tecla pulam. O jogo baixa enquanto ela toca. Som só se o navegador deixar tocar sem toque prévio; com movimento reduzido, mostra o logo pronto por 1,5 s. |
+| Gire o celular | Só em celular em pé, logo depois da abertura (`features/orientacao`). Animação Lottie do celular girando, título e motivo. Girar avança sozinho; **Jogar na vertical** segue em pé, porque o jogo funciona nas duas orientações. Já deitado ou sem toque, a tela não aparece. |
+| História | Frame Story do Figma (7954:8586), `features/historia`: página de HQ com 4 quadros (Pipoca sonhando com churrasco → tutor chama para o banho → "não mesmo!" → foge pela porta). Um quadro de cada vez, a cada 1,8 s, com estouro e clarão; o balão estoura logo depois. Toque (ou Espaço/Enter) adianta o quadro; com a página completa, toque vai para a corrida (trava de 0,7 s contra toque acidental). **Pular** (ou Esc) vai direto. Falas traduzidas, na fonte Luckiest Guy. Com movimento reduzido, a página aparece inteira. |
+| Home | Frame Home do Figma "Hora do banho" (7953:8401): azulejos, espuma, logo "A Hora do Banho" e botão **JOGAR** (`features/home`). Jogar (ou Espaço/Enter) começa a corrida direto. Efeitos em Three.js (`features/home/efeitos`): gotas que escorrem pelos azulejos aos trancos, refratando a imagem, gotas paradas que surgem e evaporam, e vapor subindo da espuma. Sem WebGL, ou enquanto o Three.js baixa, ficam as imagens estáticas; com movimento reduzido, um quadro parado. Substitui o antigo cartão de início, que tinha como jogar, a dica da lama e o recorde: esses textos ficaram sem lugar na tela por enquanto. |
 | Corrida | Canvas em tela cheia + placar. |
 | Pausa | Automática quando o app vai para segundo plano. Botão **Continuar**. |
 | Fim | Motivo do fim, pontos, distância, ossinhos, ossinhos de ouro, recorde ou "Novo recorde!", botão **Correr de novo**. |
@@ -59,10 +62,14 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 - **Câmera:** cachorro a 28% da largura. Mostra cerca de 18 m de pista. Em tela vertical, a escala
   é limitada pela largura e o chão sobe para a cena ficar no meio.
-- **Falso 3D em 3 camadas:** fundo (silhuetas, 15% da velocidade), meio (prédios com janelas ou
-  árvores, 45%) e pista (100%). Cores e paisagem mudam por cenário.
-- **Chão** com marcas a cada 2 m, para dar sensação de velocidade. Vãos desenhados como água (rio
-  e lago) ou buraco com cone.
+- **Falso 3D em 3 camadas, com a arte do Figma** (frame 7960:8725, `features/corrida/imagens`):
+  céu com sol e cidade ao fundo (parado: o sol repetido viraria dois), fileira de casas (45% da
+  velocidade, cópias alternadas espelhadas porque as bordas da arte não emendam) e calçada (presa
+  à pista, 100%). O chão fica na altura da calçada do Figma (322 de 360). A mesma arte vale para
+  os quatro cenários até existir arte de parque, rio e centro. Enquanto a arte carrega, vale o
+  cenário vetorial antigo, com cores por cenário.
+- **Calçada:** as faixas de sombra da arte andam com a pista e dão a sensação de velocidade. Vãos
+  desenhados como água (rio e lago) ou buraco com cone.
 - **Obstáculos** desenhados em vetor, cada um com forma própria (carro com rodas e vidro, ônibus,
   banco, chafariz, toldo listrado, galho com folhas, placa amarela...).
 - **Coletáveis:** ossinho 🦴, ossinho de ouro 🏅 com brilho, lenço 🧻.
@@ -87,10 +94,18 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
 
 ## 6. Placar (HUD)
 
-- Esquerda: metros, ossinhos e ossinhos de ouro.
-- Direita: barra **Tutor** (cheia = longe, esvazia quando ele se aproxima) e 5 bolinhas de
-  **Sujeira**.
-- Respeita a área segura do iPhone (notch).
+- Selos do Figma (frame 7960:8725), recortados da folha de sprites do HUD: **Distância** em metros
+  e **Velocidade** em km/h no alto à esquerda, botão de **pausa** no alto à direita. A arte traz
+  zeros desenhados ("0000 m", "00 km/h"): uma placa creme cobre os zeros e o valor ao vivo vai por
+  cima, na fonte Luckiest Guy, com zeros à esquerda como placar de fliperama.
+- Velocidade = a do motor de fato: `velocidadeBase(x) × multiplicadorSujeira(sujeira)`, em km/h
+  (de 29 a 72). A lama baixa o número na hora.
+- O botão de pausa abre a mesma pausa de quando o app vai para segundo plano, e some enquanto o
+  jogo está pausado.
+- Tutor, sujeira e ossinhos não estão no frame. Decisão do André: continuam no cartão de antes,
+  abaixo da pausa (barra **Tutor**, cheia = longe; 5 bolinhas de **Sujeira**; 🦴 e 🏅).
+- Medidas em 1/360 da altura, como o frame; em tela mais estreita que o frame, pela largura.
+  Respeita a área segura do iPhone (notch).
 
 ## 7. Idiomas
 
@@ -109,7 +124,9 @@ vale só na sessão. Quando houver conta e ranking, passa a ser só um cache.
    no CLAUDE.md, seção Voltar nativo).
 2. Testar em celular real: sensação de velocidade, tamanho dos obstáculos em tela vertical,
    resposta do toque.
-3. PWA (instalar como app e funcionar offline).
+3. ~~PWA~~ feito no branch `feat/pwa`: instala como app (tela cheia, deitado) e roda offline depois
+   da primeira abertura. Falta o deploy em HTTPS para o botão Instalar aparecer sem flag, e um
+   ícone de verdade (o atual é provisório: logo sobre os azulejos da home).
 4. Envio da partida para o ranking.
 5. Som e música.
 6. Design system: as cores do canvas estão em `desenho/paleta.ts` e as da interface em tokens
