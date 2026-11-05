@@ -7,12 +7,12 @@
 **Depende de:** [PRD-conceito-e-regras-do-jogo.md](PRD-conceito-e-regras-do-jogo.md),
 [PRD-tela-de-corrida.md](PRD-tela-de-corrida.md)
 
-> **Aviso (05/11/2026):** o cachorro deixou de seguir este documento. Por decisão do André, ele é
-> um modelo 3D renderizado que segue a referência pintada
+> **Aviso (05/11/2026):** na corrida, o cachorro segue o asset pintado
 > [referencias/cachorro-andando.webp](referencias/cachorro-andando.webp) (shih tzu creme, pelo
-> comprido, peitoral preto e vermelho), contrariando os itens "realismo" e "3D renderizado" da
-> seção 8. O código está em `src/features/corrida/desenho/cachorro3d/`. O resto do jogo ainda
-> segue este documento até nova decisão.
+> comprido, peitoral preto e vermelho), recortado em folha de sprites por
+> `scripts/sprites/recortar-cachorro.py`. Decisão do André: fidelidade ao asset vale mais que os
+> itens "realismo" e "gradiente suave" da seção 8 para o personagem. Pulo e abaixar ainda não têm
+> quadros próprios.
 
 ---
 
