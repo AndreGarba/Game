@@ -1,6 +1,6 @@
 // Arte da corrida: Figma "Hora do banho", frame 7960:8725, em WebP. Cenário na resolução original;
 // peças do HUD recortadas da folha de sprites nas mesmas regiões que o frame usa.
-import cachorroAndando from './cachorro-andando.webp'
+import cachorroCorrendo from './cachorro-correndo.webp'
 import calcada from './calcada.webp'
 import casas from './casas.webp'
 import ceu from './ceu.webp'
@@ -11,10 +11,11 @@ import velocidade from './hud-velocidade.webp'
 export const IMAGENS_CENARIO = { ceu, casas, calcada }
 export const IMAGENS_HUD = { distancia, velocidade, pausa }
 
-// Folha do cachorro andando: 5 quadros lado a lado, recortados de
-// PRD/referencias/cachorro-andando.webp por scripts/sprites/recortar-cachorro.py. Em cada
-// quadro as patas encostam na base e o focinho na borda direita (4 px de margem).
-export const SPRITE_CACHORRO_ANDANDO = { quadros: 5, largura: 409, altura: 307, margem: 4 } as const
+// Folha do cachorro correndo (galope): 8 quadros lado a lado, recortados de
+// PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
+// PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
+// `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 8, largura: 485, altura: 320, pes: 9 } as const
 
 type ArteCenario = Record<keyof typeof IMAGENS_CENARIO, HTMLImageElement>
 
@@ -32,7 +33,7 @@ export function preCarregarImagensCenario(): ArteCenario {
   if (!arte) {
     arte = { ceu: criar(ceu), casas: criar(casas), calcada: criar(calcada) }
     Object.values(IMAGENS_HUD).forEach(criar)
-    cachorro = criar(cachorroAndando)
+    cachorro = criar(cachorroCorrendo)
   }
   return arte
 }

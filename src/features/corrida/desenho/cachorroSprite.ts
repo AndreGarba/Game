@@ -1,15 +1,17 @@
 import { SUJEIRA_MAX } from '../../../engine/index.ts'
-import { SPRITE_CACHORRO_ANDANDO as FOLHA } from '../imagens/index.ts'
+import { SPRITE_CACHORRO_CORRENDO as FOLHA } from '../imagens/index.ts'
 
-// Cachorro da arte (folha de 5 quadros andando). Coordenadas em pixels CSS da tela; (cx, base) é
-// o ponto dos pés no centro da caixa de colisão.
+// Cachorro da arte (folha de 8 quadros de galope). Coordenadas em pixels CSS da tela; (cx, base)
+// é o ponto dos pés no centro da caixa de colisão.
 
-// Altura do quadro no mundo, em metros: patas ao topo do topete.
-const ALTURA_M = 1.1
+// Altura do quadro inteiro no mundo, em metros. O quadro tem folga para o quique do galope, então
+// o cachorro em si fica um pouco menor que isto.
+const ALTURA_QUADRO_M = 1.2
 // Quanto o desenho fica à frente do centro da caixa: a cabeça é a parte que bate.
-const AVANCO_M = 0.12
-// O ciclo de passos (2π de fase) percorre os 5 quadros uma vez.
-const QUADRO_NO_AR = 1
+const AVANCO_M = 0.05
+// Um ciclo de passos (2π de fase) percorre os 8 quadros uma vez.
+// No ar: o quadro do voo esticado, com as quatro patas fora do chão.
+const QUADRO_NO_AR = 6
 
 export interface OpcoesSprite {
   fase: number
@@ -24,11 +26,11 @@ let camada: HTMLCanvasElement | null = null
 
 const MANCHAS: readonly (readonly [number, number, number])[] = [
   // [x, y, raio] em fração do quadro (0..1, y para baixo)
-  [0.35, 0.62, 0.07],
-  [0.55, 0.55, 0.06],
-  [0.2, 0.7, 0.06],
-  [0.62, 0.78, 0.05],
-  [0.8, 0.4, 0.05],
+  [0.38, 0.6, 0.06],
+  [0.55, 0.5, 0.05],
+  [0.25, 0.68, 0.05],
+  [0.6, 0.72, 0.045],
+  [0.75, 0.32, 0.045],
 ]
 
 function quadroComLama(sprite: HTMLImageElement, indice: number, sujeira: number): CanvasImageSource {
@@ -67,15 +69,14 @@ export function desenharCachorroSprite(
   const fonte = quadroComLama(sprite, indice, o.sujeira)
   const recorteX = fonte === sprite ? indice * FOLHA.largura : 0
 
-  const escala = (ALTURA_M * ppm) / (FOLHA.altura - FOLHA.margem)
+  const escala = (ALTURA_QUADRO_M * ppm) / FOLHA.altura
   const l = FOLHA.largura * escala
   const a = FOLHA.altura * escala
-  const margem = FOLHA.margem * escala
 
   ctx.save()
-  ctx.translate(cx + AVANCO_M * ppm, base + margem)
+  ctx.translate(cx + AVANCO_M * ppm, base + FOLHA.pes * escala)
   // Pulo e abaixar ainda sem quadros próprios na arte: inclina no ar e achata no chão.
-  if (o.noAr) ctx.rotate(Math.max(-0.3, Math.min(0.3, -o.vy * 0.025)))
+  if (o.noAr) ctx.rotate(Math.max(-0.25, Math.min(0.25, -o.vy * 0.02)))
   if (o.abaixado) ctx.scale(1.12, 0.55)
   ctx.drawImage(fonte, recorteX, 0, FOLHA.largura, FOLHA.altura, -l / 2, -a, l, a)
   ctx.restore()

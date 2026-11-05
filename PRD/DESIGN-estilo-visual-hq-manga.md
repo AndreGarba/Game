@@ -9,10 +9,12 @@
 
 > **Aviso (05/11/2026):** na corrida, o cachorro segue o asset pintado
 > [referencias/cachorro-andando.webp](referencias/cachorro-andando.webp) (shih tzu creme, pelo
-> comprido, peitoral preto e vermelho), recortado em folha de sprites por
-> `scripts/sprites/recortar-cachorro.py`. Decisão do André: fidelidade ao asset vale mais que os
-> itens "realismo" e "gradiente suave" da seção 8 para o personagem. Pulo e abaixar ainda não têm
-> quadros próprios.
+> comprido, peitoral preto e vermelho). A animação usa a folha de galope
+> [referencias/cachorro-correndo.png](referencias/cachorro-correndo.png), gerada no ChatGPT com o
+> prompt de [referencias/prompt-cachorro-correndo.md](referencias/prompt-cachorro-correndo.md) e
+> recortada por `scripts/sprites/recortar-corrida.py`. Decisão do André: fidelidade ao asset vale
+> mais que os itens "realismo" e "gradiente suave" da seção 8 para o personagem. Abaixar ainda não
+> tem quadros próprios.
 
 ---
 
