@@ -1,7 +1,7 @@
 import { SUJEIRA_MAX } from '../../../engine/index.ts'
 import { SPRITE_CACHORRO_CORRENDO as FOLHA } from '../imagens/index.ts'
 
-// Cachorro da arte (folha de 8 quadros de galope). Coordenadas em pixels CSS da tela; (cx, base)
+// Cachorro da arte (folha de 10 quadros de galope). Coordenadas em pixels CSS da tela; (cx, base)
 // é o ponto dos pés no centro da caixa de colisão.
 
 // Altura do quadro inteiro no mundo, em metros. O quadro tem folga para o quique do galope, então
@@ -9,9 +9,9 @@ import { SPRITE_CACHORRO_CORRENDO as FOLHA } from '../imagens/index.ts'
 const ALTURA_QUADRO_M = 1.2
 // Quanto o desenho fica à frente do centro da caixa: a cabeça é a parte que bate.
 const AVANCO_M = 0.05
-// Um ciclo de passos (2π de fase) percorre os 8 quadros uma vez.
+// Um ciclo de passos (2π de fase) percorre os quadros da folha uma vez.
 // No ar: o quadro do voo esticado, com as quatro patas fora do chão.
-const QUADRO_NO_AR = 6
+const QUADRO_NO_AR = 8
 
 export interface OpcoesSprite {
   fase: number

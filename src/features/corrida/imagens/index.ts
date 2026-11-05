@@ -11,11 +11,11 @@ import velocidade from './hud-velocidade.webp'
 export const IMAGENS_CENARIO = { ceu, casas, calcada }
 export const IMAGENS_HUD = { distancia, velocidade, pausa }
 
-// Folha do cachorro correndo (galope): 8 quadros lado a lado, recortados de
+// Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave), recortados de
 // PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
 // PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
-export const SPRITE_CACHORRO_CORRENDO = { quadros: 8, largura: 485, altura: 320, pes: 9 } as const
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 489, altura: 320, pes: 11 } as const
 
 type ArteCenario = Record<keyof typeof IMAGENS_CENARIO, HTMLImageElement>
 

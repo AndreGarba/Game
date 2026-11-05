@@ -10,6 +10,9 @@ import sys
 import numpy as np
 from PIL import Image
 
+# Menos que isto e o galope "pula" de pose em pose na velocidade do jogo.
+QUADROS_MINIMOS = 10
+
 src, out = sys.argv[1], sys.argv[2]
 altura_saida = int(sys.argv[3]) if len(sys.argv) > 3 else 256
 previa = sys.argv[4] if len(sys.argv) > 4 else None
@@ -44,9 +47,13 @@ for y0 in range(H):
                     pilha.append((ny, nx))
         manchas.append((n, soma_x / cnt, cnt))
 
-grandes = sorted([m for m in manchas if m[2] > 0.02 * H * W / 8], key=lambda m: m[1])
+# Um cachorro é uma mancha com pelo menos 30% da área da maior; o resto é pelo solto.
+maior = max(m[2] for m in manchas)
+grandes = sorted([m for m in manchas if m[2] > 0.3 * maior], key=lambda m: m[1])
 total = len(grandes)
 print('quadros encontrados:', total)
+if total < QUADROS_MINIMOS:
+    sys.exit(f'A folha tem {total} quadros; o mínimo para a corrida é {QUADROS_MINIMOS}.')
 celula = W / total
 
 # Cada mancha pequena (pelo solto) vai para o cachorro mais próximo.
