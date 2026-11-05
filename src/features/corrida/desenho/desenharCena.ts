@@ -13,9 +13,11 @@ import {
   LINHA_PISO,
   spriteCachorroPronto,
   spriteObjeto,
+  spriteTutorPronto,
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
+import { desenharTutorSprite } from './tutorSprite.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
@@ -526,11 +528,17 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   // O tutor faz o que o cachorro fez quando passou por este mesmo ponto da pista: como os
   // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob a mesma placa.
   const pose = poseNoRastro(quadro.rastro, xTutor - CACHORRO_LARGURA / 2)
-  ctx.save()
-  ctx.translate(sx(cam, xTutor), sy(cam, pose.y))
-  ctx.scale(ppm, -ppm)
-  desenharTutor(ctx, { fase: x * 1.6, noAr: !pose.noChao, abaixado: pose.abaixado })
-  ctx.restore()
+  const poseTutor = { fase: x * 1.6, noAr: !pose.noChao, abaixado: pose.abaixado }
+  const spriteTutor = spriteTutorPronto()
+  if (spriteTutor) {
+    desenharTutorSprite(ctx, spriteTutor, sx(cam, xTutor), sy(cam, pose.y), ppm, poseTutor)
+  } else {
+    ctx.save()
+    ctx.translate(sx(cam, xTutor), sy(cam, pose.y))
+    ctx.scale(ppm, -ppm)
+    desenharTutor(ctx, poseTutor)
+    ctx.restore()
+  }
 
   const cx = sx(cam, x + CACHORRO_LARGURA / 2)
   const base = sy(cam, y)
