@@ -7,6 +7,13 @@
 **Depende de:** [PRD-conceito-e-regras-do-jogo.md](PRD-conceito-e-regras-do-jogo.md),
 [PRD-tela-de-corrida.md](PRD-tela-de-corrida.md)
 
+> **Aviso (05/11/2026):** o cachorro deixou de seguir este documento. Por decisão do André, ele é
+> um modelo 3D renderizado que segue a referência pintada
+> [referencias/cachorro-andando.webp](referencias/cachorro-andando.webp) (shih tzu creme, pelo
+> comprido, peitoral preto e vermelho), contrariando os itens "realismo" e "3D renderizado" da
+> seção 8. O código está em `src/features/corrida/desenho/cachorro3d/`. O resto do jogo ainda
+> segue este documento até nova decisão.
+
 ---
 
 ## 1. O jogo em uma frase

@@ -6,6 +6,7 @@ import {
 } from '../../../engine/index.ts'
 import type { PontoRastro, QuadroCorrida } from '../controladorCorrida.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
+import type { Cachorro3d } from './cachorro3d/index.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
@@ -328,7 +329,14 @@ function poseNoRastro(rastro: readonly PontoRastro[], xAlvo: number): PontoRastr
   return { ...depois, y: antes.y + (depois.y - antes.y) * Math.min(1, Math.max(0, t)) }
 }
 
-export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, altura: number, quadro: QuadroCorrida) {
+// cachorro3d: o modelo 3D, quando o WebGL existe e o módulo já carregou; sem ele, o desenho 2D.
+export function desenharCena(
+  ctx: CanvasRenderingContext2D,
+  largura: number,
+  altura: number,
+  quadro: QuadroCorrida,
+  cachorro3d: Cachorro3d | null = null,
+) {
   const { estado, alfa } = quadro
   const c = estado.cachorro
   const x = quadro.xAnterior + (c.x - quadro.xAnterior) * alfa
@@ -372,9 +380,14 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
     ctx.ellipse(cx, base, ppm * 0.5, ppm * 0.1, 0, 0, Math.PI * 2)
     ctx.fill()
   }
+  const poseCachorro = { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0, sujeira: estado.sujeira }
+  if (cachorro3d) {
+    cachorro3d.desenhar(ctx, cx, base, ppm, { ...poseCachorro, vy: c.vy })
+    return
+  }
   ctx.save()
   ctx.translate(cx, base)
   ctx.scale(ppm, -ppm)
-  desenharCachorro(ctx, { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0, sujeira: estado.sujeira })
+  desenharCachorro(ctx, poseCachorro)
   ctx.restore()
 }

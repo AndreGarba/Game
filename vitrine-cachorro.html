@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>vitrine</title></head>
+  <!-- Vitrine do cachorro 3D, só no `npm run dev` (não entra no build): /vitrine-cachorro.html
+       Parâmetros: ?um (um só, grande) ?parado ?pose=ar|abaixado|mix ?sujeira=0..5 -->
+  <body style="margin:0;background:#3a3a3c">
+    <canvas id="c" style="width:1200px;height:420px;display:block"></canvas>
+    <script type="module">
+      import { criarCachorro3d } from '/src/features/corrida/desenho/cachorro3d/index.ts'
+      const canvas = document.getElementById('c')
+      const dpr = window.devicePixelRatio || 1
+      canvas.width = 1200 * dpr
+      canvas.height = 420 * dpr
+      const ctx = canvas.getContext('2d')
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      const um = new URLSearchParams(location.search).has('um')
+      const caes = Array.from({ length: um ? 1 : 5 }, () => criarCachorro3d())
+      const params = new URLSearchParams(location.search)
+      const parado = params.has('parado')
+      function quadro(t) {
+        ctx.clearRect(0, 0, 1200, 420)
+        caes.forEach((c, i) => {
+          const pose = params.get('pose')
+          c.desenhar(ctx, um ? 520 : 130 + i * 235, um ? 400 : 390, um ? 270 : 150, {
+            fase: parado ? i * 1.25 : t / 1000 * 8 + i * 1.25,
+            noAr: pose === 'ar' || (pose === 'mix' && i === 3),
+            abaixado: pose === 'abaixado' || (pose === 'mix' && i === 4),
+            vy: i % 2 ? 6 : -6,
+            sujeira: Number(params.get('sujeira') ?? 0),
+          })
+        })
+        requestAnimationFrame(quadro)
+      }
+      requestAnimationFrame(quadro)
+    </script>
+  </body>
+</html>

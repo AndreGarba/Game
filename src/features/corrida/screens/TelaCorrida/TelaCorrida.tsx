@@ -12,6 +12,7 @@ import {
 import { localeAtual } from '../../../../i18n/index.ts'
 import { AnimacaoGirarCelular } from '../../AnimacaoGirarCelular.tsx'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
+import type { Cachorro3d } from '../../desenho/cachorro3d/index.ts'
 import { desenharCena } from '../../desenho/desenharCena.ts'
 import { useControlesCorrida } from '../../useControlesCorrida.ts'
 import './tela-corrida.css'
@@ -78,8 +79,20 @@ export function TelaCorrida() {
     const observador = new ResizeObserver(ajustarTamanho)
     observador.observe(canvas)
 
+    // three.js só chega depois da primeira tela: até lá (ou sem WebGL) o cachorro é o 2D.
+    let cachorro3d: Cachorro3d | null = null
+    let desmontado = false
+    import('../../desenho/cachorro3d/index.ts')
+      .then(({ criarCachorro3d }) => {
+        if (desmontado) return
+        cachorro3d = criarCachorro3d()
+      })
+      .catch(() => {
+        // Chunk que não baixou (offline, deploy novo): segue com o cachorro 2D.
+      })
+
     const controlador = criarControladorCorrida({
-      desenhar: (quadro) => desenharCena(ctx, largura, altura, quadro),
+      desenhar: (quadro) => desenharCena(ctx, largura, altura, quadro, cachorro3d),
       aoAtualizarHud: (estado) => setHud(hudDe(estado)),
       aoTerminar: (estado) => {
         const resultado = resultadoDaPartida(estado)
@@ -103,6 +116,8 @@ export function TelaCorrida() {
       observador.disconnect()
       document.removeEventListener('visibilitychange', aoMudarVisibilidade)
       controlador.desligar()
+      desmontado = true
+      cachorro3d?.descartar()
     }
   }, [mudarFase])
 
