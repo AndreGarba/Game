@@ -35,7 +35,7 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 ### 3.1 Movimento
 
 - O cachorro corre sozinho para a direita.
-- **Pular:** só a partir do chão (ou de cima de um obstáculo). Altura máxima ≈ 2,1 m.
+- **Pular:** só a partir do chão (ou de cima de um obstáculo). Altura máxima ≈ 3,2 m (r5; era 2,1 m).
 - **Abaixar no chão:** o cachorro fica baixo por 0,6 s.
 - **Abaixar no ar:** mergulho, cai rápido e já pousa abaixado. Serve para encaixar um pulo
   seguido de uma placa baixa.
@@ -44,7 +44,7 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 
 | Tipo | Exemplos | O que acontece |
 | --- | --- | --- |
-| Sólido | carro, ônibus, cavalete, caixa, chafariz, canteiro, banca, tora, pedra, marquise | Bater de frente = fim. Dá para pousar e correr em cima. |
+| Sólido | carro, cavalete, caixa, chafariz, canteiro, banca, tora, pedra, marquise | Bater de frente = fim. Dá para pousar e correr em cima. |
 | Teto | placa, galho, toldo, viga de ponte, andaime | Só passa abaixado. Encostar em pé = fim. |
 | Vão | rio, lago, buraco de obra, bueiro | Sem chão. Cair = fim. |
 | Rampa | rampa de madeira (cidade) | Não bate. O cachorro sobe correndo e, no alto, sai lançado. Pular na rampa vai mais longe. Às vezes vem um buraco logo depois: o lançamento sozinho atravessa. |
@@ -82,10 +82,10 @@ Três jeitos, sem vida extra:
 
 | Ordem | Cenário | Comprimento | Obstáculos típicos |
 | --- | --- | --- | --- |
-| 1 | Cidade | 800 m | todos os obstáculos com arte (r4): carros, rampa, placas, toldos, buraco de obra, marquise, e também galho, chafariz, canteiro, tora, viga, pedras no rio, ônibus, banca, andaime e bueiro |
+| 1 | Cidade | 800 m | todos os obstáculos com arte (r4): carros, rampa, placas, toldos, buraco de obra, marquise, e também galho, chafariz, canteiro, tora, viga, pedras no rio, banca, andaime e bueiro (o ônibus saiu em r5) |
 | 2 | Parque | 1.000 m | galhos, poças duplas, chafariz, canteiros, lago |
 | 3 | Rio | 1.000 m | rios, pedras no meio do rio, toras, viga baixa de ponte |
-| 4 | Centro | 1.200 m | ônibus, bancas, andaimes, bueiros, placa seguida de poça |
+| 4 | Centro | 1.200 m | bancas, andaimes, bueiros, placa seguida de poça |
 
 Depois do centro, a sequência recomeça na cidade. Todos os cenários também têm cavaletes, caixas,
 poças, linhas de ossinhos e lenços.
@@ -106,6 +106,27 @@ poças, linhas de ossinhos e lenços.
 4. Conta, data e âncora de lançamento.
 
 ## 5. Referência de balanceamento
+
+**r5 (05/11/2026):** obstáculos em tamanho real, na régua do tutor (a arte dele mede 3,2 m no
+jogo e representa 1,8 m, então 1 m real = 1,79 m do jogo): carro 7,8 × 2,6 m, cavalete
+3,8 × 1,79 m, caixa 1,27 × 1,07 m, tora 1,66 × 0,81 m, canteiro 4,5 × 0,81 m, chafariz 5,4 × 1,07 m
+(borda da bacia), banca 4,3 × 2,86 m (quiosque baixo), marquise a 4,2 m de altura. O comprimento
+de cada um sai da proporção da arte. Os tetos não mudam, porque a altura deles é a do cachorro
+abaixado. O **ônibus saiu**: com 5,4 m de altura, não cabe em pulo nenhum. Para passar por cima do
+carro, o pulo subiu de 2,1 para 3,24 m (`VEL_PULO` 13 → 18, `GRAVIDADE` 40 → 50, mergulho −18 → −22),
+com 0,72 s no ar (r4: 0,65 s). 30 partidas do bot, até 5 minutos cada:
+
+| | r4 | r5 |
+| --- | --- | --- |
+| Distância (mediana) | 3.765 m | 3.635 m |
+| Pontos (mediana) | 6.881 | 5.851 |
+| Ossinhos (mediana) | 218,5 | 183 |
+| Ossinhos de ouro (mediana) | 18,5 | 9,5 |
+| Fim | 23 pegos, 7 no limite | 22 pegos, 8 no limite |
+
+Sem batida, queda ou divergência de replay. Os ossinhos de ouro caem pela metade: os do chafariz
+e da marquise ficaram mais altos e o bot alcança menos. Para uma pessoa, o carro vira plataforma
+(7,8 m não se atravessa num pulo só): pula em cima, corre e pula para descer.
 
 **r4 (05/11/2026):** a cidade passa a sortear todos os obstáculos que têm arte, também galho,
 chafariz, canteiro, tora, viga, pedras no rio, ônibus, banca, andaime e bueiro. Os outros

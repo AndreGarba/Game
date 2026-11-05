@@ -206,7 +206,8 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   // Cone de obra na beira do buraco: avisa antes de o buraco aparecer inteiro.
   const cone = spriteDe(e, 'cone')
   if (cone) {
-    const a = cam.ppm * 0.75
+    // Cone de 70 cm em tamanho real, na mesma régua dos obstáculos (ESCALA_REAL em cenarios.ts).
+    const a = cam.ppm * 1.25
     const lc = (cone.naturalWidth / cone.naturalHeight) * a
     ctx.drawImage(cone, x - lc * 0.9, cam.chaoY - a, lc, a)
   } else {

@@ -51,6 +51,22 @@ const item = (tipo: 'lenco' | 'osso' | 'ossoOuro', x: number, y: number) => caix
 // Altura do centro de um coletável no chão: no meio do corpo do cachorro em pé.
 const Y_CHAO = 0.45
 
+// r5: obstáculos em tamanho real. A régua é o tutor: a arte dele mede 3,2 m no jogo e representa
+// um adulto de 1,8 m, então 1 m de verdade = ESCALA_REAL m do jogo. A altura sai do objeto real e
+// o comprimento sai da proporção da arte (o sprite é esticado na caixa de colisão).
+// Os números já vêm multiplicados (literais, sem arredondar em runtime: o motor só usa
+// aritmética básica). Tetos ficam fora da régua: a altura deles é a do cachorro abaixado.
+// ESCALA_REAL = 1,79
+const CARRO = { largura: 7.8, altura: 2.6 } // 1,45 m de verdade; arte 3:1
+const CAVALETE = { largura: 3.8, altura: 1.79 } // 1 m; arte 2,1:1
+const CAIXA = { largura: 1.27, altura: 1.07 } // 0,6 m; arte 1,2:1
+const TORA = { largura: 1.66, altura: 0.81 } // 0,45 m; arte 2,1:1
+const CANTEIRO = { largura: 4.5, altura: 0.81 } // 0,45 m; arte 5,6:1
+// A borda da bacia (0,6 m) é a colisão; o jato (40% da arte) fica acima dela.
+const CHAFARIZ = { largura: 5.4, altura: 1.07 }
+// Banca baixa, um quiosque de 1,6 m: uma banca de jornal de verdade (2,2 m) ficaria acima do pulo.
+const BANCA = { largura: 4.3, altura: 2.86 } // arte 1,5:1
+
 function linhaDeOssos(x: number, y: number, quantidade: number): ItemMolde[] {
   return Array.from({ length: quantidade }, (_, i) => item('osso', x + i * 1.2, y))
 }
@@ -69,14 +85,17 @@ const comuns: Molde[] = [
     id: 'cavalete',
     nivelMin: 0,
     peso: 3,
-    montar: () => ({ comprimento: 1.7, itens: [solido(0, 1.7, 0.8, 'cavalete'), item('osso', 0.85, 1.6)] }),
+    montar: () => ({
+      comprimento: CAVALETE.largura,
+      itens: [solido(0, CAVALETE.largura, CAVALETE.altura, 'cavalete'), item('osso', CAVALETE.largura / 2, CAVALETE.altura + 0.8)],
+    }),
   },
   {
     // r2: no lugar da lixeira de r1 (0,7 × 0,9), mais larga e um pouco mais alta.
     id: 'caixa',
     nivelMin: 0,
     peso: 2,
-    montar: () => ({ comprimento: 1.2, itens: [solido(0, 1.2, 1, 'caixa')] }),
+    montar: () => ({ comprimento: CAIXA.largura, itens: [solido(0, CAIXA.largura, CAIXA.altura, 'caixa')] }),
   },
   {
     id: 'poca',
@@ -109,7 +128,10 @@ const cidade: Molde[] = [
     id: 'carro',
     nivelMin: 0,
     peso: 3,
-    montar: () => ({ comprimento: 3.8, itens: [solido(0, 3.8, 1.2, 'carro'), ...linhaDeOssos(0.7, 1.7, 3)] }),
+    montar: () => ({
+      comprimento: CARRO.largura,
+      itens: [solido(0, CARRO.largura, CARRO.altura, 'carro'), ...linhaDeOssos(2, CARRO.altura + 0.5, 4)],
+    }),
   },
   {
     id: 'placa',
@@ -138,10 +160,14 @@ const cidade: Molde[] = [
     peso: 2,
     montar: (ctx) => {
       const intervalo = entre(ctx.rng, 2, 3)
-      const x2 = 3.8 + intervalo
+      const x2 = CARRO.largura + intervalo
       return {
-        comprimento: x2 + 3.8,
-        itens: [solido(0, 3.8, 1.2, 'carro'), solido(x2, 3.8, 1.2, 'carro'), item('osso', 3.8 + intervalo / 2, 2.4)],
+        comprimento: x2 + CARRO.largura,
+        itens: [
+          solido(0, CARRO.largura, CARRO.altura, 'carro'),
+          solido(x2, CARRO.largura, CARRO.altura, 'carro'),
+          item('osso', CARRO.largura + intervalo / 2, CARRO.altura + 1.2),
+        ],
       }
     },
   },
@@ -174,9 +200,14 @@ const cidade: Molde[] = [
     nivelMin: 2,
     peso: 1,
     montar: () => ({
-      // Marquise flutuante só alcançável pulando de cima do carro.
-      comprimento: 6.5,
-      itens: [solido(0, 3.8, 1.2, 'carro'), solido(4.3, 2.2, 0.3, 'marquise', 1.6), item('ossoOuro', 5.4, 2.6)],
+      // Marquise flutuante só alcançável pulando de cima do carro: a laje fica acima do pulo do
+      // chão (3,24 m) e abaixo do pulo saindo do teto do carro.
+      comprimento: CARRO.largura + 0.5 + 3.9,
+      itens: [
+        solido(0, CARRO.largura, CARRO.altura, 'carro'),
+        solido(CARRO.largura + 0.5, 3.9, 0.54, 'marquise', 4.2),
+        item('ossoOuro', CARRO.largura + 0.5 + 1.95, 5.6),
+      ],
     }),
   },
 ]
@@ -203,12 +234,12 @@ const parque: Molde[] = [
     nivelMin: 1,
     peso: 2,
     montar: (ctx) => ({
-      comprimento: 3,
+      comprimento: CHAFARIZ.largura,
       itens: [
-        solido(0, 3, 1, 'chafariz'),
-        // Só alcançável pulando de cima do chafariz.
-        item('ossoOuro', 1.5, 2.7),
-        ...(proximo(ctx.rng) < 0.5 ? [item('lenco', 1.5, 1.45)] : []),
+        solido(0, CHAFARIZ.largura, CHAFARIZ.altura, 'chafariz'),
+        // Só alcançável pulando de cima do chafariz: acima do alcance de um pulo do chão.
+        item('ossoOuro', CHAFARIZ.largura / 2, 4.3),
+        ...(proximo(ctx.rng) < 0.5 ? [item('lenco', CHAFARIZ.largura / 2, CHAFARIZ.altura + 0.45)] : []),
       ],
     }),
   },
@@ -216,7 +247,10 @@ const parque: Molde[] = [
     id: 'canteiro',
     nivelMin: 0,
     peso: 2,
-    montar: () => ({ comprimento: 2, itens: [solido(0, 2, 0.4, 'canteiro'), ...linhaDeOssos(0.4, 0.85, 2)] }),
+    montar: () => ({
+      comprimento: CANTEIRO.largura,
+      itens: [solido(0, CANTEIRO.largura, CANTEIRO.altura, 'canteiro'), ...linhaDeOssos(0.9, CANTEIRO.altura + 0.45, 3)],
+    }),
   },
   {
     id: 'lago',
@@ -266,7 +300,7 @@ const rio: Molde[] = [
     id: 'tora',
     nivelMin: 0,
     peso: 2,
-    montar: () => ({ comprimento: 1.2, itens: [solido(0, 1.2, 0.6, 'tora')] }),
+    montar: () => ({ comprimento: TORA.largura, itens: [solido(0, TORA.largura, TORA.altura, 'tora')] }),
   },
   {
     id: 'ponte_baixa',
@@ -277,17 +311,12 @@ const rio: Molde[] = [
 ]
 
 const centro: Molde[] = [
-  {
-    id: 'onibus',
-    nivelMin: 0,
-    peso: 2,
-    montar: () => ({ comprimento: 7, itens: [solido(0, 7, 1.5, 'onibus'), ...linhaDeOssos(1, 2, 5)] }),
-  },
+  // r5: o ônibus saiu. Em tamanho real (5,4 m de altura) ele não cabe em pulo nenhum.
   {
     id: 'banca',
     nivelMin: 0,
     peso: 2,
-    montar: () => ({ comprimento: 2, itens: [solido(0, 2, 1.3, 'banca')] }),
+    montar: () => ({ comprimento: BANCA.largura, itens: [solido(0, BANCA.largura, BANCA.altura, 'banca')] }),
   },
   {
     id: 'andaime',
@@ -330,7 +359,7 @@ const cidadeCompleta: Molde[] = [
   ...cidade,
   ...escolher(parque, ['galho', 'chafariz', 'canteiro']),
   ...escolher(rio, ['tora', 'ponte_baixa', 'pedras']),
-  ...escolher(centro, ['onibus', 'banca', 'andaime', 'bueiro']),
+  ...escolher(centro, ['banca', 'andaime', 'bueiro']),
 ]
 
 export const MOLDES_POR_CENARIO: Record<IdCenario, readonly Molde[]> = {

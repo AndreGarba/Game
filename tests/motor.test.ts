@@ -98,7 +98,8 @@ describe('física', () => {
 
   it('pousa em cima do sólido e segue correndo', () => {
     const estado = partidaCom([{ tipo: 'solido', x: 10, largura: 6, y: 0, altura: 1.2, visual: 'carro' }])
-    correrAte(estado, 13, (e) => (e.cachorro.x > 8 && e.cachorro.noChao && e.cachorro.y === 0 ? 'pular' : null))
+    // r5: o pulo vai mais longe (sai em x ≈ 8 e pousa perto de 14); o carro vai até 16.
+    correrAte(estado, 15, (e) => (e.cachorro.x > 8 && e.cachorro.noChao && e.cachorro.y === 0 ? 'pular' : null))
     expect(estado.fim).toBeNull()
     expect(estado.cachorro.y).toBe(1.2)
   })

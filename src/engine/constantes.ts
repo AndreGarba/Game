@@ -2,7 +2,7 @@
 // VERSAO_REGRAS, rode `npm run sim:partidas` e mostre o antes/depois no PR.
 // Unidades: metros, segundos, ticks.
 
-export const VERSAO_REGRAS = 'r4'
+export const VERSAO_REGRAS = 'r5'
 
 // Passo fixo: o motor nunca recebe "tempo decorrido". 60 ticks = 1 segundo de jogo,
 // em qualquer aparelho, e o servidor reproduz a partida tick a tick.
@@ -17,10 +17,12 @@ export const VEL_INICIAL = 8
 export const VEL_MAX = 20
 export const VEL_K = 1500
 
-export const GRAVIDADE = 40
-export const VEL_PULO = 13
+// r5: pulo de 3,24 m (era 2,1 m) para passar por cima dos obstáculos em tamanho real (o carro
+// tem 2,6 m). A gravidade subiu junto para o tempo no ar (0,72 s) ficar perto do de r4 (0,65 s).
+export const GRAVIDADE = 50
+export const VEL_PULO = 18
 // Abaixar no ar vira mergulho: cai rápido para o chão.
-export const VEL_MERGULHO = -18
+export const VEL_MERGULHO = -22
 export const ABAIXAR_TICKS = 36
 
 export const CACHORRO_LARGURA = 0.9
