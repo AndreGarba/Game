@@ -33,7 +33,7 @@ export function criarPartida(seed: number): EstadoPartida {
     seed: seed >>> 0,
     tick: 0,
     rng: criarRng(seed),
-    cachorro: { x: 0, y: 0, vy: 0, noChao: true, abaixadoTicks: 0 },
+    cachorro: { x: 0, y: 0, vy: 0, noChao: true, abaixadoTicks: 0, puloDuplo: true },
     sujeira: 0,
     vantagem: VANTAGEM_INICIAL,
     ossos: 0,
@@ -136,6 +136,12 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
     c.vy = VEL_PULO
     c.noChao = false
     c.abaixadoTicks = 0
+  } else if (acao === 'pular' && c.puloDuplo) {
+    // Pulo duplo: o mesmo gesto de novo, no ar. Substitui a velocidade (não soma), então o
+    // segundo pulo vale mais no alto do primeiro do que logo depois de sair do chão.
+    c.vy = VEL_PULO
+    c.puloDuplo = false
+    c.abaixadoTicks = 0
   } else if (acao === 'abaixar') {
     c.abaixadoTicks = ABAIXAR_TICKS
     if (!c.noChao) c.vy = Math.min(c.vy, VEL_MERGULHO)
@@ -167,6 +173,7 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
   } else {
     c.noChao = false
   }
+  if (c.noChao) c.puloDuplo = true
   // No ar o abaixar não se gasta: o mergulho já pousa abaixado.
   if (c.noChao && c.abaixadoTicks > 0) c.abaixadoTicks--
 

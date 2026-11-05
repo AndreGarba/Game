@@ -1,8 +1,8 @@
 {
   "titulo": "Hora del Baño",
   "subtitulo": "Huye de tu dueño. ¡Hoy no hay baño!",
-  "comoJogarTeclado": "Espacio o ↑ para saltar · ↓ para agacharte",
-  "comoJogarToque": "Toca o desliza hacia arriba para saltar · desliza hacia abajo para agacharte",
+  "comoJogarTeclado": "Espacio o ↑ para saltar (2 veces en el aire: doble salto) · ↓ para agacharte",
+  "comoJogarToque": "Toca o desliza hacia arriba para saltar (2 veces en el aire: doble salto) · desliza hacia abajo para agacharte",
   "dica": "El barro te hace más lento. Los pañuelos te limpian.",
   "correr": "Correr",
   "deNovo": "Correr otra vez",

@@ -1,8 +1,8 @@
 {
   "titulo": "Hora do Banho",
   "subtitulo": "Fuja do tutor. Banho, hoje não!",
-  "comoJogarTeclado": "Espaço ou ↑ para pular · ↓ para abaixar",
-  "comoJogarToque": "Toque ou deslize para cima para pular · deslize para baixo para abaixar",
+  "comoJogarTeclado": "Espaço ou ↑ para pular (2× no ar: pulo duplo) · ↓ para abaixar",
+  "comoJogarToque": "Toque ou deslize para cima para pular (2× no ar: pulo duplo) · deslize para baixo para abaixar",
   "dica": "Lama te deixa mais lento. Lenços te limpam.",
   "correr": "Correr",
   "deNovo": "Correr de novo",

@@ -41,6 +41,7 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 | Ação | Teclado | Toque |
 | --- | --- | --- |
 | Pular | Espaço, ↑ ou W | toque, ou deslizar para cima |
+| Pulo duplo (r7) | pular de novo no ar | tocar ou deslizar para cima de novo no ar |
 | Abaixar | ↓ ou S | deslizar para baixo |
 
 - O deslize dispara **no meio do gesto**, ao passar de 24 px, sem esperar soltar o dedo. Em

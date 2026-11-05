@@ -35,7 +35,7 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 ### 3.1 Movimento
 
 - O cachorro corre sozinho para a direita.
-- **Pular:** só a partir do chão (ou de cima de um obstáculo). Altura máxima ≈ 3,2 m (r5; era 2,1 m).
+- **Pular:** só a partir do chão (ou de cima de um obstáculo). Altura máxima ≈ 2,1 m. **Pulo duplo** (r7): repetir o gesto no ar dá um segundo pulo, uma vez por pulo; no alto do primeiro, chega a ≈ 4,2 m.
 - **Abaixar no chão:** o cachorro fica baixo por 0,6 s.
 - **Abaixar no ar:** mergulho, cai rápido e já pousa abaixado. Serve para encaixar um pulo
   seguido de uma placa baixa.
@@ -106,6 +106,24 @@ poças, linhas de ossinhos e lenços.
 4. Conta, data e âncora de lançamento.
 
 ## 5. Referência de balanceamento
+
+**r7 (05/11/2026):** o pulo volta ao de r4 (2,1 m, 0,65 s no ar; `VEL_PULO` 13, `GRAVIDADE` 40,
+mergulho −18) e entra o **pulo duplo**: repetir o gesto de pular no ar dá de novo `VEL_PULO`, uma
+vez por pulo. No alto do primeiro, chega a ≈ 4,2 m. O carro passa dos dois jeitos: com pulo
+simples o cachorro pousa no porta-malas e sobe o vidro traseiro pelo contorno; com o duplo cai
+direto no teto. Os ossinhos de ouro do chafariz (5,2 m) e da marquise (5,3 m) foram
+reposicionados para continuarem exigindo sair de cima do objeto. 30 partidas do bot, até 5 minutos
+cada:
+
+| | r6 | r7 |
+| --- | --- | --- |
+| Distância (mediana) | 3.635 m | 3.610 m |
+| Pontos (mediana) | 5.826 | 5.946 |
+| Ossinhos (mediana) | 183 | 188,5 |
+| Ossinhos de ouro (mediana) | 7,5 | 8 |
+| Fim | 22 pegos, 8 no limite | 22 pegos, 8 no limite |
+
+Sem batida, queda ou divergência de replay.
 
 **r6 (05/11/2026):** carro, tora, chafariz e banca ganham **contorno** (`src/engine/perfis.ts`),
 medido no sprite. Em cima deles, o cachorro segue a forma: no carro, pousa no porta-malas, sobe o

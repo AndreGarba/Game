@@ -84,12 +84,42 @@ describe('rampa', () => {
 })
 
 describe('física', () => {
-  it('pular no ar não faz nada', () => {
+  it('pulo duplo: o segundo pular no ar funciona uma vez; o terceiro não', () => {
     const estado = partidaCom([])
     passo(estado, 'pular')
-    const vy = estado.cachorro.vy
+    for (let i = 0; i < 10; i++) passo(estado, null)
+    const vyAntes = estado.cachorro.vy
     passo(estado, 'pular')
-    expect(estado.cachorro.vy).toBeLessThan(vy)
+    expect(estado.cachorro.vy).toBeGreaterThan(vyAntes)
+    const vyDuplo = estado.cachorro.vy
+    passo(estado, 'pular')
+    expect(estado.cachorro.vy).toBeLessThan(vyDuplo)
+  })
+
+  it('pulo duplo volta a valer depois de pousar', () => {
+    const estado = partidaCom([])
+    passo(estado, 'pular')
+    passo(estado, 'pular')
+    while (!estado.cachorro.noChao) passo(estado, null)
+    expect(estado.cachorro.puloDuplo).toBe(true)
+  })
+
+  it('pulo duplo sobe acima do pulo simples', () => {
+    const simples = partidaCom([])
+    const duplo = partidaCom([])
+    passo(simples, 'pular')
+    passo(duplo, 'pular')
+    let maxSimples = 0
+    let maxDuplo = 0
+    for (let i = 0; i < 90; i++) {
+      passo(simples, null)
+      // No alto do primeiro pulo, pula de novo.
+      passo(duplo, i === 19 ? 'pular' : null)
+      maxSimples = Math.max(maxSimples, simples.cachorro.y)
+      maxDuplo = Math.max(maxDuplo, duplo.cachorro.y)
+    }
+    expect(maxSimples).toBeLessThan(2.2)
+    expect(maxDuplo).toBeGreaterThan(4)
   })
 
   it('bate de frente num sólido sem pular', () => {
@@ -101,7 +131,7 @@ describe('física', () => {
   it('pousa em cima do sólido e segue correndo', () => {
     // Caixa: sólido sem perfil, topo reto.
     const estado = partidaCom([{ tipo: 'solido', x: 10, largura: 6, y: 0, altura: 1.2, visual: 'caixa' }])
-    // r5: o pulo vai mais longe (sai em x ≈ 8 e pousa perto de 14); o carro vai até 16.
+    // Sai em x ≈ 8 e pousa por volta de 13; o carro vai até 16.
     correrAte(estado, 15, (e) => (e.cachorro.x > 8 && e.cachorro.noChao && e.cachorro.y === 0 ? 'pular' : null))
     expect(estado.fim).toBeNull()
     expect(estado.cachorro.y).toBe(1.2)

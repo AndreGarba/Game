@@ -200,13 +200,13 @@ const cidade: Molde[] = [
     nivelMin: 2,
     peso: 1,
     montar: () => ({
-      // Marquise flutuante só alcançável pulando de cima do carro: a laje fica acima do pulo do
-      // chão (3,24 m) e abaixo do pulo saindo do teto do carro.
+      // Marquise flutuante só alcançável saindo de cima do carro: a laje fica acima do pulo
+      // duplo do chão (4,2 m) e ao alcance de um pulo saindo do teto do carro.
       comprimento: CARRO.largura + 0.5 + 3.9,
       itens: [
         solido(0, CARRO.largura, CARRO.altura, 'carro'),
         solido(CARRO.largura + 0.5, 3.9, 0.54, 'marquise', 4.2),
-        item('ossoOuro', CARRO.largura + 0.5 + 1.95, 5.6),
+        item('ossoOuro', CARRO.largura + 0.5 + 1.95, 5.3),
       ],
     }),
   },
@@ -237,8 +237,8 @@ const parque: Molde[] = [
       comprimento: CHAFARIZ.largura,
       itens: [
         solido(0, CHAFARIZ.largura, CHAFARIZ.altura, 'chafariz'),
-        // Só alcançável pulando de cima do chafariz: acima do alcance de um pulo do chão.
-        item('ossoOuro', CHAFARIZ.largura / 2, 4.3),
+        // Só alcançável com pulo duplo saindo de cima do chafariz: acima do pulo duplo do chão.
+        item('ossoOuro', CHAFARIZ.largura / 2, 5.2),
         ...(proximo(ctx.rng) < 0.5 ? [item('lenco', CHAFARIZ.largura / 2, CHAFARIZ.altura + 0.45)] : []),
       ],
     }),
