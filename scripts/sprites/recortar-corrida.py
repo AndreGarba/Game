@@ -23,6 +23,10 @@ previa = sys.argv[4] if len(sys.argv) > 4 else None
 im = Image.open(src).convert('RGBA')
 rgba = np.asarray(im).copy()
 H, W, _ = rgba.shape
+# Algumas folhas saem com o fundo em alfa 1-2 e o personagem em 250-253, nunca 0 e 255:
+# normaliza, senão o fundo vira uma névoa e o personagem fica levemente transparente.
+alfa = np.clip((rgba[..., 3].astype(np.float32) - 8) / (240 - 8), 0, 1)
+rgba[..., 3] = (alfa * 255).astype(np.uint8)
 alfa = rgba[..., 3]
 visivel = alfa > 8
 
@@ -38,38 +42,57 @@ for y0 in range(H):
         n += 1
         rotulo[y0, x0] = n
         pilha = [(y0, x0)]
-        soma_x = cnt = 0
+        soma_x = soma_y = cnt = 0
         while pilha:
             y, x = pilha.pop()
             soma_x += x
+            soma_y += y
             cnt += 1
             for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 ny, nx = y + dy, x + dx
                 if 0 <= ny < H and 0 <= nx < W and visivel[ny, nx] and not rotulo[ny, nx]:
                     rotulo[ny, nx] = n
                     pilha.append((ny, nx))
-        manchas.append((n, soma_x / cnt, cnt))
+        manchas.append((n, soma_x / cnt, cnt, soma_y / cnt))
 
-# Um cachorro é uma mancha com pelo menos 30% da área da maior; o resto é pelo solto.
+# Um personagem é uma mancha com pelo menos 30% da área da maior; o resto é pelo solto.
 maior = max(m[2] for m in manchas)
-grandes = sorted([m for m in manchas if m[2] > 0.3 * maior], key=lambda m: m[1])
+grandes = [m for m in manchas if m[2] > 0.3 * maior]
+# Linhas da grade: centro vertical a mais de 15% da altura da imagem do anterior abre linha nova.
+grandes.sort(key=lambda m: m[3])
+linhas = []
+for m in grandes:
+    if linhas and abs(m[3] - linhas[-1][-1][3]) < 0.15 * H:
+        linhas[-1].append(m)
+    else:
+        linhas.append([m])
+grandes = [m for linha in linhas for m in sorted(linha, key=lambda m: m[1])]
+linha_de = {m[0]: i for i, linha in enumerate(linhas) for m in linha}
 total = len(grandes)
-print('quadros encontrados:', total)
+print('quadros encontrados:', total, 'em', len(linhas), 'linha(s)')
 if total < QUADROS_MINIMOS:
     sys.exit(f'A folha tem {total} quadros; o mínimo para a corrida é {QUADROS_MINIMOS}.')
-celula = W / total
 
-# Cada mancha pequena (pelo solto) vai para o cachorro mais próximo.
-centros = np.array([m[1] for m in grandes])
+# Cada mancha pequena (pelo solto, cadarço) vai para o personagem mais próximo.
+centros = np.array([(m[1], m[3]) for m in grandes])
 dono = {}
 for m in manchas:
     if m[2] < 4:
         continue
-    dono[m[0]] = int(np.argmin(np.abs(centros - m[1])))
+    d = (centros[:, 0] - m[1]) ** 2 + (centros[:, 1] - m[3]) ** 2
+    dono[m[0]] = int(np.argmin(d))
 
 mascaras = [np.zeros((H, W), bool) for _ in range(total)]
 for rid, i in dono.items():
     mascaras[i] |= rotulo == rid
+
+# Na vertical cada quadro fica na posição da sua linha da grade: a base da linha (pé mais baixo
+# dela) vira a base comum.
+base_linha = {}
+for i, mk in enumerate(mascaras):
+    l = linha_de[grandes[i][0]]
+    base_linha[l] = max(base_linha.get(l, 0), np.where(mk)[0].max())
+desloc_y = [base_linha[linha_de[grandes[i][0]]] for i in range(total)]
 
 # Âncora horizontal de cada quadro: centro do tronco (55% de cima da altura do cachorro).
 ancoras = []
@@ -78,16 +101,15 @@ for mk in mascaras:
     topo_i, base_i = ys.min(), ys.max()
     tronco = ys < topo_i + (base_i - topo_i) * 0.55
     ancoras.append(xs[tronco].mean())
-print('deslocamento do tronco antes (px):', [round(a - i * celula - (ancoras[0]), 1) for i, a in enumerate(ancoras)])
 
 # Caixa comum, em coordenadas relativas à âncora de cada quadro.
-esq, dir_, topo, base = 0, 0, H, 0
+esq, dir_, topo, base = 0, 0, 0, -H
 for i, mk in enumerate(mascaras):
     ys, xs = np.where(mk)
     esq = min(esq, xs.min() - ancoras[i])
     dir_ = max(dir_, xs.max() + 1 - ancoras[i])
-    topo = min(topo, ys.min())
-    base = max(base, ys.max() + 1)
+    topo = min(topo, ys.min() - desloc_y[i])
+    base = max(base, ys.max() + 1 - desloc_y[i])
 margem = 6
 esq, dir_ = int(np.floor(esq)) - margem, int(np.ceil(dir_)) + margem
 topo, base = int(topo) - margem, int(base) + margem
@@ -98,13 +120,14 @@ lq_s, aq_s = round(lq * escala), altura_saida
 folha = Image.new('RGBA', (lq_s * total, aq_s), (0, 0, 0, 0))
 for i, mk in enumerate(mascaras):
     x0 = int(round(ancoras[i])) + esq
+    y0 = int(desloc_y[i]) + topo
     q = np.zeros((aq, lq, 4), np.uint8)
     # recorte com limites, preenchendo fora da imagem com transparente
     sx0, sx1 = max(0, x0), min(W, x0 + lq)
-    sy0, sy1 = max(0, topo), min(H, base)
+    sy0, sy1 = max(0, y0), min(H, y0 + aq)
     pedaco = rgba[sy0:sy1, sx0:sx1].copy()
     pedaco[..., 3] = np.where(mk[sy0:sy1, sx0:sx1], pedaco[..., 3], 0)
-    q[sy0 - topo:sy1 - topo, sx0 - x0:sx1 - x0] = pedaco
+    q[sy0 - y0:sy1 - y0, sx0 - x0:sx1 - x0] = pedaco
     folha.paste(Image.fromarray(q).resize((lq_s, aq_s), Image.LANCZOS), (i * lq_s, 0))
 
 folha.save(out, 'WEBP', quality=90, method=6)
