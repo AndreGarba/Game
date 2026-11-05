@@ -62,17 +62,28 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 - **Câmera:** cachorro a 28% da largura. Mostra cerca de 18 m de pista. Em tela vertical, a escala
   é limitada pela largura e o chão sobe para a cena ficar no meio.
-- **Falso 3D em 3 camadas, com a arte do Figma** (frame 7960:8725, `features/corrida/imagens`):
-  céu com sol e cidade ao fundo (parado: o sol repetido viraria dois), fileira de casas (45% da
-  velocidade, cópias alternadas espelhadas porque as bordas da arte não emendam) e calçada (presa
-  à pista, 100%). O chão fica na altura da calçada do Figma (322 de 360). A mesma arte vale para
-  os quatro cenários até existir arte de parque, rio e centro. Enquanto a arte carrega, vale o
-  cenário vetorial antigo, com cores por cenário.
-- **Calçada:** as faixas de sombra da arte andam com a pista e dão a sensação de velocidade. Vãos
+- **Falso 3D em 7 camadas e 4 planos de movimento, arte gerada por IA**
+  (`features/corrida/imagens/cidade`, lista em `CAMADAS_CIDADE`): fundo com céu, nuvens e skyline
+  distante (10% da velocidade), bairro de sobrados com poste e fios (25%), casas próximas com
+  árvores (50%) e frente (presa à pista, 100%). A frente tem três peças, medidas na referência: o
+  muro recuado com portões e grafite de pata (base em 242 de 360), o piso da calçada entre o muro
+  e o meio-fio (242 a 260, onde o cachorro pisa) e o meio-fio sobre terra e tijolos (de 260 para
+  baixo). Direção de arte: a imagem
+  de referência aprovada pelo André em 05/11/2026. Cada tira é recortada e emendada para repetir
+  sem costura. O chão fica a 70% da altura da tela (252 de 360); abaixo dele, a terra da pista.
+  A mesma arte vale para os quatro cenários até existir arte de parque, rio e centro. Enquanto a
+  arte carrega, vale o cenário vetorial antigo, com cores por cenário.
+- **Calçada:** as juntas das lajes andam com a pista e dão a sensação de velocidade. Vãos
   desenhados como água (rio e lago) ou buraco com cone.
-- **Obstáculos** desenhados em vetor, cada um com forma própria (carro com rodas e vidro, ônibus,
-  banco, chafariz, toldo listrado, galho com folhas, placa amarela...).
-- **Coletáveis:** ossinho 🦴, ossinho de ouro 🏅 com brilho, lenço 🧻.
+- **Obstáculos com sprite só na cidade** (`features/corrida/imagens/objetos`, gerados na mesma
+  conversa de IA do cenário; o nome do arquivo é o `visual` do elemento): caixa, cavalete, carro,
+  ônibus, banca, chafariz, canteiro, tora, pedra, marquise, rampa, placa, galho, toldo, viga,
+  andaime, cone do buraco e lama. Sólidos ocupam exatamente a caixa de colisão, com sombra de
+  contato (o jato do chafariz fica acima do topo). Tetos se apoiam na borda de baixo e esticam a
+  coluna (poste, tronco, parede) até o alto da tela. Desde r4 a cidade sorteia todos esses
+  obstáculos. Nos outros cenários eles continuam em vetor até ganharem arte própria.
+- **Coletáveis em qualquer cenário:** ossinho é moeda de ouro com osso; ossinho de ouro é moeda
+  maior, com borda brilhante e faíscas; lenço é um pacote de lenço umedecido com pata.
 
 ### 5.1 Cachorro
 
@@ -89,7 +100,7 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
 - **Repete os movimentos do cachorro.** O controlador guarda o rastro dos últimos 240 ticks
   (posição, altura, se estava no chão, se estava abaixado). O tutor faz o que o cachorro fez
   quando passou por aquele mesmo ponto da pista. Como os obstáculos estão parados no mundo, ele
-  pula o mesmo banco, sobe no mesmo carro e se agacha sob o mesmo toldo.
+  pula o mesmo cavalete, sobe no mesmo carro e se agacha sob o mesmo toldo.
 - É só visual: quem decide se o tutor pega continua sendo a vantagem calculada pelo motor.
 
 ## 6. Placar (HUD)

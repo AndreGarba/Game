@@ -1,5 +1,6 @@
 import {
   ABAIXAR_TICKS,
+  ADERENCIA_RAMPA,
   CACHORRO_LARGURA,
   DT,
   GRAVIDADE,
@@ -53,20 +54,35 @@ function topo(e: Elemento): number {
   return e.y + e.altura
 }
 
+interface Suporte {
+  altura: number
+  // Subida por metro andado: 0 no chão e nos sólidos, altura/largura na rampa.
+  inclinacao: number
+}
+
 // Maior altura em que o cachorro pode se apoiar agora: o chão (se não estiver sobre um
-// vão) ou o topo de um sólido que ele estava acima no tick anterior.
-function alturaDoSuporte(estado: EstadoPartida, yAnterior: number): number | null {
+// vão), o topo de um sólido que ele estava acima no tick anterior, ou a superfície de uma
+// rampa sob o centro dele.
+function suporteAtual(estado: EstadoPartida, yAnterior: number): Suporte | null {
   const c = estado.cachorro
   const centro = c.x + CACHORRO_LARGURA / 2
-  let suporte: number | null = null
+  let suporte: Suporte | null = null
   let sobreVao = false
+  const considerar = (altura: number, inclinacao: number) => {
+    if (suporte === null || altura > suporte.altura) suporte = { altura, inclinacao }
+  }
   for (const e of estado.elementos) {
     if (e.tipo === 'vao' && centro >= e.x && centro <= e.x + e.largura) sobreVao = true
     if (e.tipo === 'solido' && sobrepoeEmX(c, e) && topo(e) <= yAnterior + TOLERANCIA_POUSO) {
-      suporte = suporte === null ? topo(e) : Math.max(suporte, topo(e))
+      considerar(topo(e), 0)
+    }
+    if (e.tipo === 'rampa' && centro >= e.x && centro <= e.x + e.largura) {
+      const inclinacao = e.altura / e.largura
+      const superficie = (centro - e.x) * inclinacao
+      if (superficie <= yAnterior + TOLERANCIA_POUSO + ADERENCIA_RAMPA) considerar(superficie, inclinacao)
     }
   }
-  if (!sobreVao) suporte = suporte === null ? 0 : Math.max(suporte, 0)
+  if (!sobreVao) considerar(0, 0)
   return suporte
 }
 
@@ -115,10 +131,14 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
   c.vy -= GRAVIDADE * DT
   c.y += c.vy * DT
 
-  const suporte = alturaDoSuporte(estado, yAnterior)
-  if (suporte !== null && c.y <= suporte && c.vy <= 0) {
-    c.y = suporte
-    c.vy = 0
+  const suporte = suporteAtual(estado, yAnterior)
+  // Na rampa o cachorro anda grudado na superfície com a velocidade de subida. Ao passar do
+  // fim ela some como suporte e ele segue no ar com essa velocidade: é o lançamento. Pular na
+  // rampa dá vy maior que a de subida, então não gruda.
+  const subida = suporte ? v * suporte.inclinacao : 0
+  if (suporte !== null && c.y <= suporte.altura && c.vy <= subida) {
+    c.y = suporte.altura
+    c.vy = subida
     c.noChao = true
   } else {
     c.noChao = false

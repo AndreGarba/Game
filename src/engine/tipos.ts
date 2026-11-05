@@ -11,8 +11,10 @@ export type IdCenario = 'cidade' | 'parque' | 'rio' | 'centro'
 // teto:   tudo acima de `y` bloqueia; passa abaixado (placa, galho, toldo).
 // vao:    sem chão entre x e x+largura (rio, buraco de obra).
 // poca:   lama no chão; pisar suja o cachorro.
+// rampa:  sobe de 0 (em x) até `altura` (em x+largura). Não bate: o cachorro corre por cima e,
+//         no fim, sai lançado com a velocidade de subida.
 // lenco/osso/ossoOuro: coletáveis pontuais centrados em (x, y).
-export type TipoElemento = 'solido' | 'teto' | 'vao' | 'poca' | 'lenco' | 'osso' | 'ossoOuro'
+export type TipoElemento = 'solido' | 'teto' | 'vao' | 'poca' | 'rampa' | 'lenco' | 'osso' | 'ossoOuro'
 
 export interface Elemento {
   id: number
@@ -21,7 +23,7 @@ export interface Elemento {
   largura: number
   y: number
   altura: number
-  // Nome do objeto para a UI desenhar ('carro', 'banco'...). O motor não lê.
+  // Nome do objeto para a UI desenhar ('carro', 'caixa'...). O motor não lê.
   visual: string
   // Coletável já pego ou poça já pisada.
   usado: boolean

@@ -1,7 +1,7 @@
 # PRD — Motor da corrida e ranking por replay
 
 **Projeto:** Hora do Banho
-**Status:** motor implementado (`src/engine/`, regras `r1`); servidor do ranking ainda não existe
+**Status:** motor implementado (`src/engine/`, regras `r4`); servidor do ranking ainda não existe
 **Definições:** André · **Redação:** Claude
 **Data:** 02/11/2026
 **Depende de:** [PRD-conceito-e-regras-do-jogo.md](PRD-conceito-e-regras-do-jogo.md)

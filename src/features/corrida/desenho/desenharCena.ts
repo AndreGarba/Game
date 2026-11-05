@@ -5,7 +5,15 @@ import {
   type Elemento,
 } from '../../../engine/index.ts'
 import type { PontoRastro, QuadroCorrida } from '../controladorCorrida.ts'
-import { arteCenarioPronta, spriteCachorroPronto } from '../imagens/index.ts'
+import {
+  arteCenarioPronta,
+  CAMADAS_CIDADE,
+  FRAME_ALTURA,
+  LINHA_CHAO,
+  LINHA_PISO,
+  spriteCachorroPronto,
+  spriteObjeto,
+} from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
@@ -60,62 +68,41 @@ function emoji(ctx: CanvasRenderingContext2D, texto: string, x: number, y: numbe
 }
 
 /*
- * Cenário do Figma (frame 7960:8725, 780 × 360), em unidades do frame. A escala sai da linha do
- * chão: a arte vai do topo da tela até a calçada, como no design. Em paisagem dá altura/360; em pé,
- * com o chão no meio da tela, a arte encolhe junto.
+ * Cenário em camadas (`CAMADAS_CIDADE`), em unidades de um quadro de 360 de altura. A escala sai
+ * da linha do chão: em paisagem dá altura/360; em pé, com o chão no meio da tela, a arte encolhe
+ * junto.
  */
-const FRAME_ALTURA = 360
 const METROS_NA_ALTURA = 7
-// Onde a calçada encontra as casas, medido na arte.
-const LINHA_CHAO = 322
-const CEU = { x: -7, largura: 794, altura: 447 }
-const CASAS = { y: -18, largura: 781, altura: 440 }
-const CALCADA = { y: -20, largura: 784, altura: 441 }
-// Cor da base da calçada, para o que sobrar abaixo da arte em tela de pé.
-const CALCADA_BASE = 'rgb(190, 164, 152)'
+// Cor da terra da pista, para o que sobrar abaixo da arte em tela de pé.
+const TERRA_BASE = 'rgb(74, 46, 32)'
 
 function desenharCenarioArte(
   ctx: CanvasRenderingContext2D,
   cam: Camera,
-  xCamera: number,
   arte: NonNullable<ReturnType<typeof arteCenarioPronta>>,
 ) {
   const escala = cam.chaoY / LINHA_CHAO
+  // O céu é a primeira camada e é opaco; se a tela for mais alta que a arte, a cor de cima dele
+  // completa.
+  ctx.fillStyle = TERRA_BASE
+  ctx.fillRect(0, 0, cam.largura, cam.altura)
 
-  // Céu parado: tem sol, que repetido viraria dois. Cobre a largura toda mesmo em tela mais larga
-  // que o frame.
-  const escalaCeu = Math.max(escala, cam.largura / (CEU.largura + CEU.x))
-  ctx.drawImage(arte.ceu, CEU.x * escalaCeu, 0, CEU.largura * escalaCeu, CEU.altura * escalaCeu)
-
-  // Calçada presa ao mundo, como os obstáculos: a arte emenda sozinha, então só repete.
-  const larguraCalcada = CALCADA.largura * escala
-  const deslocCalcada = ((cam.x0 * cam.ppm) % larguraCalcada + larguraCalcada) % larguraCalcada
-  const yCalcada = CALCADA.y * escala
-  for (let x = -deslocCalcada; x < cam.largura; x += larguraCalcada) {
-    ctx.drawImage(arte.calcada, x, yCalcada, larguraCalcada, CALCADA.altura * escala)
-  }
-  const baseCalcada = yCalcada + CALCADA.altura * escala
-  if (baseCalcada < cam.altura) {
-    ctx.fillStyle = CALCADA_BASE
-    ctx.fillRect(0, baseCalcada - 1, cam.largura, cam.altura - baseCalcada + 1)
-  }
-
-  // Casas no meio do parallax. As bordas da arte não emendam: uma cópia sim, outra espelhada.
-  const larguraCasas = CASAS.largura * escala
-  const deslocCasas = xCamera * cam.ppm * PARALLAX_MEIO
-  const yCasas = CASAS.y * escala
-  for (let i = Math.floor(deslocCasas / larguraCasas); i * larguraCasas - deslocCasas < cam.largura; i++) {
-    const x = i * larguraCasas - deslocCasas
-    if (i % 2 === 0) {
-      ctx.drawImage(arte.casas, x, yCasas, larguraCasas, CASAS.altura * escala)
-    } else {
-      ctx.save()
-      ctx.translate(x + larguraCasas, yCasas)
-      ctx.scale(-1, 1)
-      ctx.drawImage(arte.casas, 0, 0, larguraCasas, CASAS.altura * escala)
-      ctx.restore()
+  CAMADAS_CIDADE.forEach((camada, i) => {
+    const imagem = arte[i]!
+    const altura = camada.altura * escala
+    const largura = (imagem.naturalWidth / imagem.naturalHeight) * altura
+    const y = camada.topo * escala
+    // parallax 1 = mesma velocidade dos obstáculos; as tiras emendam, então só repetem.
+    const desloc = ((cam.x0 * cam.ppm * camada.parallax) % largura + largura) % largura
+    // Arredondar evita a fresta de 1 px entre cópias com escala fracionária.
+    for (let x = -desloc; x < cam.largura; x += largura) {
+      ctx.drawImage(imagem, Math.floor(x), y, Math.ceil(largura) + 1, altura)
     }
-  }
+    if (i === 0 && y + altura < cam.chaoY) {
+      // Tela de pé: o céu não chega no chão. Estica a última linha dele.
+      ctx.drawImage(imagem, 0, imagem.naturalHeight - 1, imagem.naturalWidth, 1, 0, y + altura - 1, cam.largura, cam.chaoY)
+    }
+  })
 }
 
 /** Cenário vetorial: vale só nos primeiros quadros, enquanto a arte do Figma ainda carrega. */
@@ -180,19 +167,54 @@ function desenharChao(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numbe
   }
 }
 
+// A arte dos obstáculos foi feita para a cidade: nos outros cenários eles continuam em vetor
+// até ganharem arte própria. Coletáveis (ossos e lenço) usam o sprite em qualquer cenário.
+function spriteDe(e: Elemento, nome: string): HTMLImageElement | null {
+  return cenarioEm(e.x) === 'cidade' ? spriteObjeto(nome) : null
+}
+
 function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const x = sx(cam, e.x)
   const l = e.largura * cam.ppm
   const agua = e.visual === 'rio' || e.visual === 'lago'
-  ctx.fillStyle = agua ? COR.agua : COR.buraco
-  ctx.fillRect(x, cam.chaoY, l, cam.altura - cam.chaoY)
-  if (agua) {
-    ctx.fillStyle = COR.aguaClara
-    ctx.fillRect(x, cam.chaoY + cam.ppm * 0.15, l, cam.ppm * 0.1)
+  // O vão corta o piso inteiro da calçada, desde a base do muro: senão o piso parece passar por
+  // cima da água.
+  const topo = (cam.chaoY * LINHA_PISO) / LINHA_CHAO
+  const textura = spriteDe(e, agua ? 'agua' : 'buraco')
+  if (textura) {
+    // A textura repete na horizontal, presa ao mundo, para a água não "andar" com a câmera.
+    const altura = cam.altura - topo
+    const largura = (textura.naturalWidth / textura.naturalHeight) * altura
+    ctx.save()
+    ctx.beginPath()
+    ctx.rect(x, topo, l, altura)
+    ctx.clip()
+    const inicio = x - ((((e.x * cam.ppm) % largura) + largura) % largura)
+    for (let tx = inicio; tx < x + l; tx += largura) ctx.drawImage(textura, Math.floor(tx), topo, Math.ceil(largura) + 1, altura)
+    ctx.restore()
+  } else {
+    ctx.fillStyle = agua ? COR.agua : COR.buraco
+    ctx.fillRect(x, topo, l, cam.altura - topo)
+    if (agua) {
+      ctx.fillStyle = COR.aguaClara
+      ctx.fillRect(x, cam.chaoY + cam.ppm * 0.15, l, cam.ppm * 0.1)
+    }
+  }
+  if (agua) return
+  // Cone de obra na beira do buraco: avisa antes de o buraco aparecer inteiro.
+  const cone = spriteDe(e, 'cone')
+  if (cone) {
+    const a = cam.ppm * 0.75
+    const lc = (cone.naturalWidth / cone.naturalHeight) * a
+    ctx.drawImage(cone, x - lc * 0.9, cam.chaoY - a, lc, a)
   } else {
     emoji(ctx, '🚧', x - cam.ppm * 0.3, cam.chaoY, cam.ppm * 0.7)
   }
 }
+
+// Parte da arte que fica acima do topo da colisão: o jato do chafariz não é onde o cachorro
+// pisa, a borda da bacia é.
+const ARTE_ACIMA_DO_TOPO: Record<string, number> = { chafariz: 0.4 }
 
 function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const x = sx(cam, e.x)
@@ -201,6 +223,28 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
   const base = sy(cam, Math.max(e.y, 0))
   const a = base - topo
   const u = cam.ppm
+  const sprite = spriteDe(e, e.visual)
+  if (sprite && e.visual === 'pedra') {
+    ctx.drawImage(sprite, x, topo, l, (sprite.naturalHeight / sprite.naturalWidth) * l)
+    return
+  }
+  if (sprite && e.y > 0) {
+    // Plataforma suspensa (marquise): sem sombra no chão. A laje fica no topo da colisão e as
+    // mãos-francesas penduram abaixo dela, na proporção da arte.
+    ctx.drawImage(sprite, x, topo, l, (sprite.naturalHeight / sprite.naturalWidth) * l)
+    return
+  }
+  if (sprite) {
+    // Sombra de contato: sem ela o objeto parece flutuar sobre a calçada.
+    ctx.fillStyle = COR.sombra
+    ctx.beginPath()
+    ctx.ellipse(x + l / 2, base, l * 0.55, u * 0.09, 0, 0, Math.PI * 2)
+    ctx.fill()
+    const acima = ARTE_ACIMA_DO_TOPO[e.visual] ?? 0
+    const h = a / (1 - acima)
+    ctx.drawImage(sprite, x, base - h, l, h)
+    return
+  }
   switch (e.visual) {
     case 'carro': {
       ctx.fillStyle = COR.carros[e.id % COR.carros.length]!
@@ -229,7 +273,7 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
       }
       break
     }
-    case 'banco': {
+    case 'cavalete': {
       ctx.fillStyle = COR.madeira
       ctx.fillRect(x, topo, l, a * 0.35)
       ctx.fillStyle = COR.metal
@@ -285,11 +329,30 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
   }
 }
 
+const LINHA_DE_ESTICAR: Record<string, number> = { galho: 0.25 }
+
 function desenharTeto(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const x = sx(cam, e.x)
   const l = e.largura * cam.ppm
   const baseY = sy(cam, e.y)
   const u = cam.ppm
+  const sprite = spriteDe(e, e.visual)
+  if (sprite) {
+    // O teto vai até o céu no motor: a arte tem que chegar no alto da tela, senão parece que dá
+    // para pular por cima.
+    const a = (sprite.naturalHeight / sprite.naturalWidth) * l
+    const topo = baseY - a
+    ctx.drawImage(sprite, x, topo, l, a)
+    // A linha esticada tem que ser só "coluna" (poste, tronco, parede): no galho, as folhas do
+    // topo da arte virariam riscos, então estica uma linha mais abaixo, só de tronco.
+    const fracao = LINHA_DE_ESTICAR[e.visual] ?? 0
+    const yEsticar = topo + fracao * a
+    if (yEsticar > 0) {
+      const linha = Math.floor(fracao * sprite.naturalHeight)
+      ctx.drawImage(sprite, 0, linha, sprite.naturalWidth, 2, x, 0, l, yEsticar + 1)
+    }
+    return
+  }
   switch (e.visual) {
     case 'galho': {
       ctx.fillStyle = COR.madeiraEscura
@@ -338,7 +401,37 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
       return desenharSolido(ctx, cam, e)
     case 'teto':
       return desenharTeto(ctx, cam, e)
+    case 'rampa': {
+      const x = sx(cam, e.x)
+      const l = e.largura * u
+      const a = e.altura * u
+      const sprite = spriteDe(e, 'rampa')
+      ctx.fillStyle = COR.sombra
+      ctx.beginPath()
+      ctx.ellipse(x + l * 0.6, cam.chaoY, l * 0.5, u * 0.09, 0, 0, Math.PI * 2)
+      ctx.fill()
+      if (sprite) {
+        ctx.drawImage(sprite, x, cam.chaoY - a, l, a)
+      } else {
+        ctx.fillStyle = COR.madeira
+        ctx.beginPath()
+        ctx.moveTo(x, cam.chaoY)
+        ctx.lineTo(x + l, cam.chaoY - a)
+        ctx.lineTo(x + l, cam.chaoY)
+        ctx.fill()
+      }
+      return
+    }
     case 'poca': {
+      const lama = spriteDe(e, 'lama')
+      if (lama) {
+        if (e.usado) ctx.globalAlpha = 0.5
+        const l = e.largura * u
+        const a = (lama.naturalHeight / lama.naturalWidth) * l
+        ctx.drawImage(lama, sx(cam, e.x), cam.chaoY - a * 0.55, l, a)
+        ctx.globalAlpha = 1
+        return
+      }
       if (e.usado) ctx.globalAlpha = 0.5
       ctx.fillStyle = COR.lama
       ctx.beginPath()
@@ -357,6 +450,14 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
       if (e.usado) return
       const cx = sx(cam, e.x)
       const cy = sy(cam, e.y)
+      const moeda = spriteObjeto(e.tipo)
+      if (moeda) {
+        // A moeda de ouro é maior: tem que se destacar na fila de moedas comuns.
+        const d = u * (e.tipo === 'ossoOuro' ? 0.95 : e.tipo === 'lenco' ? 0.7 : 0.65)
+        const l = (moeda.naturalWidth / moeda.naturalHeight) * d
+        ctx.drawImage(moeda, cx - l / 2, cy - d / 2, l, d)
+        return
+      }
       if (e.tipo === 'ossoOuro') {
         ctx.fillStyle = COR.ouroBrilho
         ctx.beginPath()
@@ -406,7 +507,7 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
 
   const arte = arteCenarioPronta()
   if (arte) {
-    desenharCenarioArte(ctx, cam, x, arte)
+    desenharCenarioArte(ctx, cam, arte)
   } else {
     desenharFundo(ctx, cam, x)
     desenharChao(ctx, cam, x)

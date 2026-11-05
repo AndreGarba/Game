@@ -2,7 +2,7 @@
 // VERSAO_REGRAS, rode `npm run sim:partidas` e mostre o antes/depois no PR.
 // Unidades: metros, segundos, ticks.
 
-export const VERSAO_REGRAS = 'r1'
+export const VERSAO_REGRAS = 'r4'
 
 // Passo fixo: o motor nunca recebe "tempo decorrido". 60 ticks = 1 segundo de jogo,
 // em qualquer aparelho, e o servidor reproduz a partida tick a tick.
@@ -29,6 +29,9 @@ export const CACHORRO_ALTURA_ABAIXADO = 0.45
 // Quanto o cachorro pode estar abaixo do topo de uma plataforma e ainda pousar nela.
 // Sem essa folga, um pouso no limite do tick vira batida frontal.
 export const TOLERANCIA_POUSO = 0.15
+// Na rampa a superfície sobe a cada tick: quanto acima da altura do tick anterior ela ainda
+// segura o cachorro. Cobre a subida de um tick na velocidade máxima e a queda de um mergulho.
+export const ADERENCIA_RAMPA = 0.4
 // Abaixo disso, caiu no rio/buraco.
 export const LIMITE_QUEDA = -2
 

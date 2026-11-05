@@ -63,7 +63,7 @@ PRD/              especificações de produto
 ## Motor do jogo
 
 Regras do motor ficam **nesta seção**. Regra de motor espalhada por outras seções é regra que
-alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r1'`.
+alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r4'`.
 
 ### O jogo, como o motor vê
 
@@ -75,10 +75,13 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r1'`.
   começo e se aproxima do teto sem passar. A dificuldade continua subindo pelos degraus de
   `nivelEm` (moldes novos e menos respiro entre trechos).
 - Elementos da pista (`src/engine/tipos.ts`):
-  - `solido` (carro, banco, chafariz, marquise): bater de frente encerra; dá para pousar e correr
+  - `solido` (carro, caixa, cavalete, chafariz, marquise): bater de frente encerra; dá para pousar e correr
     em cima.
   - `teto` (placa, galho, toldo): só passa abaixado.
   - `vao` (rio, buraco, bueiro): sem chão; cair encerra.
+  - `rampa`: sobe de 0 até `altura` ao longo da largura; não bate. O cachorro anda grudado na
+    superfície com `vy = velocidade·inclinação` e, ao passar do fim, sai lançado com essa
+    velocidade. Pular na rampa funciona normalmente.
   - `poca` (lama): +1 de sujeira. `lenco`: −1 de sujeira. `osso` / `ossoOuro`: pontos.
 - **Tutor:** corre a `TUTOR_FATOR` da velocidade base; o cachorro corre a
   `1 − sujeira·PENALIDADE_SUJEIRA` dela. Limpo, o cachorro abre vantagem (até `VANTAGEM_MAX`);
@@ -122,7 +125,8 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r1'`.
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
-- Referência r1 (10 partidas do bot, 10 min cada): mediana 4,3 km; 8 de 10 terminam com o tutor
+- Referência r4 (30 partidas do bot, 5 min cada): mediana 3,8 km, 23 de 30 pegos pelo tutor e 7
+  no limite de tempo. Referência r3: mediana 3,7 km, 23 pegos e 7 no limite. Referência r2: mediana 3,7 km, 22 pegos e 8 no limite. Referência r1 (10 partidas do bot, 10 min cada): mediana 4,3 km; 8 de 10 terminam com o tutor
   alcançando, porque alguns trechos do centro forçam lama.
 
 ### Decisões em aberto
