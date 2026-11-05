@@ -45,6 +45,7 @@ const solido = (x: number, largura: number, altura: number, visual: string, y = 
 const teto = (x: number, largura: number, y: number, visual: string) => caixa('teto', x, largura, y, 100, visual)
 const vao = (x: number, largura: number, visual: string) => caixa('vao', x, largura, 0, 0, visual)
 const poca = (x: number, largura: number) => caixa('poca', x, largura, 0, 0, 'poca')
+const rampa = (x: number, largura: number, altura: number) => caixa('rampa', x, largura, 0, altura, 'rampa')
 const item = (tipo: 'lenco' | 'osso' | 'ossoOuro', x: number, y: number) => caixa(tipo, x, 0, y, 0, tipo)
 
 // Altura do centro de um coletável no chão: no meio do corpo do cachorro em pé.
@@ -64,16 +65,18 @@ function larguraDePoca(ctx: ContextoMolde): number {
 
 const comuns: Molde[] = [
   {
-    id: 'banco',
+    // r2: maior que o banco de r1 (1,6 × 0,5), para ler do tamanho da referência de arte.
+    id: 'cavalete',
     nivelMin: 0,
     peso: 3,
-    montar: () => ({ comprimento: 1.6, itens: [solido(0, 1.6, 0.5, 'banco'), item('osso', 0.8, 1.3)] }),
+    montar: () => ({ comprimento: 1.7, itens: [solido(0, 1.7, 0.8, 'cavalete'), item('osso', 0.85, 1.6)] }),
   },
   {
-    id: 'lixeira',
+    // r2: no lugar da lixeira de r1 (0,7 × 0,9), mais larga e um pouco mais alta.
+    id: 'caixa',
     nivelMin: 0,
     peso: 2,
-    montar: () => ({ comprimento: 0.7, itens: [solido(0, 0.7, 0.9, 'lixeira')] }),
+    montar: () => ({ comprimento: 1.2, itens: [solido(0, 1.2, 1, 'caixa')] }),
   },
   {
     id: 'poca',
@@ -139,6 +142,30 @@ const cidade: Molde[] = [
       return {
         comprimento: x2 + 3.8,
         itens: [solido(0, 3.8, 1.2, 'carro'), solido(x2, 3.8, 1.2, 'carro'), item('osso', 3.8 + intervalo / 2, 2.4)],
+      }
+    },
+  },
+  {
+    // Rampa de 3 × 1,2 m: subir sem pular já lança o cachorro; os ossos seguem a subida e o
+    // arco do lançamento.
+    id: 'rampa',
+    nivelMin: 0,
+    peso: 2,
+    montar: () => ({
+      comprimento: 3,
+      itens: [rampa(0, 3, 1.2), item('osso', 1, 0.85), item('osso', 2, 1.25), item('osso', 3.4, 1.8), item('osso', 4.6, 1.6)],
+    }),
+  },
+  {
+    // Rampa seguida de buraco: o lançamento sozinho atravessa; pular no alto da rampa vai mais longe.
+    id: 'rampa_buraco',
+    nivelMin: 1,
+    peso: 1,
+    montar: (ctx) => {
+      const largura = larguraDeVao(ctx, 0.3, 0.4)
+      return {
+        comprimento: 3.3 + largura,
+        itens: [rampa(0, 3, 1.2), vao(3.3, largura, 'buraco'), item('ossoOuro', 3.3 + largura / 2, 2.2)],
       }
     },
   },
@@ -289,8 +316,25 @@ const centro: Molde[] = [
   },
 ]
 
+function escolher(moldes: readonly Molde[], ids: readonly string[]): Molde[] {
+  return ids.map((id) => {
+    const molde = moldes.find((m) => m.id === id)
+    if (!molde) throw new Error(`molde inexistente: ${id}`)
+    return molde
+  })
+}
+
+// r4: a cidade recebe todos os obstáculos que têm arte, também os que nasceram em outros
+// cenários. Os outros cenários continuam com os seus, desenhados em vetor.
+const cidadeCompleta: Molde[] = [
+  ...cidade,
+  ...escolher(parque, ['galho', 'chafariz', 'canteiro']),
+  ...escolher(rio, ['tora', 'ponte_baixa', 'pedras']),
+  ...escolher(centro, ['onibus', 'banca', 'andaime', 'bueiro']),
+]
+
 export const MOLDES_POR_CENARIO: Record<IdCenario, readonly Molde[]> = {
-  cidade: [...comuns, ...cidade],
+  cidade: [...comuns, ...cidadeCompleta],
   parque: [...comuns, ...parque],
   rio: [...comuns, ...rio],
   centro: [...comuns, ...centro],

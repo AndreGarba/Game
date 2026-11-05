@@ -38,6 +38,49 @@ describe('velocidade', () => {
   })
 })
 
+describe('rampa', () => {
+  const RAMPA = { tipo: 'rampa', x: 10, largura: 3, y: 0, altura: 1.2, visual: 'rampa' } as const
+
+  it('sobe pela rampa sem pular, sem bater', () => {
+    const estado = partidaCom([RAMPA])
+    correrAte(estado, 11)
+    expect(estado.fim).toBeNull()
+    expect(estado.cachorro.noChao).toBe(true)
+    expect(estado.cachorro.y).toBeGreaterThan(0.3)
+    expect(estado.cachorro.y).toBeLessThan(1.2)
+  })
+
+  it('sai lançado no fim da rampa e volta ao chão', () => {
+    const estado = partidaCom([RAMPA])
+    let maiorAltura = 0
+    let saiuLancado = false
+    while (!estado.fim && estado.cachorro.x < 25) {
+      passo(estado, null)
+      maiorAltura = Math.max(maiorAltura, estado.cachorro.y)
+      if (!estado.cachorro.noChao && estado.cachorro.x > 12 && estado.cachorro.vy > 0) saiuLancado = true
+    }
+    expect(estado.fim).toBeNull()
+    expect(saiuLancado).toBe(true)
+    expect(maiorAltura).toBeGreaterThan(1.2)
+    expect(estado.cachorro.y).toBe(0)
+    expect(estado.cachorro.noChao).toBe(true)
+  })
+
+  it('pular no meio da rampa sai da superfície', () => {
+    const estado = partidaCom([RAMPA])
+    correrAte(estado, 11)
+    passo(estado, 'pular')
+    passo(estado, null)
+    expect(estado.cachorro.noChao).toBe(false)
+  })
+
+  it('o lançamento atravessa um buraco curto logo depois da rampa', () => {
+    const estado = partidaCom([RAMPA, { tipo: 'vao', x: 13.3, largura: 1.3, y: 0, altura: 0, visual: 'buraco' }])
+    correrAte(estado, 20)
+    expect(estado.fim).toBeNull()
+  })
+})
+
 describe('física', () => {
   it('pular no ar não faz nada', () => {
     const estado = partidaCom([])
