@@ -63,20 +63,24 @@ PRD/              especificações de produto
 ## Motor do jogo
 
 Regras do motor ficam **nesta seção**. Regra de motor espalhada por outras seções é regra que
-alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r4'`.
+alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r7'`.
 
 ### O jogo, como o motor vê
 
 - Mundo 2D lateral. As 3 camadas do falso 3D são **só visuais** (parallax): o motor tem uma
   linha de corrida, com altura. Unidades: metros e segundos.
-- O cachorro corre sozinho; o jogador só tem duas ações: **pular** (só do chão) e **abaixar**
-  (no chão: fica baixo por `ABAIXAR_TICKS`; no ar: mergulho rápido e pousa abaixado).
+- O cachorro corre sozinho; o jogador só tem duas ações: **pular** e **abaixar** (no chão: fica
+  baixo por `ABAIXAR_TICKS`; no ar: mergulho rápido e pousa abaixado). Pular no ar é o **pulo
+  duplo** (r7): uma vez por pulo, dá de novo `VEL_PULO`; volta a valer ao tocar o chão. O log não
+  distingue os dois: é o mesmo código `0`.
 - Velocidade base `v(d) = VEL_MAX - (VEL_MAX - VEL_INICIAL)·VEL_K/(VEL_K + d)`: cresce rápido no
   começo e se aproxima do teto sem passar. A dificuldade continua subindo pelos degraus de
   `nivelEm` (moldes novos e menos respiro entre trechos).
 - Elementos da pista (`src/engine/tipos.ts`):
   - `solido` (carro, caixa, cavalete, chafariz, marquise): bater de frente encerra; dá para pousar e correr
-    em cima.
+    em cima. Os que têm **perfil** (`src/engine/perfis.ts`: carro, tora, chafariz, banca) têm o
+    topo no contorno da arte, e o cachorro sobe e desce por ele grudado; parede do contorno ainda
+    bate. Os tamanhos seguem a régua do tutor (r5): 1 m de verdade = 1,79 m do jogo.
   - `teto` (placa, galho, toldo): só passa abaixado.
   - `vao` (rio, buraco, bueiro): sem chão; cair encerra.
   - `rampa`: sobe de 0 até `altura` ao longo da largura; não bate. O cachorro anda grudado na
@@ -125,6 +129,8 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r4'`.
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
+- Referência r7 (30 partidas do bot, 5 min cada): mediana 3,6 km, 22 de 30 pegos e 8 no limite.
+  r5 e r6 ficaram iguais em distância (3,6 km); detalhe em `PRD/PRD-conceito-e-regras-do-jogo.md` §5.
 - Referência r4 (30 partidas do bot, 5 min cada): mediana 3,8 km, 23 de 30 pegos pelo tutor e 7
   no limite de tempo. Referência r3: mediana 3,7 km, 23 pegos e 7 no limite. Referência r2: mediana 3,7 km, 22 pegos e 8 no limite. Referência r1 (10 partidas do bot, 10 min cada): mediana 4,3 km; 8 de 10 terminam com o tutor
   alcançando, porque alguns trechos do centro forçam lama.
@@ -352,6 +358,11 @@ Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: portu
 - Antes de escrever componente novo, verifique o DS.
 - Bottom sheet, não navegação cheia, para detalhe no meio do fluxo.
 - **Sem router, troca de tela precisa resetar o scroll** (hook no componente que decide a tela).
+- **O jogo é sempre desenhado na proporção de celular deitado (780 × 360, 19,5:9).** `App.tsx`
+  envolve tudo na `.moldura-celular` (`global.css`), o maior retângulo nessa proporção que cabe na
+  janela; o resto vira faixa. A moldura define `--altura-tela`, e toda tela mede o resto pelo
+  próprio contêiner (`cqh`/`cqw`, `clientWidth`). Tela nova não usa `vw`/`vh`, `window.inner*` nem
+  `position: fixed`: tudo isso escapa da moldura.
 - **Altura de tela é `var(--altura-tela, 100svh)`**, não `100svh` puro: somado ao padding de
   safe-area, o documento fica maior que a tela no iPhone. No desktop o erro não aparece.
 
