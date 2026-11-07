@@ -1,0 +1,17 @@
+// Site estático do jogo: só static assets, sem código de Worker.
+// Quem publica é o job "deploy" do CI, depois do merge na main. Nunca `wrangler deploy` à mão.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "horadobanho",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // Sem router: caminho inexistente responde 404 de verdade. Um fallback de SPA responderia
+    // 200 text/html também para /assets/<hash>.js de um deploy antigo, e o import() do chunk
+    // quebraria com erro de MIME em vez de 404. Offline, quem atende a navegação é o service worker.
+    "not_found_handling": "404-page"
+  },
+  // Domínio próprio ainda a definir; por enquanto, horadobanho.<conta>.workers.dev.
+  "workers_dev": true,
+  "preview_urls": false
+}
