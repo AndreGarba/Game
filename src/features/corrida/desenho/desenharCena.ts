@@ -2,6 +2,7 @@ import {
   cenarioEm,
   CACHORRO_LARGURA,
   VANTAGEM_MAX,
+  velocidadeBase,
   type Elemento,
 } from '../../../engine/index.ts'
 import type { PontoRastro, QuadroCorrida } from '../controladorCorrida.ts'
@@ -17,6 +18,7 @@ import {
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
+import { atualizarPoeira, desenharPoeira } from './poeira.ts'
 import { desenharTutorSprite } from './tutorSprite.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
@@ -530,6 +532,15 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob a mesma placa.
   const pose = poseNoRastro(quadro.rastro, xTutor - CACHORRO_LARGURA / 2)
   const poseTutor = { fase: x * 1.6, noAr: !pose.noChao, abaixado: pose.abaixado }
+
+  // Poeira atrás dos dois, desenhada antes deles para ficar por baixo dos corpos.
+  const velocidade = velocidadeBase(c.x)
+  atualizarPoeira({
+    cachorro: { x: x + CACHORRO_LARGURA * 0.15, y, noChao: c.noChao, velocidade, escala: 1 },
+    tutor: { x: xTutor - 0.35, y: pose.y, noChao: pose.noChao, velocidade, escala: 1.4 },
+  })
+  desenharPoeira(ctx, (m) => sx(cam, m), (m) => sy(cam, m), ppm)
+
   const spriteTutor = spriteTutorPronto()
   if (spriteTutor) {
     desenharTutorSprite(ctx, spriteTutor, sx(cam, xTutor), sy(cam, pose.y), ppm, poseTutor)

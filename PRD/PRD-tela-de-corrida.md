@@ -61,6 +61,10 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 ## 5. Cena
 
+- **Poeira** (`desenho/poeira.ts`): tufos creme que sobem das patas do cachorro e dos pés do tutor
+  enquanto correm no chão, mais frequentes com a velocidade, e um "puf" maior no pouso de um
+  pulo. Partículas desenhadas no próprio canvas, em metros do mundo (ficam onde foram chutadas),
+  sem biblioteca e sem tocar no motor.
 - **Câmera:** cachorro a 28% da largura. Mostra cerca de 18 m de pista. Em tela vertical, a escala
   é limitada pela largura e o chão sobe para a cena ficar no meio.
 - **Falso 3D em 7 camadas e 4 planos de movimento, arte gerada por IA**
