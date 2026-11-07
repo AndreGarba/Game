@@ -14,6 +14,7 @@ import {
   spriteCachorroPronto,
   spriteObjeto,
   spriteTutorPronto,
+  trechosDaCamada,
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
@@ -78,6 +79,53 @@ const METROS_NA_ALTURA = 7
 // Cor da terra da pista, para o que sobrar abaixo da arte em tela de pé.
 const TERRA_BASE = 'rgb(74, 46, 32)'
 
+// Sequência de trechos do muro ao longo da pista, em unidades do quadro de 360 (não depende da
+// tela). Sorteio determinístico pelo índice, sem repetir o mesmo trecho duas vezes seguidas, e
+// guardado aos poucos conforme a corrida avança. ORIGEM empurra a pista para valores positivos:
+// a câmera começa um pouco antes do x = 0.
+const ORIGEM_TRECHOS = 100_000
+const inicioTrecho: number[] = [0]
+const escolhaTrecho: number[] = []
+
+function garantirTrechos(ate: number, larguras: readonly number[]) {
+  while (inicioTrecho[inicioTrecho.length - 1]! <= ate) {
+    const k = escolhaTrecho.length
+    let v = Math.floor(hash(k * 13 + 5) * larguras.length)
+    if (k > 0 && v === escolhaTrecho[k - 1]) v = (v + 1) % larguras.length
+    escolhaTrecho.push(v)
+    inicioTrecho.push(inicioTrecho[k]! + larguras[v]!)
+  }
+}
+
+function desenharTrechos(
+  ctx: CanvasRenderingContext2D,
+  cam: Camera,
+  escala: number,
+  imagens: readonly HTMLImageElement[],
+  topo: number,
+  altura: number,
+) {
+  // Largura de cada trecho em unidades do quadro (altura da camada fixa nessas unidades).
+  const larguras = imagens.map((i) => (i.naturalWidth / i.naturalHeight) * altura)
+  // Posição da câmera nessas unidades (parallax 1: presa ao mundo).
+  const u0 = (cam.x0 * cam.ppm) / escala + ORIGEM_TRECHOS
+  const u1 = u0 + cam.largura / escala
+  garantirTrechos(u1, larguras)
+  // Primeiro trecho visível: busca binária nos inícios.
+  let baixo = 0
+  let alto = escolhaTrecho.length - 1
+  while (baixo < alto) {
+    const meio = (baixo + alto + 1) >> 1
+    if (inicioTrecho[meio]! <= u0) baixo = meio
+    else alto = meio - 1
+  }
+  for (let k = baixo; k < escolhaTrecho.length && inicioTrecho[k]! < u1; k++) {
+    const imagem = imagens[escolhaTrecho[k]!]!
+    const x = (inicioTrecho[k]! - u0) * escala
+    ctx.drawImage(imagem, Math.floor(x), topo * escala, Math.ceil(larguras[escolhaTrecho[k]!]! * escala) + 1, altura * escala)
+  }
+}
+
 function desenharCenarioArte(
   ctx: CanvasRenderingContext2D,
   cam: Camera,
@@ -90,6 +138,11 @@ function desenharCenarioArte(
   ctx.fillRect(0, 0, cam.largura, cam.altura)
 
   CAMADAS_CIDADE.forEach((camada, i) => {
+    const variantes = trechosDaCamada(i)
+    if (variantes) {
+      desenharTrechos(ctx, cam, escala, variantes, camada.topo, camada.altura)
+      return
+    }
     const imagem = arte[i]!
     const altura = camada.altura * escala
     const largura = (imagem.naturalWidth / imagem.naturalHeight) * altura

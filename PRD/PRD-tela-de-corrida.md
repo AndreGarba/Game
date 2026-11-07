@@ -74,6 +74,13 @@ Espaço e Enter também iniciam, continuam e reiniciam.
   sem costura. O chão fica a 70% da altura da tela (252 de 360); abaixo dele, a terra da pista.
   A mesma arte vale para os quatro cenários até existir arte de parque, rio e centro. Enquanto a
   arte carrega, vale o cenário vetorial antigo, com cores por cenário.
+- **Muro variado:** o muro não repete uma tira só. São 6 trechos (`cidade/muro-trecho-*.webp`),
+  montados por `scripts/arte/montar_muro.py`, cada um com quatro painéis entre pilares: madeira,
+  cinza, pata (da arte original) e tijolo, grafite de osso e cachorro, portão, cerca viva, janela
+  com hera e caixa de correio (gerados no ChatGPT, `PRD/referencias/muro-paineis.png`). Todo
+  trecho começa num pilar e termina num painel, com o mesmo pilar da arte original, então emendam
+  em qualquer ordem. A pista sorteia a sequência pelo índice do trecho (sem repetir o mesmo duas
+  vezes seguidas), sempre igual no mesmo ponto da pista.
 - **Calçada:** as juntas das lajes andam com a pista e dão a sensação de velocidade. Vãos
   desenhados como água (rio e lago) ou buraco com cone.
 - **Obstáculos com sprite só na cidade** (`features/corrida/imagens/objetos`, gerados na mesma

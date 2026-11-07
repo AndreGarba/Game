@@ -22,6 +22,13 @@ export const IMAGENS_HUD = { distancia, velocidade, pausa }
 // colisão, então a proporção da arte tem que acompanhar a do molde.
 const ARQUIVOS_OBJETOS = import.meta.glob<string>('./objetos/*.webp', { eager: true, import: 'default' })
 const APELIDOS: Record<string, string> = { osso: 'moeda-osso', ossoOuro: 'moeda-osso-ouro', lago: 'agua', rio: 'agua' }
+// Trechos do muro, montados por `scripts/arte/montar_muro.py` (pilar da arte original + painéis
+// antigos e novos). Ordem pelo nome: o sorteio da pista depende do índice.
+const ARQUIVOS_TRECHOS_MURO = import.meta.glob<string>('./cidade/muro-trecho-*.webp', { eager: true, import: 'default' })
+const TRECHOS_MURO = Object.keys(ARQUIVOS_TRECHOS_MURO)
+  .sort()
+  .map((caminho) => ARQUIVOS_TRECHOS_MURO[caminho]!)
+
 const SPRITES_OBJETOS: Record<string, string> = Object.fromEntries(
   Object.entries(ARQUIVOS_OBJETOS).map(([caminho, src]) => [caminho.replace(/^.*\/|\.webp$/g, ''), src]),
 )
@@ -37,6 +44,11 @@ export interface Camada {
   /** Topo da arte no quadro de 360. */
   topo: number
   altura: number
+  /**
+   * Trechos que se alternam no lugar de repetir `src` (o muro). Cada um começa num pilar e
+   * termina num painel, então emendam em qualquer ordem. `src` fica para enquanto carregam.
+   */
+  trechos?: readonly string[]
 }
 
 export const LINHA_CHAO = 252
@@ -60,7 +72,7 @@ export const CAMADAS_CIDADE: readonly Camada[] = [
   // Medidas da referência de arte (quadro de 360): o muro fica recuado, com a base em 242; entre
   // ele e o meio-fio corre o piso da calçada (242 a 260), onde o cachorro pisa (252); o meio-fio
   // começa em 260 e a terra embaixo dele.
-  { src: muro, parallax: PLANO_FRENTE, topo: 163, altura: 80 },
+  { src: muro, parallax: PLANO_FRENTE, topo: 163, altura: 80, trechos: TRECHOS_MURO },
   // O piso tem tufos de grama no fundo: a faixa de laje começa a 36% da arte.
   { src: piso, parallax: PLANO_FRENTE, topo: 232, altura: 28 },
   // A borda de cima do meio-fio fica a 10,7% da arte (os tufos de grama ficam acima dela).
@@ -81,6 +93,8 @@ let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
 let cachorro: HTMLImageElement | null = null
 let tutor: HTMLImageElement | null = null
+// Imagens dos trechos de cada camada que tem `trechos`, no mesmo índice de CAMADAS_CIDADE.
+let trechos: (HTMLImageElement[] | null)[] | null = null
 
 function criar(src: string) {
   const imagem = new Image()
@@ -92,6 +106,7 @@ function criar(src: string) {
 export function preCarregarImagensCenario(): HTMLImageElement[] {
   if (!arte) {
     arte = CAMADAS_CIDADE.map((c) => criar(c.src))
+    trechos = CAMADAS_CIDADE.map((c) => (c.trechos ? c.trechos.map(criar) : null))
     sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
     Object.values(IMAGENS_HUD).forEach(criar)
     cachorro = criar(cachorroCorrendo)
@@ -120,6 +135,13 @@ export function spriteTutorPronto(): HTMLImageElement | null {
 export function arteCenarioPronta(): HTMLImageElement[] | null {
   const a = preCarregarImagensCenario()
   return a.every((i) => i.complete && i.naturalWidth > 0) ? a : null
+}
+
+/** Trechos da camada `i` já carregados, ou null (aí ela repete a imagem única). */
+export function trechosDaCamada(i: number): HTMLImageElement[] | null {
+  preCarregarImagensCenario()
+  const lista = trechos?.[i]
+  return lista && lista.length > 0 && lista.every((t) => t.complete && t.naturalWidth > 0) ? lista : null
 }
 
 /** Sprite do objeto, ou null se não houver arte para ele (ou se ainda não carregou): vale o vetor. */
