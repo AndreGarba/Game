@@ -59,7 +59,7 @@ export function FormularioRanking({ seed, log }: Props) {
     salvarNome(limpo)
     setEnvio({ fase: 'enviando' })
     try {
-      const resposta = await registrarNoRanking({ jogadorId: idDoJogador(), nome: limpo, seed, log })
+      const resposta = await registrarNoRanking({ jogadorId: await idDoJogador(), nome: limpo, seed, log })
       setEnvio({ fase: 'enviado', resposta })
     } catch (erro) {
       setEnvio({ fase: 'erro', codigo: erro instanceof FalhaRanking ? erro.codigo : 'interno' })
