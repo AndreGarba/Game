@@ -82,7 +82,8 @@ Espaço e Enter também iniciam, continuam e reiniciam.
   andaime, cone do buraco e lama. Sólidos ocupam exatamente a caixa de colisão, com sombra de
   contato (o jato do chafariz fica acima do topo). Tetos se apoiam na borda de baixo e esticam a
   coluna (poste, tronco, parede) até o alto da tela. Desde r4 a cidade sorteia todos esses
-  obstáculos. Nos outros cenários eles continuam em vetor até ganharem arte própria.
+  obstáculos. Os outros cenários usam os mesmos sprites (o fundo ainda é o da cidade); o vetor só
+  aparece nos primeiros quadros, enquanto a imagem carrega.
 - **Coletáveis em qualquer cenário:** ossinho é moeda de ouro com osso; ossinho de ouro é moeda
   maior, com borda brilhante e faíscas; lenço é um pacote de lenço umedecido com pata.
 

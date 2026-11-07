@@ -354,7 +354,7 @@ function escolher(moldes: readonly Molde[], ids: readonly string[]): Molde[] {
 }
 
 // r4: a cidade recebe todos os obstáculos que têm arte, também os que nasceram em outros
-// cenários. Os outros cenários continuam com os seus, desenhados em vetor.
+// cenários. Os outros cenários continuam com os seus moldes (a arte é a mesma em todos).
 const cidadeCompleta: Molde[] = [
   ...cidade,
   ...escolher(parque, ['galho', 'chafariz', 'canteiro']),

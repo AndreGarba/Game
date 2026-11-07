@@ -169,10 +169,11 @@ function desenharChao(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numbe
   }
 }
 
-// A arte dos obstáculos foi feita para a cidade: nos outros cenários eles continuam em vetor
-// até ganharem arte própria. Coletáveis (ossos e lenço) usam o sprite em qualquer cenário.
-function spriteDe(e: Elemento, nome: string): HTMLImageElement | null {
-  return cenarioEm(e.x) === 'cidade' ? spriteObjeto(nome) : null
+// Sprite do obstáculo em qualquer cenário; o vetor fica só para visual sem arte e para os
+// primeiros quadros, enquanto a imagem carrega. Já foi só na cidade: passando de 800 m (fim da
+// cidade, começo do parque) os obstáculos voltavam a vetor e pareciam não ter carregado.
+function spriteDe(_e: Elemento, nome: string): HTMLImageElement | null {
+  return spriteObjeto(nome)
 }
 
 function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
