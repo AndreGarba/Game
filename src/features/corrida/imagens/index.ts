@@ -10,7 +10,7 @@ import muro from './cidade/muro.webp'
 import piso from './cidade/piso.webp'
 import pista from './cidade/pista.webp'
 import sequenciasCasas from './cidade/casas/trechos.json'
-import sequenciasMuro from './cidade/muro/trechos.json'
+import dadosMuro from './cidade/muro/muro.json'
 import distancia from './hud-distancia.webp'
 import pausa from './hud-pausa.webp'
 import tutorCorrendo from './tutor-correndo.webp'
@@ -29,16 +29,23 @@ function pecasDaPasta(arquivos: Record<string, string>): Record<string, string> 
   return Object.fromEntries(Object.entries(arquivos).map(([caminho, src]) => [caminho.replace(/^.*\/|\.webp$/g, ''), src]))
 }
 
-// Muro: peças e sequências de `scripts/arte/montar_muro.py`. Cada sequência vira pilar, painel,
-// pilar, painel...: começa num pilar e termina num painel, então qualquer trecho emenda em
-// qualquer outro. A ordem do JSON importa: o sorteio da pista depende do índice.
+// Muro: painéis e conexões de `scripts/arte/montar_muro.py`, todos no mesmo canvas de altura.
+// A regra de montagem (repetição e conexão na troca) fica em desenharCena.ts.
 const PECAS_MURO = pecasDaPasta(import.meta.glob<string>('./cidade/muro/*.webp', { eager: true, import: 'default' }))
-const TRECHOS_MURO = sequenciasMuro.trechos.map((paineis) => paineis.flatMap((p) => [PECAS_MURO.pilar!, PECAS_MURO[p]!]))
+const MONTAGEM_MURO: MontagemMuro<string> = {
+  tipo: 'muro',
+  paineis: dadosMuro.paineis.map((p) => PECAS_MURO[`painel-${p}`]!),
+  conexoes: dadosMuro.conexoes.map((c) => PECAS_MURO[`conexao-${c}`]!),
+  repeticao: dadosMuro.repeticao,
+}
 
 // Casas: uma construção por trecho (`scripts/arte/montar_casas.py`), mais a tira original, que
 // tem as árvores entre as casas.
 const PECAS_CASAS = { ...pecasDaPasta(import.meta.glob<string>('./cidade/casas/*.webp', { eager: true, import: 'default' })), original: casas }
-const TRECHOS_CASAS = sequenciasCasas.trechos.map((pecas) => pecas.map((p) => PECAS_CASAS[p as keyof typeof PECAS_CASAS]!))
+const MONTAGEM_CASAS: MontagemTrechos<string> = {
+  tipo: 'trechos',
+  trechos: sequenciasCasas.trechos.map((pecas) => pecas.map((p) => PECAS_CASAS[p as keyof typeof PECAS_CASAS]!)),
+}
 
 const SPRITES_OBJETOS: Record<string, string> = Object.fromEntries(
   Object.entries(ARQUIVOS_OBJETOS).map(([caminho, src]) => [caminho.replace(/^.*\/|\.webp$/g, ''), src]),
@@ -56,11 +63,37 @@ export interface Camada {
   topo: number
   altura: number
   /**
-   * Trechos que se alternam no lugar de repetir `src`: cada trecho é uma lista de peças
-   * desenhadas lado a lado, todas com a altura da camada. `src` fica para enquanto carregam.
+   * Peças que se alternam no lugar de repetir `src`, todas desenhadas com a altura da camada.
+   * `src` fica para enquanto elas carregam.
    */
-  trechos?: readonly (readonly string[])[]
+  montagem?: Montagem<string>
 }
+
+/** Sorteia trechos prontos (cada um uma lista de peças lado a lado). */
+export interface MontagemTrechos<T> {
+  tipo: 'trechos'
+  trechos: readonly (readonly T[])[]
+}
+/**
+ * Muro: um painel se repete lado a lado de `repeticao.min` a `repeticao.max` vezes, sem conexão
+ * no meio; quando o painel muda, entra uma conexão sorteada.
+ */
+export interface MontagemMuro<T> {
+  tipo: 'muro'
+  paineis: readonly T[]
+  conexoes: readonly T[]
+  repeticao: { min: number; max: number }
+}
+export type Montagem<T> = MontagemTrechos<T> | MontagemMuro<T>
+
+// Escala das camadas de frente em relação à referência de arte: muro (com as conexões) e casas
+// 1,5× maiores, como pediu o André, mantendo a base de cada uma no lugar.
+const ESCALA_MURO = 1.5
+const ESCALA_CASAS = 1.5
+// Na arte original o muro tem 260 px = 80 unidades do quadro, com a base em 243. O canvas das
+// peças novas tem a altura do pilar mais a folga dos enfeites (lâmpada, vaso, bola) em cima.
+const ALTURA_MURO = ((80 * dadosMuro.alturaCanvas) / 260) * ESCALA_MURO
+const ALTURA_CASAS = 195 * ESCALA_CASAS
 
 export const LINHA_CHAO = 252
 // Onde começa o piso da calçada (base do muro): rio e buraco cortam a partir daqui.
@@ -79,11 +112,11 @@ export const CAMADAS_CIDADE: readonly Camada[] = [
   { src: ceu, parallax: PLANO_FUNDO, topo: 0, altura: 360 },
   { src: skyline, parallax: PLANO_FUNDO, topo: 16, altura: 180 },
   { src: bairro, parallax: PLANO_BAIRRO, topo: 62, altura: 122 },
-  { src: casas, parallax: PLANO_CASAS, topo: 45, altura: 195, trechos: TRECHOS_CASAS },
+  { src: casas, parallax: PLANO_CASAS, topo: 240 - ALTURA_CASAS, altura: ALTURA_CASAS, montagem: MONTAGEM_CASAS },
   // Medidas da referência de arte (quadro de 360): o muro fica recuado, com a base em 242; entre
   // ele e o meio-fio corre o piso da calçada (242 a 260), onde o cachorro pisa (252); o meio-fio
   // começa em 260 e a terra embaixo dele.
-  { src: muro, parallax: PLANO_FRENTE, topo: 163, altura: 80, trechos: TRECHOS_MURO },
+  { src: muro, parallax: PLANO_FRENTE, topo: 243 - ALTURA_MURO, altura: ALTURA_MURO, montagem: MONTAGEM_MURO },
   // O piso tem tufos de grama no fundo: a faixa de laje começa a 36% da arte.
   { src: piso, parallax: PLANO_FRENTE, topo: 232, altura: 28 },
   // A borda de cima do meio-fio fica a 10,7% da arte (os tufos de grama ficam acima dela).
@@ -104,9 +137,9 @@ let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
 let cachorro: HTMLImageElement | null = null
 let tutor: HTMLImageElement | null = null
-// Imagens dos trechos de cada camada que tem `trechos`, no mesmo índice de CAMADAS_CIDADE. A
-// mesma peça (o pilar) é uma imagem só, reaproveitada em todos os trechos.
-let trechos: (HTMLImageElement[][] | null)[] | null = null
+// Montagem de cada camada já com as imagens, no mesmo índice de CAMADAS_CIDADE. A mesma peça é
+// uma imagem só, reaproveitada onde aparecer.
+let montagens: (Montagem<HTMLImageElement> | null)[] | null = null
 
 function criar(src: string) {
   const imagem = new Image()
@@ -120,7 +153,12 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     arte = CAMADAS_CIDADE.map((c) => criar(c.src))
     const cache = new Map<string, HTMLImageElement>()
     const imagem = (src: string) => cache.get(src) ?? cache.set(src, criar(src)).get(src)!
-    trechos = CAMADAS_CIDADE.map((c) => (c.trechos ? c.trechos.map((pecas) => pecas.map(imagem)) : null))
+    montagens = CAMADAS_CIDADE.map((c): Montagem<HTMLImageElement> | null => {
+      const m = c.montagem
+      if (!m) return null
+      if (m.tipo === 'trechos') return { tipo: 'trechos', trechos: m.trechos.map((pecas) => pecas.map(imagem)) }
+      return { ...m, paineis: m.paineis.map(imagem), conexoes: m.conexoes.map(imagem) }
+    })
     sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
     Object.values(IMAGENS_HUD).forEach(criar)
     cachorro = criar(cachorroCorrendo)
@@ -151,11 +189,13 @@ export function arteCenarioPronta(): HTMLImageElement[] | null {
   return a.every((i) => i.complete && i.naturalWidth > 0) ? a : null
 }
 
-/** Trechos da camada `i` já carregados, ou null (aí ela repete a imagem única). */
-export function trechosDaCamada(i: number): HTMLImageElement[][] | null {
+/** Montagem da camada `i` com todas as peças carregadas, ou null (aí ela repete a imagem única). */
+export function montagemDaCamada(i: number): Montagem<HTMLImageElement> | null {
   preCarregarImagensCenario()
-  const lista = trechos?.[i]
-  return lista && lista.length > 0 && lista.every((t) => t.every((p) => p.complete && p.naturalWidth > 0)) ? lista : null
+  const m = montagens?.[i]
+  if (!m) return null
+  const pecas = m.tipo === 'trechos' ? m.trechos.flat() : [...m.paineis, ...m.conexoes]
+  return pecas.every((p) => p.complete && p.naturalWidth > 0) ? m : null
 }
 
 /** Sprite do objeto, ou null se não houver arte para ele (ou se ainda não carregou): vale o vetor. */

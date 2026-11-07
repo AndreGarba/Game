@@ -1,18 +1,22 @@
-"""Monta os trechos de muro da cidade a partir da arte do muro e da folha de painéis novos.
+"""Prepara as peças do muro da cidade: painéis (os "muros") e conexões (os pilares entre eles).
 
 uso: python scripts/arte/montar_muro.py
 
-Todo trecho começa num pilar e termina num painel, e todo painel encosta num pilar dos dois lados.
-Então qualquer trecho emenda em qualquer outro: a junção é sempre painel | pilar, com o MESMO
-pilar (recortado da arte original). É isso que deixa a sequência sorteada sem costura visível.
+Regra de montagem (aplicada pelo jogo, ao vivo, em desenharCena.ts):
+  - um mesmo painel se repete lado a lado, sem conexão no meio, de 3 a 10 vezes;
+  - quando o painel muda, entra uma conexão sorteada entre as 11;
+  - o painel seguinte nunca é igual ao anterior.
+Toda junção de painéis diferentes é painel | conexão | painel, e toda conexão tem a mesma base e a
+mesma altura de corpo: por isso qualquer ordem emenda sem costura.
 
 Entradas:
-  src/features/corrida/imagens/cidade/muro.webp   arte original (pilares + 4 painéis)
-  PRD/referencias/muro-paineis.png                6 painéis novos, gerados no ChatGPT
-  PRD/referencias/muro-paineis-2.png              8 painéis novos, segundo lote
+  src/features/corrida/imagens/cidade/muro.webp   arte original (pilar + painéis madeira, cinza, pata)
+  PRD/referencias/muro-paineis.png                6 painéis, gerados no ChatGPT
+  PRD/referencias/muro-paineis-2.png              8 painéis, segundo lote
+  PRD/referencias/muro-conexoes.png               10 conexões novas
 Saídas (em src/features/corrida/imagens/cidade/muro/):
-  pilar.webp e <painel>.webp   peças soltas, todas com a altura da arte original
-  trechos.json                 as sequências de painéis; o jogo monta cada trecho na hora
+  painel-<nome>.webp, conexao-<nome>.webp   todas no MESMO canvas de altura, base no rodapé
+  muro.json                                 listas de painéis e conexões e a faixa de repetição
 """
 import json
 from pathlib import Path
@@ -22,108 +26,112 @@ from PIL import Image
 
 RAIZ = Path(__file__).resolve().parents[2]
 ORIGINAL = RAIZ / "src/features/corrida/imagens/cidade/muro.webp"
-FOLHAS = [
+FOLHAS_PAINEIS = [
     (RAIZ / "PRD/referencias/muro-paineis.png", ["tijolo", "grafite", "portao", "cerca_viva", "janela", "correio"]),
     (
         RAIZ / "PRD/referencias/muro-paineis-2.png",
         ["pedra", "cerca_branca", "garagem", "azulejo", "floreira", "mural_sol", "gato", "medidor"],
     ),
 ]
-PECAS = RAIZ / "src/features/corrida/imagens/cidade/muro"
-
-# Medidas da arte original (1404 × 260): o pilar ocupa x 226..293 e o painel cinza vai do topo
-# do capitel do painel (y 42) até a base (y 258).
-PILAR = (226, 294)
-PAINEL_TOPO, PAINEL_BASE = 42, 259
-ORIGINAIS = {
-    "madeira": (460, 664),
-    "cinza": (734, 978),
-    "pata": (1047, 1260),
-}
-
-# Sequências de quatro painéis, misturando os da arte original com os novos. A ordem importa:
-# o índice é o nome do arquivo, e o sorteio da pista depende dele. Trecho novo entra no fim.
-TRECHOS = [
-    ["madeira", "pata", "cinza", "tijolo"],
-    ["grafite", "madeira", "cinza", "correio"],
-    ["portao", "tijolo", "cerca_viva", "pata"],
-    ["janela", "cinza", "madeira", "grafite"],
-    ["cerca_viva", "correio", "portao", "cinza"],
-    ["pata", "janela", "tijolo", "madeira"],
-    # Segundo lote.
-    ["pedra", "cerca_branca", "cinza", "gato"],
-    ["garagem", "madeira", "azulejo", "floreira"],
-    ["mural_sol", "cinza", "medidor", "pedra"],
-    ["azulejo", "pata", "garagem", "cerca_viva"],
-    ["floreira", "tijolo", "gato", "madeira"],
-    ["cerca_branca", "grafite", "pedra", "cinza"],
-    ["medidor", "portao", "mural_sol", "tijolo"],
-    ["gato", "cinza", "cerca_branca", "janela"],
-    ["madeira", "floreira", "correio", "garagem"],
-    ["pedra", "azulejo", "madeira", "pata"],
-    ["cinza", "mural_sol", "cerca_viva", "medidor"],
-    ["tijolo", "garagem", "gato", "azulejo"],
-    ["janela", "pedra", "floreira", "cerca_branca"],
-    ["portao", "medidor", "cinza", "grafite"],
-    ["correio", "cerca_branca", "mural_sol", "madeira"],
+FOLHA_CONEXOES = RAIZ / "PRD/referencias/muro-conexoes.png"
+NOMES_CONEXOES = [
+    "tijolo", "pedra", "luminaria", "madeira", "ferro", "vaso", "azulejo", "interfone", "hera", "bola",
 ]
+SAIDA = RAIZ / "src/features/corrida/imagens/cidade/muro"
+REPETICAO = {"min": 3, "max": 10}
+
+# Medidas da arte original (1404 × 260): o pilar ocupa x 226..293 (corpo do topo do capitel, y 1,
+# até a base, y 258) e o painel cinza vai do capitel do painel (y 42) até a base.
+PILAR = (226, 294)
+PILAR_TOPO, BASE = 1, 259
+PAINEL_TOPO = 42
+ORIGINAIS = {"madeira": (460, 664), "cinza": (734, 978), "pata": (1047, 1260)}
 
 
-def paineis_novos(folha_caminho: Path, nomes: list[str], altura_painel: int) -> dict[str, tuple[Image.Image, int]]:
-    folha = Image.open(folha_caminho).convert("RGBA")
-    alfa = np.asarray(folha)[..., 3] > 128
-    colunas = np.where(alfa.any(axis=0))[0]
-    blocos, inicio, anterior = [], colunas[0], colunas[0]
+def blocos(opaco: np.ndarray) -> list[tuple[int, int]]:
+    colunas = np.where(opaco.any(axis=0))[0]
+    lista, inicio, anterior = [], colunas[0], colunas[0]
     for x in colunas[1:]:
         if x > anterior + 3:
-            blocos.append((inicio, anterior + 1))
+            lista.append((inicio, anterior + 1))
             inicio = x
         anterior = x
-    blocos.append((inicio, anterior + 1))
-    assert len(blocos) == len(nomes), f"{folha_caminho.name}: esperava {len(nomes)} painéis, achei {len(blocos)}"
-    # A base comum de todos (y mais baixo) vira a base do painel; a altura sai da maioria.
-    linhas = [np.where(alfa[:, a:b].any(axis=1))[0] for a, b in blocos]
-    base = max(l.max() for l in linhas) + 1
-    topo_comum = int(np.median([l.min() for l in linhas]))
-    escala = altura_painel / (base - topo_comum)
+    lista.append((inicio, anterior + 1))
+    return lista
+
+
+def recortar(caminho: Path, nomes: list[str], altura_corpo: int, corpo_por_largura: bool):
+    """Recorta cada peça da folha e escala para o corpo ter `altura_corpo` px.
+
+    O corpo vai da base comum até o topo "cheio" da peça: nos painéis, o topo comum da maioria
+    (a cerca viva passa por cima); nas conexões, a primeira linha em que a peça já tem quase a
+    largura toda (o capitel), para que lâmpada, vaso e bola fiquem como enfeite acima.
+    Devolve {nome: (imagem, px acima do topo do corpo)}.
+    """
+    folha = Image.open(caminho).convert("RGBA")
+    opaco = np.asarray(folha)[..., 3] > 128
+    pedacos = blocos(opaco)
+    assert len(pedacos) == len(nomes), f"{caminho.name}: esperava {len(nomes)} peças, achei {len(pedacos)}"
+    base = max(np.where(opaco[:, a:b].any(axis=1))[0].max() for a, b in pedacos) + 1
+    topos_corpo = []
+    for a, b in pedacos:
+        sub = opaco[:, a:b]
+        if corpo_por_largura:
+            larguras = sub.sum(axis=1)
+            topos_corpo.append(int(np.where(larguras > 0.8 * larguras.max())[0].min()))
+        else:
+            topos_corpo.append(int(np.where(sub.any(axis=1))[0].min()))
+    corpo = base - int(np.median(topos_corpo))
+    escala = altura_corpo / corpo
     saida = {}
-    for nome, (a, b), linha in zip(nomes, blocos, linhas):
-        # A cerca viva passa um pouco do topo: mantém, ela cresce por cima do capitel.
-        topo = min(linha.min(), topo_comum)
+    for nome, (a, b) in zip(nomes, pedacos):
+        topo = int(np.where(opaco[:, a:b].any(axis=1))[0].min())
         pedaco = folha.crop((a, topo, b, base))
         tamanho = (round(pedaco.width * escala), round(pedaco.height * escala))
-        saida[nome] = (pedaco.resize(tamanho, Image.LANCZOS), round((topo_comum - topo) * escala))
+        acima = round((base - corpo - topo) * escala)
+        saida[nome] = (pedaco.resize(tamanho, Image.LANCZOS), max(0, acima))
     return saida
 
 
 def main():
     original = Image.open(ORIGINAL).convert("RGBA")
-    altura = original.height
-    pilar = original.crop((PILAR[0], 0, PILAR[1], altura))
-    paineis: dict[str, tuple[Image.Image, int]] = {
-        nome: (original.crop((a, 0, b, altura)), 0) for nome, (a, b) in ORIGINAIS.items()
-    }
-    for folha, nomes in FOLHAS:
-        paineis.update(paineis_novos(folha, nomes, PAINEL_BASE - PAINEL_TOPO))
-    usados = {p for t in TRECHOS for p in t}
-    assert usados <= paineis.keys(), f"painel sem arte: {usados - paineis.keys()}"
-    for t in TRECHOS:
-        assert all(a != b for a, b in zip(t, t[1:])), f"painel repetido lado a lado em {t}"
 
-    # Peças soltas, todas com a altura da arte original (o painel novo vai na altura do capitel):
-    # o jogo monta cada trecho na hora, pilar + painel, e nada se repete em arquivo.
-    PECAS.mkdir(parents=True, exist_ok=True)
-    for velho in PECAS.glob("*.webp"):
+    conexoes = {"pilar": (original.crop((PILAR[0], PILAR_TOPO, PILAR[1], BASE)), 0)}
+    conexoes.update(recortar(FOLHA_CONEXOES, NOMES_CONEXOES, BASE - PILAR_TOPO, corpo_por_largura=True))
+
+    paineis = {nome: (original.crop((a, PAINEL_TOPO, b, BASE)), 0) for nome, (a, b) in ORIGINAIS.items()}
+    for folha, nomes in FOLHAS_PAINEIS:
+        paineis.update(recortar(folha, nomes, BASE - PAINEL_TOPO, corpo_por_largura=False))
+
+    # Canvas comum: o mais alto dos enfeites acima do capitel do pilar. Toda peça tem a base no
+    # rodapé, e o jogo desenha todas com a mesma altura: a escala fica igual entre elas.
+    folga = max(acima for _, acima in conexoes.values())
+    altura_canvas = folga + (BASE - PILAR_TOPO)
+
+    def salvar(nome: str, img: Image.Image):
+        canvas = Image.new("RGBA", (img.width, altura_canvas), (0, 0, 0, 0))
+        canvas.alpha_composite(img, (0, altura_canvas - img.height))
+        canvas.save(SAIDA / f"{nome}.webp", "WEBP", quality=88, method=6)
+
+    SAIDA.mkdir(parents=True, exist_ok=True)
+    for velho in list(SAIDA.glob("*.webp")) + list(SAIDA.glob("*.json")):
         velho.unlink()
-    pilar.save(PECAS / "pilar.webp", "WEBP", quality=88, method=6)
-    for nome in sorted(usados):
-        img, sobra = paineis[nome]
-        peca = Image.new("RGBA", (img.width, altura), (0, 0, 0, 0))
-        peca.alpha_composite(img, (0, 0 if nome in ORIGINAIS else PAINEL_TOPO - sobra))
-        peca.save(PECAS / f"{nome}.webp", "WEBP", quality=88, method=6)
-    (PECAS / "trechos.json").write_text(json.dumps({"trechos": TRECHOS}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    total = sum(f.stat().st_size for f in PECAS.glob("*.webp"))
-    print(f"{len(usados) + 1} peças ({total // 1024} KB), {len(TRECHOS)} trechos em {PECAS.relative_to(RAIZ)}")
+    for nome, (img, _) in conexoes.items():
+        salvar(f"conexao-{nome}", img)
+    for nome, (img, _) in paineis.items():
+        salvar(f"painel-{nome}", img)
+
+    dados = {
+        "paineis": sorted(paineis),
+        "conexoes": sorted(conexoes),
+        "repeticao": REPETICAO,
+        # Onde fica a base do muro no canvas (fração da altura): o jogo põe isso na linha do piso.
+        "alturaCanvas": altura_canvas,
+        "alturaPilar": BASE - PILAR_TOPO,
+    }
+    (SAIDA / "muro.json").write_text(json.dumps(dados, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    total = sum(f.stat().st_size for f in SAIDA.glob("*.webp"))
+    print(f"{len(paineis)} painéis, {len(conexoes)} conexões ({total // 1024} KB), canvas {altura_canvas} px")
 
 
 if __name__ == "__main__":

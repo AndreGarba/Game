@@ -1,0 +1,40 @@
+{
+ "paineis": [
+  "azulejo",
+  "cerca_branca",
+  "cerca_viva",
+  "cinza",
+  "correio",
+  "floreira",
+  "garagem",
+  "gato",
+  "grafite",
+  "janela",
+  "madeira",
+  "medidor",
+  "mural_sol",
+  "pata",
+  "pedra",
+  "portao",
+  "tijolo"
+ ],
+ "conexoes": [
+  "azulejo",
+  "bola",
+  "ferro",
+  "hera",
+  "interfone",
+  "luminaria",
+  "madeira",
+  "pedra",
+  "pilar",
+  "tijolo",
+  "vaso"
+ ],
+ "repeticao": {
+  "min": 3,
+  "max": 10
+ },
+ "alturaCanvas": 319,
+ "alturaPilar": 258
+}

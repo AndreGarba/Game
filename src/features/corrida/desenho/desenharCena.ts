@@ -14,7 +14,8 @@ import {
   spriteCachorroPronto,
   spriteObjeto,
   spriteTutorPronto,
-  trechosDaCamada,
+  montagemDaCamada,
+  type Montagem,
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
@@ -79,61 +80,79 @@ const METROS_NA_ALTURA = 7
 // Cor da terra da pista, para o que sobrar abaixo da arte em tela de pé.
 const TERRA_BASE = 'rgb(74, 46, 32)'
 
-// Sequência de trechos de uma camada ao longo da pista (muro, casas), em unidades do quadro de 360
-// (não depende da tela). Sorteio determinístico pelo índice, sem repetir o mesmo trecho duas vezes
-// seguidas, guardado aos poucos conforme a corrida avança. Cada camada tem a sua sequência.
+// Peças de uma camada ao longo da pista (muro, casas), em unidades do quadro de 360 (não depende
+// da tela). O sorteio é determinístico pelo índice do grupo e fica guardado aos poucos conforme a
+// corrida avança, então o mesmo ponto da pista mostra sempre a mesma coisa. Cada camada tem a sua.
 // ORIGEM empurra a pista para valores positivos: a câmera começa um pouco antes do x = 0.
 const ORIGEM_TRECHOS = 100_000
-const sequencias = new Map<number, { inicio: number[]; escolha: number[] }>()
 
-function sequenciaDa(camada: number, ate: number, larguras: readonly number[]) {
-  let seq = sequencias.get(camada)
-  if (!seq) {
-    seq = { inicio: [0], escolha: [] }
-    sequencias.set(camada, seq)
-  }
-  while (seq.inicio[seq.inicio.length - 1]! <= ate) {
-    const k = seq.escolha.length
-    let v = Math.floor(hash(k * 13 + 5 + camada * 7919) * larguras.length)
-    if (k > 0 && v === seq.escolha[k - 1]) v = (v + 1) % larguras.length
-    seq.escolha.push(v)
-    seq.inicio.push(seq.inicio[k]! + larguras[v]!)
-  }
-  return seq
+interface Sequencia {
+  inicio: number[]
+  peca: HTMLImageElement[]
+  grupos: number
+  ultimo: number
+}
+const sequencias = new Map<number, Sequencia>()
+
+function sorte(k: number, camada: number, sal: number) {
+  return hash(k * 13 + sal * 101 + camada * 7919)
 }
 
-function desenharTrechos(
+// Acrescenta o próximo grupo de peças da regra da camada.
+function proximoGrupo(seq: Sequencia, camada: number, m: Montagem<HTMLImageElement>): HTMLImageElement[] {
+  const k = seq.grupos++
+  if (m.tipo === 'trechos') {
+    let v = Math.floor(sorte(k, camada, 1) * m.trechos.length)
+    if (v === seq.ultimo) v = (v + 1) % m.trechos.length
+    seq.ultimo = v
+    return [...m.trechos[v]!]
+  }
+  // Muro: troca de painel (nunca o mesmo de antes), conexão sorteada na troca e o painel novo
+  // repetido de min a max vezes, colado, sem conexão no meio.
+  let painel = Math.floor(sorte(k, camada, 2) * m.paineis.length)
+  if (painel === seq.ultimo) painel = (painel + 1) % m.paineis.length
+  seq.ultimo = painel
+  const { min, max } = m.repeticao
+  const vezes = min + Math.floor(sorte(k, camada, 3) * (max - min + 1))
+  const conexao = m.conexoes[Math.floor(sorte(k, camada, 4) * m.conexoes.length)]!
+  return [conexao, ...Array.from({ length: vezes }, () => m.paineis[painel]!)]
+}
+
+function desenharMontagem(
   ctx: CanvasRenderingContext2D,
   cam: Camera,
   escala: number,
   indice: number,
   camada: { parallax: number; topo: number; altura: number },
-  trechos: readonly (readonly HTMLImageElement[])[],
+  montagem: Montagem<HTMLImageElement>,
 ) {
   const { parallax, topo, altura } = camada
-  // Largura de cada peça e de cada trecho em unidades do quadro (a altura da camada é fixa nelas).
-  const largurasPecas = trechos.map((pecas) => pecas.map((p) => (p.naturalWidth / p.naturalHeight) * altura))
-  const larguras = largurasPecas.map((l) => l.reduce((soma, x) => soma + x, 0))
+  const largura = (p: HTMLImageElement) => (p.naturalWidth / p.naturalHeight) * altura
   const u0 = (cam.x0 * cam.ppm * parallax) / escala + ORIGEM_TRECHOS
   const u1 = u0 + cam.largura / escala
-  const seq = sequenciaDa(indice, u1, larguras)
-  // Primeiro trecho visível: busca binária nos inícios.
+  let seq = sequencias.get(indice)
+  if (!seq) {
+    seq = { inicio: [0], peca: [], grupos: 0, ultimo: -1 }
+    sequencias.set(indice, seq)
+  }
+  while (seq.inicio[seq.inicio.length - 1]! <= u1) {
+    for (const p of proximoGrupo(seq, indice, montagem)) {
+      seq.peca.push(p)
+      seq.inicio.push(seq.inicio[seq.inicio.length - 1]! + largura(p))
+    }
+  }
+  // Primeira peça visível: busca binária nos inícios.
   let baixo = 0
-  let alto = seq.escolha.length - 1
+  let alto = seq.peca.length - 1
   while (baixo < alto) {
     const meio = (baixo + alto + 1) >> 1
     if (seq.inicio[meio]! <= u0) baixo = meio
     else alto = meio - 1
   }
-  for (let k = baixo; k < seq.escolha.length && seq.inicio[k]! < u1; k++) {
-    const v = seq.escolha[k]!
-    let u = seq.inicio[k]!
-    trechos[v]!.forEach((peca, i) => {
-      const largura = largurasPecas[v]![i]!
-      // Arredondar e sobrar 1 px evita fresta entre peças com escala fracionária.
-      ctx.drawImage(peca, Math.floor((u - u0) * escala), topo * escala, Math.ceil(largura * escala) + 1, altura * escala)
-      u += largura
-    })
+  for (let k = baixo; k < seq.peca.length && seq.inicio[k]! < u1; k++) {
+    const p = seq.peca[k]!
+    // Arredondar e sobrar 1 px evita fresta entre peças com escala fracionária.
+    ctx.drawImage(p, Math.floor((seq.inicio[k]! - u0) * escala), topo * escala, Math.ceil(largura(p) * escala) + 1, altura * escala)
   }
 }
 
@@ -149,9 +168,9 @@ function desenharCenarioArte(
   ctx.fillRect(0, 0, cam.largura, cam.altura)
 
   CAMADAS_CIDADE.forEach((camada, i) => {
-    const variantes = trechosDaCamada(i)
-    if (variantes) {
-      desenharTrechos(ctx, cam, escala, i, camada, variantes)
+    const montagem = montagemDaCamada(i)
+    if (montagem) {
+      desenharMontagem(ctx, cam, escala, i, camada, montagem)
       return
     }
     const imagem = arte[i]!
