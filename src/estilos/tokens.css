@@ -20,6 +20,8 @@
   --cor-hud-creme: #fdf3e3;
   /* Figma: Grayscale/gray-700. */
   --cinza-700: #0f131b;
+  /* Faixas em volta da moldura de celular deitado, onde a janela sobra. */
+  --cor-faixa-moldura: #000000;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */
   --cor-abertura-fundo: #f8f7fa;
 

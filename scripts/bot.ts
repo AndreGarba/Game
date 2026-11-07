@@ -55,7 +55,8 @@ function avaliar(estado: EstadoPartida, ticks: number, profundidade: number): nu
 }
 
 function acoesPossiveis(estado: EstadoPartida): Acao[] {
-  return estado.cachorro.noChao ? ['pular', 'abaixar'] : ['abaixar']
+  const c = estado.cachorro
+  return c.noChao || c.puloDuplo ? ['pular', 'abaixar'] : ['abaixar']
 }
 
 export function decidir(estado: EstadoPartida): Acao | null {

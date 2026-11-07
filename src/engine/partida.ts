@@ -1,5 +1,6 @@
 import {
   ABAIXAR_TICKS,
+  ADERENCIA_PERFIL,
   ADERENCIA_RAMPA,
   CACHORRO_LARGURA,
   DT,
@@ -22,6 +23,7 @@ import {
 } from './constantes.ts'
 import { alturaCachorro, multiplicadorSujeira, velocidadeBase } from './fisica.ts'
 import { atualizarPista } from './gerador.ts'
+import { alturaSuperficie, temPerfil } from './perfis.ts'
 import { criarRng } from './rng.ts'
 import type { Acao, Cachorro, ComandoLog, Elemento, EstadoPartida, MotivoFim, ResultadoPartida } from './tipos.ts'
 
@@ -31,7 +33,7 @@ export function criarPartida(seed: number): EstadoPartida {
     seed: seed >>> 0,
     tick: 0,
     rng: criarRng(seed),
-    cachorro: { x: 0, y: 0, vy: 0, noChao: true, abaixadoTicks: 0 },
+    cachorro: { x: 0, y: 0, vy: 0, noChao: true, abaixadoTicks: 0, puloDuplo: true },
     sujeira: 0,
     vantagem: VANTAGEM_INICIAL,
     ossos: 0,
@@ -58,6 +60,8 @@ interface Suporte {
   altura: number
   // Subida por metro andado: 0 no chão e nos sólidos, altura/largura na rampa.
   inclinacao: number
+  // Topo de sólido com perfil: o cachorro gruda e segue o contorno, sem lançamento.
+  perfil: boolean
 }
 
 // Maior altura em que o cachorro pode se apoiar agora: o chão (se não estiver sobre um
@@ -68,13 +72,20 @@ function suporteAtual(estado: EstadoPartida, yAnterior: number): Suporte | null 
   const centro = c.x + CACHORRO_LARGURA / 2
   let suporte: Suporte | null = null
   let sobreVao = false
-  const considerar = (altura: number, inclinacao: number) => {
-    if (suporte === null || altura > suporte.altura) suporte = { altura, inclinacao }
+  const considerar = (altura: number, inclinacao: number, perfil = false) => {
+    if (suporte === null || altura > suporte.altura) suporte = { altura, inclinacao, perfil }
   }
   for (const e of estado.elementos) {
     if (e.tipo === 'vao' && centro >= e.x && centro <= e.x + e.largura) sobreVao = true
-    if (e.tipo === 'solido' && sobrepoeEmX(c, e) && topo(e) <= yAnterior + TOLERANCIA_POUSO) {
-      considerar(topo(e), 0)
+    if (e.tipo === 'solido' && sobrepoeEmX(c, e)) {
+      if (temPerfil(e)) {
+        // Superfície sob o centro (presa à borda quando só parte do cachorro está em cima). A
+        // folga da rampa deixa subir o vidro traseiro do carro sem contar como batida.
+        const altura = alturaSuperficie(e, centro)
+        if (altura <= yAnterior + TOLERANCIA_POUSO + ADERENCIA_RAMPA) considerar(altura, 0, true)
+      } else if (topo(e) <= yAnterior + TOLERANCIA_POUSO) {
+        considerar(topo(e), 0)
+      }
     }
     if (e.tipo === 'rampa' && centro >= e.x && centro <= e.x + e.largura) {
       const inclinacao = e.altura / e.largura
@@ -98,6 +109,12 @@ function tocaColetavel(c: Cachorro, e: Elemento): boolean {
 function bateu(c: Cachorro, e: Elemento): boolean {
   if (!sobrepoeEmX(c, e)) return false
   const altura = alturaCachorro(c)
+  if (e.tipo === 'solido' && temPerfil(e)) {
+    // Bate quando a frente do cachorro encontra uma parede do contorno (a traseira do carro),
+    // não numa subida que dá para andar.
+    const frente = alturaSuperficie(e, c.x + CACHORRO_LARGURA)
+    return c.y < frente - TOLERANCIA_POUSO - ADERENCIA_RAMPA && c.y + altura > e.y
+  }
   if (e.tipo === 'solido') return c.y < topo(e) - TOLERANCIA_POUSO && c.y + altura > e.y
   if (e.tipo === 'teto') return c.y + altura > e.y && c.y < topo(e)
   return false
@@ -113,9 +130,17 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
   if (estado.fim) return
   const c = estado.cachorro
 
-  if (acao === 'pular' && c.noChao) {
+  const estavaNoChao = c.noChao
+  const pulou = acao === 'pular' && c.noChao
+  if (pulou) {
     c.vy = VEL_PULO
     c.noChao = false
+    c.abaixadoTicks = 0
+  } else if (acao === 'pular' && c.puloDuplo) {
+    // Pulo duplo: o mesmo gesto de novo, no ar. Substitui a velocidade (não soma), então o
+    // segundo pulo vale mais no alto do primeiro do que logo depois de sair do chão.
+    c.vy = VEL_PULO
+    c.puloDuplo = false
     c.abaixadoTicks = 0
   } else if (acao === 'abaixar') {
     c.abaixadoTicks = ABAIXAR_TICKS
@@ -136,13 +161,19 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
   // fim ela some como suporte e ele segue no ar com essa velocidade: é o lançamento. Pular na
   // rampa dá vy maior que a de subida, então não gruda.
   const subida = suporte ? v * suporte.inclinacao : 0
-  if (suporte !== null && c.y <= suporte.altura && c.vy <= subida) {
+  if (suporte !== null && suporte.perfil && estavaNoChao && !pulou && c.y >= suporte.altura - ADERENCIA_PERFIL) {
+    // Andando sobre um contorno: acompanha a superfície para cima e para baixo.
+    c.y = suporte.altura
+    c.vy = 0
+    c.noChao = true
+  } else if (suporte !== null && c.y <= suporte.altura && c.vy <= subida) {
     c.y = suporte.altura
     c.vy = subida
     c.noChao = true
   } else {
     c.noChao = false
   }
+  if (c.noChao) c.puloDuplo = true
   // No ar o abaixar não se gasta: o mergulho já pousa abaixado.
   if (c.noChao && c.abaixadoTicks > 0) c.abaixadoTicks--
 

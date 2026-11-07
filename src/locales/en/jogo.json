@@ -1,8 +1,8 @@
 {
   "titulo": "Bath Time",
   "subtitulo": "Run from your owner. No bath today!",
-  "comoJogarTeclado": "Space or ↑ to jump · ↓ to duck",
-  "comoJogarToque": "Tap or swipe up to jump · swipe down to duck",
+  "comoJogarTeclado": "Space or ↑ to jump (twice in the air: double jump) · ↓ to duck",
+  "comoJogarToque": "Tap or swipe up to jump (twice in the air: double jump) · swipe down to duck",
   "dica": "Mud slows you down. Tissues clean you up.",
   "correr": "Run",
   "deNovo": "Run again",

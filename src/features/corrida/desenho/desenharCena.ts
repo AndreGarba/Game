@@ -13,9 +13,11 @@ import {
   LINHA_PISO,
   spriteCachorroPronto,
   spriteObjeto,
+  spriteTutorPronto,
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
+import { desenharTutorSprite } from './tutorSprite.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
@@ -204,7 +206,8 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   // Cone de obra na beira do buraco: avisa antes de o buraco aparecer inteiro.
   const cone = spriteDe(e, 'cone')
   if (cone) {
-    const a = cam.ppm * 0.75
+    // Cone de 70 cm em tamanho real, na mesma régua dos obstáculos (ESCALA_REAL em cenarios.ts).
+    const a = cam.ppm * 1.25
     const lc = (cone.naturalWidth / cone.naturalHeight) * a
     ctx.drawImage(cone, x - lc * 0.9, cam.chaoY - a, lc, a)
   } else {
@@ -526,11 +529,17 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   // O tutor faz o que o cachorro fez quando passou por este mesmo ponto da pista: como os
   // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob a mesma placa.
   const pose = poseNoRastro(quadro.rastro, xTutor - CACHORRO_LARGURA / 2)
-  ctx.save()
-  ctx.translate(sx(cam, xTutor), sy(cam, pose.y))
-  ctx.scale(ppm, -ppm)
-  desenharTutor(ctx, { fase: x * 1.6, noAr: !pose.noChao, abaixado: pose.abaixado })
-  ctx.restore()
+  const poseTutor = { fase: x * 1.6, noAr: !pose.noChao, abaixado: pose.abaixado }
+  const spriteTutor = spriteTutorPronto()
+  if (spriteTutor) {
+    desenharTutorSprite(ctx, spriteTutor, sx(cam, xTutor), sy(cam, pose.y), ppm, poseTutor)
+  } else {
+    ctx.save()
+    ctx.translate(sx(cam, xTutor), sy(cam, pose.y))
+    ctx.scale(ppm, -ppm)
+    desenharTutor(ctx, poseTutor)
+    ctx.restore()
+  }
 
   const cx = sx(cam, x + CACHORRO_LARGURA / 2)
   const base = sy(cam, y)

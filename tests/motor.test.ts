@@ -8,6 +8,8 @@ import {
   VEL_INICIAL,
   VEL_MAX,
   velocidadeBase,
+  alturaSuperficie,
+  CACHORRO_LARGURA,
   type Acao,
   type Elemento,
   type EstadoPartida,
@@ -82,12 +84,42 @@ describe('rampa', () => {
 })
 
 describe('física', () => {
-  it('pular no ar não faz nada', () => {
+  it('pulo duplo: o segundo pular no ar funciona uma vez; o terceiro não', () => {
     const estado = partidaCom([])
     passo(estado, 'pular')
-    const vy = estado.cachorro.vy
+    for (let i = 0; i < 10; i++) passo(estado, null)
+    const vyAntes = estado.cachorro.vy
     passo(estado, 'pular')
-    expect(estado.cachorro.vy).toBeLessThan(vy)
+    expect(estado.cachorro.vy).toBeGreaterThan(vyAntes)
+    const vyDuplo = estado.cachorro.vy
+    passo(estado, 'pular')
+    expect(estado.cachorro.vy).toBeLessThan(vyDuplo)
+  })
+
+  it('pulo duplo volta a valer depois de pousar', () => {
+    const estado = partidaCom([])
+    passo(estado, 'pular')
+    passo(estado, 'pular')
+    while (!estado.cachorro.noChao) passo(estado, null)
+    expect(estado.cachorro.puloDuplo).toBe(true)
+  })
+
+  it('pulo duplo sobe acima do pulo simples', () => {
+    const simples = partidaCom([])
+    const duplo = partidaCom([])
+    passo(simples, 'pular')
+    passo(duplo, 'pular')
+    let maxSimples = 0
+    let maxDuplo = 0
+    for (let i = 0; i < 90; i++) {
+      passo(simples, null)
+      // No alto do primeiro pulo, pula de novo.
+      passo(duplo, i === 19 ? 'pular' : null)
+      maxSimples = Math.max(maxSimples, simples.cachorro.y)
+      maxDuplo = Math.max(maxDuplo, duplo.cachorro.y)
+    }
+    expect(maxSimples).toBeLessThan(2.2)
+    expect(maxDuplo).toBeGreaterThan(4)
   })
 
   it('bate de frente num sólido sem pular', () => {
@@ -97,10 +129,38 @@ describe('física', () => {
   })
 
   it('pousa em cima do sólido e segue correndo', () => {
-    const estado = partidaCom([{ tipo: 'solido', x: 10, largura: 6, y: 0, altura: 1.2, visual: 'carro' }])
-    correrAte(estado, 13, (e) => (e.cachorro.x > 8 && e.cachorro.noChao && e.cachorro.y === 0 ? 'pular' : null))
+    // Caixa: sólido sem perfil, topo reto.
+    const estado = partidaCom([{ tipo: 'solido', x: 10, largura: 6, y: 0, altura: 1.2, visual: 'caixa' }])
+    // Sai em x ≈ 8 e pousa por volta de 13; o carro vai até 16.
+    correrAte(estado, 15, (e) => (e.cachorro.x > 8 && e.cachorro.noChao && e.cachorro.y === 0 ? 'pular' : null))
     expect(estado.fim).toBeNull()
     expect(estado.cachorro.y).toBe(1.2)
+  })
+
+  it('carro: bate de frente na traseira sem pular', () => {
+    const estado = partidaCom([{ tipo: 'solido', x: 10, largura: 7.8, y: 0, altura: 2.6, visual: 'carro' }])
+    correrAte(estado, 12)
+    expect(estado.fim?.motivo).toBe('batida')
+  })
+
+  it('carro: anda por cima seguindo o contorno e desce do outro lado', () => {
+    const carro = { tipo: 'solido' as const, x: 10, largura: 7.8, y: 0, altura: 2.6, visual: 'carro' }
+    const estado = partidaCom([carro])
+    // Começa em pé no porta-malas.
+    estado.cachorro.x = 10.2
+    estado.cachorro.y = alturaSuperficie({ ...carro, id: 1, usado: false }, 10.2 + CACHORRO_LARGURA / 2)
+    const alturas: number[] = []
+    while (!estado.fim && estado.cachorro.x < 22) {
+      passo(estado, null)
+      alturas.push(estado.cachorro.y)
+    }
+    expect(estado.fim).toBeNull()
+    // Sobe o vidro traseiro até o teto (2,6 m), sem lançamento acima dele.
+    expect(Math.max(...alturas)).toBeCloseTo(2.6, 5)
+    // No capô está bem abaixo do teto; depois do carro, de volta ao chão.
+    const noCapo = alturas[Math.floor(alturas.length * 0.5)]!
+    expect(noCapo).toBeLessThan(2.6)
+    expect(estado.cachorro.y).toBe(0)
   })
 
   it('teto: bate em pé, passa abaixado', () => {

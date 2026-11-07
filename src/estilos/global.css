@@ -10,9 +10,9 @@ html,
 body,
 #raiz {
   margin: 0;
-  height: var(--altura-tela, 100svh);
+  height: 100svh;
   overflow: hidden;
-  background: var(--cor-fundo);
+  background: var(--cor-faixa-moldura);
   color: var(--cor-texto);
   font-family: var(--fonte);
   overscroll-behavior: none;
@@ -23,4 +23,24 @@ body,
 
 button {
   font: inherit;
+}
+
+#raiz {
+  display: grid;
+  place-items: center;
+}
+
+/*
+ * O jogo é sempre desenhado na proporção de um celular deitado: 780 × 360, a do frame do Figma
+ * (19,5:9). A moldura é o maior retângulo nessa proporção que cabe na janela; o que sobra vira
+ * faixa. Toda tela usa var(--altura-tela) e mede o resto pelo próprio contêiner (cqh/cqw), então
+ * herdar a altura daqui basta para tudo caber dentro da moldura, no desktop e no celular.
+ */
+.moldura-celular {
+  --altura-tela: min(100svh, calc(100vw * 360 / 780));
+  position: relative;
+  width: calc(var(--altura-tela) * 780 / 360);
+  height: var(--altura-tela);
+  overflow: hidden;
+  background: var(--cor-fundo);
 }

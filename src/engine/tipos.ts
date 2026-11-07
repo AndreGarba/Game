@@ -35,6 +35,8 @@ export interface Cachorro {
   vy: number
   noChao: boolean
   abaixadoTicks: number
+  // r7: o segundo pulo no ar ainda está disponível. Volta a valer ao tocar o chão.
+  puloDuplo: boolean
 }
 
 export type MotivoFim = 'pego' | 'batida' | 'queda'

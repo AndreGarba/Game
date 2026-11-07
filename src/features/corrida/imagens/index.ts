@@ -11,6 +11,7 @@ import piso from './cidade/piso.webp'
 import pista from './cidade/pista.webp'
 import distancia from './hud-distancia.webp'
 import pausa from './hud-pausa.webp'
+import tutorCorrendo from './tutor-correndo.webp'
 import velocidade from './hud-velocidade.webp'
 
 export const IMAGENS_HUD = { distancia, velocidade, pausa }
@@ -70,11 +71,16 @@ export const CAMADAS_CIDADE: readonly Camada[] = [
 // PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
 // PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
-export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 413, altura: 320, pes: 11 } as const
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 415, altura: 320, pes: 11 } as const
+
+// Folha do tutor correndo: 10 quadros (a arte veio numa grade 5×2, lida linha por linha),
+// recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
+export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, pes: 6 } as const
 
 let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
 let cachorro: HTMLImageElement | null = null
+let tutor: HTMLImageElement | null = null
 
 function criar(src: string) {
   const imagem = new Image()
@@ -89,14 +95,25 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
     Object.values(IMAGENS_HUD).forEach(criar)
     cachorro = criar(cachorroCorrendo)
+    tutor = criar(tutorCorrendo)
   }
   return arte
+}
+
+function pronta(imagem: HTMLImageElement | null) {
+  return imagem && imagem.complete && imagem.naturalWidth > 0 ? imagem : null
 }
 
 /** A folha do cachorro, ou null enquanto não carregou (o canvas desenha o cachorro vetorial). */
 export function spriteCachorroPronto(): HTMLImageElement | null {
   preCarregarImagensCenario()
-  return cachorro && cachorro.complete && cachorro.naturalWidth > 0 ? cachorro : null
+  return pronta(cachorro)
+}
+
+/** A folha do tutor, ou null enquanto não carregou (o canvas desenha o tutor vetorial). */
+export function spriteTutorPronto(): HTMLImageElement | null {
+  preCarregarImagensCenario()
+  return pronta(tutor)
 }
 
 /** As camadas, ou null enquanto alguma não carregou (o canvas desenha o cenário vetorial). */

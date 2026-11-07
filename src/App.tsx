@@ -16,6 +16,14 @@ const importarCorrida = () => import('./features/corrida/screens/TelaCorrida/Tel
 const TelaCorrida = lazy(() => importarCorrida().then((m) => ({ default: m.TelaCorrida })))
 
 export function App() {
+  return (
+    <div className="moldura-celular">
+      <TelaAtual />
+    </div>
+  )
+}
+
+function TelaAtual() {
   const [tela, setTela] = useState<Tela>('abertura')
 
   useEffect(() => {
