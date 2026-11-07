@@ -7,6 +7,7 @@ Fonte da verdade de produto. Leia o PRD relevante antes de implementar (ver `CLA
 | [PRD-conceito-e-regras-do-jogo.md](PRD-conceito-e-regras-do-jogo.md) | O que é o jogo: cachorro, tutor, lama, lenços, ossinhos, cenários, fim e pontuação | regras r1 no motor |
 | [PRD-motor-e-ranking-por-replay.md](PRD-motor-e-ranking-por-replay.md) | Motor determinístico, geração da pista, ranking por replay, testes e simulação | motor pronto; servidor a construir |
 | [PRD-tela-de-corrida.md](PRD-tela-de-corrida.md) | Tela jogável: fluxo, controles, cena, cachorro e tutor, placar, idiomas, recorde | jogável no navegador |
+| [PRD-casca-android-hibrida.md](PRD-casca-android-hibrida.md) | Casca Android em Kotlin com WebView própria e ponte JS↔nativo (substitui o plano TWA) | aprovado; casca mínima feita |
 | [DESIGN-estilo-visual-hq-manga.md](DESIGN-estilo-visual-hq-manga.md) | Direção de arte HQ/mangá para imagens da interface: traço, cor, retícula, onomatopeias, prompt base | direção inicial |
 
 ## Referência herdada

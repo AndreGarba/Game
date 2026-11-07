@@ -39,10 +39,12 @@ lançamento: **a definir**.
 - **Testes:** Vitest, com golden master no motor
 - **Lint:** oxlint
 - **PWA:** `vite-plugin-pwa`, `registerType: 'autoUpdate'`
-- **Cascas das lojas:** `android/` (TWA) e `ios/` (WKWebView). Ver
-  [Lojas e anúncios](#lojas-e-anúncios). Hoje `android/` é uma casca **Capacitor de teste**, que
-  embute o `dist/` no APK para jogar sem site publicado (`android/README.md`). A TWA da loja ainda
-  não existe.
+- **Cascas das lojas:** `android/` (Kotlin + WebView própria + ponte JS↔nativo) e `ios/`
+  (WKWebView, ainda não existe). Ver [Lojas e anúncios](#lojas-e-anúncios) e
+  `PRD/PRD-casca-android-hibrida.md`. **Não usar TWA:** sem ponte JS, no THE IMMORTAL tudo virou
+  parâmetro de URL e intent sem resposta. O sabor `producao` carrega o site publicado e é o único
+  que vai pra Play; o `local` (só debug) embute o `dist/` para testar sem site
+  (`android/README.md`).
 
 Comunicação e nomes de arquivo/função em **português**. Comentário explica *por quê*, não *o quê*.
 
@@ -287,8 +289,9 @@ O jogo é web; as lojas recebem cascas finas. Mudança no jogo vai pro ar com o 
 Versão nova de loja só quando a casca muda (ícone, permissões, SDK nativo). Detalhes e checklist:
 `android/README.md`, `ios/README.md` e `LICOES-LOJAS-E-ANUNCIOS.md`.
 
-1. **A casca anuncia o que sabe fazer** por query string na abertura (`?anuncios_nativos=1` etc.).
-   Sem o parâmetro, o site assume casca antiga ou navegador. Nunca presuma a capacidade.
+1. **A casca anuncia o que sabe fazer.** No Android, pela ponte: `versaoCasca()` devolve a lista
+   de `capacidades` (PR 2 da casca). Sem a ponte, ou sem a capacidade na lista, o site assume
+   casca antiga ou navegador. Nunca presuma a capacidade.
 2. **Recompensa só no servidor (SSV).** Nonce criado pelo site, AdMob chama a Edge Function, que
    confere a assinatura do Google. Nada é concedido no aparelho.
 3. **Bloco de anúncio novo = PR que adiciona o ID na lista da função SSV, antes de publicar a
@@ -301,13 +304,14 @@ Versão nova de loja só quando a casca muda (ícone, permissões, SDK nativo). 
    Primeira partida do aparelho sem anúncio.
 6. **iOS: `WKAppBoundDomains` bloqueia o SDK do AdMob.** Tirar a lista libera o anúncio e mata o
    cache offline no WKWebView. Decisão a tomar e registrar aqui: [decisão].
-7. **Android TWA: `window.open` pro próprio domínio reabre o app.** Páginas do site abrem na mesma
-   janela dentro do app.
+7. **Android: dentro da WebView só roda a origem do jogo** (`BuildConfig.ORIGENS_PERMITIDAS`,
+   lida pelo `ClienteWeb` e pela ponte). Link para fora abre em Custom Tab. Domínio novo entra na
+   lista **antes** de o site mudar de endereço, senão o app abre o próprio jogo numa aba externa.
 8. Consentimento: UMP antes do primeiro anúncio onde a lei exigir; no iOS também ATT. Item no
    Perfil reabre o formulário.
 9. Build Release das cascas falha se faltar secret de anúncio: nunca publicar com ID de teste.
 10. Chave de upload Android em dois cofres fora do repo. Play App Signing ligado. `assetlinks.json`
-    com as duas impressões digitais.
+    só se houver App Links verificados, e então com as duas impressões digitais.
 
 ---
 
