@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="erro_titulo">Sin conexión</string>
+    <string name="erro_texto">La primera vez, el juego necesita internet para descargarse. Después funciona sin red.</string>
+    <string name="erro_tentar">Intentar de nuevo</string>
+</resources>

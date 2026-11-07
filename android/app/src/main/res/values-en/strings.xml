@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="erro_titulo">No connection</string>
+    <string name="erro_texto">The first time, the game needs the internet to download. After that it runs offline.</string>
+    <string name="erro_tentar">Try again</string>
+</resources>
