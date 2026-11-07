@@ -27,6 +27,10 @@ lançamento: **a definir**.
   cuidado: um fallback que responde `200 text/html` para qualquer caminho também responde assim
   para `/assets/<hash>.js` de um deploy antigo, e o `import()` do chunk falha com erro de MIME em
   vez de 404. Se o app não tem router, prefira `404-page`.
+  Worker `horadobanho`, configurado em `wrangler.jsonc` com `404-page` (o app não tem router).
+  Publica pelo job `deploy` do CI, só em push na `main` e depois do `verificar`. Secrets do
+  repositório: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`. Domínio próprio: a definir; por
+  enquanto `*.workers.dev`.
 - **API:** Supabase Edge Functions (`supabase/functions/`), na mesma região do banco.
 - **Testes:** Vitest, com golden master no motor
 - **Lint:** oxlint

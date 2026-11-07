@@ -10,10 +10,11 @@ on:
 permissions:
   contents: read
 
-# Push novo no mesmo PR cancela a rodada anterior, que já ficou velha.
+# Push novo no mesmo PR cancela a rodada anterior, que já ficou velha. Na main não: cancelar
+# no meio interromperia um deploy. As rodadas da main entram em fila.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verificar:
@@ -33,3 +34,29 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:all
       - run: npm run build
+
+  # Único caminho para produção: merge na main → verificar passou → deploy. Nunca à mão.
+  # Secrets do repositório: CLOUDFLARE_API_TOKEN (permissão "Workers Scripts: Edit") e
+  # CLOUDFLARE_ACCOUNT_ID.
+  deploy:
+    needs: verificar
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: producao
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # wrangler pinado no package.json: cada deploy usa a versão que alguém decidiu.
+      - run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
