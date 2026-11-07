@@ -71,10 +71,15 @@ function emoji(ctx: CanvasRenderingContext2D, texto: string, x: number, y: numbe
 
 /*
  * Cenário em camadas (`CAMADAS_CIDADE`), em unidades de um quadro de 360 de altura. A escala sai
- * da linha do chão: em paisagem dá altura/360; em pé, com o chão no meio da tela, a arte encolhe
- * junto.
+ * da linha do chão, que fica sempre na mesma fração da altura.
+ *
+ * Tudo é travado na ALTURA da tela: muro, casas, personagens e obstáculos ocupam sempre a mesma
+ * fração da altura, em qualquer resolução. A largura não muda tamanho de nada: tela mais larga
+ * só mostra mais metros de pista (mais cenário repetido à frente e atrás).
+ * 10 m de mundo por altura de tela: o tutor (3,2 m) fica um pouco mais alto que o muro, como no
+ * ajuste feito em tela grande. Para mexer na relação personagem × cenário, é este número.
  */
-const METROS_NA_ALTURA = 7
+const METROS_NA_ALTURA = 10
 // Cor da terra da pista, para o que sobrar abaixo da arte em tela de pé.
 const TERRA_BASE = 'rgb(74, 46, 32)'
 
@@ -500,11 +505,10 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   const x = quadro.xAnterior + (c.x - quadro.xAnterior) * alfa
   const y = quadro.yAnterior + (c.y - quadro.yAnterior) * alfa
 
-  // Paisagem: mostra uns 18 m de pista; em retrato a escala é limitada pela largura.
-  const ppm = Math.min(altura / METROS_NA_ALTURA, largura / 18)
-  // Chão na altura da calçada do Figma. Em tela vertical a escala é limitada pela largura e
-  // sobraria céu demais: o chão sobe para deixar a cena no meio da tela.
-  const chaoY = Math.min((altura * LINHA_CHAO) / FRAME_ALTURA, altura / 2 + 3.5 * ppm)
+  // Escala só pela altura (ver METROS_NA_ALTURA): a largura decide quantos metros aparecem.
+  const ppm = altura / METROS_NA_ALTURA
+  // Chão na altura da calçada do Figma. A moldura nunca fica em pé, então não precisa de ajuste.
+  const chaoY = (altura * LINHA_CHAO) / FRAME_ALTURA
   const cam: Camera = { ppm, x0: x - (largura * POSICAO_CACHORRO) / ppm, chaoY, largura, altura }
   const xFim = cam.x0 + largura / ppm
 

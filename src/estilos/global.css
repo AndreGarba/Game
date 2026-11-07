@@ -31,15 +31,16 @@ button {
 }
 
 /*
- * O jogo é sempre desenhado na proporção de um celular deitado: 780 × 360, a do frame do Figma
- * (19,5:9). A moldura é o maior retângulo nessa proporção que cabe na janela; o que sobra vira
- * faixa. Toda tela usa var(--altura-tela) e mede o resto pelo próprio contêiner (cqh/cqw), então
- * herdar a altura daqui basta para tudo caber dentro da moldura, no desktop e no celular.
+ * O jogo é sempre desenhado como um celular deitado, entre 16:9 e 21:9 (o frame do Figma, 780 ×
+ * 360, é 19,5:9 e fica no meio). Dentro dessa faixa a moldura ocupa a janela inteira: a corrida
+ * trava a escala na altura, então tela mais larga mostra mais pista e nada muda de tamanho. Fora
+ * dela (janela em pé, 4:3 ou ultralarga) sobra faixa. Toda tela usa var(--altura-tela) e mede o
+ * resto pelo próprio contêiner (cqh/cqw).
  */
 .moldura-celular {
-  --altura-tela: min(100svh, calc(100vw * 360 / 780));
+  --altura-tela: min(100svh, calc(100vw * 9 / 16));
   position: relative;
-  width: calc(var(--altura-tela) * 780 / 360);
+  width: min(100vw, calc(var(--altura-tela) * 21 / 9));
   height: var(--altura-tela);
   overflow: hidden;
   background: var(--cor-fundo);

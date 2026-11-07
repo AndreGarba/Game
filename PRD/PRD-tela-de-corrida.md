@@ -61,8 +61,10 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 ## 5. Cena
 
-- **Câmera:** cachorro a 28% da largura. Mostra cerca de 18 m de pista. Em tela vertical, a escala
-  é limitada pela largura e o chão sobe para a cena ficar no meio.
+- **Câmera:** cachorro a 28% da largura. **Escala travada na altura:** 10 m de mundo por altura
+  de tela (`METROS_NA_ALTURA`), então muro, personagens e obstáculos ocupam sempre a mesma fração
+  da altura, em qualquer resolução. A largura só decide quantos metros de pista aparecem: cerca de
+  18 m em 16:9, 22 m em 19,5:9 e 23 m em 21:9.
 - **Falso 3D em 7 camadas e 4 planos de movimento, arte gerada por IA**
   (`features/corrida/imagens/cidade`, lista em `CAMADAS_CIDADE`): fundo com céu, nuvens e skyline
   distante (10% da velocidade), bairro de sobrados com poste e fios (25%), casas próximas com

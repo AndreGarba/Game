@@ -366,11 +366,16 @@ Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: portu
 - Antes de escrever componente novo, verifique o DS.
 - Bottom sheet, não navegação cheia, para detalhe no meio do fluxo.
 - **Sem router, troca de tela precisa resetar o scroll** (hook no componente que decide a tela).
-- **O jogo é sempre desenhado na proporção de celular deitado (780 × 360, 19,5:9).** `App.tsx`
-  envolve tudo na `.moldura-celular` (`global.css`), o maior retângulo nessa proporção que cabe na
-  janela; o resto vira faixa. A moldura define `--altura-tela`, e toda tela mede o resto pelo
+- **O jogo é sempre desenhado como celular deitado, entre 16:9 e 21:9.** `App.tsx` envolve tudo
+  na `.moldura-celular` (`global.css`): dentro dessa faixa ela ocupa a janela inteira; fora (em pé,
+  4:3, ultralarga) sobra faixa. A moldura define `--altura-tela`, e toda tela mede o resto pelo
   próprio contêiner (`cqh`/`cqw`, `clientWidth`). Tela nova não usa `vw`/`vh`, `window.inner*` nem
   `position: fixed`: tudo isso escapa da moldura.
+- **Tamanho de objeto não depende da resolução: tudo é travado na altura.** A corrida usa só
+  `METROS_NA_ALTURA` (`desenharCena.ts`) para a escala; tela mais larga mostra mais pista, nunca
+  objeto maior. Já foi `min(altura, largura)`: no celular a largura mandava, os personagens
+  cresciam e o cenário, desenhado pela altura, não, e o tutor ficava maior que o muro. Para mudar
+  a relação personagem × cenário, é esse número.
 - **Altura de tela é `var(--altura-tela, 100svh)`**, não `100svh` puro: somado ao padding de
   safe-area, o documento fica maior que a tela no iPhone. No desktop o erro não aparece.
 
