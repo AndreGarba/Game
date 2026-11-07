@@ -48,5 +48,29 @@
     "ossosOuro": "Ossinhos de ouro",
     "recorde": "Recorde: {{valor}}",
     "novoRecorde": "Novo recorde!"
+  },
+  "ranking": {
+    "titulo": "Ranking",
+    "carregando": "Carregando…",
+    "indisponivel": "Ranking fora do ar agora.",
+    "vazio": "Ninguém no ranking ainda. Seja o primeiro!",
+    "seuNome": "Seu nome no ranking",
+    "placeholderNome": "Como quer aparecer?",
+    "enviar": "Salvar",
+    "enviando": "Salvando…",
+    "nomeLongo": "Use até {{max}} letras.",
+    "posicao": "{{posicao}}º lugar no ranking!",
+    "melhorPartida": "Sua corrida mais longa, {{nome}}!",
+    "melhorContinua": "Seu melhor continua {{valor}} m.",
+    "erro": {
+      "payload_invalido": "Não deu para salvar esta corrida.",
+      "nome_invalido": "Esse nome não vale. Tente outro.",
+      "versao_regras": "Atualize o jogo para entrar no ranking.",
+      "log_invalido": "Não deu para conferir esta corrida.",
+      "limite": "Muitas corridas seguidas. Espere um minutinho.",
+      "interno": "O ranking falhou. Tente de novo.",
+      "rede": "Sem internet. Tente de novo.",
+      "sem_configuracao": "Ranking indisponível."
+    }
   }
 }

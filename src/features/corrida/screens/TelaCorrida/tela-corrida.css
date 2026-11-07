@@ -190,6 +190,26 @@
   text-align: center;
 }
 
+.tela-corrida__cartao--fim {
+  width: min(720px, 100%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espaco-6);
+  align-items: center;
+  padding: var(--espaco-4) var(--espaco-6);
+}
+
+.tela-corrida__acoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tela-corrida__acoes > .formulario-ranking {
+  align-self: stretch;
+  margin-top: 0;
+}
+
 .tela-corrida__titulo {
   margin: 0 0 var(--espaco-2);
   font-size: var(--texto-5);
@@ -262,6 +282,11 @@
 }
 
 @media (orientation: portrait) and (pointer: coarse) {
+  .tela-corrida__cartao--fim {
+    grid-template-columns: 1fr;
+    gap: var(--espaco-2);
+  }
+
   .tela-corrida__medidor {
     grid-template-columns: 48px 64px;
   }

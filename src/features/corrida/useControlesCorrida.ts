@@ -9,6 +9,12 @@ const TECLAS: Record<string, Acao> = {
   KeyS: 'abaixar',
 }
 
+// Campo de texto com foco (nome do ranking): Espaço, W e S são letras, não pulo.
+export function digitando(evento: KeyboardEvent): boolean {
+  const alvo = evento.target
+  return alvo instanceof HTMLElement && (alvo.isContentEditable || alvo.matches('input, textarea, select'))
+}
+
 // Distância vertical, em px, para um arrasto contar como deslize.
 const LIMIAR_DESLIZE = 24
 
@@ -18,7 +24,7 @@ export function useControlesCorrida(area: RefObject<HTMLElement | null>, enviar:
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       const acao = TECLAS[evento.code]
-      if (!acao || evento.repeat) return
+      if (!acao || evento.repeat || digitando(evento)) return
       evento.preventDefault()
       enviar(acao)
     }

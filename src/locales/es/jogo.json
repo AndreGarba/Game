@@ -48,5 +48,29 @@
     "ossosOuro": "Huesitos de oro",
     "recorde": "Récord: {{valor}}",
     "novoRecorde": "¡Nuevo récord!"
+  },
+  "ranking": {
+    "titulo": "Ranking",
+    "carregando": "Cargando…",
+    "indisponivel": "El ranking no está disponible ahora.",
+    "vazio": "Nadie en el ranking todavía. ¡Sé el primero!",
+    "seuNome": "Tu nombre en el ranking",
+    "placeholderNome": "¿Cómo quieres aparecer?",
+    "enviar": "Guardar",
+    "enviando": "Guardando…",
+    "nomeLongo": "Usa hasta {{max}} letras.",
+    "posicao": "¡Puesto {{posicao}} en el ranking!",
+    "melhorPartida": "¡Tu carrera más larga, {{nome}}!",
+    "melhorContinua": "Tu mejor sigue siendo {{valor}} m.",
+    "erro": {
+      "payload_invalido": "No se pudo guardar esta carrera.",
+      "nome_invalido": "Ese nombre no vale. Prueba otro.",
+      "versao_regras": "Actualiza el juego para entrar en el ranking.",
+      "log_invalido": "No se pudo verificar esta carrera.",
+      "limite": "Demasiadas carreras seguidas. Espera un minuto.",
+      "interno": "El ranking falló. Inténtalo de nuevo.",
+      "rede": "Sin internet. Inténtalo de nuevo.",
+      "sem_configuracao": "Ranking no disponible."
+    }
   }
 }

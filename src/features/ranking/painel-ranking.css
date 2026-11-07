@@ -1,0 +1,73 @@
+/*
+ * Painel do ranking na home, à direita do logo. Medido pelo contêiner da home (cqh/cqw), como o
+ * resto da composição, para caber em qualquer celular deitado.
+ */
+.painel-ranking {
+  position: absolute;
+  top: 7.8cqh;
+  right: 2.5cqw;
+  width: 24cqw;
+  max-height: 84cqh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-4);
+  background: var(--cor-superficie-translucida);
+  box-shadow: var(--sombra-1);
+  color: var(--cor-texto);
+}
+
+.painel-ranking__titulo {
+  margin: 0 0 var(--espaco-1);
+  font-family: var(--fonte-hq);
+  font-size: var(--texto-3);
+  font-weight: 400;
+  text-align: center;
+  color: var(--cor-destaque);
+}
+
+.painel-ranking__aviso {
+  margin: var(--espaco-2) 0;
+  font-size: var(--texto-1);
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.painel-ranking__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.painel-ranking__linha {
+  display: grid;
+  grid-template-columns: 2.2em 1fr auto;
+  gap: var(--espaco-1);
+  padding: calc(var(--espaco-1) / 2) 0;
+  font-size: var(--texto-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.painel-ranking__linha + .painel-ranking__linha {
+  border-top: 1px solid var(--cor-trilho);
+}
+
+.painel-ranking__posicao {
+  font-weight: 800;
+  color: var(--cor-texto-suave);
+}
+
+.painel-ranking__linha:first-child .painel-ranking__posicao {
+  color: var(--cor-ouro);
+}
+
+.painel-ranking__nome {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.painel-ranking__distancia {
+  font-weight: 700;
+}
