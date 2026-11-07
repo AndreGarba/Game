@@ -29,8 +29,12 @@ lançamento: **a definir**.
   vez de 404. Se o app não tem router, prefira `404-page`.
   Worker `horadobanho`, configurado em `wrangler.jsonc` com `404-page` (o app não tem router).
   Publica pelo job `deploy` do CI, só em push na `main` e depois do `verificar`. Secrets do
-  repositório: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`. Domínio próprio: a definir; por
-  enquanto `*.workers.dev`.
+  repositório: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`. No ar desde 2026-11-07 em
+  <https://horadobanho.aquinoweb-wag.workers.dev>. Domínio próprio: a definir.
+  O token é de conta (`github-deploy-horadobanho`, template "Edit Cloudflare Workers") e
+  **vence em 2027-11-06**. Vencido, o job `deploy` falha com erro de autenticação e o site fica
+  parado na última versão, sem aviso para o jogador: gere outro antes e troque o secret. Token de
+  conta não consegue descobrir a conta sozinho, por isso o `CLOUDFLARE_ACCOUNT_ID` é obrigatório.
 - **API:** Supabase Edge Functions (`supabase/functions/`), na mesma região do banco.
 - **Testes:** Vitest, com golden master no motor
 - **Lint:** oxlint
