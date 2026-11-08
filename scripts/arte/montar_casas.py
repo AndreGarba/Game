@@ -1,11 +1,11 @@
-"""Recorta as casas e os prédios da folha gerada no ChatGPT para a camada de casas da cidade.
+"""Recorta as casas da folha gerada no ChatGPT para a camada de casas da cidade.
 
 uso: python scripts/arte/montar_casas.py
 
 Entrada:
   PRD/referencias/casas-predios.png   5 casas e 5 prédios pequenos, lado a lado, fundo transparente
 Saídas (em src/features/corrida/imagens/cidade/casas/):
-  casa-<n>.webp e predio-<n>.webp      uma construção por arquivo
+  casa-<n>.webp                        uma casa por arquivo (os prédios da folha não entram)
   trechos.json                         a lista que a camada sorteia (inclui a tira original)
 
 Todas as construções saem no MESMO canvas de altura, com a base no rodapé: a camada desenha cada
@@ -23,6 +23,9 @@ FOLHA = RAIZ / "PRD/referencias/casas-predios.png"
 SAIDA = RAIZ / "src/features/corrida/imagens/cidade/casas"
 
 NOMES = [f"casa-{i}" for i in range(1, 6)] + [f"predio-{i}" for i in range(1, 6)]
+# Os prédios saíram do jogo a pedido do André: ficam na folha (a contagem depende deles para achar
+# os cortes), mas só as casas viram arquivo.
+EXPORTAR = [n for n in NOMES if n.startswith("casa-")]
 # Duas casas da folha encostam uma na outra: corte no vale de pixels entre elas.
 CORTES_EXTRAS = [227, 675]
 FOLGA = 36
@@ -57,6 +60,8 @@ def main():
     for velho in SAIDA.glob("*.webp"):
         velho.unlink()
     for nome, (a, b) in zip(NOMES, pedacos):
+        if nome not in EXPORTAR:
+            continue
         recorte = folha.crop((a, topo, b, base))
         # Só o que é desta construção: o corte extra pode trazer pontas da vizinha. Coluna da borda
         # com quase nada opaco é resto da outra casa.
@@ -69,12 +74,12 @@ def main():
         canvas = Image.new("RGBA", (recorte.width + 2 * FOLGA, altura), (0, 0, 0, 0))
         canvas.alpha_composite(recorte, (FOLGA, 0))
         canvas.save(SAIDA / f"{nome}.webp", "WEBP", quality=88, method=6)
-    trechos = [[nome] for nome in NOMES] + [[ORIGINAL]]
+    trechos = [[nome] for nome in EXPORTAR] + [[ORIGINAL]]
     (SAIDA / "trechos.json").write_text(
         json.dumps({"trechos": trechos}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
     )
     total = sum(f.stat().st_size for f in SAIDA.glob("*.webp"))
-    print(f"{len(NOMES)} construções ({total // 1024} KB), altura {altura} px")
+    print(f"{len(EXPORTAR)} casas ({total // 1024} KB), altura {altura} px")
 
 
 if __name__ == "__main__":

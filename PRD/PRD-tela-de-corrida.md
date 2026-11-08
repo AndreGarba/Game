@@ -89,14 +89,16 @@ Espaço e Enter também iniciam, continuam e reiniciam.
   (sorteado). Quando o painel muda, entra uma conexão sorteada entre as 11, e o painel seguinte
   nunca é igual ao anterior. Todas as conexões têm a mesma base e o mesmo corpo do pilar original;
   os enfeites (lâmpada, vaso, bola) sobem acima dele.
-- **Casas variadas:** a camada de casas sorteia 5 casas, 5 prédios pequenos
-  (`cidade/casas/`, de `scripts/arte/montar_casas.py` e `PRD/referencias/casas-predios.png`) e a
-  tira original, que tem as árvores. Todas as construções saem na mesma escala, então a porta tem o
-  mesmo tamanho em todas.
+- **Muro fechado:** nenhuma peça deixa ver a camada de trás. O script corta as laterais de cada
+  peça nova até a coluna em que o corpo (sem capitel e sem grama) é 100% opaco, e preenche os
+  furinhos de dentro com a cor vizinha. As peças da arte original já emendavam e vão como estão.
+- **Casas variadas:** a camada de casas sorteia 5 casas novas (`cidade/casas/`, de
+  `scripts/arte/montar_casas.py` e `PRD/referencias/casas-predios.png`) e a tira original, que tem
+  as árvores, na mesma escala. Os 5 prédios da mesma folha saíram do jogo a pedido do André.
 - **Sorteio:** cada camada sorteia a própria sequência pelo índice do grupo, em unidades do
   quadro: o mesmo ponto da pista mostra sempre a mesma coisa.
 - **Tamanho:** muro (com as conexões) e casas 1,5× maiores que na referência de arte, com a base
-  no mesmo lugar. Os prédios mais altos passam do topo da tela.
+  no mesmo lugar.
 - **Calçada:** as juntas das lajes andam com a pista e dão a sensação de velocidade. Vãos
   desenhados como água (rio e lago) ou buraco com cone.
 - **Obstáculos com sprite só na cidade** (`features/corrida/imagens/objetos`, gerados na mesma

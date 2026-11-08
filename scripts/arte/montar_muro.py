@@ -108,18 +108,42 @@ def main():
     folga = max(acima for _, acima in conexoes.values())
     altura_canvas = folga + (BASE - PILAR_TOPO)
 
-    def salvar(nome: str, img: Image.Image):
+    topo_pilar = altura_canvas - (BASE - PILAR_TOPO)
+
+    def salvar(nome: str, img: Image.Image, faixa_corpo: tuple[int, int] | None):
         canvas = Image.new("RGBA", (img.width, altura_canvas), (0, 0, 0, 0))
         canvas.alpha_composite(img, (0, altura_canvas - img.height))
+        if faixa_corpo is None:
+            # Peça da arte original: já emendava sem fresta, vai como está.
+            canvas.save(SAIDA / f"{nome}.webp", "WEBP", quality=88, method=6)
+            return
+        # Muro fechado: corta as laterais até a primeira e a última coluna em que o corpo da peça
+        # (sem o capitel e sem a grama) é 100% opaco. A IA desenha bordas suaves e grama mais larga
+        # que o corpo, e essa franja deixava ver a camada de trás entre uma peça e outra.
+        alfa = np.asarray(canvas)[faixa_corpo[0] : faixa_corpo[1], :, 3]
+        cheias = np.where((alfa >= 250).all(axis=0))[0]
+        assert len(cheias), f"{nome}: nenhuma coluna cheia no corpo"
+        canvas = canvas.crop((int(cheias.min()), 0, int(cheias.max()) + 1, altura_canvas))
+        # Furinhos que sobram dentro do corpo (entre pedras, atrás de flores) ficam com a cor do
+        # pixel opaco mais próximo na mesma linha: nada da camada de trás aparece pelo muro.
+        px = np.asarray(canvas).copy()
+        for y in range(faixa_corpo[0], faixa_corpo[1]):
+            linha = px[y]
+            opacos = np.where(linha[:, 3] >= 250)[0]
+            for x in np.where(linha[:, 3] < 250)[0]:
+                vizinho = opacos[np.argmin(np.abs(opacos - x))]
+                linha[x] = linha[vizinho]
+        canvas = Image.fromarray(px)
         canvas.save(SAIDA / f"{nome}.webp", "WEBP", quality=88, method=6)
 
     SAIDA.mkdir(parents=True, exist_ok=True)
     for velho in list(SAIDA.glob("*.webp")) + list(SAIDA.glob("*.json")):
         velho.unlink()
+    # Corpo: abaixo do capitel e acima da grama da base.
     for nome, (img, _) in conexoes.items():
-        salvar(f"conexao-{nome}", img)
+        salvar(f"conexao-{nome}", img, None if nome == "pilar" else (topo_pilar + 30, altura_canvas - 30))
     for nome, (img, _) in paineis.items():
-        salvar(f"painel-{nome}", img)
+        salvar(f"painel-{nome}", img, None if nome in ORIGINAIS else (topo_pilar + PAINEL_TOPO + 8, altura_canvas - 30))
 
     dados = {
         "paineis": sorted(paineis),
