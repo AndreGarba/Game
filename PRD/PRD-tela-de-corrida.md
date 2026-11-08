@@ -85,10 +85,14 @@ Espaço e Enter também iniciam, continuam e reiniciam.
   gato dormindo e medidor de luz. Conexões: o pilar original e 10 novas (tijolo, pedra, luminária,
   madeira, ferro, vaso, azulejo, interfone, hera, bola de pedra). Tudo gerado no ChatGPT a partir
   da arte original (`PRD/referencias/muro-*.png`).
-- **Regra do muro:** o mesmo painel se repete lado a lado, sem conexão no meio, de 3 a 10 vezes
-  (sorteado). Quando o painel muda, entra uma conexão sorteada entre as 11, e o painel seguinte
-  nunca é igual ao anterior. Todas as conexões têm a mesma base e o mesmo corpo do pilar original;
-  os enfeites (lâmpada, vaso, bola) sobem acima dele.
+- **Regra do muro:** só as texturas repetem: azulejo, cerca branca, cinza, madeira, pedra e
+  tijolo se repetem lado a lado, sem conexão no meio, de 2 a 8 vezes (sorteado). Os outros 11 são
+  destaques (cerca viva, correio, floreira, garagem, gato, grafite, janela, medidor, mural de sol,
+  pata, portão): aparecem sozinhos, uma vez, com 30% de chance a cada troca e nunca dois destaques
+  seguidos. Toda troca de painel leva uma conexão sorteada entre as 11, e o painel seguinte nunca é
+  igual ao anterior. As conexões têm a mesma base e o mesmo corpo do pilar original; os enfeites
+  (lâmpada, vaso, bola) sobem acima dele. Listas e números em `cidade/muro/muro.json`, definidos em
+  `scripts/arte/montar_muro.py`.
 - **Muro fechado:** nenhuma peça deixa ver a camada de trás. O script corta as laterais de cada
   peça nova até a coluna em que o corpo (sem capitel e sem grama) é 100% opaco, e preenche os
   furinhos de dentro com a cor vizinha. As peças da arte original já emendavam e vão como estão.

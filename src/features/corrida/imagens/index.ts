@@ -45,9 +45,11 @@ function pecasDaPasta(arquivos: Record<string, string>): Record<string, string> 
 const PECAS_MURO = pecasDaPasta(import.meta.glob<string>('./cidade/muro/*.webp', { eager: true, import: 'default' }))
 const MONTAGEM_MURO: MontagemMuro<string> = {
   tipo: 'muro',
-  paineis: dadosMuro.paineis.map((p) => PECAS_MURO[`painel-${p}`]!),
+  repetem: dadosMuro.repetem.map((p) => PECAS_MURO[`painel-${p}`]!),
+  destaques: dadosMuro.destaques.map((p) => PECAS_MURO[`painel-${p}`]!),
   conexoes: dadosMuro.conexoes.map((c) => PECAS_MURO[`conexao-${c}`]!),
   repeticao: dadosMuro.repeticao,
+  chanceDestaque: dadosMuro.chanceDestaque,
 }
 
 // Casas: uma construção por trecho (`scripts/arte/montar_casas.py`), mais a tira original, que
@@ -86,14 +88,17 @@ export interface MontagemTrechos<T> {
   trechos: readonly (readonly T[])[]
 }
 /**
- * Muro: um painel se repete lado a lado de `repeticao.min` a `repeticao.max` vezes, sem conexão
- * no meio; quando o painel muda, entra uma conexão sorteada.
+ * Muro: os painéis de textura (`repetem`) se repetem lado a lado de `repeticao.min` a
+ * `repeticao.max` vezes, sem conexão no meio. Os de destaque aparecem sozinhos, uma vez, com chance
+ * `chanceDestaque` a cada troca (nunca dois seguidos). Toda troca de painel leva uma conexão.
  */
 export interface MontagemMuro<T> {
   tipo: 'muro'
-  paineis: readonly T[]
+  repetem: readonly T[]
+  destaques: readonly T[]
   conexoes: readonly T[]
   repeticao: { min: number; max: number }
+  chanceDestaque: number
 }
 export type Montagem<T> = MontagemTrechos<T> | MontagemMuro<T>
 
@@ -168,7 +173,12 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
       const m = c.montagem
       if (!m) return null
       if (m.tipo === 'trechos') return { tipo: 'trechos', trechos: m.trechos.map((pecas) => pecas.map(imagem)) }
-      return { ...m, paineis: m.paineis.map(imagem), conexoes: m.conexoes.map(imagem) }
+      return {
+        ...m,
+        repetem: m.repetem.map(imagem),
+        destaques: m.destaques.map(imagem),
+        conexoes: m.conexoes.map(imagem),
+      }
     })
     sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
     Object.values(IMAGENS_HUD).forEach(criar)
@@ -206,7 +216,7 @@ export function montagemDaCamada(i: number): Montagem<HTMLImageElement> | null {
   preCarregarImagensCenario()
   const m = montagens?.[i]
   if (!m) return null
-  const pecas = m.tipo === 'trechos' ? m.trechos.flat() : [...m.paineis, ...m.conexoes]
+  const pecas = m.tipo === 'trechos' ? m.trechos.flat() : [...m.repetem, ...m.destaques, ...m.conexoes]
   return pecas.every((p) => p.complete && p.naturalWidth > 0) ? m : null
 }
 
