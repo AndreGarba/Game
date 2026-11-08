@@ -165,8 +165,12 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
   (de 29 a 72). A lama baixa o número na hora.
 - O botão de pausa abre a mesma pausa de quando o app vai para segundo plano, e some enquanto o
   jogo está pausado.
-- Tutor, sujeira e ossinhos não estão no frame. Decisão do André: continuam no cartão de antes,
-  abaixo da pausa (barra **Tutor**, cheia = longe; 5 bolinhas de **Sujeira**; 🦴 e 🏅).
+- **Moedas:** selo verde ao lado do de Velocidade, no mesmo estilo, com a moeda desenhada e a
+  contagem com zeros à esquerda. A arte não tem texto: o rótulo vem dos locales. Decisão do André:
+  contador único, sem separar a moeda especial, que soma +10 (a normal soma +1). É só a contagem da tela: a
+  pontuação da partida continua vindo do motor (`PONTOS_OSSO`, `PONTOS_OSSO_OURO`).
+- Decisão do André: o HUD não mostra a aproximação do tutor nem a sujeira. A lama aparece só no
+  cachorro e na velocidade, e o tutor, na cena.
 - Medidas em 1/360 da altura, como o frame; em tela mais estreita que o frame, pela largura.
   Respeita a área segura do iPhone (notch).
 

@@ -14,6 +14,7 @@ import sequenciasCasas from './cidade/casas/trechos.json'
 import dadosMuro from './cidade/muro/muro.json'
 import distancia from './hud-distancia.webp'
 import pausa from './hud-pausa.webp'
+import moedas from './hud-moedas.webp'
 import fimBanho from './fim-banho.webp'
 import fimBotao from './fim-botao.webp'
 import fimOsso from './fim-osso.webp'
@@ -25,7 +26,9 @@ import tutorPulando from './tutor-pulando.webp'
 import tutorDeslizando from './tutor-slide.webp'
 import velocidade from './hud-velocidade.webp'
 
-export const IMAGENS_HUD = { distancia, velocidade, pausa }
+// O selo de moedas veio do ChatGPT, sem texto, com os outros dois selos como referência; a folha
+// original está em PRD/referencias/selo-moedas.png.
+export const IMAGENS_HUD = { distancia, velocidade, moedas, pausa }
 
 // Fim de partida: peças sem texto (a copy vem dos locales), geradas no ChatGPT com os selos do
 // HUD como referência de estilo. Folha original em PRD/referencias/fim-hud.png. O banho (metade
