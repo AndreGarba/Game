@@ -16,6 +16,7 @@ import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
+import { FimBanho } from '../../FimBanho.tsx'
 import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
 import { FormularioRanking } from '../../../ranking/FormularioRanking.tsx'
 import '@fontsource/luckiest-guy/latin-400.css'
@@ -227,7 +228,7 @@ export function TelaCorrida() {
           style={{ '--foco-x': fim.foco.x, '--foco-y': fim.foco.y } as CSSProperties}
         >
           <div className="fim-iris" aria-hidden="true" />
-          <img className="fim-banho" src={IMAGENS_FIM.banho} alt="" draggable={false} />
+          <FimBanho />
           <div className="fim-partida">
             <div className="fim-partida__painel">
               <img className="fim-partida__fundo" src={IMAGENS_FIM.painel} alt="" draggable={false} />
