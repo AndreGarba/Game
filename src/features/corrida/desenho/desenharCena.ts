@@ -92,7 +92,11 @@ interface Sequencia {
   inicio: number[]
   peca: HTMLImageElement[]
   grupos: number
+  // Índice do último trecho sorteado (casas), para não repetir em seguida.
   ultimo: number
+  // Último painel do muro e se ele foi um destaque.
+  ultimoPainel: HTMLImageElement | null
+  destaqueAntes: boolean
 }
 const sequencias = new Map<number, Sequencia>()
 
@@ -109,15 +113,21 @@ function proximoGrupo(seq: Sequencia, camada: number, m: Montagem<HTMLImageEleme
     seq.ultimo = v
     return [...m.trechos[v]!]
   }
-  // Muro: troca de painel (nunca o mesmo de antes), conexão sorteada na troca e o painel novo
-  // repetido de min a max vezes, colado, sem conexão no meio.
-  let painel = Math.floor(sorte(k, camada, 2) * m.paineis.length)
-  if (painel === seq.ultimo) painel = (painel + 1) % m.paineis.length
-  seq.ultimo = painel
+  // Muro: toda troca de painel começa com uma conexão sorteada. Às vezes (nunca duas seguidas)
+  // entra um destaque sozinho; senão, uma textura repetida de min a max vezes, colada, sem
+  // conexão no meio. O painel novo nunca é igual ao anterior.
+  const conexao = m.conexoes[Math.floor(sorte(k, camada, 4) * m.conexoes.length)]!
+  const destaque = !seq.destaqueAntes && sorte(k, camada, 5) < m.chanceDestaque
+  const lista = destaque ? m.destaques : m.repetem
+  let i = Math.floor(sorte(k, camada, 2) * lista.length)
+  if (lista[i] === seq.ultimoPainel) i = (i + 1) % lista.length
+  const painel = lista[i]!
+  seq.ultimoPainel = painel
+  seq.destaqueAntes = destaque
+  if (destaque) return [conexao, painel]
   const { min, max } = m.repeticao
   const vezes = min + Math.floor(sorte(k, camada, 3) * (max - min + 1))
-  const conexao = m.conexoes[Math.floor(sorte(k, camada, 4) * m.conexoes.length)]!
-  return [conexao, ...Array.from({ length: vezes }, () => m.paineis[painel]!)]
+  return [conexao, ...Array.from({ length: vezes }, () => painel)]
 }
 
 function desenharMontagem(
@@ -134,7 +144,7 @@ function desenharMontagem(
   const u1 = u0 + cam.largura / escala
   let seq = sequencias.get(indice)
   if (!seq) {
-    seq = { inicio: [0], peca: [], grupos: 0, ultimo: -1 }
+    seq = { inicio: [0], peca: [], grupos: 0, ultimo: -1, ultimoPainel: null, destaqueAntes: false }
     sequencias.set(indice, seq)
   }
   while (seq.inicio[seq.inicio.length - 1]! <= u1) {

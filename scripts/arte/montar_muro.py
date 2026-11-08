@@ -3,7 +3,9 @@
 uso: python scripts/arte/montar_muro.py
 
 Regra de montagem (aplicada pelo jogo, ao vivo, em desenharCena.ts):
-  - um mesmo painel se repete lado a lado, sem conexão no meio, de 3 a 10 vezes;
+  - painéis de textura (REPETEM) se repetem lado a lado, sem conexão no meio, de 2 a 8 vezes;
+  - painéis de destaque (com objeto ou desenho) aparecem uma vez ou outra, sozinhos, nunca repetidos
+    e nunca dois destaques seguidos;
   - quando o painel muda, entra uma conexão sorteada entre as 11;
   - o painel seguinte nunca é igual ao anterior.
 Toda junção de painéis diferentes é painel | conexão | painel, e toda conexão tem a mesma base e a
@@ -38,7 +40,11 @@ NOMES_CONEXOES = [
     "tijolo", "pedra", "luminaria", "madeira", "ferro", "vaso", "azulejo", "interfone", "hera", "bola",
 ]
 SAIDA = RAIZ / "src/features/corrida/imagens/cidade/muro"
-REPETICAO = {"min": 3, "max": 10}
+REPETICAO = {"min": 2, "max": 8}
+# Escolha do André (07/11/2026): só as texturas repetem. O resto é destaque.
+REPETEM = ["azulejo", "cerca_branca", "cinza", "madeira", "pedra", "tijolo"]
+# Chance de o próximo trecho ser um destaque (se o anterior não foi).
+CHANCE_DESTAQUE = 0.3
 
 # Medidas da arte original (1404 × 260): o pilar ocupa x 226..293 (corpo do topo do capitel, y 1,
 # até a base, y 258) e o painel cinza vai do capitel do painel (y 42) até a base.
@@ -146,7 +152,9 @@ def main():
         salvar(f"painel-{nome}", img, None if nome in ORIGINAIS else (topo_pilar + PAINEL_TOPO + 8, altura_canvas - 30))
 
     dados = {
-        "paineis": sorted(paineis),
+        "repetem": sorted(REPETEM),
+        "destaques": sorted(p for p in paineis if p not in REPETEM),
+        "chanceDestaque": CHANCE_DESTAQUE,
         "conexoes": sorted(conexoes),
         "repeticao": REPETICAO,
         # Onde fica a base do muro no canvas (fração da altura): o jogo põe isso na linha do piso.

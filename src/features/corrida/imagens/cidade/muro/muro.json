@@ -1,23 +1,26 @@
 {
- "paineis": [
+ "repetem": [
   "azulejo",
   "cerca_branca",
-  "cerca_viva",
   "cinza",
+  "madeira",
+  "pedra",
+  "tijolo"
+ ],
+ "destaques": [
+  "cerca_viva",
   "correio",
   "floreira",
   "garagem",
   "gato",
   "grafite",
   "janela",
-  "madeira",
   "medidor",
   "mural_sol",
   "pata",
-  "pedra",
-  "portao",
-  "tijolo"
+  "portao"
  ],
+ "chanceDestaque": 0.3,
  "conexoes": [
   "azulejo",
   "bola",
@@ -32,8 +35,8 @@
   "vaso"
  ],
  "repeticao": {
-  "min": 3,
-  "max": 10
+  "min": 2,
+  "max": 8
  },
  "alturaCanvas": 319,
  "alturaPilar": 258
