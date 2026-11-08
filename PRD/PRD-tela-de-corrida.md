@@ -132,6 +132,19 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
 
 ### 5.2 Tutor
 
+- **Pulo em sprite** (`desenho/tutorSprite.ts`, folha de 10 quadros gerada no ChatGPT, em
+  `PRD/referencias/tutor-pulo-correndo.png`). É o salto de quem vem correndo e não tem jeito para
+  a coisa. Como ele refaz o caminho do cachorro, sabe antes onde vai pular: dá o último passo
+  empurrando o chão nos 0,7 m antes do ponto do pulo, sem parar para agachar. No ar, sobe com o
+  joelho alto, abre as pernas no alto e desce com o pé na frente. Ao pousar de uma queda maior que
+  ~0,6 m, cai para a frente, apoia uma mão no chão e levanta com o tronco inclinado, tropeçando,
+  em ~0,43 s pelo relógio real, até voltar à corrida. Queda pequena (descer de um capô) não vira
+  tombo. A altura vem do rastro do cachorro; a folha é recortada com o pé no rodapé para não somar
+  com ela.
+- **Slide em sprite** (`desenho/tutorSprite.ts`, folha de 6 quadros gerada no ChatGPT, em
+  `PRD/referencias/tutor-slide.png`). Abaixado, desliza de pés à frente, com uma mão apoiada atrás:
+  2 quadros descendo pelo relógio real, 4 em loop no ritmo da distância e os 2 primeiros ao
+  contrário para voltar à corrida. No ar, o mergulho fica no quadro de quase tocar o chão.
 - **Sempre na tela**, correndo atrás do cachorro com a esponja na mão.
 - A vantagem real (até 20 m) não cabe entre a margem e o cachorro, então é **comprimida**:
   vantagem máxima = tutor colado na margem esquerda; vantagem zero = esponja encostando no
