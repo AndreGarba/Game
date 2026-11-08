@@ -4,8 +4,6 @@ import { lerRecorde, registrarPlacar } from '../../../../data/recorde.ts'
 import {
   multiplicadorSujeira,
   resultado as resultadoDaPartida,
-  SUJEIRA_MAX,
-  VANTAGEM_MAX,
   velocidadeBase,
   type Acao,
   type ComandoLog,
@@ -28,10 +26,7 @@ type Fase = 'correndo' | 'pausado' | 'fim'
 interface Hud {
   metros: number
   kmh: number
-  ossos: number
-  ossosOuro: number
-  sujeira: number
-  vantagem: number
+  moedas: number
 }
 
 interface Fim {
@@ -45,15 +40,15 @@ interface Fim {
   log: readonly ComandoLog[]
 }
 
+// Só o contador do HUD: a pontuação da partida continua saindo do motor (PONTOS_OSSO*).
+const MOEDAS_POR_OSSO_OURO = 10
+
 function hudDe(estado: EstadoPartida): Hud {
   return {
     metros: Math.floor(estado.cachorro.x),
     // A velocidade em que o cachorro corre de fato: a base do trecho freada pela lama.
     kmh: Math.round(velocidadeBase(estado.cachorro.x) * multiplicadorSujeira(estado.sujeira) * 3.6),
-    ossos: estado.ossos,
-    ossosOuro: estado.ossosOuro,
-    sujeira: estado.sujeira,
-    vantagem: estado.vantagem,
+    moedas: estado.ossos + estado.ossosOuro * MOEDAS_POR_OSSO_OURO,
   }
 }
 
@@ -182,32 +177,15 @@ export function TelaCorrida() {
             <img src={IMAGENS_HUD.velocidade} alt="" draggable={false} />
             <span className="tela-corrida__valor tela-corrida__valor--velocidade">{digitos(hud.kmh, 2)}</span>
           </div>
+          {/* Selo gerado sem texto: rótulo (traduzido) e valor vão por cima da arte. */}
+          <div className="tela-corrida__selo tela-corrida__selo--moedas" role="img" aria-label={t('hud.moedas', { valor: numero(hud.moedas) })}>
+            <img src={IMAGENS_HUD.moedas} alt="" draggable={false} />
+            <span className="tela-corrida__rotulo-selo">{t('hud.moedasRotulo')}</span>
+            <span className="tela-corrida__valor tela-corrida__valor--moedas">{digitos(hud.moedas, 4)}</span>
+          </div>
           <button className="tela-corrida__pausa" onClick={pausar} aria-label={t('hud.pausar')} disabled={fase !== 'correndo'}>
             <img src={IMAGENS_HUD.pausa} alt="" draggable={false} />
           </button>
-          <div className="tela-corrida__medidores">
-            <div className="tela-corrida__ossos">
-              <span>🦴 {numero(hud.ossos)}</span>
-              <span>🏅 {numero(hud.ossosOuro)}</span>
-            </div>
-            <div className="tela-corrida__medidor">
-              <span>{t('hud.tutor')}</span>
-              <div className="tela-corrida__trilho">
-                <div
-                  className="tela-corrida__barra-vantagem"
-                  style={{ '--progresso': Math.max(0, hud.vantagem) / VANTAGEM_MAX } as CSSProperties}
-                />
-              </div>
-            </div>
-            <div className="tela-corrida__medidor">
-              <span>{t('hud.sujeira')}</span>
-              <div className="tela-corrida__pontos-sujeira">
-                {Array.from({ length: SUJEIRA_MAX }, (_, i) => (
-                  <span key={i} className={i < hud.sujeira ? 'tela-corrida__sujo' : 'tela-corrida__limpo'} />
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       )}
 

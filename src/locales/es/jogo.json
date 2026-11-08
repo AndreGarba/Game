@@ -31,8 +31,8 @@
   },
   "hud": {
     "metros": "{{valor}} m",
-    "tutor": "Dueño",
-    "sujeira": "Suciedad",
+    "moedas": "Monedas: {{valor}}",
+    "moedasRotulo": "Monedas",
     "distancia": "Distancia: {{valor}} m",
     "velocidade": "Velocidad: {{valor}} km/h",
     "pausar": "Pausar"
