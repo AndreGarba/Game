@@ -2,6 +2,7 @@
 // referência de arte do jogo e preparadas por `scripts/arte/preparar_camada.py` (recorte, emenda
 // horizontal e WebP). Peças do HUD vêm do Figma "Hora do banho", frame 7960:8725.
 import cachorroCorrendo from './cachorro-correndo.webp'
+import cachorroSlide from './cachorro-slide.webp'
 import ceu from './cidade/ceu.webp'
 import skyline from './cidade/skyline.webp'
 import bairro from './cidade/bairro.webp'
@@ -145,6 +146,13 @@ export const CAMADAS_CIDADE: readonly Camada[] = [
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
 export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 415, altura: 320, pes: 11 } as const
 
+// Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no
+// ChatGPT a partir de PRD/referencias/cachorro-slide-referencia.png e recortada pelo mesmo script
+// (`--quadros-minimos 6 --alfa-fundo 215`: a folha veio com um véu branco em alfa 180-196).
+// `pes` medido na barriga/patas opacas (o script contou um halo quase invisível embaixo, 8 px, e o
+// cachorro flutuava); 32 = 28 do contato real + 4 para o corpo encostar no chão.
+export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pes: 32 } as const
+
 // Folha do tutor correndo: 10 quadros (a arte veio numa grade 5×2, lida linha por linha),
 // recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
 export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, pes: 6 } as const
@@ -152,6 +160,7 @@ export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, p
 let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
 let cachorro: HTMLImageElement | null = null
+let slide: HTMLImageElement | null = null
 let tutor: HTMLImageElement | null = null
 // Montagem de cada camada já com as imagens, no mesmo índice de CAMADAS_CIDADE. A mesma peça é
 // uma imagem só, reaproveitada onde aparecer.
@@ -184,6 +193,7 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     Object.values(IMAGENS_HUD).forEach(criar)
     Object.values(IMAGENS_FIM).forEach(criar)
     cachorro = criar(cachorroCorrendo)
+    slide = criar(cachorroSlide)
     tutor = criar(tutorCorrendo)
   }
   return arte
@@ -197,6 +207,12 @@ function pronta(imagem: HTMLImageElement | null) {
 export function spriteCachorroPronto(): HTMLImageElement | null {
   preCarregarImagensCenario()
   return pronta(cachorro)
+}
+
+/** A folha do slide, ou null enquanto não carregou (aí o abaixar achata o quadro do galope). */
+export function spriteSlidePronto(): HTMLImageElement | null {
+  preCarregarImagensCenario()
+  return pronta(slide)
 }
 
 /** A folha do tutor, ou null enquanto não carregou (o canvas desenha o tutor vetorial). */

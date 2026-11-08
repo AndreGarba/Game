@@ -117,6 +117,15 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 ### 5.1 Cachorro
 
+Sprite da arte (`desenho/cachorroSprite.ts`): galope de 10 quadros correndo e **slide de 6
+quadros abaixado** (gerado no ChatGPT a partir de `PRD/referencias/cachorro-slide-referencia.png`).
+No slide, os 2 primeiros quadros descem para o chão, um a cada 5 ticks do abaixar, e os quadros 3
+a 6 deslizam em loop no ritmo da distância. No mergulho (abaixar no ar) fica no quadro de quase
+tocar o chão. No slide o desenho encosta a barriga no chão e escorrega até 45 cm para a frente;
+ao voltar a correr, volta suave para a posição de antes (só desenho: a caixa de colisão não anda).
+As manchas de lama valem para as duas folhas. O texto abaixo é o cachorro vetorial,
+que só aparece enquanto as imagens carregam:
+
 Desenhado em vetor (o emoji ficava quase invisível no canvas): corpo, cabeça, orelha, focinho,
 língua, rabo abanando e pernas que alternam conforme a distância percorrida. No ar, as pernas
 esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha de lama no corpo.

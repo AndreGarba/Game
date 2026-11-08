@@ -13,6 +13,7 @@ import {
   LINHA_CHAO,
   LINHA_PISO,
   spriteCachorroPronto,
+  spriteSlidePronto,
   spriteObjeto,
   spriteTutorPronto,
   montagemDaCamada,
@@ -676,7 +677,11 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   // Folha de sprites da arte; enquanto ela não carrega, o cachorro vetorial.
   const sprite = spriteCachorroPronto()
   if (sprite) {
-    desenharCachorroSprite(ctx, sprite, cx, base, ppm, { ...poseCachorro, vy: c.vy })
+    desenharCachorroSprite(ctx, sprite, spriteSlidePronto(), cx, base, ppm, {
+      ...poseCachorro,
+      ticksAbaixado: c.abaixadoTicks,
+      vy: c.vy,
+    })
     return
   }
   ctx.save()
