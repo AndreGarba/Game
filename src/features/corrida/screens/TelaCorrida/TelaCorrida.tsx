@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import { lerRecorde, registrarPlacar } from '../../../../data/recorde.ts'
 import {
-  multiplicadorSujeira,
+  vantagemTutor,
   resultado as resultadoDaPartida,
   SUJEIRA_MAX,
   VANTAGEM_MAX,
@@ -47,12 +47,11 @@ interface Fim {
 function hudDe(estado: EstadoPartida): Hud {
   return {
     metros: Math.floor(estado.cachorro.x),
-    // A velocidade em que o cachorro corre de fato: a base do trecho freada pela lama.
-    kmh: Math.round(velocidadeBase(estado.cachorro.x) * multiplicadorSujeira(estado.sujeira) * 3.6),
+    kmh: Math.round(velocidadeBase(estado.cachorro.x) * 3.6),
     ossos: estado.ossos,
     ossosOuro: estado.ossosOuro,
     sujeira: estado.sujeira,
-    vantagem: estado.vantagem,
+    vantagem: vantagemTutor(estado.sujeira),
   }
 }
 

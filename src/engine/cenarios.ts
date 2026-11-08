@@ -25,7 +25,7 @@ export type ItemMolde = Omit<Elemento, 'id' | 'usado'>
 export interface ContextoMolde {
   rng: EstadoRng
   nivel: number
-  // Distância horizontal de um pulo do chão ao chão, já no pior caso de sujeira.
+  // Distância horizontal de um pulo do chão ao chão, com a folga de FATOR_ALCANCE_PISTA.
   alcance: number
 }
 

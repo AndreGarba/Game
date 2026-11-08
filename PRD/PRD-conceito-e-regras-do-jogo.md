@@ -25,7 +25,7 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 | Controles | **Pular** e **abaixar**. Nada de trocar de faixa. |
 | Obstáculos | O cachorro pode **subir e correr em cima** de carros, bancos, chafarizes, marquises. Bater de frente encerra. Rios e buracos são vãos: cair encerra. Placas, galhos e toldos só passam abaixado. |
 | Pontuação | **Distância + coletáveis** (ossinhos e ossinhos de ouro). |
-| Lama e lenços | Poça de lama suja o cachorro e o deixa mais lento, e o tutor se aproxima. Lenço limpa um pouco e o cachorro volta a abrir distância. |
+| Lama e lenços | Cada poça de lama suja o cachorro e traz o tutor um degrau para mais perto, onde ele fica. A 4ª poça encerra a partida. Lenço limpa uma poça e o tutor recua um degrau. |
 | Cenários | **Sequência fixa e igual para todos**: cidade → parque → rio → centro, e recomeça. Os obstáculos dentro de cada cenário mudam a cada partida. |
 | Velocidade | Cresce até um **teto alto**. Depois disso, a dificuldade sobe pela densidade de obstáculos. |
 | Público | Todas as idades. |
@@ -48,7 +48,7 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 | Teto | placa, galho, toldo, viga de ponte, andaime | Só passa abaixado. Encostar em pé = fim. |
 | Vão | rio, lago, buraco de obra, bueiro | Sem chão. Cair = fim. |
 | Rampa | rampa de madeira (cidade) | Não bate. O cachorro sobe correndo e, no alto, sai lançado. Pular na rampa vai mais longe. Às vezes vem um buraco logo depois: o lançamento sozinho atravessa. |
-| Poça de lama | — | +1 de sujeira (máximo 5). Dá para pular por cima. |
+| Poça de lama | — | +1 de sujeira. O cachorro aguenta 3; a 4ª encerra a partida. Dá para pular por cima. |
 
 ### 3.3 Coletáveis
 
@@ -60,11 +60,11 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 
 ### 3.4 O tutor
 
-- Corre um pouco mais devagar que um cachorro limpo (97% da velocidade base).
-- Cada nível de sujeira deixa o cachorro 4% mais lento. **Com 1 de sujeira o tutor já começa a se
-  aproximar.**
-- A distância entre os dois (vantagem) começa em 12 m e vai no máximo a 20 m.
-- Vantagem zero: o tutor pegou, fim de partida.
+- A distância entre os dois (vantagem) depende só da sujeira: 20 m limpo, 15 m com 1 lama, 10 m com
+  2 e 5 m com 3. Entre uma lama e outra, **a distância não muda**.
+- A lama não deixa o cachorro mais lento.
+- A 4ª lama é o tutor alcançando: fim de partida.
+- Lenço devolve uma lama: o tutor recua um degrau.
 
 ### 3.5 Fim de partida
 
@@ -106,6 +106,24 @@ poças, linhas de ossinhos e lenços.
 4. Conta, data e âncora de lançamento.
 
 ## 5. Referência de balanceamento
+
+**r8 (08/11/2026):** a lama deixa de frear o cachorro e de trazer o tutor aos poucos. Cada poça
+coloca o tutor num degrau fixo (20, 15, 10 e 5 m) e a 4ª encerra a partida como `pego`. Lenço
+continua tirando 1 de sujeira, então recua o tutor um degrau e devolve uma poça. A pista de cada
+seed não muda. 30 partidas do bot, até 5 minutos cada:
+
+| | r7 | r8 |
+| --- | --- | --- |
+| Distância (mediana) | 3.610 m | 4.139 m (teto de 5 min) |
+| Pontos (mediana) | 5.946 | 6.554 |
+| Ossinhos (mediana) | 188,5 | 206 |
+| Ossinhos de ouro (mediana) | 8 | 8 |
+| Fim | 22 pegos, 8 no limite | 12 pegos, 18 no limite |
+
+Sem batida, queda ou divergência de replay. Os 12 pegos acontecem no centro, a partir de 3.125 m.
+O bot sobe porque olha o futuro e pula quase toda poça evitável; 18 de 30 param no teto de 5 minutos,
+então a mediana de distância não mede até onde ele iria. Para uma pessoa, o limite de 3 poças deve
+pesar mais do que no bot: falta testar com jogadores.
 
 **r7 (05/11/2026):** o pulo volta ao de r4 (2,1 m, 0,65 s no ar; `VEL_PULO` 13, `GRAVIDADE` 40,
 mergulho −18) e entra o **pulo duplo**: repetir o gesto de pular no ar dá de novo `VEL_PULO`, uma

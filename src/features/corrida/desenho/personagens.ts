@@ -13,7 +13,6 @@ export const COR_PERSONAGEM = {
   camisa: '#3e7bfa',
   calca: '#2f3b52',
   esponja: '#ffd23f',
-  sujeira: 'rgba(110, 72, 40, 0.9)',
   contorno: 'rgba(31, 26, 23, 0.55)',
 } as const
 
@@ -34,9 +33,9 @@ function perna(ctx: CanvasRenderingContext2D, x: number, y: number, comprimento:
 // fase: avança com a distância percorrida, para as pernas acompanharem a velocidade.
 export function desenharCachorro(
   ctx: CanvasRenderingContext2D,
-  opcoes: { fase: number; noAr: boolean; abaixado: boolean; sujeira: number },
+  opcoes: { fase: number; noAr: boolean; abaixado: boolean },
 ) {
-  const { fase, noAr, abaixado, sujeira } = opcoes
+  const { fase, noAr, abaixado } = opcoes
   ctx.save()
   if (abaixado) ctx.scale(1.1, 0.55)
   ctx.lineCap = 'round'
@@ -83,17 +82,6 @@ export function desenharCachorro(
   elipse(ctx, 0.58, 0.93, 0.035, 0.04)
   ctx.fillStyle = COR_PERSONAGEM.lingua
   elipse(ctx, 0.72, 0.68, 0.04, 0.06)
-
-  // Manchas de lama: mesma posição a cada quadro, uma por nível de sujeira.
-  const manchas = [
-    [-0.2, 0.55],
-    [0.15, 0.7],
-    [-0.35, 0.7],
-    [0.3, 0.5],
-    [0.5, 0.95],
-  ] as const
-  ctx.fillStyle = COR_PERSONAGEM.sujeira
-  for (const [mx, my] of manchas.slice(0, sujeira)) elipse(ctx, mx, my, 0.11, 0.08)
 
   ctx.restore()
 }

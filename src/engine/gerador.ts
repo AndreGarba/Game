@@ -1,9 +1,8 @@
 import {
   DESCARTAR_ATRAS,
+  FATOR_ALCANCE_PISTA,
   GERAR_A_FRENTE,
   GRAVIDADE,
-  PENALIDADE_SUJEIRA,
-  SUJEIRA_MAX,
   VEL_PULO,
 } from './constantes.ts'
 import { cenarioEm, MOLDES_POR_CENARIO, type Molde } from './cenarios.ts'
@@ -31,10 +30,9 @@ export function nivelEm(x: number): number {
 }
 
 const TEMPO_DE_AR = (2 * VEL_PULO) / GRAVIDADE
-const PIOR_MULTIPLICADOR = 1 - SUJEIRA_MAX * PENALIDADE_SUJEIRA
 
 export function alcancePulo(x: number): number {
-  return velocidadeBase(x) * PIOR_MULTIPLICADOR * TEMPO_DE_AR
+  return velocidadeBase(x) * FATOR_ALCANCE_PISTA * TEMPO_DE_AR
 }
 
 function sortearMolde(rng: EstadoRng, moldes: readonly Molde[], nivel: number): Molde {

@@ -47,8 +47,8 @@ export interface EstadoPartida {
   tick: number
   rng: EstadoRng
   cachorro: Cachorro
+  // Até SUJEIRA_MAX; a poça seguinte encerra a partida. Dela sai a distância do tutor (vantagemTutor).
   sujeira: number
-  vantagem: number
   ossos: number
   ossosOuro: number
   lencos: number

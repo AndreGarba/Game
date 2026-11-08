@@ -2,6 +2,7 @@ import {
   cenarioEm,
   CACHORRO_LARGURA,
   VANTAGEM_MAX,
+  vantagemTutor,
   velocidadeBase,
   type Elemento,
 } from '../../../engine/index.ts'
@@ -613,6 +614,24 @@ export function posicaoCachorroNaTela(estado: QuadroCorrida['estado'], largura: 
   }
 }
 
+// Fração da tela percorrida por segundo. No motor a distância do tutor muda de uma vez; na tela,
+// um salto de vários metros pareceria teletransporte, então ele corre até o lugar novo.
+const VELOCIDADE_FRACAO_TUTOR = 0.6
+let fracaoTutor: number | null = null
+let instanteTutor = 0
+let xUltimoTutor = 0
+
+function fracaoTutorNaTela(alvo: number, xCachorro: number): number {
+  const agora = performance.now()
+  // Partida nova (x voltou para trás) ou primeiro quadro: começa no lugar, sem deslizar.
+  if (fracaoTutor === null || xCachorro < xUltimoTutor) fracaoTutor = alvo
+  const passoMax = (VELOCIDADE_FRACAO_TUTOR * (agora - instanteTutor)) / 1000
+  fracaoTutor += Math.max(-passoMax, Math.min(passoMax, alvo - fracaoTutor))
+  instanteTutor = agora
+  xUltimoTutor = xCachorro
+  return fracaoTutor
+}
+
 export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, altura: number, quadro: QuadroCorrida) {
   const { estado, alfa } = quadro
   const c = estado.cachorro
@@ -639,7 +658,7 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   // então ela é comprimida. Vantagem máxima = colado na margem; zero = encostando no cachorro.
   const xMargem = cam.x0 + 0.3
   const xEncostado = x - 1.1
-  const fracao = Math.min(1, Math.max(0, estado.vantagem / VANTAGEM_MAX))
+  const fracao = fracaoTutorNaTela(Math.min(1, Math.max(0, vantagemTutor(estado.sujeira) / VANTAGEM_MAX)), c.x)
   const xTutor = xEncostado + (xMargem - xEncostado) * fracao
   // O tutor faz o que o cachorro fez quando passou por este mesmo ponto da pista: como os
   // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob a mesma placa.
@@ -673,7 +692,7 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
     ctx.ellipse(cx, base, ppm * 0.5, ppm * 0.1, 0, 0, Math.PI * 2)
     ctx.fill()
   }
-  const poseCachorro = { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0, sujeira: estado.sujeira }
+  const poseCachorro = { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0 }
   // Folha de sprites da arte; enquanto ela não carrega, o cachorro vetorial.
   const sprite = spriteCachorroPronto()
   if (sprite) {

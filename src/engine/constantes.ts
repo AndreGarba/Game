@@ -2,7 +2,7 @@
 // VERSAO_REGRAS, rode `npm run sim:partidas` e mostre o antes/depois no PR.
 // Unidades: metros, segundos, ticks.
 
-export const VERSAO_REGRAS = 'r7'
+export const VERSAO_REGRAS = 'r8'
 
 // Passo fixo: o motor nunca recebe "tempo decorrido". 60 ticks = 1 segundo de jogo,
 // em qualquer aparelho, e o servidor reproduz a partida tick a tick.
@@ -40,16 +40,17 @@ export const ADERENCIA_PERFIL = 0.5
 // Abaixo disso, caiu no rio/buraco.
 export const LIMITE_QUEDA = -2
 
-// Sujeira: cada poça de lama soma 1, cada lenço tira 1. Cada nível deixa o cachorro
-// PENALIDADE_SUJEIRA mais lento em relação à velocidade base.
-export const SUJEIRA_MAX = 5
-export const PENALIDADE_SUJEIRA = 0.04
+// r8: cada poça de lama soma 1 de sujeira, cada lenço tira 1. O cachorro aguenta SUJEIRA_MAX
+// poças; a seguinte encerra a partida (motivo 'pego').
+export const SUJEIRA_MAX = 3
 
-// O tutor corre a TUTOR_FATOR da velocidade base. Cachorro limpo abre vantagem devagar;
-// com 1 de sujeira já perde terreno. Vantagem zero = tutor pegou.
-export const TUTOR_FATOR = 0.97
-export const VANTAGEM_INICIAL = 12
+// r8: a distância do tutor é um degrau fixo por nível de sujeira: limpo fica a VANTAGEM_MAX e cada
+// nível o traz para mais perto, sem aproximação gradual. Ver vantagemTutor em fisica.ts.
 export const VANTAGEM_MAX = 20
+
+// r8: a pista continua calibrada em 80% da velocidade base (o pior caso de sujeira até r7, quando
+// a lama freava o cachorro). Sem isso, a largura dos vãos e das poças mudaria junto com esta regra.
+export const FATOR_ALCANCE_PISTA = 0.8
 
 export const RAIO_COLETAVEL = 0.35
 export const PONTOS_POR_METRO = 1
