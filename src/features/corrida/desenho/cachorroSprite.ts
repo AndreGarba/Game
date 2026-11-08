@@ -27,6 +27,13 @@ const QUADRO_NO_AR = 8
 // os quadros 2 a 5 deslizam em loop, no ritmo da distância corrida.
 const QUADROS_DESCIDA = 2
 const TICKS_DESCIDA = 5
+// No slide o desenho escorrega um pouco para a frente e, ao voltar a correr, volta ao lugar. Só
+// desenho: a caixa de colisão do motor não anda. Suavizado pelo relógio real, para ir e voltar
+// sem salto.
+const AVANCO_SLIDE_M = 0.45
+const RAPIDEZ_AVANCO = 9
+let avancoSlide = 0
+let ultimoInstante: number | null = null
 
 export interface OpcoesSprite {
   fase: number
@@ -111,8 +118,14 @@ export function desenharCachorroSprite(
   const l = folha.largura * escala
   const a = folha.altura * escala
 
+  const agora = performance.now() / 1000
+  const dt = ultimoInstante === null ? 0 : Math.min(0.1, agora - ultimoInstante)
+  ultimoInstante = agora
+  const alvo = deslizando ? AVANCO_SLIDE_M : 0
+  avancoSlide += (alvo - avancoSlide) * (1 - Math.exp(-RAPIDEZ_AVANCO * dt))
+
   ctx.save()
-  ctx.translate(cx + AVANCO_M * ppm, base + folha.pes * escala)
+  ctx.translate(cx + (AVANCO_M + avancoSlide) * ppm, base + folha.pes * escala)
   // Pulo ainda sem quadros próprios: inclina no ar (o mergulho abaixado já usa o slide).
   if (o.noAr && !deslizando) ctx.rotate(Math.max(-0.25, Math.min(0.25, -o.vy * 0.02)))
   // Sem a folha do slide (ainda carregando), o abaixar achata o galope como antes.

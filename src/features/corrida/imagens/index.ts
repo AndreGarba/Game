@@ -149,7 +149,9 @@ export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 415, altura: 320
 // Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no
 // ChatGPT a partir de PRD/referencias/cachorro-slide-referencia.png e recortada pelo mesmo script
 // (`--quadros-minimos 6 --alfa-fundo 215`: a folha veio com um véu branco em alfa 180-196).
-export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pes: 8 } as const
+// `pes` medido na barriga/patas opacas (o script contou um halo quase invisível embaixo, 8 px, e o
+// cachorro flutuava); 32 = 28 do contato real + 4 para o corpo encostar no chão.
+export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pes: 32 } as const
 
 // Folha do tutor correndo: 10 quadros (a arte veio numa grade 5×2, lida linha por linha),
 // recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
