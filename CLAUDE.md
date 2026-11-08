@@ -280,8 +280,8 @@ comm -23 <(echo "$SLUGS_DO_list_edge_functions" | sort) <(ls supabase/functions 
   para o aparelho novo, e o id clonado faria dois aparelhos gravarem como o mesmo jogador. O cliente lê pela RPC `ranking_top` (sem `jogador_id`: com ele, qualquer um gravaria
   no lugar de outro) e grava só pela Edge Function `registrar-partida`, que chama
   `registrar_partida` com `service_role`. A regra do nome (`normalizarNome`/`nomeValido`) mora no
-  motor para valer igual no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o ranking
-  some da tela e o jogo segue.
+  motor para valer igual no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o painel
+  aberto pelo ícone da home avisa que o ranking está fora do ar e o jogo segue.
 - **Pendentes:** seed emitida pelo servidor (hoje o cliente sorteia), Turnstile, filtro de nome
   ofensivo, e o que fazer com o ranking quando `VERSAO_REGRAS` mudar (hoje mistura versões).
 
@@ -407,6 +407,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | --- | --- |
 | Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
 | História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
+| Painel do ranking aberto pelo ícone da home (`TelaHome`) | **pendente:** fecha só pelo próprio ícone; o voltar do celular fecha o app |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.
 Verificação manual: abrir a camada, ler `history.length`, chamar `history.back()`.

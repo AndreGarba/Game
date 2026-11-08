@@ -135,3 +135,38 @@
   max-width: none;
   pointer-events: none;
 }
+
+/* Coluna de ícones à direita. Mesma escala do botão de pausa do HUD (48 de 360 de altura), um pouco maior por ser alvo de toque. */
+.tela-home__icones {
+  position: absolute;
+  top: calc(5cqh + var(--safe-topo));
+  right: calc(2.5cqw + var(--safe-direita));
+  display: flex;
+  flex-direction: column;
+  gap: 2.5cqh;
+}
+
+.tela-home__icone {
+  display: block;
+  width: min(16cqh, 12cqw);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.08s ease-out;
+}
+
+.tela-home__icone:active {
+  transform: scale(0.9);
+}
+
+.tela-home__icone:focus-visible {
+  outline: 3px solid var(--cor-destaque-texto);
+  outline-offset: 3px;
+}
+
+.tela-home__icone img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

@@ -3,9 +3,12 @@
 import azulejos from './azulejos.webp'
 import botoes from './botoes.webp'
 import espuma from './espuma.webp'
+// Ícones gerados no ChatGPT a partir do botão de pausa do HUD, para ficarem da mesma família.
+import iconeConfiguracoes from './icone-configuracoes.webp'
+import iconeRanking from './icone-ranking.webp'
 import logo from './logo.webp'
 
-export const IMAGENS_HOME = { azulejos, espuma, logo, botoes }
+export const IMAGENS_HOME = { azulejos, espuma, logo, botoes, iconeConfiguracoes, iconeRanking }
 
 /** Começa a baixar a arte da home enquanto a abertura toca, para a home abrir pronta. */
 export function preCarregarImagensHome() {
