@@ -48,6 +48,11 @@
   width: calc(var(--u) * 125.268 / 3.6);
 }
 
+.tela-corrida__selo--moedas {
+  left: calc(var(--u) * 296.2 / 3.6 + var(--safe-esquerda));
+  width: calc(var(--u) * 127 / 3.6);
+}
+
 /* Placa da cor do selo sobre os zeros desenhados na arte; o valor ao vivo vai em cima dela. */
 .tela-corrida__valor {
   position: absolute;
@@ -78,6 +83,33 @@
   height: 39.6%;
 }
 
+/* A arte deste selo não traz zeros: o valor não precisa da placa creme. */
+.tela-corrida__valor--moedas {
+  left: 37%;
+  top: 40%;
+  width: 45%;
+  height: 40%;
+  justify-content: center;
+  background: none;
+}
+
+/* Rótulo sobre a fita verde, inclinado como o letreiro desenhado nos outros selos. */
+.tela-corrida__rotulo-selo {
+  position: absolute;
+  left: 30%;
+  top: 6%;
+  width: 52%;
+  height: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cor-hq-preto);
+  font-family: var(--fonte-hq);
+  font-size: calc(var(--u) * 11 / 3.6);
+  line-height: 1;
+  transform: rotate(-2deg) skewX(-8deg);
+}
+
 .tela-corrida__pausa {
   position: absolute;
   top: calc(var(--u) * 22 / 3.6 + var(--safe-topo));
@@ -103,71 +135,6 @@
 .tela-corrida__pausa:focus-visible {
   outline: 3px solid var(--cor-destaque-texto);
   outline-offset: 3px;
-}
-
-/* Tutor, sujeira e ossinhos não estão no frame: ficam no cartão de antes, abaixo da pausa. */
-.tela-corrida__medidores {
-  position: absolute;
-  top: calc(var(--u) * 76 / 3.6 + var(--safe-topo));
-  right: calc(var(--u) * 28 / 3.6 + var(--safe-direita));
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-2);
-  padding: var(--espaco-2) var(--espaco-3);
-  border-radius: var(--raio-2);
-  background: var(--cor-superficie-translucida);
-  box-shadow: var(--sombra-1);
-  font-size: var(--texto-1);
-  font-weight: 700;
-}
-
-.tela-corrida__ossos {
-  display: flex;
-  gap: var(--espaco-3);
-  font-size: var(--texto-2);
-  font-variant-numeric: tabular-nums;
-}
-
-.tela-corrida__medidor {
-  display: grid;
-  grid-template-columns: 56px 96px;
-  align-items: center;
-  gap: var(--espaco-2);
-}
-
-.tela-corrida__trilho {
-  height: var(--espaco-2);
-  border-radius: var(--raio-total);
-  background: var(--cor-trilho);
-  overflow: hidden;
-}
-
-/* Barra cheia = tutor longe. Esvazia conforme ele se aproxima. */
-.tela-corrida__barra-vantagem {
-  height: 100%;
-  width: calc(var(--progresso, 1) * 100%);
-  border-radius: inherit;
-  background: var(--cor-ok);
-  transition: width 0.1s linear;
-}
-
-.tela-corrida__pontos-sujeira {
-  display: flex;
-  gap: var(--espaco-1);
-}
-
-.tela-corrida__pontos-sujeira > span {
-  width: var(--espaco-3);
-  height: var(--espaco-3);
-  border-radius: var(--raio-total);
-}
-
-.tela-corrida__limpo {
-  background: var(--cor-trilho);
-}
-
-.tela-corrida__sujo {
-  background: var(--cor-lama);
 }
 
 .tela-corrida__veu {
@@ -211,12 +178,6 @@
 .tela-corrida__botao:focus-visible {
   outline: 3px solid var(--cor-texto);
   outline-offset: 3px;
-}
-
-@media (orientation: portrait) and (pointer: coarse) {
-  .tela-corrida__medidor {
-    grid-template-columns: 48px 64px;
-  }
 }
 
 /*
@@ -282,10 +243,27 @@
 .fim-banho {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  overflow: hidden;
   border-right: calc(var(--u) * 4) solid var(--cor-hq-preto);
-  user-select: none;
   animation: fim-banho-entra var(--fim-banho) cubic-bezier(0.2, 0.9, 0.3, 1.15) calc(var(--fim-iris) + 0.05s) both;
+}
+
+.fim-banho__imagem,
+.fim-banho__efeitos {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fim-banho__imagem {
+  object-fit: cover;
+  user-select: none;
+}
+
+/* Bolhas e névoa: dentro da moldura da imagem, então não passam para o painel de resultado. */
+.fim-banho__efeitos {
+  pointer-events: none;
 }
 
 @keyframes fim-banho-entra {

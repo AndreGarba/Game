@@ -26,6 +26,7 @@ export interface QuadroCorrida {
 export interface PontoRastro {
   x: number
   y: number
+  vy: number
   noChao: boolean
   abaixado: boolean
 }
@@ -71,7 +72,7 @@ export function criarControladorCorrida(opcoes: OpcoesControlador) {
         yAnterior = estado.cachorro.y
         passo(estado, acao)
         const c = estado.cachorro
-        rastro.push({ x: c.x, y: c.y, noChao: c.noChao, abaixado: c.abaixadoTicks > 0 })
+        rastro.push({ x: c.x, y: c.y, vy: c.vy, noChao: c.noChao, abaixado: c.abaixadoTicks > 0 })
         if (rastro.length > TAMANHO_RASTRO) rastro.shift()
         acumulado -= DT
         if (estado.tick % TICKS_ENTRE_HUD === 0) opcoes.aoAtualizarHud(estado)

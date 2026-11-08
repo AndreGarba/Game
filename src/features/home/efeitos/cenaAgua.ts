@@ -92,7 +92,7 @@ export async function criarCenaAgua(
     new ShaderMaterial({
       vertexShader: VERTICE_TELA_CHEIA,
       fragmentShader: FRAGMENTO_VAPOR,
-      uniforms: { uTela: { value: tela }, uTempo: tempo },
+      uniforms: { uTela: { value: tela }, uTempo: tempo, uForca: { value: 1 } },
       transparent: true,
       depthTest: false,
       depthWrite: false,

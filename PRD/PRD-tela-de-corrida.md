@@ -32,7 +32,7 @@ Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "
 | Home | Frame Home do Figma "Hora do banho" (7953:8401): azulejos, espuma, logo "A Hora do Banho" e botão **JOGAR** (`features/home`). Jogar (ou Espaço/Enter) começa a corrida direto. Efeitos em Three.js (`features/home/efeitos`): gotas que escorrem pelos azulejos aos trancos, refratando a imagem, gotas paradas que surgem e evaporam, e vapor subindo da espuma. Sem WebGL, ou enquanto o Three.js baixa, ficam as imagens estáticas; com movimento reduzido, um quadro parado. Substitui o antigo cartão de início, que tinha como jogar, a dica da lama e o recorde: esses textos ficaram sem lugar na tela por enquanto. |
 | Corrida | Canvas em tela cheia + placar. |
 | Pausa | Automática quando o app vai para segundo plano. Botão **Continuar**. |
-| Fim | Motivo do fim, pontos, distância, ossinhos, ossinhos de ouro, recorde ou "Novo recorde!", botão **Correr de novo**. |
+| Fim | Motivo do fim, pontos, distância, ossinhos, ossinhos de ouro, recorde ou "Novo recorde!", botão **Correr de novo**. Bolhas de sabão e névoa em Three.js (`features/corrida/efeitos`) só em cima da imagem do banho; tocar numa bolha estoura. Sem WebGL, fica só a imagem; com movimento reduzido, um quadro parado. |
 
 Espaço e Enter também iniciam, continuam e reiniciam.
 
@@ -123,8 +123,7 @@ No slide, os 2 primeiros quadros descem para o chão, um a cada 5 ticks do abaix
 a 6 deslizam em loop no ritmo da distância. No mergulho (abaixar no ar) fica no quadro de quase
 tocar o chão. No slide o desenho encosta a barriga no chão e escorrega até 45 cm para a frente;
 ao voltar a correr, volta suave para a posição de antes (só desenho: a caixa de colisão não anda).
-A lama não muda a aparência do cachorro: a sujeira aparece só no cartão do placar e na distância
-do tutor. O texto abaixo é o cachorro vetorial, que só aparece enquanto as imagens carregam:
+A lama não muda a aparência do cachorro. O texto abaixo é o cachorro vetorial, que só aparece enquanto as imagens carregam:
 
 Desenhado em vetor (o emoji ficava quase invisível no canvas): corpo, cabeça, orelha, focinho,
 língua, rabo abanando e pernas que alternam conforme a distância percorrida. No ar, as pernas
@@ -132,6 +131,19 @@ esticam. Abaixado, o corpo achata.
 
 ### 5.2 Tutor
 
+- **Pulo em sprite** (`desenho/tutorSprite.ts`, folha de 10 quadros gerada no ChatGPT, em
+  `PRD/referencias/tutor-pulo-correndo.png`). É o salto de quem vem correndo e não tem jeito para
+  a coisa. Como ele refaz o caminho do cachorro, sabe antes onde vai pular: dá o último passo
+  empurrando o chão nos 0,7 m antes do ponto do pulo, sem parar para agachar. No ar, sobe com o
+  joelho alto, abre as pernas no alto e desce com o pé na frente. Ao pousar de uma queda maior que
+  ~0,6 m, cai para a frente, apoia uma mão no chão e levanta com o tronco inclinado, tropeçando,
+  em ~0,43 s pelo relógio real, até voltar à corrida. Queda pequena (descer de um capô) não vira
+  tombo. A altura vem do rastro do cachorro; a folha é recortada com o pé no rodapé para não somar
+  com ela.
+- **Slide em sprite** (`desenho/tutorSprite.ts`, folha de 6 quadros gerada no ChatGPT, em
+  `PRD/referencias/tutor-slide.png`). Abaixado, desliza de pés à frente, com uma mão apoiada atrás:
+  2 quadros descendo pelo relógio real, 4 em loop no ritmo da distância e os 2 primeiros ao
+  contrário para voltar à corrida. No ar, o mergulho fica no quadro de quase tocar o chão.
 - **Sempre na tela**, correndo atrás do cachorro com a esponja na mão.
 - A vantagem real (até 20 m) não cabe entre a margem e o cachorro, então é **comprimida**:
   vantagem máxima = tutor colado na margem esquerda; vantagem zero = esponja encostando no
@@ -153,8 +165,12 @@ esticam. Abaixado, o corpo achata.
 - Velocidade = a do motor de fato: `velocidadeBase(x)`, em km/h (de 29 a 72).
 - O botão de pausa abre a mesma pausa de quando o app vai para segundo plano, e some enquanto o
   jogo está pausado.
-- Tutor, sujeira e ossinhos não estão no frame. Decisão do André: continuam no cartão de antes,
-  abaixo da pausa (barra **Tutor**, cheia = longe; 3 bolinhas de **Sujeira**; 🦴 e 🏅).
+- **Moedas:** selo verde ao lado do de Velocidade, no mesmo estilo, com a moeda desenhada e a
+  contagem com zeros à esquerda. A arte não tem texto: o rótulo vem dos locales. Decisão do André:
+  contador único, sem separar a moeda especial, que soma +10 (a normal soma +1). É só a contagem da tela: a
+  pontuação da partida continua vindo do motor (`PONTOS_OSSO`, `PONTOS_OSSO_OURO`).
+- Decisão do André: o HUD não mostra a aproximação do tutor nem a sujeira. Desde r8, a lama não
+  muda o cachorro nem a velocidade: ela aparece só na distância do tutor, na cena.
 - Medidas em 1/360 da altura, como o frame; em tela mais estreita que o frame, pela largura.
   Respeita a área segura do iPhone (notch).
 

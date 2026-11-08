@@ -31,8 +31,8 @@
   },
   "hud": {
     "metros": "{{valor}} m",
-    "tutor": "Owner",
-    "sujeira": "Dirt",
+    "moedas": "Coins: {{valor}}",
+    "moedasRotulo": "Coins",
     "distancia": "Distance: {{valor}} m",
     "velocidade": "Speed: {{valor}} km/h",
     "pausar": "Pause"

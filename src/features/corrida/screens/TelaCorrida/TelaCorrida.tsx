@@ -2,10 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import { lerRecorde, registrarPlacar } from '../../../../data/recorde.ts'
 import {
-  vantagemTutor,
   resultado as resultadoDaPartida,
-  SUJEIRA_MAX,
-  VANTAGEM_MAX,
   velocidadeBase,
   type Acao,
   type ComandoLog,
@@ -16,6 +13,7 @@ import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
+import { FimBanho } from '../../FimBanho.tsx'
 import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
 import { FormularioRanking } from '../../../ranking/FormularioRanking.tsx'
 import '@fontsource/luckiest-guy/latin-400.css'
@@ -27,10 +25,7 @@ type Fase = 'correndo' | 'pausado' | 'fim'
 interface Hud {
   metros: number
   kmh: number
-  ossos: number
-  ossosOuro: number
-  sujeira: number
-  vantagem: number
+  moedas: number
 }
 
 interface Fim {
@@ -44,14 +39,14 @@ interface Fim {
   log: readonly ComandoLog[]
 }
 
+// Só o contador do HUD: a pontuação da partida continua saindo do motor (PONTOS_OSSO*).
+const MOEDAS_POR_OSSO_OURO = 10
+
 function hudDe(estado: EstadoPartida): Hud {
   return {
     metros: Math.floor(estado.cachorro.x),
     kmh: Math.round(velocidadeBase(estado.cachorro.x) * 3.6),
-    ossos: estado.ossos,
-    ossosOuro: estado.ossosOuro,
-    sujeira: estado.sujeira,
-    vantagem: vantagemTutor(estado.sujeira),
+    moedas: estado.ossos + estado.ossosOuro * MOEDAS_POR_OSSO_OURO,
   }
 }
 
@@ -180,32 +175,15 @@ export function TelaCorrida() {
             <img src={IMAGENS_HUD.velocidade} alt="" draggable={false} />
             <span className="tela-corrida__valor tela-corrida__valor--velocidade">{digitos(hud.kmh, 2)}</span>
           </div>
+          {/* Selo gerado sem texto: rótulo (traduzido) e valor vão por cima da arte. */}
+          <div className="tela-corrida__selo tela-corrida__selo--moedas" role="img" aria-label={t('hud.moedas', { valor: numero(hud.moedas) })}>
+            <img src={IMAGENS_HUD.moedas} alt="" draggable={false} />
+            <span className="tela-corrida__rotulo-selo">{t('hud.moedasRotulo')}</span>
+            <span className="tela-corrida__valor tela-corrida__valor--moedas">{digitos(hud.moedas, 4)}</span>
+          </div>
           <button className="tela-corrida__pausa" onClick={pausar} aria-label={t('hud.pausar')} disabled={fase !== 'correndo'}>
             <img src={IMAGENS_HUD.pausa} alt="" draggable={false} />
           </button>
-          <div className="tela-corrida__medidores">
-            <div className="tela-corrida__ossos">
-              <span>🦴 {numero(hud.ossos)}</span>
-              <span>🏅 {numero(hud.ossosOuro)}</span>
-            </div>
-            <div className="tela-corrida__medidor">
-              <span>{t('hud.tutor')}</span>
-              <div className="tela-corrida__trilho">
-                <div
-                  className="tela-corrida__barra-vantagem"
-                  style={{ '--progresso': Math.max(0, hud.vantagem) / VANTAGEM_MAX } as CSSProperties}
-                />
-              </div>
-            </div>
-            <div className="tela-corrida__medidor">
-              <span>{t('hud.sujeira')}</span>
-              <div className="tela-corrida__pontos-sujeira">
-                {Array.from({ length: SUJEIRA_MAX }, (_, i) => (
-                  <span key={i} className={i < hud.sujeira ? 'tela-corrida__sujo' : 'tela-corrida__limpo'} />
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
@@ -226,7 +204,7 @@ export function TelaCorrida() {
           style={{ '--foco-x': fim.foco.x, '--foco-y': fim.foco.y } as CSSProperties}
         >
           <div className="fim-iris" aria-hidden="true" />
-          <img className="fim-banho" src={IMAGENS_FIM.banho} alt="" draggable={false} />
+          <FimBanho />
           <div className="fim-partida">
             <div className="fim-partida__painel">
               <img className="fim-partida__fundo" src={IMAGENS_FIM.painel} alt="" draggable={false} />

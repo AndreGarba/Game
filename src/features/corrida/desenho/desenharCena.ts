@@ -17,13 +17,15 @@ import {
   spriteSlidePronto,
   spriteObjeto,
   spriteTutorPronto,
+  spriteTutorPuloPronto,
+  spriteTutorSlidePronto,
   montagemDaCamada,
   type Montagem,
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
 import { atualizarPoeira, desenharPoeira } from './poeira.ts'
-import { desenharTutorSprite } from './tutorSprite.ts'
+import { ANTECIPACAO_PULO_M, desenharTutorSprite } from './tutorSprite.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
@@ -572,7 +574,7 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
   }
 }
 
-const POSE_NO_CHAO: PontoRastro = { x: 0, y: 0, noChao: true, abaixado: false }
+const POSE_NO_CHAO: PontoRastro = { x: 0, y: 0, vy: 0, noChao: true, abaixado: false }
 
 function poseNoRastro(rastro: readonly PontoRastro[], xAlvo: number): PontoRastro {
   const primeiro = rastro[0]
@@ -589,6 +591,21 @@ function poseNoRastro(rastro: readonly PontoRastro[], xAlvo: number): PontoRastr
   const antes = rastro[baixo - 1] ?? depois
   const t = depois.x === antes.x ? 1 : (xAlvo - antes.x) / (depois.x - antes.x)
   return { ...depois, y: antes.y + (depois.y - antes.y) * Math.min(1, Math.max(0, t)) }
+}
+
+// Metros até o próximo ponto do rastro em que o cachorro saiu do chão, se estiver dentro do limite.
+// O tutor refaz o caminho do cachorro, então o pulo dele já está no rastro antes de acontecer: dá
+// para dar o passo de impulso antes de sair do chão, o que o cachorro não pode (ele depende do toque do jogador).
+function metrosAtePuloNoRastro(rastro: readonly PontoRastro[], xAlvo: number, limite: number): number | null {
+  // De trás para a frente, sem parar no primeiro: o que vale é o pulo mais próximo.
+  let metros: number | null = null
+  for (let i = rastro.length - 1; i > 0; i--) {
+    const p = rastro[i]!
+    const anterior = rastro[i - 1]!
+    if (anterior.x <= xAlvo) break
+    if (!p.noChao && anterior.noChao && p.x - xAlvo <= limite) metros = p.x - xAlvo
+  }
+  return metros
 }
 
 /** Câmera que segue o cachorro em `x` (metros) numa tela de `largura` × `altura` px. */
@@ -663,7 +680,14 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
   // O tutor faz o que o cachorro fez quando passou por este mesmo ponto da pista: como os
   // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob a mesma placa.
   const pose = poseNoRastro(quadro.rastro, xTutor - CACHORRO_LARGURA / 2)
-  const poseTutor = { fase: x * 1.6, noAr: !pose.noChao, abaixado: pose.abaixado }
+  const xNoRastro = xTutor - CACHORRO_LARGURA / 2
+  const poseTutor = {
+    fase: x * 1.6,
+    noAr: !pose.noChao,
+    abaixado: pose.abaixado,
+    vy: pose.vy,
+    metrosAtePulo: pose.noChao ? metrosAtePuloNoRastro(quadro.rastro, xNoRastro, ANTECIPACAO_PULO_M) : null,
+  }
 
   // Poeira atrás dos dois, desenhada antes deles para ficar por baixo dos corpos.
   const velocidade = velocidadeBase(c.x)
@@ -675,7 +699,16 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
 
   const spriteTutor = spriteTutorPronto()
   if (spriteTutor) {
-    desenharTutorSprite(ctx, spriteTutor, sx(cam, xTutor), sy(cam, pose.y), ppm, poseTutor)
+    desenharTutorSprite(
+      ctx,
+      spriteTutor,
+      spriteTutorPuloPronto(),
+      spriteTutorSlidePronto(),
+      sx(cam, xTutor),
+      sy(cam, pose.y),
+      ppm,
+      poseTutor,
+    )
   } else {
     ctx.save()
     ctx.translate(sx(cam, xTutor), sy(cam, pose.y))
