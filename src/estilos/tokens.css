@@ -18,6 +18,8 @@
   --cor-hq-preto: #000000;
   /* Creme do fundo dos selos do HUD (amostrado da arte), para cobrir os zeros desenhados. */
   --cor-hud-creme: #fdf3e3;
+  /* Azul da retícula do painel de fim de partida (amostrado da arte), para o rótulo "Pontos". */
+  --cor-hud-azul: #2f6fc4;
   /* Figma: Grayscale/gray-700. */
   --cinza-700: #0f131b;
   /* Faixas em volta da moldura de celular deitado, onde a janela sobra. */

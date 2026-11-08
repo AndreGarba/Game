@@ -13,8 +13,8 @@ import {
 } from '../../../../engine/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
-import { desenharCena } from '../../desenho/desenharCena.ts'
-import { IMAGENS_HUD } from '../../imagens/index.ts'
+import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
+import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
 import { useControlesCorrida } from '../../useControlesCorrida.ts'
 import '@fontsource/luckiest-guy/latin-400.css'
 import './tela-corrida.css'
@@ -35,6 +35,8 @@ interface Fim {
   resultado: ResultadoPartida
   novoRecorde: boolean
   recorde: number
+  /** Onde o cachorro estava na tela (0 a 1): o círculo da transição fecha ali. */
+  foco: { x: number; y: number }
 }
 
 function hudDe(estado: EstadoPartida): Hud {
@@ -89,7 +91,8 @@ export function TelaCorrida() {
       aoTerminar: (estado) => {
         const resultado = resultadoDaPartida(estado)
         const novoRecorde = registrarPlacar(resultado.pontos)
-        setFim({ resultado, novoRecorde, recorde: lerRecorde() })
+        const foco = posicaoCachorroNaTela(estado, largura, altura)
+        setFim({ resultado, novoRecorde, recorde: lerRecorde(), foco })
         mudarFase('fim')
       },
     })
@@ -212,25 +215,47 @@ export function TelaCorrida() {
       )}
 
       {fase === 'fim' && fim && (
-        <div className="tela-corrida__veu">
-          <div className="tela-corrida__cartao">
-            <h2 className="tela-corrida__titulo-fim">{t(`fim.${fim.resultado.motivo}`)}</h2>
-            <p className="tela-corrida__pontos">{numero(fim.resultado.pontos)}</p>
-            <p className="tela-corrida__rotulo">{t('fim.pontos')}</p>
-            {fim.novoRecorde && <p className="tela-corrida__novo-recorde">{t('fim.novoRecorde')}</p>}
-            <dl className="tela-corrida__detalhes">
-              <dt>{t('fim.distancia')}</dt>
-              <dd>{t('hud.metros', { valor: numero(fim.resultado.distancia) })}</dd>
-              <dt>{t('fim.ossos')}</dt>
-              <dd>🦴 {numero(fim.resultado.ossos)}</dd>
-              <dt>{t('fim.ossosOuro')}</dt>
-              <dd>🏅 {numero(fim.resultado.ossosOuro)}</dd>
-            </dl>
-            <button className="tela-corrida__botao" onClick={correr} autoFocus>
-              {t('deNovo')}
+        <div
+          className="tela-corrida__veu tela-corrida__veu--fim"
+          style={{ '--foco-x': fim.foco.x, '--foco-y': fim.foco.y } as CSSProperties}
+        >
+          <div className="fim-iris" aria-hidden="true" />
+          <img className="fim-banho" src={IMAGENS_FIM.banho} alt="" draggable={false} />
+          <div className="fim-partida">
+            <div className="fim-partida__painel">
+              <img className="fim-partida__fundo" src={IMAGENS_FIM.painel} alt="" draggable={false} />
+              <h2 className="fim-partida__titulo">{t(`fim.${fim.resultado.motivo}`)}</h2>
+              <div className="fim-partida__miolo">
+                <p className="fim-partida__pontos">{numero(fim.resultado.pontos)}</p>
+                <p className="fim-partida__rotulo">{t('fim.pontos')}</p>
+                <dl className="fim-partida__detalhes">
+                  <dt>{t('fim.distancia')}</dt>
+                  <dd>{t('hud.metros', { valor: numero(fim.resultado.distancia) })}</dd>
+                  <dt>{t('fim.ossos')}</dt>
+                  <dd>
+                    <img src={IMAGENS_FIM.osso} alt="" draggable={false} />
+                    {numero(fim.resultado.ossos)}
+                  </dd>
+                  <dt>{t('fim.ossosOuro')}</dt>
+                  <dd>
+                    <img src={IMAGENS_FIM.ossoOuro} alt="" draggable={false} />
+                    {numero(fim.resultado.ossosOuro)}
+                  </dd>
+                </dl>
+              </div>
+              {fim.novoRecorde && (
+                <p className="fim-partida__selo">
+                  <img src={IMAGENS_FIM.selo} alt="" draggable={false} />
+                  <span>{t('fim.novoRecorde')}</span>
+                </p>
+              )}
+            </div>
+            <button className="fim-partida__botao" onClick={correr} autoFocus>
+              <img src={IMAGENS_FIM.botao} alt="" draggable={false} />
+              <span>{t('deNovo')}</span>
             </button>
             {!fim.novoRecorde && (
-              <p className="tela-corrida__recorde">{t('fim.recorde', { valor: numero(fim.recorde) })}</p>
+              <p className="fim-partida__recorde">{t('fim.recorde', { valor: numero(fim.recorde) })}</p>
             )}
           </div>
         </div>

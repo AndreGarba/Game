@@ -11,10 +11,21 @@ import piso from './cidade/piso.webp'
 import pista from './cidade/pista.webp'
 import distancia from './hud-distancia.webp'
 import pausa from './hud-pausa.webp'
+import fimBanho from './fim-banho.webp'
+import fimBotao from './fim-botao.webp'
+import fimOsso from './fim-osso.webp'
+import fimOssoOuro from './fim-osso-ouro.webp'
+import fimPainel from './fim-painel.webp'
+import fimSelo from './fim-selo.webp'
 import tutorCorrendo from './tutor-correndo.webp'
 import velocidade from './hud-velocidade.webp'
 
 export const IMAGENS_HUD = { distancia, velocidade, pausa }
+
+// Fim de partida: peças sem texto (a copy vem dos locales), geradas no ChatGPT com os selos do
+// HUD como referência de estilo. Folha original em PRD/referencias/fim-hud.png. O banho (metade
+// esquerda da tela de fim) vem de PRD/referencias/fim-banho.webp, reduzido para 960 de largura.
+export const IMAGENS_FIM = { banho: fimBanho, painel: fimPainel, botao: fimBotao, osso: fimOsso, ossoOuro: fimOssoOuro, selo: fimSelo }
 
 // Sprites dos objetos da pista, gerados na mesma conversa de IA das camadas. O nome do arquivo
 // é o `visual` do elemento do motor (ou o tipo, nos coletáveis): arquivo novo em `objetos/` já
@@ -94,6 +105,7 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     arte = CAMADAS_CIDADE.map((c) => criar(c.src))
     sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
     Object.values(IMAGENS_HUD).forEach(criar)
+    Object.values(IMAGENS_FIM).forEach(criar)
     cachorro = criar(cachorroCorrendo)
     tutor = criar(tutorCorrendo)
   }
