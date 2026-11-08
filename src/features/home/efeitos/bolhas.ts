@@ -58,7 +58,13 @@ const entre = (min: number, max: number) => min + sorte() * (max - min)
  * Bolhas de sabão que sobem da espuma; parte estoura no caminho e parte sai por cima. Tocar numa
  * bolha também estoura. A simulação roda em JS (são poucas) e o shader só desenha.
  */
-export function criarBolhas(tela: Vector2, tempo: { value: number }, movimentoReduzido: boolean): Bolhas {
+export function criarBolhas(
+  tela: Vector2,
+  tempo: { value: number },
+  movimentoReduzido: boolean,
+  // Multiplica o intervalo entre bolhas: área menor que a tela inteira pede menos bolhas.
+  raridade = 1,
+): Bolhas {
   const bolhas: Bolha[] = []
   let ateProxima = 0
 
@@ -109,7 +115,7 @@ export function criarBolhas(tela: Vector2, tempo: { value: number }, movimentoRe
     ateProxima -= delta
     if (ateProxima <= 0) {
       soltar()
-      ateProxima = entre(INTERVALO_MIN, INTERVALO_MAX)
+      ateProxima = entre(INTERVALO_MIN, INTERVALO_MAX) * raridade
     }
     for (let i = bolhas.length - 1; i >= 0; i--) {
       const b = bolhas[i]!

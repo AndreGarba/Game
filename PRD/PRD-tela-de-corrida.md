@@ -32,7 +32,7 @@ Abertura GAS Games ──fim ou toque──▶ [Gire o celular] ──girou ou "
 | Home | Frame Home do Figma "Hora do banho" (7953:8401): azulejos, espuma, logo "A Hora do Banho" e botão **JOGAR** (`features/home`). Jogar (ou Espaço/Enter) começa a corrida direto. Efeitos em Three.js (`features/home/efeitos`): gotas que escorrem pelos azulejos aos trancos, refratando a imagem, gotas paradas que surgem e evaporam, e vapor subindo da espuma. Sem WebGL, ou enquanto o Three.js baixa, ficam as imagens estáticas; com movimento reduzido, um quadro parado. Substitui o antigo cartão de início, que tinha como jogar, a dica da lama e o recorde: esses textos ficaram sem lugar na tela por enquanto. |
 | Corrida | Canvas em tela cheia + placar. |
 | Pausa | Automática quando o app vai para segundo plano. Botão **Continuar**. |
-| Fim | Motivo do fim, pontos, distância, ossinhos, ossinhos de ouro, recorde ou "Novo recorde!", botão **Correr de novo**. |
+| Fim | Motivo do fim, pontos, distância, ossinhos, ossinhos de ouro, recorde ou "Novo recorde!", botão **Correr de novo**. Bolhas de sabão e névoa em Three.js (`features/corrida/efeitos`) só em cima da imagem do banho; tocar numa bolha estoura. Sem WebGL, fica só a imagem; com movimento reduzido, um quadro parado. |
 
 Espaço e Enter também iniciam, continuam e reiniciam.
 

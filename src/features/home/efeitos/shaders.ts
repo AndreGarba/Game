@@ -145,6 +145,7 @@ void main() {
 export const FRAGMENTO_VAPOR = /* glsl */ `
 uniform vec2 uTela;
 uniform float uTempo;
+uniform float uForca;
 varying vec2 vUv;
 
 ${ACASO}
@@ -181,7 +182,7 @@ void main() {
   float lateral = mix(0.55, 1.0, smoothstep(0.15, 0.5, abs(vUv.x - 0.5)));
   float alfa = min(0.85, smoothstep(0.4, 0.7, nuvem) * altura * lateral * 1.6);
 
-  gl_FragColor = vec4(vec3(1.0, 0.99, 0.97), alfa);
+  gl_FragColor = vec4(vec3(1.0, 0.99, 0.97), alfa * uForca);
 }
 `
 
