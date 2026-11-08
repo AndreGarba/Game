@@ -83,7 +83,8 @@ Validação do log (`LogInvalido`):
 
 ### 4.1 Ainda a construir
 
-- Edge Function `validar-partida` que recebe seed + log, roda `simularPartida` e grava o resultado.
+- ~~Edge Function `validar-partida`~~ feita como `registrar-partida` (ver CLAUDE.md, "Ranking e
+  anti-fraude").
 - De onde vem a seed (ver decisão em aberto no PRD de conceito). Sem seed emitida pelo servidor,
   dá para testar seeds até achar uma pista fácil.
 - Versão das regras no payload: partida enviada com `VERSAO_REGRAS` diferente da do servidor é

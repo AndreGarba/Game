@@ -48,5 +48,29 @@
     "ossosOuro": "Golden bones",
     "recorde": "Best: {{valor}}",
     "novoRecorde": "New best!"
+  },
+  "ranking": {
+    "titulo": "Ranking",
+    "carregando": "Loading…",
+    "indisponivel": "Ranking is down right now.",
+    "vazio": "No one here yet. Be the first!",
+    "seuNome": "Your name on the ranking",
+    "placeholderNome": "How should we call you?",
+    "enviar": "Save",
+    "enviando": "Saving…",
+    "nomeLongo": "Use up to {{max}} letters.",
+    "posicao": "#{{posicao}} on the ranking!",
+    "melhorPartida": "Your longest run yet, {{nome}}!",
+    "melhorContinua": "Your best is still {{valor}} m.",
+    "erro": {
+      "payload_invalido": "Couldn't save this run.",
+      "nome_invalido": "That name won't work. Try another.",
+      "versao_regras": "Update the game to join the ranking.",
+      "log_invalido": "Couldn't verify this run.",
+      "limite": "Too many runs in a row. Wait a minute.",
+      "interno": "The ranking failed. Try again.",
+      "rede": "No internet. Try again.",
+      "sem_configuracao": "Ranking unavailable."
+    }
   }
 }

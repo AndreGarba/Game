@@ -1,0 +1,80 @@
+.formulario-ranking {
+  margin: var(--espaco-2) 0 0;
+  padding: var(--espaco-3);
+  border-radius: var(--raio-2);
+  background: var(--cor-trilho);
+  text-align: left;
+}
+
+.formulario-ranking__rotulo {
+  display: block;
+  margin-bottom: var(--espaco-1);
+  font-size: var(--texto-2);
+  font-weight: 700;
+}
+
+.formulario-ranking__linha {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.formulario-ranking__campo {
+  flex: 1;
+  min-width: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  border: 2px solid var(--cor-trilho);
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font: inherit;
+  font-size: var(--texto-3);
+}
+
+.formulario-ranking__campo:focus-visible {
+  outline: none;
+  border-color: var(--cor-destaque);
+}
+
+.formulario-ranking__enviar {
+  padding: var(--espaco-2) var(--espaco-4);
+  border: 0;
+  border-radius: var(--raio-total);
+  background: var(--cor-texto);
+  color: var(--cor-superficie);
+  font: inherit;
+  font-size: var(--texto-2);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.formulario-ranking__enviar:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.formulario-ranking__enviar:focus-visible {
+  outline: 3px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+.formulario-ranking__erro {
+  margin: var(--espaco-1) 0 0;
+  font-size: var(--texto-1);
+  color: var(--cor-perigo);
+}
+
+.formulario-ranking--feito {
+  text-align: center;
+}
+
+.formulario-ranking__posicao {
+  margin: 0;
+  font-size: var(--texto-4);
+  font-weight: 800;
+  color: var(--cor-destaque);
+}
+
+.formulario-ranking__mensagem {
+  margin: var(--espaco-1) 0 0;
+  font-size: var(--texto-2);
+}

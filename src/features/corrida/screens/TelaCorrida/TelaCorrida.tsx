@@ -8,6 +8,7 @@ import {
   VANTAGEM_MAX,
   velocidadeBase,
   type Acao,
+  type ComandoLog,
   type EstadoPartida,
   type ResultadoPartida,
 } from '../../../../engine/index.ts'
@@ -15,7 +16,8 @@ import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
-import { useControlesCorrida } from '../../useControlesCorrida.ts'
+import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
+import { FormularioRanking } from '../../../ranking/FormularioRanking.tsx'
 import '@fontsource/luckiest-guy/latin-400.css'
 import './tela-corrida.css'
 
@@ -37,6 +39,9 @@ interface Fim {
   recorde: number
   /** Onde o cachorro estava na tela (0 a 1): o círculo da transição fecha ali. */
   foco: { x: number; y: number }
+  // O que vai para o ranking: o servidor refaz a partida a partir daqui.
+  seed: number
+  log: readonly ComandoLog[]
 }
 
 function hudDe(estado: EstadoPartida): Hud {
@@ -88,11 +93,11 @@ export function TelaCorrida() {
     const controlador = criarControladorCorrida({
       desenhar: (quadro) => desenharCena(ctx, largura, altura, quadro),
       aoAtualizarHud: (estado) => setHud(hudDe(estado)),
-      aoTerminar: (estado) => {
+      aoTerminar: (estado, log) => {
         const resultado = resultadoDaPartida(estado)
         const novoRecorde = registrarPlacar(resultado.pontos)
         const foco = posicaoCachorroNaTela(estado, largura, altura)
-        setFim({ resultado, novoRecorde, recorde: lerRecorde(), foco })
+        setFim({ resultado, novoRecorde, recorde: lerRecorde(), foco, seed: estado.seed, log: [...log] })
         mudarFase('fim')
       },
     })
@@ -145,6 +150,8 @@ export function TelaCorrida() {
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       if (evento.code !== 'Space' && evento.code !== 'Enter') return
+      // Digitando o nome do ranking, Espaço é espaço e Enter envia o nome.
+      if (digitando(evento)) return
       if (faseRef.current === 'fim') correr()
       else if (faseRef.current === 'pausado') continuar()
       else return
@@ -250,7 +257,9 @@ export function TelaCorrida() {
                 </p>
               )}
             </div>
-            <button className="fim-partida__botao" onClick={correr} autoFocus>
+            {/* Sem autoFocus no botão: na primeira partida o foco vai para o nome do ranking. */}
+            <FormularioRanking key={fim.seed} seed={fim.seed} log={fim.log} />
+            <button className="fim-partida__botao" onClick={correr}>
               <img src={IMAGENS_FIM.botao} alt="" draggable={false} />
               <span>{t('deNovo')}</span>
             </button>

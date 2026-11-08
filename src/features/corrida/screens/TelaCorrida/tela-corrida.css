@@ -308,7 +308,7 @@
   from {
     transform: scale(0.6) rotate(-4deg);
     opacity: 0;
-    visibility: hidden;
+    pointer-events: none;
   }
 }
 
@@ -323,7 +323,7 @@
   }
 
   .fim-partida {
-    animation: fim-aparece 0.2s 0.9s both;
+    animation: fim-partida-aparece 0.2s 0.9s both;
   }
 }
 
@@ -334,6 +334,14 @@
   }
 }
 
+/* Os dados não somem com visibility: o autoFocus do nome do ranking precisa de um campo focável. */
+@keyframes fim-partida-aparece {
+  from {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 .fim-partida img {
   display: block;
   user-select: none;
@@ -341,7 +349,7 @@
 
 .fim-partida__painel {
   position: relative;
-  height: calc(var(--u) * 240);
+  height: calc(var(--u) * 196);
   aspect-ratio: 891 / 699;
 }
 
@@ -454,7 +462,7 @@
   position: relative;
   width: calc(var(--u) * 168);
   aspect-ratio: 600 / 209;
-  margin-top: calc(var(--u) * -24);
+  margin-top: calc(var(--u) * -6);
   padding: 0;
   border: 0;
   background: none;
@@ -503,4 +511,66 @@
 .fim-partida__recorde {
   margin: calc(var(--u) * 4) 0 0;
   font-size: calc(var(--u) * 12);
+}
+
+/*
+ * Nome do ranking (FormularioRanking, da main) vestido de HQ só aqui: faixa creme de contorno
+ * preto entre o painel e o botão, na mesma unidade do painel.
+ */
+.fim-partida .formulario-ranking {
+  width: calc(var(--u) * 236);
+  margin: calc(var(--u) * 2) 0 0;
+  padding: calc(var(--u) * 5) calc(var(--u) * 8);
+  border: calc(var(--u) * 2.5) solid var(--cor-hq-preto);
+  border-radius: calc(var(--u) * 4);
+  background: var(--cor-hud-creme);
+  transform: rotate(-1.5deg);
+}
+
+.fim-partida .formulario-ranking__rotulo {
+  margin-bottom: calc(var(--u) * 3);
+  font-size: calc(var(--u) * 9);
+  font-weight: 400;
+}
+
+.fim-partida .formulario-ranking__linha {
+  gap: calc(var(--u) * 5);
+}
+
+.fim-partida .formulario-ranking__campo {
+  padding: calc(var(--u) * 3) calc(var(--u) * 6);
+  border: calc(var(--u) * 2) solid var(--cor-hq-preto);
+  border-radius: calc(var(--u) * 3);
+  font-family: var(--fonte);
+  font-size: calc(var(--u) * 10);
+  font-weight: 700;
+}
+
+.fim-partida .formulario-ranking__enviar {
+  padding: calc(var(--u) * 3) calc(var(--u) * 10);
+  border: calc(var(--u) * 2) solid var(--cor-hq-preto);
+  background: var(--cor-hud-azul);
+  color: var(--cor-destaque-texto);
+  font-family: var(--fonte-hq);
+  font-size: calc(var(--u) * 10);
+  font-weight: 400;
+}
+
+.fim-partida .formulario-ranking__erro {
+  margin-top: calc(var(--u) * 2);
+  font-family: var(--fonte);
+  font-size: calc(var(--u) * 8);
+  font-weight: 700;
+}
+
+.fim-partida .formulario-ranking__posicao {
+  font-size: calc(var(--u) * 13);
+  font-weight: 400;
+}
+
+.fim-partida .formulario-ranking__mensagem {
+  margin-top: calc(var(--u) * 2);
+  font-family: var(--fonte);
+  font-size: calc(var(--u) * 9);
+  font-weight: 700;
 }

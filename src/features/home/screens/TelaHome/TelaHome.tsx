@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PainelRanking } from '../../../ranking/PainelRanking.tsx'
 import { IMAGENS_HOME } from '../../imagens/index.ts'
 import './tela-home.css'
 
@@ -60,6 +61,7 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
       <button className="tela-home__jogar" onClick={aoJogar} aria-label={t('home.jogar')}>
         <img className="tela-home__jogar-sprite" src={IMAGENS_HOME.botoes} alt="" draggable={false} />
       </button>
+      <PainelRanking />
     </div>
   )
 }

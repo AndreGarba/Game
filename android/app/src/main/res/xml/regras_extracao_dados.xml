@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Android 12+. Vai para o aparelho novo só o localStorage da WebView (hoje, o recorde). Cache
-     HTTP e precache do service worker ficam de fora: são grandes e o site baixa de novo. Quando
-     houver id anônimo de telemetria ou ranking, ele fica de fora daqui, para não clonar
-     identidade entre aparelhos. -->
+     HTTP e precache do service worker ficam de fora: são grandes e o site baixa de novo. O id
+     anônimo do ranking fica de fora de propósito: mora no IndexedDB (src/data/jogador.ts), que
+     não está na lista, para não clonar identidade entre aparelhos. Não incluir IndexedDB aqui. -->
 <data-extraction-rules>
     <cloud-backup>
         <include domain="root" path="app_webview/Default/Local Storage/" />

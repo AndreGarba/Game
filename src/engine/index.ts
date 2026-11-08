@@ -16,6 +16,7 @@ export {
   acaoDoCodigo,
   LogInvalido,
 } from './partida.ts'
+export { NOME_MAX, normalizarNome, nomeValido } from './nomeJogador.ts'
 export type {
   Acao,
   Cachorro,

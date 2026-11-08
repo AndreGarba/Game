@@ -234,7 +234,7 @@ alguém finalmente testou.
 
 | Função | `verify_jwt` | Defesa |
 | --- | --- | --- |
-| [preencher conforme forem criadas] | | |
+| `registrar-partida` | `false` | Sem login: refaz a partida com o motor (seed + log), nunca aceita placar; rate limit por IP (`contar_envio_ip`, 10/min). Turnstile pendente. |
 
 - **Toda sessão que deployar function termina comparando produção contra o repo:**
 
@@ -271,6 +271,16 @@ comm -23 <(echo "$SLUGS_DO_list_edge_functions" | sort) <(ls supabase/functions 
   rate limit por IP + captcha (ex.: Turnstile) no servidor.
 - Tabela de ranking não legível direto pelo cliente quando houver jogadores simulados: leitura
   só por RPC `security definer`.
+- **Como está hoje:** `public.ranking` guarda uma linha por jogador com a partida **mais longa**
+  (empate: mais pontos), mais seed + log para auditoria. O jogador é um id anônimo do aparelho, no
+  **IndexedDB**, não no `localStorage`: o backup da casca Android leva o `localStorage` da WebView
+  para o aparelho novo, e o id clonado faria dois aparelhos gravarem como o mesmo jogador. O cliente lê pela RPC `ranking_top` (sem `jogador_id`: com ele, qualquer um gravaria
+  no lugar de outro) e grava só pela Edge Function `registrar-partida`, que chama
+  `registrar_partida` com `service_role`. A regra do nome (`normalizarNome`/`nomeValido`) mora no
+  motor para valer igual no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o ranking
+  some da tela e o jogo segue.
+- **Pendentes:** seed emitida pelo servidor (hoje o cliente sorteia), Turnstile, filtro de nome
+  ofensivo, e o que fazer com o ranking quando `VERSAO_REGRAS` mudar (hoje mistura versões).
 
 ---
 
