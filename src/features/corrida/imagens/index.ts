@@ -21,6 +21,7 @@ import fimOssoOuro from './fim-osso-ouro.webp'
 import fimPainel from './fim-painel.webp'
 import fimSelo from './fim-selo.webp'
 import tutorCorrendo from './tutor-correndo.webp'
+import tutorPulando from './tutor-pulando.webp'
 import velocidade from './hud-velocidade.webp'
 
 export const IMAGENS_HUD = { distancia, velocidade, pausa }
@@ -157,11 +158,16 @@ export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pe
 // recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
 export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, pes: 6 } as const
 
+// Folha do tutor pulando: 10 quadros, do ar até ficar em pé (PRD/referencias/tutor-pulando.webp),
+// recortados com `--pes-no-rodape`: a altura do pulo vem do motor, não da arte.
+export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 228, altura: 400, pes: 6 } as const
+
 let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
 let cachorro: HTMLImageElement | null = null
 let slide: HTMLImageElement | null = null
 let tutor: HTMLImageElement | null = null
+let tutorPulo: HTMLImageElement | null = null
 // Montagem de cada camada já com as imagens, no mesmo índice de CAMADAS_CIDADE. A mesma peça é
 // uma imagem só, reaproveitada onde aparecer.
 let montagens: (Montagem<HTMLImageElement> | null)[] | null = null
@@ -195,6 +201,7 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     cachorro = criar(cachorroCorrendo)
     slide = criar(cachorroSlide)
     tutor = criar(tutorCorrendo)
+    tutorPulo = criar(tutorPulando)
   }
   return arte
 }
@@ -213,6 +220,12 @@ export function spriteCachorroPronto(): HTMLImageElement | null {
 export function spriteSlidePronto(): HTMLImageElement | null {
   preCarregarImagensCenario()
   return pronta(slide)
+}
+
+/** A folha do pulo do tutor, ou null enquanto não carregou (aí ele pula com um quadro da corrida). */
+export function spriteTutorPuloPronto(): HTMLImageElement | null {
+  preCarregarImagensCenario()
+  return pronta(tutorPulo)
 }
 
 /** A folha do tutor, ou null enquanto não carregou (o canvas desenha o tutor vetorial). */

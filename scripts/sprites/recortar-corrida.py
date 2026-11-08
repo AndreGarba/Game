@@ -25,6 +25,9 @@ parser.add_argument('--quadros-minimos', type=int, default=10)
 # Alfa a partir do qual o pixel é personagem. Algumas folhas saem com o fundo em alfa 1-2; a do
 # slide saiu com um véu branco em alfa 180-196 e o cachorro em 248: aí passa --alfa-fundo 205.
 parser.add_argument('--alfa-fundo', type=float, default=8)
+# Cada quadro com o pé mais baixo no rodapé. Para animação com pulo desenhado na folha: a altura
+# vem do motor, e a altura da arte somaria com ela.
+parser.add_argument('--pes-no-rodape', action='store_true')
 args = parser.parse_args()
 src, out, altura_saida, previa = args.entrada, args.saida, args.altura_saida, args.previa
 QUADROS_MINIMOS = args.quadros_minimos
@@ -102,6 +105,8 @@ for i, mk in enumerate(mascaras):
     l = linha_de[grandes[i][0]]
     base_linha[l] = max(base_linha.get(l, 0), np.where(mk)[0].max())
 desloc_y = [base_linha[linha_de[grandes[i][0]]] for i in range(total)]
+if args.pes_no_rodape:
+    desloc_y = [np.where(mk)[0].max() for mk in mascaras]
 
 # Âncora horizontal de cada quadro: centro do tronco (55% de cima da altura do cachorro).
 ancoras = []
@@ -142,7 +147,7 @@ for i, mk in enumerate(mascaras):
 folha.save(out, 'WEBP', quality=90, method=6)
 # Linha das patas: a pata mais baixa de todos os quadros, medida da base do quadro.
 pes = round(margem * escala)
-print(f'quadros={total} largura={lq_s} altura={aq_s} pes={pes}')
+print(f'quadros={total} largura={lq_s} altura={aq_s} pes={pes} altura_origem={aq}')
 if previa:
     fundo = Image.new('RGBA', folha.size, (120, 200, 255, 255))
     fundo.alpha_composite(folha)

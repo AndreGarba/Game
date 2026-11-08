@@ -132,6 +132,11 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
 
 ### 5.2 Tutor
 
+- **Pulo em sprite** (`desenho/tutorSprite.ts`, folha de 10 quadros do André em
+  `PRD/referencias/tutor-pulando.webp`). Como ele refaz o caminho do cachorro, sabe antes onde vai
+  pular: agacha nos 1,2 m antes do ponto do pulo, sobe, fica com as pernas soltas no alto, desce e
+  aterrissa flexionando os joelhos antes de voltar a correr. A altura vem do rastro do cachorro; a
+  folha é recortada com o pé no rodapé para não somar com ela.
 - **Sempre na tela**, correndo atrás do cachorro com a esponja na mão.
 - A vantagem real (até 20 m) não cabe entre a margem e o cachorro, então é **comprimida**:
   vantagem máxima = tutor colado na margem esquerda; vantagem zero = esponja encostando no
