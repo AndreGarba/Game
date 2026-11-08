@@ -190,71 +190,9 @@
   text-align: center;
 }
 
-.tela-corrida__cartao--fim {
-  width: min(720px, 100%);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--espaco-6);
-  align-items: center;
-  padding: var(--espaco-4) var(--espaco-6);
-}
-
-.tela-corrida__acoes {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tela-corrida__acoes > .formulario-ranking {
-  align-self: stretch;
-  margin-top: 0;
-}
-
 .tela-corrida__titulo {
   margin: 0 0 var(--espaco-2);
   font-size: var(--texto-5);
-}
-
-.tela-corrida__titulo-fim {
-  margin: 0 0 var(--espaco-3);
-  font-size: var(--texto-4);
-}
-
-
-
-.tela-corrida__pontos {
-  margin: 0;
-  font-size: var(--texto-6);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-.tela-corrida__rotulo {
-  margin: 0 0 var(--espaco-2);
-  font-size: var(--texto-2);
-  color: var(--cor-texto-suave);
-}
-
-.tela-corrida__novo-recorde {
-  margin: 0 0 var(--espaco-2);
-  font-weight: 800;
-  color: var(--cor-ouro);
-}
-
-.tela-corrida__detalhes {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--espaco-1) var(--espaco-4);
-  margin: var(--espaco-3) 0 var(--espaco-4);
-  font-size: var(--texto-2);
-  text-align: left;
-}
-
-.tela-corrida__detalhes dd {
-  margin: 0;
-  font-weight: 700;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
 }
 
 .tela-corrida__botao {
@@ -275,19 +213,364 @@
   outline-offset: 3px;
 }
 
-.tela-corrida__recorde {
-  margin: var(--espaco-3) 0 0;
-  font-size: var(--texto-2);
-  color: var(--cor-texto-suave);
-}
-
 @media (orientation: portrait) and (pointer: coarse) {
-  .tela-corrida__cartao--fim {
-    grid-template-columns: 1fr;
-    gap: var(--espaco-2);
-  }
-
   .tela-corrida__medidor {
     grid-template-columns: 48px 64px;
   }
+}
+
+/*
+ * Fim de partida com as peças do ChatGPT (imagens/fim-*.webp). As posições em % seguem a arte do
+ * painel (891 × 699): a fita azul do título e o miolo creme. Aqui --u é 1/360 da altura da tela
+ * (o do HUD é 1/100 e divide por 3,6 em cada medida), travado pela largura da metade da tela
+ * (400 unidades cabem o painel com o selo de recorde).
+ *
+ * Sequência, como no fim de desenho animado: a tela escurece na batida, um círculo fecha sobre o
+ * cachorro (para um instante em volta dele) e apaga tudo; no escuro, o banho entra pela metade
+ * esquerda e, depois que ele assenta, os dados aparecem na direita. --foco-x/--foco-y vêm do
+ * TelaCorrida (onde o cachorro estava, de 0 a 1).
+ */
+.tela-corrida__veu--fim {
+  --u: min(100cqh / 360, 50cqw / 400);
+  --fim-iris: 1s;
+  --fim-banho: 0.45s;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+  animation: fim-escurece 0.15s ease-out both;
+}
+
+@keyframes fim-escurece {
+  from {
+    background: transparent;
+  }
+}
+
+/* Um furo redondo num mar preto: a sombra gigante é o preto, o elemento é o furo. */
+.fim-iris {
+  position: absolute;
+  left: calc(var(--foco-x, 0.3) * 100%);
+  top: calc(var(--foco-y, 0.6) * 100%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 200cqmax var(--cor-hq-preto);
+  translate: -50% -50%;
+  pointer-events: none;
+  animation: fim-iris-fecha var(--fim-iris) both;
+}
+
+@keyframes fim-iris-fecha {
+  from {
+    width: 165cqmax;
+    height: 165cqmax;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.75, 0.6);
+  }
+
+  55%,
+  75% {
+    width: calc(var(--u) * 80);
+    height: calc(var(--u) * 80);
+    animation-timing-function: cubic-bezier(0.6, 0, 1, 1);
+  }
+}
+
+.fim-banho,
+.fim-partida {
+  position: relative;
+}
+
+.fim-banho {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-right: calc(var(--u) * 4) solid var(--cor-hq-preto);
+  user-select: none;
+  animation: fim-banho-entra var(--fim-banho) cubic-bezier(0.2, 0.9, 0.3, 1.15) calc(var(--fim-iris) + 0.05s) both;
+}
+
+@keyframes fim-banho-entra {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+.fim-partida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--fonte-hq);
+  color: var(--cor-hq-preto);
+  animation: fim-partida-entra 0.32s cubic-bezier(0.34, 1.56, 0.64, 1)
+    calc(var(--fim-iris) + var(--fim-banho) + 0.25s) both;
+}
+
+@keyframes fim-partida-entra {
+  from {
+    transform: scale(0.6) rotate(-4deg);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Sem movimento, mas a ordem fica: escurece, o banho aparece e depois os dados. */
+@media (prefers-reduced-motion: reduce) {
+  .fim-iris {
+    animation: fim-aparece 0.3s both;
+  }
+
+  .fim-banho {
+    animation: fim-aparece 0.2s 0.4s both;
+  }
+
+  .fim-partida {
+    animation: fim-partida-aparece 0.2s 0.9s both;
+  }
+}
+
+@keyframes fim-aparece {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Os dados não somem com visibility: o autoFocus do nome do ranking precisa de um campo focável. */
+@keyframes fim-partida-aparece {
+  from {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.fim-partida img {
+  display: block;
+  user-select: none;
+}
+
+.fim-partida__painel {
+  position: relative;
+  height: calc(var(--u) * 196);
+  aspect-ratio: 891 / 699;
+}
+
+.fim-partida__fundo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Dentro da fita azul, que pende um pouco para a esquerda. */
+.fim-partida__titulo {
+  position: absolute;
+  left: 28%;
+  top: 6%;
+  width: 56%;
+  height: 20%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--u) * 12);
+  font-weight: 400;
+  line-height: 1.05;
+  text-align: center;
+  transform: rotate(-1.5deg);
+}
+
+.fim-partida__miolo {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 30%;
+  bottom: 13%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-1.5deg);
+}
+
+.fim-partida__pontos {
+  margin: 0;
+  font-size: calc(var(--u) * 44);
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.fim-partida__rotulo {
+  margin: 0 0 calc(var(--u) * 6);
+  font-size: calc(var(--u) * 11);
+  color: var(--cor-hud-azul);
+}
+
+.fim-partida__detalhes {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: calc(var(--u) * 2) calc(var(--u) * 12);
+  width: 100%;
+  margin: 0;
+  font-size: calc(var(--u) * 12);
+}
+
+.fim-partida__detalhes dt {
+  font-family: var(--fonte);
+  font-weight: 800;
+}
+
+.fim-partida__detalhes dd {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(var(--u) * 4);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.fim-partida__detalhes dd img {
+  height: calc(var(--u) * 12);
+}
+
+/* Estrela de "Novo recorde" pregada no canto do painel. */
+.fim-partida__selo {
+  position: absolute;
+  top: 12%;
+  right: -13%;
+  width: 25%;
+  margin: 0;
+  transform: rotate(12deg);
+}
+
+.fim-partida__selo img {
+  width: 100%;
+}
+
+.fim-partida__selo span {
+  position: absolute;
+  inset: 22% 18%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--u) * 9);
+  line-height: 1;
+  text-align: center;
+}
+
+/* O botão morde a borda de baixo do painel, como os selos sobrepostos do HUD. */
+.fim-partida__botao {
+  position: relative;
+  width: calc(var(--u) * 168);
+  aspect-ratio: 600 / 209;
+  margin-top: calc(var(--u) * -6);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.08s ease-out;
+}
+
+.fim-partida__botao:hover {
+  transform: scale(1.04) rotate(-1deg);
+}
+
+.fim-partida__botao:active {
+  transform: scale(0.92);
+}
+
+.fim-partida__botao:focus-visible {
+  outline: 3px solid var(--cor-destaque-texto);
+  outline-offset: 3px;
+  border-radius: var(--raio-total);
+}
+
+.fim-partida__botao img {
+  width: 100%;
+  height: 100%;
+}
+
+/* A pílula fica acima da espessura 3D: o texto centra nela, não na peça inteira. */
+.fim-partida__botao span,
+.fim-partida__recorde {
+  color: var(--cor-destaque-texto);
+  -webkit-text-stroke: calc(var(--u) * 2.4) var(--cor-hq-preto);
+  paint-order: stroke fill;
+}
+
+.fim-partida__botao span {
+  position: absolute;
+  inset: 0 0 14%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fonte-hq);
+  font-size: calc(var(--u) * 17);
+  line-height: 1;
+}
+
+.fim-partida__recorde {
+  margin: calc(var(--u) * 4) 0 0;
+  font-size: calc(var(--u) * 12);
+}
+
+/*
+ * Nome do ranking (FormularioRanking, da main) vestido de HQ só aqui: faixa creme de contorno
+ * preto entre o painel e o botão, na mesma unidade do painel.
+ */
+.fim-partida .formulario-ranking {
+  width: calc(var(--u) * 236);
+  margin: calc(var(--u) * 2) 0 0;
+  padding: calc(var(--u) * 5) calc(var(--u) * 8);
+  border: calc(var(--u) * 2.5) solid var(--cor-hq-preto);
+  border-radius: calc(var(--u) * 4);
+  background: var(--cor-hud-creme);
+  transform: rotate(-1.5deg);
+}
+
+.fim-partida .formulario-ranking__rotulo {
+  margin-bottom: calc(var(--u) * 3);
+  font-size: calc(var(--u) * 9);
+  font-weight: 400;
+}
+
+.fim-partida .formulario-ranking__linha {
+  gap: calc(var(--u) * 5);
+}
+
+.fim-partida .formulario-ranking__campo {
+  padding: calc(var(--u) * 3) calc(var(--u) * 6);
+  border: calc(var(--u) * 2) solid var(--cor-hq-preto);
+  border-radius: calc(var(--u) * 3);
+  font-family: var(--fonte);
+  font-size: calc(var(--u) * 10);
+  font-weight: 700;
+}
+
+.fim-partida .formulario-ranking__enviar {
+  padding: calc(var(--u) * 3) calc(var(--u) * 10);
+  border: calc(var(--u) * 2) solid var(--cor-hq-preto);
+  background: var(--cor-hud-azul);
+  color: var(--cor-destaque-texto);
+  font-family: var(--fonte-hq);
+  font-size: calc(var(--u) * 10);
+  font-weight: 400;
+}
+
+.fim-partida .formulario-ranking__erro {
+  margin-top: calc(var(--u) * 2);
+  font-family: var(--fonte);
+  font-size: calc(var(--u) * 8);
+  font-weight: 700;
+}
+
+.fim-partida .formulario-ranking__posicao {
+  font-size: calc(var(--u) * 13);
+  font-weight: 400;
+}
+
+.fim-partida .formulario-ranking__mensagem {
+  margin-top: calc(var(--u) * 2);
+  font-family: var(--fonte);
+  font-size: calc(var(--u) * 9);
+  font-weight: 700;
 }

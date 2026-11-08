@@ -579,18 +579,37 @@ function poseNoRastro(rastro: readonly PontoRastro[], xAlvo: number): PontoRastr
   return { ...depois, y: antes.y + (depois.y - antes.y) * Math.min(1, Math.max(0, t)) }
 }
 
+/** Câmera que segue o cachorro em `x` (metros) numa tela de `largura` × `altura` px. */
+function cameraPara(x: number, largura: number, altura: number): Camera {
+  // Paisagem: mostra uns 18 m de pista; em retrato a escala é limitada pela largura.
+  const ppm = Math.min(altura / METROS_NA_ALTURA, largura / 18)
+  // Chão na altura da calçada do Figma. Em tela vertical a escala é limitada pela largura e
+  // sobraria céu demais: o chão sobe para deixar a cena no meio da tela.
+  const chaoY = Math.min((altura * LINHA_CHAO) / FRAME_ALTURA, altura / 2 + 3.5 * ppm)
+  return { ppm, x0: x - (largura * POSICAO_CACHORRO) / ppm, chaoY, largura, altura }
+}
+
+/**
+ * Centro do cachorro na tela, em fração da largura e da altura (0 a 1). A tela de fim fecha o
+ * círculo da transição em cima dele.
+ */
+export function posicaoCachorroNaTela(estado: QuadroCorrida['estado'], largura: number, altura: number) {
+  const c = estado.cachorro
+  const cam = cameraPara(c.x, largura, altura)
+  return {
+    x: sx(cam, c.x + CACHORRO_LARGURA / 2) / largura,
+    y: sy(cam, c.y + CACHORRO_LARGURA / 2) / altura,
+  }
+}
+
 export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, altura: number, quadro: QuadroCorrida) {
   const { estado, alfa } = quadro
   const c = estado.cachorro
   const x = quadro.xAnterior + (c.x - quadro.xAnterior) * alfa
   const y = quadro.yAnterior + (c.y - quadro.yAnterior) * alfa
 
-  // Paisagem: mostra uns 18 m de pista; em retrato a escala é limitada pela largura.
-  const ppm = Math.min(altura / METROS_NA_ALTURA, largura / 18)
-  // Chão na altura da calçada do Figma. Em tela vertical a escala é limitada pela largura e
-  // sobraria céu demais: o chão sobe para deixar a cena no meio da tela.
-  const chaoY = Math.min((altura * LINHA_CHAO) / FRAME_ALTURA, altura / 2 + 3.5 * ppm)
-  const cam: Camera = { ppm, x0: x - (largura * POSICAO_CACHORRO) / ppm, chaoY, largura, altura }
+  const cam = cameraPara(x, largura, altura)
+  const ppm = cam.ppm
   const xFim = cam.x0 + largura / ppm
 
   const arte = arteCenarioPronta()

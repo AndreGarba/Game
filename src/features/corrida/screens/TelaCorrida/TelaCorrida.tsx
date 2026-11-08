@@ -14,8 +14,8 @@ import {
 } from '../../../../engine/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
-import { desenharCena } from '../../desenho/desenharCena.ts'
-import { IMAGENS_HUD } from '../../imagens/index.ts'
+import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
+import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
 import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
 import { FormularioRanking } from '../../../ranking/FormularioRanking.tsx'
 import '@fontsource/luckiest-guy/latin-400.css'
@@ -37,6 +37,8 @@ interface Fim {
   resultado: ResultadoPartida
   novoRecorde: boolean
   recorde: number
+  /** Onde o cachorro estava na tela (0 a 1): o círculo da transição fecha ali. */
+  foco: { x: number; y: number }
   // O que vai para o ranking: o servidor refaz a partida a partir daqui.
   seed: number
   log: readonly ComandoLog[]
@@ -94,7 +96,8 @@ export function TelaCorrida() {
       aoTerminar: (estado, log) => {
         const resultado = resultadoDaPartida(estado)
         const novoRecorde = registrarPlacar(resultado.pontos)
-        setFim({ resultado, novoRecorde, recorde: lerRecorde(), seed: estado.seed, log: [...log] })
+        const foco = posicaoCachorroNaTela(estado, largura, altura)
+        setFim({ resultado, novoRecorde, recorde: lerRecorde(), foco, seed: estado.seed, log: [...log] })
         mudarFase('fim')
       },
     })
@@ -219,32 +222,50 @@ export function TelaCorrida() {
       )}
 
       {fase === 'fim' && fim && (
-        <div className="tela-corrida__veu">
-          {/* Deitado, a altura não cabe resultado + nome + botão empilhados: duas colunas. */}
-          <div className="tela-corrida__cartao tela-corrida__cartao--fim">
-            <div className="tela-corrida__resumo">
-              <h2 className="tela-corrida__titulo-fim">{t(`fim.${fim.resultado.motivo}`)}</h2>
-              <p className="tela-corrida__pontos">{numero(fim.resultado.pontos)}</p>
-              <p className="tela-corrida__rotulo">{t('fim.pontos')}</p>
-              {fim.novoRecorde && <p className="tela-corrida__novo-recorde">{t('fim.novoRecorde')}</p>}
-              <dl className="tela-corrida__detalhes">
-                <dt>{t('fim.distancia')}</dt>
-                <dd>{t('hud.metros', { valor: numero(fim.resultado.distancia) })}</dd>
-                <dt>{t('fim.ossos')}</dt>
-                <dd>🦴 {numero(fim.resultado.ossos)}</dd>
-                <dt>{t('fim.ossosOuro')}</dt>
-                <dd>🏅 {numero(fim.resultado.ossosOuro)}</dd>
-              </dl>
-            </div>
-            <div className="tela-corrida__acoes">
-              <FormularioRanking key={fim.seed} seed={fim.seed} log={fim.log} />
-              <button className="tela-corrida__botao" onClick={correr}>
-                {t('deNovo')}
-              </button>
-              {!fim.novoRecorde && (
-                <p className="tela-corrida__recorde">{t('fim.recorde', { valor: numero(fim.recorde) })}</p>
+        <div
+          className="tela-corrida__veu tela-corrida__veu--fim"
+          style={{ '--foco-x': fim.foco.x, '--foco-y': fim.foco.y } as CSSProperties}
+        >
+          <div className="fim-iris" aria-hidden="true" />
+          <img className="fim-banho" src={IMAGENS_FIM.banho} alt="" draggable={false} />
+          <div className="fim-partida">
+            <div className="fim-partida__painel">
+              <img className="fim-partida__fundo" src={IMAGENS_FIM.painel} alt="" draggable={false} />
+              <h2 className="fim-partida__titulo">{t(`fim.${fim.resultado.motivo}`)}</h2>
+              <div className="fim-partida__miolo">
+                <p className="fim-partida__pontos">{numero(fim.resultado.pontos)}</p>
+                <p className="fim-partida__rotulo">{t('fim.pontos')}</p>
+                <dl className="fim-partida__detalhes">
+                  <dt>{t('fim.distancia')}</dt>
+                  <dd>{t('hud.metros', { valor: numero(fim.resultado.distancia) })}</dd>
+                  <dt>{t('fim.ossos')}</dt>
+                  <dd>
+                    <img src={IMAGENS_FIM.osso} alt="" draggable={false} />
+                    {numero(fim.resultado.ossos)}
+                  </dd>
+                  <dt>{t('fim.ossosOuro')}</dt>
+                  <dd>
+                    <img src={IMAGENS_FIM.ossoOuro} alt="" draggable={false} />
+                    {numero(fim.resultado.ossosOuro)}
+                  </dd>
+                </dl>
+              </div>
+              {fim.novoRecorde && (
+                <p className="fim-partida__selo">
+                  <img src={IMAGENS_FIM.selo} alt="" draggable={false} />
+                  <span>{t('fim.novoRecorde')}</span>
+                </p>
               )}
             </div>
+            {/* Sem autoFocus no botão: na primeira partida o foco vai para o nome do ranking. */}
+            <FormularioRanking key={fim.seed} seed={fim.seed} log={fim.log} />
+            <button className="fim-partida__botao" onClick={correr}>
+              <img src={IMAGENS_FIM.botao} alt="" draggable={false} />
+              <span>{t('deNovo')}</span>
+            </button>
+            {!fim.novoRecorde && (
+              <p className="fim-partida__recorde">{t('fim.recorde', { valor: numero(fim.recorde) })}</p>
+            )}
           </div>
         </div>
       )}
