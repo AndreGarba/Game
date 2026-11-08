@@ -1,0 +1,4 @@
+# Só o que o CLI lê no deploy da function. O verify_jwt também vai no cabeçalho do index.ts e na
+# tabela do CLAUDE.md: redeploy sem o valor certo troca a autenticação em silêncio.
+[functions.registrar-partida]
+verify_jwt = false

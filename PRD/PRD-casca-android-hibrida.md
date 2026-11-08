@@ -241,7 +241,9 @@ Segue `CLAUDE.md` "Lojas e anúncios" e `LICOES-LOJAS-E-ANUNCIOS.md`; o que muda
 - Gravação nunca lança (já é assim em `recorde.ts`). Regra para qualquer save novo.
 - `allowBackup` ligado com `dataExtractionRules`/`fullBackupContent` em `res/xml`: entra o storage
   da WebView (o recorde vale a pena ir junto para o aparelho novo); sai qualquer id anônimo de
-  telemetria ou ranking quando ele existir, para não clonar identidade entre aparelhos.
+  telemetria ou ranking, para não clonar identidade entre aparelhos. O id do ranking mora no
+  IndexedDB (`src/data/jogador.ts`), que as regras de backup não incluem; o nome digitado fica no
+  `localStorage` e vai junto.
 
 ### 6.2 Build e publicação
 
