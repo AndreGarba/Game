@@ -58,6 +58,47 @@
   display: block;
   width: 100%;
   height: auto;
+  /*
+   * Flutuando: sobe-desce, vai-e-vem e inclinação em animações separadas, com durações que não
+   * se dividem entre si. Somadas, quase nunca repetem a mesma combinação e o movimento parece
+   * aleatório sem precisar de JS. Fica no img porque o h1 já usa transform para centralizar.
+   */
+  animation:
+    logo-flutua-y 5.3s ease-in-out infinite alternate,
+    logo-flutua-x 7.9s ease-in-out infinite alternate,
+    logo-inclina 11.3s ease-in-out infinite alternate;
+  will-change: translate, rotate;
+}
+
+/* Cada propriedade (translate e rotate) é animada por uma animação só: assim elas se somam. */
+@keyframes logo-flutua-y {
+  0% { translate: var(--logo-x, 0) -0.9cqh; }
+  45% { translate: var(--logo-x, 0) 0.4cqh; }
+  100% { translate: var(--logo-x, 0) 0.9cqh; }
+}
+
+@property --logo-x {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes logo-flutua-x {
+  0% { --logo-x: -0.6cqh; }
+  60% { --logo-x: 0.2cqh; }
+  100% { --logo-x: 0.6cqh; }
+}
+
+@keyframes logo-inclina {
+  0% { rotate: -0.7deg; }
+  35% { rotate: 0.3deg; }
+  100% { rotate: 0.7deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tela-home__logo {
+    animation: none;
+  }
 }
 
 .tela-home__jogar {
