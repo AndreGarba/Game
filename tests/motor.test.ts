@@ -7,6 +7,7 @@ import {
   SUJEIRA_MAX,
   VEL_INICIAL,
   VEL_MAX,
+  vantagemTutor,
   velocidadeBase,
   alturaSuperficie,
   CACHORRO_LARGURA,
@@ -194,11 +195,51 @@ describe('sujeira, lenço e tutor', () => {
     expect(estado.lencos).toBe(1)
   })
 
-  it('cachorro sujo perde vantagem até ser pego', () => {
-    const estado = partidaCom([])
-    estado.sujeira = SUJEIRA_MAX
-    correrAte(estado, 100_000)
-    expect(estado.fim?.motivo).toBe('pego')
+  const pocas = (quantidade: number) =>
+    Array.from({ length: quantidade }, (_, i) => ({
+      tipo: 'poca' as const,
+      x: 5 + i * 5,
+      largura: 2,
+      y: 0,
+      altura: 0,
+      visual: 'poca',
+    }))
+
+  it('cada lama deixa o tutor um degrau mais perto, sempre na mesma distância', () => {
+    expect([0, 1, 2, 3, 4].map(vantagemTutor)).toEqual([20, 15, 10, 5, 0])
+  })
+
+  it('sujeira não freia o cachorro nem encerra a partida sozinha', () => {
+    const limpo = partidaCom([])
+    const sujo = partidaCom([])
+    sujo.sujeira = SUJEIRA_MAX
+    correrAte(limpo, 2000)
+    correrAte(sujo, 2000)
+    expect(sujo.fim).toBeNull()
+    expect(sujo.tick).toBe(limpo.tick)
+  })
+
+  it('aguenta 3 lamas; a 4ª encerra a partida como pego', () => {
+    const tres = partidaCom(pocas(3))
+    correrAte(tres, 40)
+    expect(tres.sujeira).toBe(SUJEIRA_MAX)
+    expect(tres.fim).toBeNull()
+
+    const quatro = partidaCom(pocas(4))
+    correrAte(quatro, 40)
+    expect(quatro.fim?.motivo).toBe('pego')
+    expect(vantagemTutor(quatro.sujeira)).toBe(0)
+  })
+
+  it('lenço devolve uma lama: o tutor recua um degrau e a conta volta a caber', () => {
+    const estado = partidaCom([
+      ...pocas(3),
+      { tipo: 'lenco', x: 22, largura: 0, y: 0.45, altura: 0, visual: 'lenco' },
+      { tipo: 'poca', x: 26, largura: 2, y: 0, altura: 0, visual: 'poca' },
+    ])
+    correrAte(estado, 40)
+    expect(estado.sujeira).toBe(SUJEIRA_MAX)
+    expect(estado.fim).toBeNull()
   })
 
   it('cachorro limpo não é pego', () => {

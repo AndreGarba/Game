@@ -2,8 +2,8 @@
 
 Corrida infinita (endless runner) 2D para todos os públicos. O jogador é o **cachorro**, que foge
 do tutor para não tomar banho: pula e se abaixa por cidade, parque, rio e centro, cada vez mais
-rápido. Lama deixa o cachorro mais lento e o tutor se aproxima; lenços limpam. Ossinhos e ossinhos
-de ouro valem pontos. Quem vai mais longe, com mais ossos, sobe no ranking.
+rápido. Cada lama traz o tutor um degrau para mais perto e a 4ª encerra a partida; lenços limpam.
+Ossinhos e ossinhos de ouro valem pontos. Quem vai mais longe, com mais ossos, sobe no ranking.
 
 Sessão curta: termina na primeira batida, queda ou quando o tutor alcança. Público livre, todas as idades. Conta, data e âncora de
 lançamento: **a definir**.
@@ -73,7 +73,7 @@ PRD/              especificações de produto
 ## Motor do jogo
 
 Regras do motor ficam **nesta seção**. Regra de motor espalhada por outras seções é regra que
-alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r7'`.
+alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r8'`.
 
 ### O jogo, como o motor vê
 
@@ -97,9 +97,10 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r7'`.
     superfície com `vy = velocidade·inclinação` e, ao passar do fim, sai lançado com essa
     velocidade. Pular na rampa funciona normalmente.
   - `poca` (lama): +1 de sujeira. `lenco`: −1 de sujeira. `osso` / `ossoOuro`: pontos.
-- **Tutor:** corre a `TUTOR_FATOR` da velocidade base; o cachorro corre a
-  `1 − sujeira·PENALIDADE_SUJEIRA` dela. Limpo, o cachorro abre vantagem (até `VANTAGEM_MAX`);
-  com 1 de sujeira já perde terreno. Vantagem zero = pego.
+- **Tutor (r8):** a distância é um degrau fixo por nível de sujeira (`vantagemTutor`: 20, 15, 10 e
+  5 m), sem aproximação gradual, e a lama não freia o cachorro. Ele aguenta `SUJEIRA_MAX` (3)
+  poças; a seguinte é `pego`. Lenço tira 1 de sujeira: o tutor recua um degrau e sobra mais uma
+  poça. A largura de vãos e poças segue `FATOR_ALCANCE_PISTA`, para a pista de cada seed não mudar.
 - **Fim:** `batida`, `queda` ou `pego`. Não existe vida extra.
 - **Pontuação:** `metros·PONTOS_POR_METRO + ossos·PONTOS_OSSO + ossosOuro·PONTOS_OSSO_OURO`.
 - **Cenários:** sequência fixa e igual para todos (`SEQUENCIA_CENARIOS`: cidade → parque → rio →
@@ -139,6 +140,8 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r7'`.
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
+- Referência r8 (30 partidas do bot, 5 min cada): mediana 4,1 km, 12 de 30 pegos e 18 no limite.
+  A mediana bate no teto de 5 min, então não mede até onde o bot iria.
 - Referência r7 (30 partidas do bot, 5 min cada): mediana 3,6 km, 22 de 30 pegos e 8 no limite.
   r5 e r6 ficaram iguais em distância (3,6 km); detalhe em `PRD/PRD-conceito-e-regras-do-jogo.md` §5.
 - Referência r4 (30 partidas do bot, 5 min cada): mediana 3,8 km, 23 de 30 pegos pelo tutor e 7

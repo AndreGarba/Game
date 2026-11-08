@@ -123,12 +123,11 @@ No slide, os 2 primeiros quadros descem para o chão, um a cada 5 ticks do abaix
 a 6 deslizam em loop no ritmo da distância. No mergulho (abaixar no ar) fica no quadro de quase
 tocar o chão. No slide o desenho encosta a barriga no chão e escorrega até 45 cm para a frente;
 ao voltar a correr, volta suave para a posição de antes (só desenho: a caixa de colisão não anda).
-As manchas de lama valem para as duas folhas. O texto abaixo é o cachorro vetorial,
-que só aparece enquanto as imagens carregam:
+A lama não muda a aparência do cachorro. O texto abaixo é o cachorro vetorial, que só aparece enquanto as imagens carregam:
 
 Desenhado em vetor (o emoji ficava quase invisível no canvas): corpo, cabeça, orelha, focinho,
 língua, rabo abanando e pernas que alternam conforme a distância percorrida. No ar, as pernas
-esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha de lama no corpo.
+esticam. Abaixado, o corpo achata.
 
 ### 5.2 Tutor
 
@@ -153,7 +152,9 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
   (posição, altura, se estava no chão, se estava abaixado). O tutor faz o que o cachorro fez
   quando passou por aquele mesmo ponto da pista. Como os obstáculos estão parados no mundo, ele
   pula o mesmo cavalete, sobe no mesmo carro e se agacha sob o mesmo toldo.
-- É só visual: quem decide se o tutor pega continua sendo a vantagem calculada pelo motor.
+- No motor a distância muda de uma vez a cada lama (r8); na tela, ele corre até o lugar novo em
+  menos de 1 s, para não parecer teletransporte.
+- É só visual: quem decide se o tutor pega é a contagem de lama no motor.
 
 ## 6. Placar (HUD)
 
@@ -161,16 +162,15 @@ esticam. Abaixado, o corpo achata. Cada nível de sujeira acrescenta uma mancha 
   e **Velocidade** em km/h no alto à esquerda, botão de **pausa** no alto à direita. A arte traz
   zeros desenhados ("0000 m", "00 km/h"): uma placa creme cobre os zeros e o valor ao vivo vai por
   cima, na fonte Luckiest Guy, com zeros à esquerda como placar de fliperama.
-- Velocidade = a do motor de fato: `velocidadeBase(x) × multiplicadorSujeira(sujeira)`, em km/h
-  (de 29 a 72). A lama baixa o número na hora.
+- Velocidade = a do motor de fato: `velocidadeBase(x)`, em km/h (de 29 a 72).
 - O botão de pausa abre a mesma pausa de quando o app vai para segundo plano, e some enquanto o
   jogo está pausado.
 - **Moedas:** selo verde ao lado do de Velocidade, no mesmo estilo, com a moeda desenhada e a
   contagem com zeros à esquerda. A arte não tem texto: o rótulo vem dos locales. Decisão do André:
   contador único, sem separar a moeda especial, que soma +10 (a normal soma +1). É só a contagem da tela: a
   pontuação da partida continua vindo do motor (`PONTOS_OSSO`, `PONTOS_OSSO_OURO`).
-- Decisão do André: o HUD não mostra a aproximação do tutor nem a sujeira. A lama aparece só no
-  cachorro e na velocidade, e o tutor, na cena.
+- Decisão do André: o HUD não mostra a aproximação do tutor nem a sujeira. Desde r8, a lama não
+  muda o cachorro nem a velocidade: ela aparece só na distância do tutor, na cena.
 - Medidas em 1/360 da altura, como o frame; em tela mais estreita que o frame, pela largura.
   Respeita a área segura do iPhone (notch).
 

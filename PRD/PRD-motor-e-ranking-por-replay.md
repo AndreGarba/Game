@@ -39,7 +39,7 @@ servidor não precisa acreditar no placar que o aparelho diz ter feito.
 | `constantes.ts` | Todo número de balanceamento e `VERSAO_REGRAS`. |
 | `tipos.ts` | `EstadoPartida`, `Elemento`, `Acao`, `ComandoLog`, `ResultadoPartida`. |
 | `rng.ts` | Gerador de números aleatórios. |
-| `fisica.ts` | Velocidade base, multiplicador de sujeira, altura do cachorro. |
+| `fisica.ts` | Velocidade base, distância do tutor por nível de sujeira, altura do cachorro. |
 | `cenarios.ts` | Sequência de cenários e os **moldes** de trecho de cada um. |
 | `gerador.ts` | Monta a pista sob demanda, à frente do cachorro, e descarta o que ficou para trás. |
 | `partida.ts` | `criarPartida`, `passo`, colisões, coleta, fim, pontuação e `simularPartida`. |
@@ -47,12 +47,12 @@ servidor não precisa acreditar no placar que o aparelho diz ter feito.
 ### 3.1 Um tick, em ordem
 
 1. Aplica a ação do tick (pular ou abaixar), se houver.
-2. Calcula a velocidade do cachorro e atualiza a vantagem sobre o tutor.
+2. Calcula a velocidade do cachorro.
 3. Move o cachorro e aplica gravidade.
 4. Resolve o apoio: chão, ou topo de um sólido que o cachorro estava acima no tick anterior
    (folga de 15 cm para o pouso). Sobre um vão não há chão.
-5. Colisões: sólido de frente ou teto = batida. Poça pisada no chão = +1 sujeira. Coletáveis.
-6. Abaixo de −2 m = queda. Vantagem ≤ 0 = pego.
+5. Colisões: sólido de frente ou teto = batida. Poça pisada no chão = +1 sujeira; a 4ª = pego. Coletáveis.
+6. Abaixo de −2 m = queda.
 7. Gera mais pista se preciso.
 
 ### 3.2 Geração da pista
@@ -60,7 +60,7 @@ servidor não precisa acreditar no placar que o aparelho diz ter feito.
 - A pista existe só até 150 m à frente do cachorro; os primeiros 40 m são livres.
 - Cada trecho é um **molde** sorteado entre os do cenário atual, liberado pelo degrau de
   dificuldade (0, 250, 800, 2.000 m) e com peso próprio.
-- Larguras de vãos e poças são calculadas pelo alcance do pulo **no pior caso de sujeira**, para
+- Larguras de vãos e poças são calculadas por 80% do alcance do pulo (`FATOR_ALCANCE_PISTA`), para
   todo vão ser pulável.
 - Entre um trecho e outro há um respiro medido em segundos de corrida, que encurta com a
   dificuldade.

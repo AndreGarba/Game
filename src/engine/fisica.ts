@@ -1,7 +1,8 @@
 import {
   CACHORRO_ALTURA_ABAIXADO,
   CACHORRO_ALTURA_EM_PE,
-  PENALIDADE_SUJEIRA,
+  SUJEIRA_MAX,
+  VANTAGEM_MAX,
   VEL_INICIAL,
   VEL_K,
   VEL_MAX,
@@ -15,8 +16,10 @@ export function velocidadeBase(x: number): number {
   return VEL_MAX - ((VEL_MAX - VEL_INICIAL) * VEL_K) / (VEL_K + d)
 }
 
-export function multiplicadorSujeira(sujeira: number): number {
-  return 1 - sujeira * PENALIDADE_SUJEIRA
+// Distância do tutor em cada nível de sujeira: com SUJEIRA_MAX = 3 e VANTAGEM_MAX = 20, são
+// 20, 15, 10 e 5 m. Passar de SUJEIRA_MAX dá zero: é o tutor alcançando.
+export function vantagemTutor(sujeira: number): number {
+  return VANTAGEM_MAX * (1 - sujeira / (SUJEIRA_MAX + 1))
 }
 
 export function alturaCachorro(c: Cachorro): number {

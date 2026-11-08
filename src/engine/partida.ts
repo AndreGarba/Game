@@ -14,14 +14,11 @@ import {
   TICKS_MAX,
   TOLERANCIA_POUSO,
   TRECHO_INICIAL_LIVRE,
-  TUTOR_FATOR,
-  VANTAGEM_INICIAL,
-  VANTAGEM_MAX,
   VEL_MERGULHO,
   VEL_PULO,
   VERSAO_REGRAS,
 } from './constantes.ts'
-import { alturaCachorro, multiplicadorSujeira, velocidadeBase } from './fisica.ts'
+import { alturaCachorro, velocidadeBase } from './fisica.ts'
 import { atualizarPista } from './gerador.ts'
 import { alturaSuperficie, temPerfil } from './perfis.ts'
 import { criarRng } from './rng.ts'
@@ -35,7 +32,6 @@ export function criarPartida(seed: number): EstadoPartida {
     rng: criarRng(seed),
     cachorro: { x: 0, y: 0, vy: 0, noChao: true, abaixadoTicks: 0, puloDuplo: true },
     sujeira: 0,
-    vantagem: VANTAGEM_INICIAL,
     ossos: 0,
     ossosOuro: 0,
     lencos: 0,
@@ -147,9 +143,7 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
     if (!c.noChao) c.vy = Math.min(c.vy, VEL_MERGULHO)
   }
 
-  const base = velocidadeBase(c.x)
-  const v = base * multiplicadorSujeira(estado.sujeira)
-  estado.vantagem = Math.min(VANTAGEM_MAX, estado.vantagem + (v - base * TUTOR_FATOR) * DT)
+  const v = velocidadeBase(c.x)
 
   const yAnterior = c.y
   c.x += v * DT
@@ -186,7 +180,11 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
     if (e.tipo === 'poca') {
       if (c.noChao && c.y === 0 && sobrepoeEmX(c, e)) {
         e.usado = true
-        estado.sujeira = Math.min(SUJEIRA_MAX, estado.sujeira + 1)
+        estado.sujeira++
+        if (estado.sujeira > SUJEIRA_MAX) {
+          encerrar(estado, 'pego')
+          break
+        }
       }
     } else if ((e.tipo === 'lenco' || e.tipo === 'osso' || e.tipo === 'ossoOuro') && tocaColetavel(c, e)) {
       e.usado = true
@@ -199,7 +197,6 @@ export function passo(estado: EstadoPartida, acao: Acao | null): void {
   }
 
   if (!estado.fim && c.y < LIMITE_QUEDA) encerrar(estado, 'queda')
-  if (!estado.fim && estado.vantagem <= 0) encerrar(estado, 'pego')
 
   estado.tick++
   if (!estado.fim) atualizarPista(estado)
