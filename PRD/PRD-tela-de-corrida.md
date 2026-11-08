@@ -61,6 +61,10 @@ Espaço e Enter também iniciam, continuam e reiniciam.
 
 ## 5. Cena
 
+- **Poeira** (`desenho/poeira.ts`): tufos creme que sobem das patas do cachorro e dos pés do tutor
+  enquanto correm no chão, mais frequentes com a velocidade, e um "puf" maior no pouso de um
+  pulo. Partículas desenhadas no próprio canvas, em metros do mundo (ficam onde foram chutadas),
+  sem biblioteca e sem tocar no motor.
 - **Câmera:** cachorro a 28% da largura. Mostra cerca de 18 m de pista. Em tela vertical, a escala
   é limitada pela largura e o chão sobe para a cena ficar no meio.
 - **Falso 3D em 7 camadas e 4 planos de movimento, arte gerada por IA**
@@ -74,6 +78,25 @@ Espaço e Enter também iniciam, continuam e reiniciam.
   sem costura. O chão fica a 70% da altura da tela (252 de 360); abaixo dele, a terra da pista.
   A mesma arte vale para os quatro cenários até existir arte de parque, rio e centro. Enquanto a
   arte carrega, vale o cenário vetorial antigo, com cores por cenário.
+- **Muro variado:** 17 painéis ("muros") e 11 conexões (pilares), peças soltas em `cidade/muro/`
+  preparadas por `scripts/arte/montar_muro.py` (regras em `cidade/muro/muro.json`). Painéis:
+  madeira, cinza e pata da arte original; tijolo, grafite de osso e cachorro, portão, cerca viva,
+  janela com hera, caixa de correio, pedra, cerca branca, garagem, azulejo, floreira, mural de sol,
+  gato dormindo e medidor de luz. Conexões: o pilar original e 10 novas (tijolo, pedra, luminária,
+  madeira, ferro, vaso, azulejo, interfone, hera, bola de pedra). Tudo gerado no ChatGPT a partir
+  da arte original (`PRD/referencias/muro-*.png`).
+- **Regra do muro:** o mesmo painel se repete lado a lado, sem conexão no meio, de 3 a 10 vezes
+  (sorteado). Quando o painel muda, entra uma conexão sorteada entre as 11, e o painel seguinte
+  nunca é igual ao anterior. Todas as conexões têm a mesma base e o mesmo corpo do pilar original;
+  os enfeites (lâmpada, vaso, bola) sobem acima dele.
+- **Casas variadas:** a camada de casas sorteia 5 casas, 5 prédios pequenos
+  (`cidade/casas/`, de `scripts/arte/montar_casas.py` e `PRD/referencias/casas-predios.png`) e a
+  tira original, que tem as árvores. Todas as construções saem na mesma escala, então a porta tem o
+  mesmo tamanho em todas.
+- **Sorteio:** cada camada sorteia a própria sequência pelo índice do grupo, em unidades do
+  quadro: o mesmo ponto da pista mostra sempre a mesma coisa.
+- **Tamanho:** muro (com as conexões) e casas 1,5× maiores que na referência de arte, com a base
+  no mesmo lugar. Os prédios mais altos passam do topo da tela.
 - **Calçada:** as juntas das lajes andam com a pista e dão a sensação de velocidade. Vãos
   desenhados como água (rio e lago) ou buraco com cone.
 - **Obstáculos com sprite só na cidade** (`features/corrida/imagens/objetos`, gerados na mesma
