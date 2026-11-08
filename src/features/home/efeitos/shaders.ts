@@ -184,3 +184,93 @@ void main() {
   gl_FragColor = vec4(vec3(1.0, 0.99, 0.97), alfa);
 }
 `
+
+/**
+ * Uma bolha por instância. aBolha: centro e raio em pixels CSS (y de baixo para cima) e o
+ * progresso do estouro. vLocal mede em raios a partir do centro.
+ */
+export const VERTICE_BOLHA = /* glsl */ `
+attribute vec4 aBolha;
+attribute float aSemente;
+uniform vec2 uTela;
+uniform float uFolga;
+varying vec2 vLocal;
+varying float vEstouro;
+varying float vSemente;
+void main() {
+  vLocal = position.xy * uFolga;
+  vEstouro = aBolha.w;
+  vSemente = aSemente;
+  vec2 pixel = aBolha.xy + vLocal * aBolha.z;
+  gl_Position = vec4(pixel / uTela * 2.0 - 1.0, 0.0, 1.0);
+}
+`
+
+/**
+ * Película de sabão: quase transparente no meio, borda iridescente que gira com o tempo, reflexo
+ * de janela no alto à esquerda. Ao estourar, a película some e sobra um anel que se abre em
+ * pedaços e gotinhas que se espalham.
+ */
+export const FRAGMENTO_BOLHA = /* glsl */ `
+uniform float uTempo;
+varying vec2 vLocal;
+varying float vEstouro;
+varying float vSemente;
+
+${ACASO}
+
+vec3 arcoIris(float t) {
+  return 0.5 + 0.5 * cos(6.2832 * (vec3(0.0, 0.33, 0.67) + t));
+}
+
+void main() {
+  float r = length(vLocal);
+  float angulo = atan(vLocal.y, vLocal.x);
+  float borda = 0.035;
+
+  if (vEstouro <= 0.0) {
+    if (r > 1.0 + borda) discard;
+    float dentro = smoothstep(1.0 + borda, 1.0 - borda, r);
+    // Película mais grossa na borda (fresnel): é onde a cor aparece.
+    float fresnel = pow(r, 4.0);
+    float giro = uTempo * 0.12 + vSemente * 5.0;
+    vec3 cor = arcoIris(r * 1.3 + angulo * 0.08 + giro + 0.15 * sin(vLocal.y * 3.0 + uTempo * 0.9));
+    float alfa = (0.08 + 0.6 * fresnel) * dentro;
+    // Contorno claro e fino.
+    float contorno = smoothstep(0.85, 0.97, r) * dentro;
+    cor = mix(cor, vec3(1.0), contorno * 0.6);
+    alfa = max(alfa, contorno * 0.8);
+    // Reflexo principal e um menor do lado oposto.
+    float reflexo = smoothstep(0.24, 0.1, length((vLocal - vec2(-0.38, 0.42)) * vec2(1.0, 1.6)));
+    float reflexo2 = smoothstep(0.13, 0.05, length(vLocal - vec2(0.45, -0.5))) * 0.6;
+    float brilho = max(reflexo, reflexo2);
+    cor = mix(cor, vec3(1.0), brilho);
+    alfa = max(alfa, brilho * 0.9);
+    gl_FragColor = vec4(cor, alfa);
+    return;
+  }
+
+  float e = clamp(vEstouro, 0.0, 1.0);
+  float some = 1.0 - e;
+  // Anel que se abre e se rasga em pedaços.
+  float raioAnel = 1.0 + e * 0.35;
+  float anel = smoothstep(0.12, 0.04, abs(r - raioAnel)) * some;
+  float pedacos = step(0.15 + e * 0.6, acaso(floor((angulo + 3.1416) * 2.0) + vSemente * 91.0));
+  anel *= pedacos;
+  // Gotinhas que voam para fora.
+  float gotas = 0.0;
+  for (int i = 0; i < 9; i++) {
+    float fi = float(i);
+    float a = (fi + acaso(fi + vSemente * 13.0) * 0.6) * 6.2832 / 9.0;
+    float distancia = 1.0 + e * (0.45 + 0.25 * acaso(fi * 3.7 + vSemente));
+    vec2 centro = vec2(cos(a), sin(a)) * distancia;
+    float tamanho = mix(0.17, 0.05, e);
+    gotas = max(gotas, smoothstep(tamanho, tamanho * 0.4, length(vLocal - centro)));
+  }
+  gotas *= some;
+  float alfa = max(anel, gotas) * 0.95;
+  if (alfa <= 0.001) discard;
+  vec3 cor = mix(arcoIris(angulo * 0.16 + vSemente * 5.0), vec3(1.0), 0.4);
+  gl_FragColor = vec4(cor, alfa);
+}
+`

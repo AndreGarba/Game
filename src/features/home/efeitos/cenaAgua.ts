@@ -10,6 +10,7 @@ import {
   WebGLRenderer,
   type Texture,
 } from 'three'
+import { criarBolhas } from './bolhas.ts'
 import { FRAGMENTO_AZULEJOS, FRAGMENTO_IMAGEM, FRAGMENTO_VAPOR, VERTICE_TELA_CHEIA } from './shaders.ts'
 
 export interface ImagensCena {
@@ -104,6 +105,8 @@ export async function criarCenaAgua(
     cena.add(malha)
   })
 
+  const movimentoReduzido = matchMedia('(prefers-reduced-motion: reduce)').matches
+
   const ajustarTamanho = () => {
     const largura = canvas.clientWidth
     const altura = canvas.clientHeight
@@ -112,16 +115,22 @@ export async function criarCenaAgua(
     renderer.setSize(largura, altura, false)
     tela.set(largura, altura)
   }
-  ajustarTamanho()
   const observador = new ResizeObserver(ajustarTamanho)
   observador.observe(canvas)
 
-  const movimentoReduzido = matchMedia('(prefers-reduced-motion: reduce)').matches
+  ajustarTamanho()
+  // Depois de medir: as bolhas nascem já espalhadas pela tela de verdade.
+  const bolhas = criarBolhas(tela, tempo, movimentoReduzido)
+  bolhas.malha.renderOrder = materiais.length
+  cena.add(bolhas.malha)
+
   let anterior: number | null = null
   let quadro = 0
   const laco = (agora: number) => {
-    if (anterior !== null) tempo.value += Math.min(DELTA_MAX, (agora - anterior) / 1000)
+    const delta = anterior === null ? 0 : Math.min(DELTA_MAX, (agora - anterior) / 1000)
     anterior = agora
+    tempo.value += delta
+    bolhas.atualizar(delta)
     renderer.render(cena, camera)
     quadro = requestAnimationFrame(laco)
   }
@@ -134,6 +143,16 @@ export async function criarCenaAgua(
   }
   document.addEventListener('visibilitychange', aoMudarVisibilidade)
 
+  // O canvas não recebe toque (fica por baixo do logo e do botão): escuta no contêiner da tela.
+  // Não impede o evento, então tocar no JOGAR continua jogando.
+  const alvoToque = canvas.parentElement
+  const aoTocar = (evento: PointerEvent) => {
+    if (movimentoReduzido) return
+    const caixa = canvas.getBoundingClientRect()
+    bolhas.tocar(evento.clientX - caixa.left, evento.clientY - caixa.top)
+  }
+  alvoToque?.addEventListener('pointerdown', aoTocar)
+
   // Com movimento reduzido fica um quadro parado: gotas e vapor aparecem, mas nada se mexe.
   tempo.value = 12
   renderer.render(cena, camera)
@@ -144,6 +163,8 @@ export async function criarCenaAgua(
       cancelAnimationFrame(quadro)
       observador.disconnect()
       document.removeEventListener('visibilitychange', aoMudarVisibilidade)
+      alvoToque?.removeEventListener('pointerdown', aoTocar)
+      bolhas.destruir()
       geometria.dispose()
       materiais.forEach((material) => material.dispose())
       texturas.forEach((textura) => textura.dispose())
