@@ -9,23 +9,32 @@
 # escorregando para trás dentro da célula ao longo do ciclo, e na volta ao quadro 1 isso vira um
 # tranco para a frente. Na vertical a posição original fica: é o quique do galope e o contato das
 # patas com o chão.
+import argparse
 import sys
 import numpy as np
 from PIL import Image
 
-# Menos que isto e o galope "pula" de pose em pose na velocidade do jogo.
-QUADROS_MINIMOS = 10
-
-src, out = sys.argv[1], sys.argv[2]
-altura_saida = int(sys.argv[3]) if len(sys.argv) > 3 else 256
-previa = sys.argv[4] if len(sys.argv) > 4 else None
+parser = argparse.ArgumentParser()
+parser.add_argument('entrada')
+parser.add_argument('saida')
+parser.add_argument('altura_saida', nargs='?', type=int, default=256)
+parser.add_argument('previa', nargs='?')
+# Menos que 10 e o galope "pula" de pose em pose na velocidade do jogo. Animações que não são o
+# ciclo de corrida (o slide do abaixar) passam o próprio mínimo.
+parser.add_argument('--quadros-minimos', type=int, default=10)
+# Alfa a partir do qual o pixel é personagem. Algumas folhas saem com o fundo em alfa 1-2; a do
+# slide saiu com um véu branco em alfa 180-196 e o cachorro em 248: aí passa --alfa-fundo 205.
+parser.add_argument('--alfa-fundo', type=float, default=8)
+args = parser.parse_args()
+src, out, altura_saida, previa = args.entrada, args.saida, args.altura_saida, args.previa
+QUADROS_MINIMOS = args.quadros_minimos
 
 im = Image.open(src).convert('RGBA')
 rgba = np.asarray(im).copy()
 H, W, _ = rgba.shape
-# Algumas folhas saem com o fundo em alfa 1-2 e o personagem em 250-253, nunca 0 e 255:
-# normaliza, senão o fundo vira uma névoa e o personagem fica levemente transparente.
-alfa = np.clip((rgba[..., 3].astype(np.float32) - 8) / (240 - 8), 0, 1)
+# Normaliza o alfa entre o fundo e o personagem: senão o fundo vira uma névoa e o personagem fica
+# levemente transparente.
+alfa = np.clip((rgba[..., 3].astype(np.float32) - args.alfa_fundo) / (240 - args.alfa_fundo), 0, 1)
 rgba[..., 3] = (alfa * 255).astype(np.uint8)
 alfa = rgba[..., 3]
 visivel = alfa > 8
