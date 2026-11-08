@@ -22,6 +22,7 @@ import fimPainel from './fim-painel.webp'
 import fimSelo from './fim-selo.webp'
 import tutorCorrendo from './tutor-correndo.webp'
 import tutorPulando from './tutor-pulando.webp'
+import tutorDeslizando from './tutor-slide.webp'
 import velocidade from './hud-velocidade.webp'
 
 export const IMAGENS_HUD = { distancia, velocidade, pausa }
@@ -55,7 +56,9 @@ const MONTAGEM_MURO: MontagemMuro<string> = {
 }
 
 // Casas: uma construção por trecho (`scripts/arte/montar_casas.py`), mais a tira original, que
-// tem as árvores entre as casas.
+// tem as árvores entre as casas. A tira foi desenhada para emendar nela mesma, com a casa amarela
+// dividida entre as duas pontas: `scripts/arte/montar_casas_original.py` junta a casa, porque no
+// sorteio cada ponta encosta em outra construção.
 const PECAS_CASAS = { ...pecasDaPasta(import.meta.glob<string>('./cidade/casas/*.webp', { eager: true, import: 'default' })), original: casas }
 const MONTAGEM_CASAS: MontagemTrechos<string> = {
   tipo: 'trechos',
@@ -158,9 +161,13 @@ export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pe
 // recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
 export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, pes: 6 } as const
 
-// Folha do tutor pulando: 10 quadros, do ar até ficar em pé (PRD/referencias/tutor-pulando.webp),
-// recortados com `--pes-no-rodape`: a altura do pulo vem do motor, não da arte.
-export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 228, altura: 400, pes: 6 } as const
+// Folha do tutor pulando: 10 quadros, do último passo ao tropeço depois do pouso, gerada no ChatGPT
+// (PRD/referencias/tutor-pulo-correndo.png) e recortada com `--pes-no-rodape`: a altura do pulo vem do motor, não da arte.
+export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 348, altura: 400, pes: 6 } as const
+
+// Folha do tutor abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no ChatGPT
+// (PRD/referencias/tutor-slide.png) e recortada com `--quadros-minimos 6 --pes-no-rodape`.
+export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 482, altura: 400, pes: 6 } as const
 
 let arte: HTMLImageElement[] | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
@@ -168,6 +175,7 @@ let cachorro: HTMLImageElement | null = null
 let slide: HTMLImageElement | null = null
 let tutor: HTMLImageElement | null = null
 let tutorPulo: HTMLImageElement | null = null
+let tutorSlide: HTMLImageElement | null = null
 // Montagem de cada camada já com as imagens, no mesmo índice de CAMADAS_CIDADE. A mesma peça é
 // uma imagem só, reaproveitada onde aparecer.
 let montagens: (Montagem<HTMLImageElement> | null)[] | null = null
@@ -202,6 +210,7 @@ export function preCarregarImagensCenario(): HTMLImageElement[] {
     slide = criar(cachorroSlide)
     tutor = criar(tutorCorrendo)
     tutorPulo = criar(tutorPulando)
+    tutorSlide = criar(tutorDeslizando)
   }
   return arte
 }
@@ -226,6 +235,12 @@ export function spriteSlidePronto(): HTMLImageElement | null {
 export function spriteTutorPuloPronto(): HTMLImageElement | null {
   preCarregarImagensCenario()
   return pronta(tutorPulo)
+}
+
+/** A folha do slide do tutor, ou null enquanto não carregou (aí o abaixar achata o quadro da corrida). */
+export function spriteTutorSlidePronto(): HTMLImageElement | null {
+  preCarregarImagensCenario()
+  return pronta(tutorSlide)
 }
 
 /** A folha do tutor, ou null enquanto não carregou (o canvas desenha o tutor vetorial). */

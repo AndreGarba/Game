@@ -17,6 +17,7 @@ import {
   spriteObjeto,
   spriteTutorPronto,
   spriteTutorPuloPronto,
+  spriteTutorSlidePronto,
   montagemDaCamada,
   type Montagem,
 } from '../imagens/index.ts'
@@ -593,7 +594,7 @@ function poseNoRastro(rastro: readonly PontoRastro[], xAlvo: number): PontoRastr
 
 // Metros até o próximo ponto do rastro em que o cachorro saiu do chão, se estiver dentro do limite.
 // O tutor refaz o caminho do cachorro, então o pulo dele já está no rastro antes de acontecer: dá
-// para agachar antes de sair do chão, o que o cachorro não pode (ele depende do toque do jogador).
+// para dar o passo de impulso antes de sair do chão, o que o cachorro não pode (ele depende do toque do jogador).
 function metrosAtePuloNoRastro(rastro: readonly PontoRastro[], xAlvo: number, limite: number): number | null {
   // De trás para a frente, sem parar no primeiro: o que vale é o pulo mais próximo.
   let metros: number | null = null
@@ -679,7 +680,16 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
 
   const spriteTutor = spriteTutorPronto()
   if (spriteTutor) {
-    desenharTutorSprite(ctx, spriteTutor, spriteTutorPuloPronto(), sx(cam, xTutor), sy(cam, pose.y), ppm, poseTutor)
+    desenharTutorSprite(
+      ctx,
+      spriteTutor,
+      spriteTutorPuloPronto(),
+      spriteTutorSlidePronto(),
+      sx(cam, xTutor),
+      sy(cam, pose.y),
+      ppm,
+      poseTutor,
+    )
   } else {
     ctx.save()
     ctx.translate(sx(cam, xTutor), sy(cam, pose.y))
