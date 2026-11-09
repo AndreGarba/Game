@@ -3,6 +3,7 @@ import { TelaAbertura } from './features/abertura/screens/TelaAbertura/TelaAbert
 import { preCarregarImagensConfiguracoes } from './features/configuracoes/imagens/index.ts'
 import { preCarregarImagensCenario } from './features/corrida/imagens/index.ts'
 import { preCarregarImagensHistoria } from './features/historia/imagens/index.ts'
+import { preCarregarEfeitosHistoria } from './features/historia/sons/efeitosHistoria.ts'
 import { TelaHistoria } from './features/historia/screens/TelaHistoria/TelaHistoria.tsx'
 import { preCarregarImagensHome } from './features/home/imagens/index.ts'
 import { TelaHome } from './features/home/screens/TelaHome/TelaHome.tsx'
@@ -13,12 +14,13 @@ import { TelaGirarCelular } from './features/orientacao/screens/TelaGirarCelular
 type Tela = 'abertura' | 'girarCelular' | 'home' | 'historia' | 'corrida'
 
 // A abertura tem o som do logo e o pedido de girar vem logo depois dela: a música entra na home.
-// A história ainda é a home se despedindo; a trilha da perseguição começa com a corrida.
+// A história para a música e deixa os efeitos de cada quadro contarem a cena; a trilha da
+// perseguição começa com a corrida.
 const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
   abertura: null,
   girarCelular: null,
   home: 'home',
-  historia: 'home',
+  historia: null,
   corrida: 'corrida',
 }
 
@@ -53,6 +55,8 @@ function TelaAtual() {
 
   useEffect(() => {
     tocarTrilha(TRILHA_DA_TELA[tela])
+    // Da home o próximo passo é a história: os efeitos dela ficam prontos antes do Jogar.
+    if (tela === 'home') preCarregarEfeitosHistoria()
   }, [tela])
 
   // Sem router, a tela nova herdaria o scroll da anterior.

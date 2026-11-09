@@ -1,4 +1,5 @@
 import { assinarMusica, lerMusicaLigada } from '../../data/preferencias.ts'
+import { decodificar, iniciarAudio, obterContextoAudio } from '../som/contextoAudio.ts'
 import urlCorrida from './trilhas/corrida.mp3'
 import urlHome from './trilhas/home.mp3'
 
@@ -27,55 +28,39 @@ const TROCA_S = 0.6
 
 type Tocando = { nome: NomeTrilha; fonte: AudioBufferSourceNode; ganho: GainNode }
 
-let contexto: AudioContext | null = null
 let mestre: GainNode | null = null
 let pedida: NomeTrilha | null = null
 let tocando: Tocando | null = null
 let abafada = false
-let iniciado = false
-const buffers = new Map<NomeTrilha, Promise<AudioBuffer>>()
-
-function obterContexto(): AudioContext | null {
-  if (contexto) return contexto
-  const Construtor =
-    window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-  if (!Construtor) return null
-  contexto = new Construtor()
-  mestre = contexto.createGain()
-  mestre.gain.value = volumeAlvo()
-  mestre.connect(contexto.destination)
-  return contexto
-}
+const loops = new Map<NomeTrilha, Promise<AudioBuffer>>()
 
 function volumeAlvo(): number {
   if (!lerMusicaLigada()) return 0
   return abafada ? VOLUME * FATOR_ABAFADO : VOLUME
 }
 
-/** Só toca quando há trilha pedida, música ligada e o jogo na frente; fora disso, o áudio dorme. */
-function deveTocar(): boolean {
-  return pedida !== null && lerMusicaLigada() && document.visibilityState === 'visible'
+function obterMestre(ctx: AudioContext): GainNode {
+  if (!mestre) {
+    mestre = ctx.createGain()
+    mestre.gain.value = volumeAlvo()
+    mestre.connect(ctx.destination)
+  }
+  return mestre
 }
 
-function ajustar() {
-  const ctx = contexto
+/*
+ * Desligada, a música vai a volume zero mas a trilha segue correndo: o contexto não pode dormir,
+ * porque os efeitos sonoros usam o mesmo. Ao religar, ela volta no ponto em que estaria.
+ */
+function ajustarVolume() {
+  const ctx = obterContextoAudio()
   if (!ctx || !mestre) return
   mestre.gain.setTargetAtTime(volumeAlvo(), ctx.currentTime, 0.12)
-  if (deveTocar()) {
-    // Antes do primeiro toque o navegador recusa: o desbloqueio tenta de novo no gesto.
-    if (ctx.state === 'suspended') void ctx.resume().catch(() => {})
-  } else if (ctx.state === 'running') {
-    // Espera o volume descer antes de suspender, senão corta seco.
-    const aguardado = ctx
-    setTimeout(() => {
-      if (!deveTocar() && aguardado.state === 'running') void aguardado.suspend().catch(() => {})
-    }, 500)
-  }
 }
 
-async function carregar(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffer> {
+async function montarLoop(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffer> {
   const { url, inicio, fim } = TRILHAS[nome]
-  const bruto = await ctx.decodeAudioData(await (await fetch(url)).arrayBuffer())
+  const bruto = await decodificar(url, ctx)
   const taxa = bruto.sampleRate
   const a = Math.round(inicio * taxa)
   const b = Math.round(fim * taxa)
@@ -94,13 +79,12 @@ async function carregar(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffe
   return loop
 }
 
-function buffer(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffer> {
-  let promessa = buffers.get(nome)
+function loop(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffer> {
+  let promessa = loops.get(nome)
   if (!promessa) {
-    promessa = carregar(nome, ctx)
-    // Falhou (rede, decodificação): esquece para tentar de novo na próxima troca de tela.
-    promessa.catch(() => buffers.delete(nome))
-    buffers.set(nome, promessa)
+    promessa = montarLoop(nome, ctx)
+    promessa.catch(() => loops.delete(nome))
+    loops.set(nome, promessa)
   }
   return promessa
 }
@@ -113,28 +97,24 @@ function soltar(atual: Tocando, ctx: AudioContext) {
   atual.fonte.stop(agora + TROCA_S + 0.05)
 }
 
-/** Troca a trilha de fundo, com fade. `null` para a música (abertura, que tem som próprio). */
+/** Troca a trilha de fundo, com fade. `null` para a música (abertura e história têm som próprio). */
 export function tocarTrilha(nome: NomeTrilha | null) {
   pedida = nome
-  const ctx = obterContexto()
-  if (!ctx || !mestre) return
-  if (tocando?.nome === nome) {
-    ajustar()
-    return
-  }
+  const ctx = obterContextoAudio()
+  if (!ctx) return
+  const saida = obterMestre(ctx)
+  if (tocando?.nome === nome) return
   if (tocando) {
     soltar(tocando, ctx)
     tocando = null
   }
-  ajustar()
   if (!nome) return
-  const saida = mestre
-  buffer(nome, ctx)
-    .then((loop) => {
+  loop(nome, ctx)
+    .then((buffer) => {
       // A tela pode ter mudado enquanto decodificava.
       if (pedida !== nome || tocando) return
       const fonte = ctx.createBufferSource()
-      fonte.buffer = loop
+      fonte.buffer = buffer
       fonte.loop = true
       const ganho = ctx.createGain()
       ganho.gain.setValueAtTime(0, ctx.currentTime)
@@ -149,26 +129,11 @@ export function tocarTrilha(nome: NomeTrilha | null) {
 /** Abaixa a música (pausa e fim de partida) sem parar a trilha. */
 export function abafarMusica(abafar: boolean) {
   abafada = abafar
-  ajustar()
+  ajustarVolume()
 }
 
-// Todo gesto tenta destravar, não só o primeiro: o iOS volta a suspender o áudio depois de uma
-// ligação ou de outro app tocar som, e o próximo toque precisa conseguir retomar.
-const EVENTOS_GESTO = ['pointerdown', 'keydown', 'touchend'] as const
-
-/**
- * Liga o tocador uma vez, na raiz do app. O navegador só deixa tocar som depois de um gesto. Também
- * segue o switch das configurações e dorme com o jogo em segundo plano (aba trocada, app
- * minimizado na casca).
- */
+/** Liga o áudio e passa a seguir o switch das configurações. Uma vez, na raiz do app. */
 export function iniciarTocador() {
-  if (iniciado) return
-  iniciado = true
-  const destravar = () => {
-    obterContexto()
-    ajustar()
-  }
-  for (const evento of EVENTOS_GESTO) window.addEventListener(evento, destravar, true)
-  document.addEventListener('visibilitychange', ajustar)
-  assinarMusica(ajustar)
+  iniciarAudio()
+  assinarMusica(ajustarVolume)
 }

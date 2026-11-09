@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import '@fontsource/luckiest-guy/latin-400.css'
 import { IMAGENS_HISTORIA as img } from '../../imagens/index.ts'
+import { pararEfeitosHistoria, tocarEfeitoQuadro } from '../../sons/efeitosHistoria.ts'
 import './tela-historia.css'
 
 const TOTAL_QUADROS = 4
@@ -43,6 +44,13 @@ export function TelaHistoria({ aoTerminar }: { aoTerminar: () => void }) {
     const espera = setTimeout(() => setVisiveis((v) => v + 1), visiveis === 0 ? PRIMEIRO_MS : INTERVALO_MS)
     return () => clearTimeout(espera)
   }, [visiveis, completa])
+
+  // Cada quadro entra com o som da cena. Com movimento reduzido os quatro entram juntos: toca o último.
+  useEffect(() => {
+    if (visiveis > 0) tocarEfeitoQuadro(visiveis)
+  }, [visiveis])
+
+  useEffect(() => pararEfeitosHistoria, [])
 
   // Quem toca rápido para adiantar quadros não pode cair na corrida sem ver o último.
   const completaEmRef = useRef(0)
