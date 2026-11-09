@@ -11,15 +11,16 @@ import cena4Musica from './cena-4-musica.mp3'
 /*
  * O som de cada quadro da história são duas gerações da ElevenLabs (`scripts/som/gerar-efeitos.ts`)
  * tocando juntas: o efeito puro (ronco, porta e susto, patinhas no assoalho, porta arrebentando e
- * patinhas sumindo) e a mesma cena com música de desenho por baixo (ninar, "tchan-tchan-TCHAN!",
- * suspense, fanfarra de fuga). Somar aqui, e não num arquivo mixado, deixa o equilíbrio ajustável
+ * patinhas sumindo) e a música de desenho da cena (na cena 1, só a canção de ninar; nas outras, a
+ * cena inteira de novo com "tchan-tchan-TCHAN!", suspense e fanfarra de fuga por baixo). Somar aqui, e não num arquivo mixado, deixa o equilíbrio ajustável
  * sem gerar de novo. Não seguem o switch da música: são a cena, não a trilha.
  *
  * Volumes medidos nos arquivos: as patinhas da cena 3 saíram bem mais baixas que a música, e a
  * cena 4 somada no volume cheio passa de 1,0. O limitador no fim segura o que sobrar.
  */
 const CENAS = [
-  { efeito: cena1, musica: cena1Musica, volumeEfeito: 1, volumeMusica: 0.6 },
+  // Ronco reforçado e canção de ninar pura por baixo, as duas no mesmo nível médio.
+  { efeito: cena1, musica: cena1Musica, volumeEfeito: 1.8, volumeMusica: 0.55 },
   { efeito: cena2, musica: cena2Musica, volumeEfeito: 0.9, volumeMusica: 0.75 },
   { efeito: cena3, musica: cena3Musica, volumeEfeito: 1.6, volumeMusica: 0.6 },
   { efeito: cena4, musica: cena4Musica, volumeEfeito: 0.8, volumeMusica: 0.7 },

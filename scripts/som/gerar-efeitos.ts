@@ -26,11 +26,14 @@ const EFEITOS = {
     duracao: 2.5,
     texto: 'A small fluffy dog snoring very calmly and peacefully while asleep, soft slow breaths with gentle little snores. ' + ESTILO_EFEITO,
   },
+  // Só a canção de ninar: o ronco vem da camada `cena1`. Pedir os dois juntos deixava a melodia
+  // sumida atrás do ronco.
   'cena1-musica': {
     duracao: 2.5,
     texto:
-      'A soft, sleepy cartoon lullaby on music box and celesta, slow and dreamy, with a small fluffy dog ' +
-      'snoring very calmly and peacefully on top. ' + ESTILO_MUSICA,
+      'A gentle, sweet cartoon lullaby melody played on a music box and celesta, slow, soft and dreamy, ' +
+      'a clear simple tune like a bedtime song, warm soft pad underneath. Music only, no snoring, no other sounds. ' +
+      ESTILO_MUSICA,
   },
   // Quadro 2: o tutor abre a porta e chama para o banho.
   cena2: {
