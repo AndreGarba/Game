@@ -6,10 +6,21 @@ import { preCarregarImagensHistoria } from './features/historia/imagens/index.ts
 import { TelaHistoria } from './features/historia/screens/TelaHistoria/TelaHistoria.tsx'
 import { preCarregarImagensHome } from './features/home/imagens/index.ts'
 import { TelaHome } from './features/home/screens/TelaHome/TelaHome.tsx'
+import { iniciarTocador, tocarTrilha, type NomeTrilha } from './features/musica/tocadorMusica.ts'
 import { retratoNoToque } from './features/orientacao/AnimacaoGirarCelular.tsx'
 import { TelaGirarCelular } from './features/orientacao/screens/TelaGirarCelular/TelaGirarCelular.tsx'
 
 type Tela = 'abertura' | 'girarCelular' | 'home' | 'historia' | 'corrida'
+
+// A abertura tem o som do logo e o pedido de girar vem logo depois dela: a música entra na home.
+// A história ainda é a home se despedindo; a trilha da perseguição começa com a corrida.
+const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
+  abertura: null,
+  girarCelular: null,
+  home: 'home',
+  historia: 'home',
+  corrida: 'corrida',
+}
 
 // Tudo que vem depois da abertura baixa enquanto ela toca (arte da home, da história e do
 // cenário, Three.js dos efeitos, a corrida): quando o logo termina, as telas seguintes abrem prontas.
@@ -35,6 +46,14 @@ function TelaAtual() {
     preCarregarImagensCenario()
     void importarCorrida()
   }, [])
+
+  useEffect(() => {
+    iniciarTocador()
+  }, [])
+
+  useEffect(() => {
+    tocarTrilha(TRILHA_DA_TELA[tela])
+  }, [tela])
 
   // Sem router, a tela nova herdaria o scroll da anterior.
   useLayoutEffect(() => {

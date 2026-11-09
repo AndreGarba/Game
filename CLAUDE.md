@@ -157,6 +157,26 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r8'`.
 
 ---
 
+## Música de fundo
+
+- Duas trilhas, geradas na ElevenLabs Music por `scripts/musica/gerar-trilhas.ts` (os prompts
+  ficam lá): `home` (home e história, 100 BPM) e `corrida` (150 BPM). O `App.tsx` escolhe a
+  trilha pela tela; a abertura não tem, porque tem o som do logo. A corrida abafa a música na
+  pausa e no fim (`abafarMusica`).
+- A chave (`ELEVENLABS_API_KEY`) mora em `.env.local` e só o script usa. O jogo nunca chama a
+  ElevenLabs: toca os mp3 de `src/features/musica/trilhas/`.
+- **A gravação não é loop.** Cada uma tem 60 s com um final no último compasso. O loop é um
+  trecho de compasso a compasso (`inicio`/`fim` em `tocadorMusica.ts`), e a emenda é feita ao
+  decodificar, cruzando o começo com o que vinha depois do `fim`. Trilha regerada = medir
+  `inicio`/`fim` de novo (andamento pela autocorrelação do envelope, fim pela correlação da forma
+  de onda); valores velhos numa gravação nova dão um tropeço a cada volta.
+- Web Audio, não `<audio loop>`: o elemento deixa um buraco a cada volta. O navegador só libera
+  som depois de um gesto, então todo toque ou tecla tenta destravar (o iOS volta a suspender o
+  áudio depois de uma ligação). Com a música desligada ou o jogo em segundo plano, o contexto de
+  áudio é suspenso.
+
+---
+
 ## Save do jogador
 
 [Onde mora o save: `localStorage`, conta, ambos.]
