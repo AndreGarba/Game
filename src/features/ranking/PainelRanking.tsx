@@ -8,10 +8,10 @@ const LINHAS = 10
 
 type Carga = { fase: 'carregando' } | { fase: 'pronto'; linhas: LinhaRanking[] } | { fase: 'erro' }
 
-// Top 10 por distância, na home. Sem Supabase configurado no build, não aparece.
+// Top 10 por distância, aberto pelo ícone da home. Sem Supabase no build, avisa em vez de sumir: o ícone continua lá.
 export function PainelRanking() {
   const { t } = useTranslation()
-  const [carga, setCarga] = useState<Carga>({ fase: 'carregando' })
+  const [carga, setCarga] = useState<Carga>(rankingDisponivel() ? { fase: 'carregando' } : { fase: 'erro' })
 
   useEffect(() => {
     if (!rankingDisponivel()) return
@@ -24,7 +24,6 @@ export function PainelRanking() {
     return () => cancelamento.abort()
   }, [])
 
-  if (!rankingDisponivel()) return null
   const numero = (n: number) => n.toLocaleString(localeAtual())
 
   return (

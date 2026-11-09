@@ -17,7 +17,8 @@
     "continuar": "Toque para correr"
   },
   "home": {
-    "jogar": "Jogar"
+    "jogar": "Jogar",
+    "configuracoes": "Configurações"
   },
   "orientacao": {
     "titulo": "Gire o celular",

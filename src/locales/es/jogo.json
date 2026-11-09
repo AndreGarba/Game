@@ -17,7 +17,8 @@
     "continuar": "Toca para correr"
   },
   "home": {
-    "jogar": "Jugar"
+    "jogar": "Jugar",
+    "configuracoes": "Ajustes"
   },
   "orientacao": {
     "titulo": "Gira el móvil",

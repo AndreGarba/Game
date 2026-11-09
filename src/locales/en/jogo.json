@@ -17,7 +17,8 @@
     "continuar": "Tap to run"
   },
   "home": {
-    "jogar": "Play"
+    "jogar": "Play",
+    "configuracoes": "Settings"
   },
   "orientacao": {
     "titulo": "Turn your phone",
