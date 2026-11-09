@@ -22,7 +22,11 @@ lançamento: **a definir**.
 
 - **Frontend:** React + Vite + Tailwind
 - **Design system:** [pasta/pacote do DS — a definir]
-- **Backend:** Supabase, região [região — a definir] — projeto `[ID DO PROJETO — a definir]`
+- **Backend:** Supabase, região `sa-east-1` — projeto `hora-do-banho`, `[ID DO PROJETO — a definir]`.
+  **Ainda não foi criado:** custa US$ 10/mês na organização do André, que adiou a criação em
+  2026-11-08. O `the-immortal`, único projeto da conta, é de outro jogo: não usar. O job `deploy`
+  lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` das variáveis do repositório; sem elas,
+  o site sai sem ranking e nada acusa.
 - **Hospedagem:** Cloudflare Workers static assets. Configure o fallback de rota com
   cuidado: um fallback que responde `200 text/html` para qualquer caminho também responde assim
   para `/assets/<hash>.js` de um deploy antigo, e o `import()` do chunk falha com erro de MIME em

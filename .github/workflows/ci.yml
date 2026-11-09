@@ -60,6 +60,9 @@ jobs:
   # Único caminho para produção: merge na main → verificar passou → deploy. Nunca à mão.
   # Secrets do repositório: CLOUDFLARE_API_TOKEN (permissão "Workers Scripts: Edit") e
   # CLOUDFLARE_ACCOUNT_ID.
+  # Variáveis do repositório (não são secrets: só URL e chave publishable, que vão no bundle):
+  # VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY. O Vite grava o valor no build: sem elas, o
+  # deploy passa e o site sai sem ranking, sem erro nenhum.
   deploy:
     needs: verificar
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -76,6 +79,9 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
       # wrangler pinado no package.json: cada deploy usa a versão que alguém decidiu.
       - run: npx wrangler deploy
