@@ -19,6 +19,13 @@
   "home": {
     "jogar": "Jugar"
   },
+  "configuracoes": {
+    "abrir": "Ajustes",
+    "titulo": "Ajustes",
+    "fechar": "Cerrar",
+    "musica": "Música",
+    "musicaDetalhe": "Banda sonora del juego"
+  },
   "orientacao": {
     "titulo": "Gira el móvil",
     "texto": "En horizontal ves más de la pista y los obstáculos llegan con más tiempo.",

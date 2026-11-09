@@ -161,6 +161,10 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r8'`.
 
 [Onde mora o save: `localStorage`, conta, ambos.]
 
+Preferências do aparelho (`src/data/preferencias.ts`): música de fundo em
+`horadobanho:musica` (`'0'` desliga; ausente ou qualquer outro valor conta como ligada). Quem
+toca a música assina `assinarMusica` para reagir ao switch da janela de configurações na hora.
+
 Se houver save local versionado (`VERSAO_ATUAL` + migrations encadeadas `migrarV<n>ParaV<n+1>`):
 
 1. Mudou o formato do estado salvo → incrementa a versão e escreve a migration com defaults neutros.
@@ -405,6 +409,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 
 | Camada | Como |
 | --- | --- |
+| Janela de configurações (aberta pela engrenagem da home) | `useVoltarNativoEmCamadas` (`src/features/navegacao/`); o X, o Esc e o toque no véu chamam `history.back()` |
 | Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
 | História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
 

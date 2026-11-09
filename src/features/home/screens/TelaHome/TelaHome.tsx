@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { IMAGENS_CONFIGURACOES } from '../../../configuracoes/imagens/index.ts'
+import { JanelaConfiguracoes } from '../../../configuracoes/JanelaConfiguracoes/JanelaConfiguracoes.tsx'
+import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
 import { PainelRanking } from '../../../ranking/PainelRanking.tsx'
 import { IMAGENS_HOME } from '../../imagens/index.ts'
 import './tela-home.css'
@@ -10,10 +13,23 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
   aoJogarRef.current = aoJogar
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [efeitosProntos, setEfeitosProntos] = useState(false)
+  const [configuracoesAbertas, setConfiguracoesAbertas] = useState(false)
+  const configuracoesAbertasRef = useRef(false)
+  configuracoesAbertasRef.current = configuracoesAbertas
+  const engrenagemRef = useRef<HTMLButtonElement>(null)
+
+  useVoltarNativoEmCamadas(configuracoesAbertas, () => {
+    setConfiguracoesAbertas(false)
+    engrenagemRef.current?.focus({ preventScroll: true })
+  })
 
   // Espaço/Enter jogam sem precisar de foco no botão: autoFocus desenharia o anel de foco até no toque.
+  // Com a janela de configurações aberta, as teclas são dela (Espaço liga e desliga o switch).
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
+      if (configuracoesAbertasRef.current) return
+      // Botão com foco (a engrenagem, depois de fechar a janela) responde à tecla sozinho.
+      if (evento.target instanceof HTMLButtonElement) return
       if (evento.code !== 'Space' && evento.code !== 'Enter') return
       evento.preventDefault()
       aoJogarRef.current()
@@ -62,6 +78,16 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
         <img className="tela-home__jogar-sprite" src={IMAGENS_HOME.botoes} alt="" draggable={false} />
       </button>
       <PainelRanking />
+      <button
+        ref={engrenagemRef}
+        className="tela-home__configuracoes"
+        onClick={() => setConfiguracoesAbertas(true)}
+        aria-label={t('configuracoes.abrir')}
+        aria-haspopup="dialog"
+      >
+        <img src={IMAGENS_CONFIGURACOES.engrenagem} alt="" draggable={false} />
+      </button>
+      {configuracoesAbertas && <JanelaConfiguracoes />}
     </div>
   )
 }

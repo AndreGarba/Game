@@ -135,3 +135,32 @@
   max-width: none;
   pointer-events: none;
 }
+
+/* Engrenagem no canto de cima à esquerda: o da direita é do ranking. */
+.tela-home__configuracoes {
+  position: absolute;
+  top: 3cqh;
+  left: 3cqh;
+  width: 17cqh;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.08s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tela-home__configuracoes img {
+  display: block;
+  width: 100%;
+  pointer-events: none;
+}
+
+.tela-home__configuracoes:active {
+  transform: scale(0.92);
+}
+
+.tela-home__configuracoes:focus-visible {
+  outline: 3px solid var(--cor-destaque-texto);
+  outline-offset: 3px;
+}

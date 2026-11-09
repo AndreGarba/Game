@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react'
 import { TelaAbertura } from './features/abertura/screens/TelaAbertura/TelaAbertura.tsx'
+import { preCarregarImagensConfiguracoes } from './features/configuracoes/imagens/index.ts'
 import { preCarregarImagensCenario } from './features/corrida/imagens/index.ts'
 import { preCarregarImagensHistoria } from './features/historia/imagens/index.ts'
 import { TelaHistoria } from './features/historia/screens/TelaHistoria/TelaHistoria.tsx'
@@ -28,6 +29,7 @@ function TelaAtual() {
 
   useEffect(() => {
     preCarregarImagensHome()
+    preCarregarImagensConfiguracoes()
     void import('./features/home/efeitos/cenaAgua.ts')
     preCarregarImagensHistoria()
     preCarregarImagensCenario()
