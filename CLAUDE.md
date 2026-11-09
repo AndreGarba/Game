@@ -161,8 +161,9 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r8'`.
 
 - Duas trilhas, geradas na ElevenLabs Music por `scripts/musica/gerar-trilhas.ts` (os prompts
   ficam lá): `home` (100 BPM) e `corrida` (150 BPM). O `App.tsx` escolhe a trilha pela tela; a
-  abertura não tem (som do logo) nem a história (um efeito por quadro, de
-  `scripts/som/gerar-efeitos.ts`, em `src/features/historia/sons/`). Os efeitos não seguem o
+  abertura não tem (som do logo) nem a história: cada quadro dela toca duas camadas juntas, o
+  efeito puro e a cena com música de desenho (`scripts/som/gerar-efeitos.ts`, sons em
+  `src/features/historia/sons/`, volume de cada camada e limitador em `efeitosHistoria.ts`). Os efeitos não seguem o
   switch da música. A corrida abafa a música na pausa e no fim (`abafarMusica`).
 - A chave (`ELEVENLABS_API_KEY`) mora em `.env.local` e só o script usa. O jogo nunca chama a
   ElevenLabs: toca os mp3 de `src/features/musica/trilhas/`.
