@@ -26,6 +26,7 @@ import { COR, PALETA_CENARIO } from './paleta.ts'
 import { desenharCachorroSprite } from './cachorroSprite.ts'
 import { atualizarPoeira, desenharPoeira } from './poeira.ts'
 import { ANTECIPACAO_PULO_M, desenharTutorSprite } from './tutorSprite.ts'
+import type { PoseTutorSom } from '../som/sonsCorrida.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
@@ -649,7 +650,16 @@ function fracaoTutorNaTela(alvo: number, xCachorro: number): number {
   return fracaoTutor
 }
 
-export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, altura: number, quadro: QuadroCorrida) {
+/**
+ * Desenha o quadro e devolve a pose do tutor que acabou de ir para a tela: ela só existe aqui
+ * (sai do rastro e da compressão da distância), e os passos e o pouso dele seguem a animação.
+ */
+export function desenharCena(
+  ctx: CanvasRenderingContext2D,
+  largura: number,
+  altura: number,
+  quadro: QuadroCorrida,
+): { tutor: PoseTutorSom } {
   const { estado, alfa } = quadro
   const c = estado.cachorro
   const x = quadro.xAnterior + (c.x - quadro.xAnterior) * alfa
@@ -725,6 +735,7 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
     ctx.ellipse(cx, base, ppm * 0.5, ppm * 0.1, 0, 0, Math.PI * 2)
     ctx.fill()
   }
+  const tutor: PoseTutorSom = { noChao: pose.noChao, abaixado: pose.abaixado, fase: poseTutor.fase }
   const poseCachorro = { fase: x * 2.2, noAr: !c.noChao, abaixado: c.abaixadoTicks > 0 }
   // Folha de sprites da arte; enquanto ela não carrega, o cachorro vetorial.
   const sprite = spriteCachorroPronto()
@@ -734,11 +745,12 @@ export function desenharCena(ctx: CanvasRenderingContext2D, largura: number, alt
       ticksAbaixado: c.abaixadoTicks,
       vy: c.vy,
     })
-    return
+    return { tutor }
   }
   ctx.save()
   ctx.translate(cx, base)
   ctx.scale(ppm, -ppm)
   desenharCachorro(ctx, poseCachorro)
   ctx.restore()
+  return { tutor }
 }

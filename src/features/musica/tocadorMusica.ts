@@ -1,5 +1,6 @@
 import { assinarMusica, lerMusicaLigada } from '../../data/preferencias.ts'
 import { decodificar, iniciarAudio, obterContextoAudio } from '../som/contextoAudio.ts'
+import urlBanho from './trilhas/banho.mp3'
 import urlCorrida from './trilhas/corrida.mp3'
 import urlHome from './trilhas/home.mp3'
 
@@ -10,15 +11,32 @@ import urlHome from './trilhas/home.mp3'
  * começo do trecho é cruzado com o que vinha logo depois do `fim`, então o salto do fim para o
  * começo cai no mesmo ponto da música. Web Audio em vez de <audio loop>: o elemento deixa um
  * buraco audível a cada volta e não aceita ponto de loop.
+ *
+ * O fim de partida tem música própria: quando a imagem do banho entra, a trilha `banho`. Ela é
+ * curta, da ElevenLabs de efeitos (`scripts/som/gerar-efeitos.ts`), e já veio como loop: toca
+ * inteira, sem `inicio`/`fim`.
  */
-export type NomeTrilha = 'home' | 'corrida'
+export type NomeTrilha = 'home' | 'corrida' | 'banho'
 
-const TRILHAS: Record<NomeTrilha, { url: string; inicio: number; fim: number }> = {
+interface Trilha {
+  url: string
+  // Trecho de compasso a compasso; sem eles, a gravação já é um loop e toca inteira.
+  inicio?: number
+  fim?: number
+  // As gravações curtas saíram mais baixas que as da ElevenLabs Music (RMS 0,07 contra 0,18).
+  volume?: number
+}
+
+const TRILHAS: Record<NomeTrilha, Trilha> = {
   // 100 BPM: 20 compassos de 2,4 s.
   home: { url: urlHome, inicio: 0.042, fim: 48.044 },
   // 150 BPM: 32 compassos de 1,6 s.
   corrida: { url: urlCorrida, inicio: 0.472, fim: 51.67 },
+  banho: { url: urlBanho, volume: 2 },
 }
+
+// O banho entra com a imagem deslizando: depois da íris (`--fim-iris` 1 s + 0,05 s em tela-corrida.css).
+const ENTRADA_BANHO_MS = 1050
 
 const VOLUME = 0.5
 // Pausa e fim de partida: a música continua, mais baixa, para a volta não ser um susto.
@@ -61,6 +79,7 @@ function ajustarVolume() {
 async function montarLoop(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffer> {
   const { url, inicio, fim } = TRILHAS[nome]
   const bruto = await decodificar(url, ctx)
+  if (inicio === undefined || fim === undefined) return bruto
   const taxa = bruto.sampleRate
   const a = Math.round(inicio * taxa)
   const b = Math.round(fim * taxa)
@@ -97,8 +116,20 @@ function soltar(atual: Tocando, ctx: AudioContext) {
   atual.fonte.stop(agora + TROCA_S + 0.05)
 }
 
+let esperaBanho: ReturnType<typeof setTimeout> | undefined
+
+// Troca de trilha pedida de fora (De novo, outra tela) desfaz o banho que ia entrar.
+function cancelarFim() {
+  clearTimeout(esperaBanho)
+}
+
 /** Troca a trilha de fundo, com fade. `null` para a música (abertura e história têm som próprio). */
 export function tocarTrilha(nome: NomeTrilha | null) {
+  cancelarFim()
+  trocar(nome)
+}
+
+function trocar(nome: NomeTrilha | null) {
   pedida = nome
   const ctx = obterContextoAudio()
   if (!ctx) return
@@ -109,6 +140,8 @@ export function tocarTrilha(nome: NomeTrilha | null) {
     tocando = null
   }
   if (!nome) return
+  // A partida pode acabar a qualquer momento: o banho fica decodificado antes.
+  if (nome === 'corrida') loop('banho', ctx).catch(() => {})
   loop(nome, ctx)
     .then((buffer) => {
       // A tela pode ter mudado enquanto decodificava.
@@ -118,7 +151,7 @@ export function tocarTrilha(nome: NomeTrilha | null) {
       fonte.loop = true
       const ganho = ctx.createGain()
       ganho.gain.setValueAtTime(0, ctx.currentTime)
-      ganho.gain.linearRampToValueAtTime(1, ctx.currentTime + TROCA_S)
+      ganho.gain.linearRampToValueAtTime(TRILHAS[nome].volume ?? 1, ctx.currentTime + TROCA_S)
       fonte.connect(ganho).connect(saida)
       fonte.start()
       tocando = { nome, fonte, ganho }
@@ -126,7 +159,17 @@ export function tocarTrilha(nome: NomeTrilha | null) {
     .catch(() => {})
 }
 
-/** Abaixa a música (pausa e fim de partida) sem parar a trilha. */
+/**
+ * Fim de partida: a trilha da corrida sai na batida, sem vinheta, e o banho entra junto com a
+ * imagem. Segue o switch como o resto da música (passa pelo mesmo ganho mestre).
+ */
+export function tocarFimDePartida() {
+  cancelarFim()
+  trocar(null)
+  esperaBanho = setTimeout(() => trocar('banho'), ENTRADA_BANHO_MS)
+}
+
+/** Abaixa a música (pausa) sem parar a trilha. */
 export function abafarMusica(abafar: boolean) {
   abafada = abafar
   ajustarVolume()

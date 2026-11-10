@@ -15,7 +15,8 @@ import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
 import { FimBanho } from '../../FimBanho.tsx'
 import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
-import { abafarMusica } from '../../../musica/tocadorMusica.ts'
+import { abafarMusica, tocarFimDePartida, tocarTrilha } from '../../../musica/tocadorMusica.ts'
+import { atualizarSonsCorrida, ofegar, pararSonsCorrida } from '../../som/sonsCorrida.ts'
 import { FormularioRanking } from '../../../ranking/FormularioRanking.tsx'
 import '@fontsource/luckiest-guy/latin-400.css'
 import './tela-corrida.css'
@@ -65,11 +66,17 @@ export function TelaCorrida() {
     setFase(nova)
   }, [])
 
-  // Pausado ou no fim, a perseguição segue baixinho por trás do painel.
+  // Pausado, a perseguição segue baixinho por trás do painel. No fim, game over e música do banho;
+  // De novo traz a perseguição de volta.
   useEffect(() => {
-    abafarMusica(fase !== 'correndo')
+    abafarMusica(fase === 'pausado')
+    ofegar(fase === 'correndo')
+    if (fase === 'fim') tocarFimDePartida()
+    else tocarTrilha('corrida')
     return () => abafarMusica(false)
   }, [fase])
+
+  useEffect(() => pararSonsCorrida, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -92,7 +99,10 @@ export function TelaCorrida() {
     observador.observe(canvas)
 
     const controlador = criarControladorCorrida({
-      desenhar: (quadro) => desenharCena(ctx, largura, altura, quadro),
+      desenhar: (quadro) => {
+        const { tutor } = desenharCena(ctx, largura, altura, quadro)
+        atualizarSonsCorrida(quadro.estado, tutor)
+      },
       aoAtualizarHud: (estado) => setHud(hudDe(estado)),
       aoTerminar: (estado, log) => {
         const resultado = resultadoDaPartida(estado)
