@@ -1,6 +1,9 @@
 /*
  * Gera os efeitos sonoros do jogo na ElevenLabs (modelo eleven_text_to_sound_v3): os da história
- * (`cena*`) e os da corrida (`ofegante`, `passos-tutor`, `pouso`).
+ * (`cena*`), os da corrida (`ofegante`, `passos-tutor`, `pouso`) e a música do fim de partida
+ * (`banho`, que vai para `src/features/musica/trilhas/`). Ela sai daqui,
+ * e não da ElevenLabs Music, porque é pedido como loop: toca enquanto a tela de fim estiver aberta
+ * e não precisa de ponto de loop medido.
  *
  *   node --env-file=.env.local scripts/som/gerar-efeitos.ts <pasta-de-saida> [cena1 ofegante ...]
  *
@@ -91,6 +94,15 @@ const EFEITOS = {
   pouso: {
     duracao: 0.7,
     texto: 'An adult person landing on a sidewalk with both sneakers after a jump, a solid heavy cartoon thud, short. ' + ESTILO_EFEITO,
+  },
+  // A imagem do banho: o cachorro na banheira, de cara emburrada. Música de fundo em loop.
+  banho: {
+    duracao: 20,
+    loop: true,
+    texto:
+      'Funny grumpy cartoon background music for a cranky little dog forced to take a bath: a bouncy comedic ' +
+      'tuba and bassoon melody stomping along, pizzicato strings, playful bubbly xylophone and rubber duck squeaks, ' +
+      'mock-serious and sulky but silly, steady medium tempo, seamless loop. ' + ESTILO_MUSICA,
   },
 } as const satisfies Record<string, { duracao: number; texto: string; loop?: boolean }>
 
