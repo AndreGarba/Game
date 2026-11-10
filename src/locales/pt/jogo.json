@@ -20,6 +20,12 @@
     "jogar": "Jogar",
     "configuracoes": "Configurações"
   },
+  "configuracoes": {
+    "titulo": "Configurações",
+    "fechar": "Fechar",
+    "musica": "Música",
+    "musicaDetalhe": "Trilha de fundo"
+  },
   "orientacao": {
     "titulo": "Gire o celular",
     "texto": "Na horizontal você vê mais da pista e os obstáculos chegam com mais tempo.",

@@ -161,9 +161,36 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r8'`.
 
 ---
 
+## Música de fundo
+
+- Duas trilhas, geradas na ElevenLabs Music por `scripts/musica/gerar-trilhas.ts` (os prompts
+  ficam lá): `home` (100 BPM) e `corrida` (150 BPM). O `App.tsx` escolhe a trilha pela tela; a
+  abertura não tem (som do logo) nem a história: cada quadro dela toca duas camadas juntas, o
+  efeito puro e a cena com música de desenho (`scripts/som/gerar-efeitos.ts`, sons em
+  `src/features/historia/sons/`, volume de cada camada e limitador em `efeitosHistoria.ts`). Os efeitos não seguem o
+  switch da música. A corrida abafa a música na pausa e no fim (`abafarMusica`).
+- A chave (`ELEVENLABS_API_KEY`) mora em `.env.local` e só o script usa. O jogo nunca chama a
+  ElevenLabs: toca os mp3 de `src/features/musica/trilhas/`.
+- **A gravação não é loop.** Cada uma tem 60 s com um final no último compasso. O loop é um
+  trecho de compasso a compasso (`inicio`/`fim` em `tocadorMusica.ts`), e a emenda é feita ao
+  decodificar, cruzando o começo com o que vinha depois do `fim`. Trilha regerada = medir
+  `inicio`/`fim` de novo (andamento pela autocorrelação do envelope, fim pela correlação da forma
+  de onda); valores velhos numa gravação nova dão um tropeço a cada volta.
+- Web Audio, não `<audio loop>`: o elemento deixa um buraco a cada volta. Um `AudioContext` só
+  para música e efeitos (`src/features/som/contextoAudio.ts`). O navegador só libera som depois de
+  um gesto, então todo toque ou tecla tenta destravar (o iOS volta a suspender o áudio depois de
+  uma ligação). O contexto dorme só com o jogo em segundo plano; música desligada é volume zero,
+  não contexto suspenso, senão os efeitos ficariam mudos junto.
+
+---
+
 ## Save do jogador
 
 [Onde mora o save: `localStorage`, conta, ambos.]
+
+Preferências do aparelho (`src/data/preferencias.ts`): música de fundo em
+`horadobanho:musica` (`'0'` desliga; ausente ou qualquer outro valor conta como ligada). Quem
+toca a música assina `assinarMusica` para reagir ao switch da janela de configurações na hora.
 
 Se houver save local versionado (`VERSAO_ATUAL` + migrations encadeadas `migrarV<n>ParaV<n+1>`):
 
@@ -409,6 +436,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 
 | Camada | Como |
 | --- | --- |
+| Janela de configurações (aberta pelo ícone de configurações da home) | `useVoltarNativoEmCamadas` (`src/features/navegacao/`); o X, o Esc e o toque no véu chamam `history.back()` |
 | Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
 | História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
 | Painel do ranking aberto pelo ícone da home (`TelaHome`) | **pendente:** fecha só pelo próprio ícone; o voltar do celular fecha o app |

@@ -15,6 +15,7 @@ import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
 import { FimBanho } from '../../FimBanho.tsx'
 import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
+import { abafarMusica } from '../../../musica/tocadorMusica.ts'
 import { FormularioRanking } from '../../../ranking/FormularioRanking.tsx'
 import '@fontsource/luckiest-guy/latin-400.css'
 import './tela-corrida.css'
@@ -63,6 +64,12 @@ export function TelaCorrida() {
     faseRef.current = nova
     setFase(nova)
   }, [])
+
+  // Pausado ou no fim, a perseguição segue baixinho por trás do painel.
+  useEffect(() => {
+    abafarMusica(fase !== 'correndo')
+    return () => abafarMusica(false)
+  }, [fase])
 
   useEffect(() => {
     const canvas = canvasRef.current

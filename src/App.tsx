@@ -1,14 +1,28 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react'
 import { TelaAbertura } from './features/abertura/screens/TelaAbertura/TelaAbertura.tsx'
+import { preCarregarImagensConfiguracoes } from './features/configuracoes/imagens/index.ts'
 import { preCarregarImagensCenario } from './features/corrida/imagens/index.ts'
 import { preCarregarImagensHistoria } from './features/historia/imagens/index.ts'
+import { preCarregarEfeitosHistoria } from './features/historia/sons/efeitosHistoria.ts'
 import { TelaHistoria } from './features/historia/screens/TelaHistoria/TelaHistoria.tsx'
 import { preCarregarImagensHome } from './features/home/imagens/index.ts'
 import { TelaHome } from './features/home/screens/TelaHome/TelaHome.tsx'
+import { iniciarTocador, tocarTrilha, type NomeTrilha } from './features/musica/tocadorMusica.ts'
 import { retratoNoToque } from './features/orientacao/AnimacaoGirarCelular.tsx'
 import { TelaGirarCelular } from './features/orientacao/screens/TelaGirarCelular/TelaGirarCelular.tsx'
 
 type Tela = 'abertura' | 'girarCelular' | 'home' | 'historia' | 'corrida'
+
+// A abertura tem o som do logo e o pedido de girar vem logo depois dela: a música entra na home.
+// A história para a música e deixa os efeitos de cada quadro contarem a cena; a trilha da
+// perseguição começa com a corrida.
+const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
+  abertura: null,
+  girarCelular: null,
+  home: 'home',
+  historia: null,
+  corrida: 'corrida',
+}
 
 // Tudo que vem depois da abertura baixa enquanto ela toca (arte da home, da história e do
 // cenário, Three.js dos efeitos, a corrida): quando o logo termina, as telas seguintes abrem prontas.
@@ -28,11 +42,22 @@ function TelaAtual() {
 
   useEffect(() => {
     preCarregarImagensHome()
+    preCarregarImagensConfiguracoes()
     void import('./features/home/efeitos/cenaAgua.ts')
     preCarregarImagensHistoria()
     preCarregarImagensCenario()
     void importarCorrida()
   }, [])
+
+  useEffect(() => {
+    iniciarTocador()
+  }, [])
+
+  useEffect(() => {
+    tocarTrilha(TRILHA_DA_TELA[tela])
+    // Da home o próximo passo é a história: os efeitos dela ficam prontos antes do Jogar.
+    if (tela === 'home') preCarregarEfeitosHistoria()
+  }, [tela])
 
   // Sem router, a tela nova herdaria o scroll da anterior.
   useLayoutEffect(() => {

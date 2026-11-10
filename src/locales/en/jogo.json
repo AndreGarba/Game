@@ -20,6 +20,12 @@
     "jogar": "Play",
     "configuracoes": "Settings"
   },
+  "configuracoes": {
+    "titulo": "Settings",
+    "fechar": "Close",
+    "musica": "Music",
+    "musicaDetalhe": "Background soundtrack"
+  },
   "orientacao": {
     "titulo": "Turn your phone",
     "texto": "Sideways you see more of the track, and obstacles give you more time.",

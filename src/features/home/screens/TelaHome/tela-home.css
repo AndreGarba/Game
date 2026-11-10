@@ -154,6 +154,7 @@
   background: none;
   cursor: pointer;
   transition: transform 0.08s ease-out;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tela-home__icone:active {

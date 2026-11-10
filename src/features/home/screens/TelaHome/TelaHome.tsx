@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { JanelaConfiguracoes } from '../../../configuracoes/JanelaConfiguracoes/JanelaConfiguracoes.tsx'
+import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
 import { PainelRanking } from '../../../ranking/PainelRanking.tsx'
 import { IMAGENS_HOME } from '../../imagens/index.ts'
 import './tela-home.css'
@@ -11,10 +13,21 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [efeitosProntos, setEfeitosProntos] = useState(false)
   const [rankingAberto, setRankingAberto] = useState(false)
+  const [configuracoesAbertas, setConfiguracoesAbertas] = useState(false)
+  const configuracoesAbertasRef = useRef(false)
+  configuracoesAbertasRef.current = configuracoesAbertas
+  const botaoConfiguracoesRef = useRef<HTMLButtonElement>(null)
+
+  useVoltarNativoEmCamadas(configuracoesAbertas, () => {
+    setConfiguracoesAbertas(false)
+    botaoConfiguracoesRef.current?.focus({ preventScroll: true })
+  })
 
   // Espaço/Enter jogam sem precisar de foco no botão: autoFocus desenharia o anel de foco até no toque.
+  // Com a janela de configurações aberta, as teclas são dela (Espaço liga e desliga o switch).
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
+      if (configuracoesAbertasRef.current) return
       if (evento.code !== 'Space' && evento.code !== 'Enter') return
       // Com foco num botão, a tecla é dele: sem isto, abrir o ranking pelo teclado começaria a partida.
       if (evento.target instanceof Element && evento.target.closest('button')) return
@@ -65,8 +78,13 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
         <img className="tela-home__jogar-sprite" src={IMAGENS_HOME.botoes} alt="" draggable={false} />
       </button>
       <div className="tela-home__icones">
-        {/* A tela de configurações ainda não existe: por enquanto o botão só marca o lugar. */}
-        <button className="tela-home__icone" aria-label={t('home.configuracoes')}>
+        <button
+          ref={botaoConfiguracoesRef}
+          className="tela-home__icone"
+          onClick={() => setConfiguracoesAbertas(true)}
+          aria-label={t('home.configuracoes')}
+          aria-haspopup="dialog"
+        >
           <img src={IMAGENS_HOME.iconeConfiguracoes} alt="" draggable={false} />
         </button>
         <button
@@ -79,6 +97,7 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
         </button>
       </div>
       {rankingAberto && <PainelRanking />}
+      {configuracoesAbertas && <JanelaConfiguracoes />}
     </div>
   )
 }
