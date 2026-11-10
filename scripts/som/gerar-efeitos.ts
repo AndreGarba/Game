@@ -1,7 +1,12 @@
 /*
- * Gera os sons da história na ElevenLabs (modelo eleven_text_to_sound_v3).
+ * Gera os efeitos sonoros do jogo na ElevenLabs (modelo eleven_text_to_sound_v3): os da história
+ * (`cena*`) e os da corrida (`ofegante`, `passos-tutor`, `pouso`).
  *
- *   node --env-file=.env.local scripts/som/gerar-efeitos.ts <pasta-de-saida> [cena1 cena2-musica ...]
+ *   node --env-file=.env.local scripts/som/gerar-efeitos.ts <pasta-de-saida> [cena1 ofegante ...]
+ *
+ * Corrida (`src/features/corrida/som/`): o ofegar é pedido como loop e toca sem parar enquanto o
+ * cachorro corre; os passos do tutor são uma corrida inteira, recortada passo a passo no jogo
+ * (`PASSOS` em `sonsCorrida.ts`, medidos na forma de onda: gerou de novo, mede de novo).
  *
  * Cada quadro tem duas camadas que o jogo toca juntas (`src/features/historia/sons/`): o efeito
  * puro (`cenaN`) e a mesma cena com música de desenho por baixo (`cenaN-musica`). Os quadros
@@ -68,13 +73,32 @@ const EFEITOS = {
       'A loud crash of a wooden door bursting and splintering with a cartoon cymbal hit, then a zippy cartoon ' +
       'chase flourish of xylophone and brass while small dog paws run fast and fade away into the distance. ' + ESTILO_MUSICA,
   },
-} as const
+  // Corrida: toca em loop o tempo todo, então nada que chame atenção sozinho (latido, ganido).
+  ofegante: {
+    duracao: 4,
+    loop: true,
+    texto:
+      'A small happy dog panting steadily and quickly while running, rhythmic short breaths in and out with the ' +
+      'tongue out, even and constant, no barking, no whining. ' + ESTILO_EFEITO,
+  },
+  'passos-tutor': {
+    duracao: 4,
+    texto:
+      'An adult person running steadily on a city sidewalk in sneakers, clear distinct footsteps with an even ' +
+      'rhythm, each step separate and crisp, no breathing, no background noise. ' + ESTILO_EFEITO,
+  },
+  // Um só para o cachorro e o tutor: o baque leve de patinhas não agradou.
+  pouso: {
+    duracao: 0.7,
+    texto: 'An adult person landing on a sidewalk with both sneakers after a jump, a solid heavy cartoon thud, short. ' + ESTILO_EFEITO,
+  },
+} as const satisfies Record<string, { duracao: number; texto: string; loop?: boolean }>
 
 type NomeEfeito = keyof typeof EFEITOS
 
 async function main() {
   const [pasta, ...pedidos] = process.argv.slice(2)
-  if (!pasta) throw new Error('Uso: gerar-efeitos.ts <pasta-de-saida> [cena1 cena2-musica ...]')
+  if (!pasta) throw new Error('Uso: gerar-efeitos.ts <pasta-de-saida> [cena1 ofegante ...]')
   if (!process.env.ELEVENLABS_API_KEY) {
     throw new Error('ELEVENLABS_API_KEY ausente: rode com --env-file=.env.local')
   }
@@ -86,12 +110,14 @@ async function main() {
   const carimbo = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')
 
   for (const nome of nomes) {
-    const { texto, duracao } = EFEITOS[nome]
+    const efeito: { texto: string; duracao: number; loop?: boolean } = EFEITOS[nome]
+    const { texto, duracao } = efeito
     console.log(`Gerando ${nome} (${duracao} s)…`)
     const audio = await cliente.textToSoundEffects.convert({
       text: texto,
       modelId: 'eleven_text_to_sound_v3',
       durationSeconds: duracao,
+      loop: efeito.loop ?? false,
       promptInfluence: 0.6,
       outputFormat: 'mp3_44100_128',
     })

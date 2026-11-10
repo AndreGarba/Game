@@ -168,7 +168,11 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r8'`.
   abertura não tem (som do logo) nem a história: cada quadro dela toca duas camadas juntas, o
   efeito puro e a cena com música de desenho (`scripts/som/gerar-efeitos.ts`, sons em
   `src/features/historia/sons/`, volume de cada camada e limitador em `efeitosHistoria.ts`). Os efeitos não seguem o
-  switch da música. A corrida abafa a música na pausa e no fim (`abafarMusica`).
+  switch da música.
+- Sons da corrida (`src/features/corrida/som/sonsCorrida.ts`, mesmo script): o cachorro ofegante
+  em loop enquanto corre, os passos do tutor e o pouso (o mesmo som para os dois). Saem do que `desenharCena`
+  acabou de desenhar (o tutor só existe ali, refazendo o rastro), não do motor. Os passos são
+  recortes de uma gravação só (`PASSOS`): regerou, mede os ataques de novo. A corrida abafa a música na pausa e no fim (`abafarMusica`).
 - A chave (`ELEVENLABS_API_KEY`) mora em `.env.local` e só o script usa. O jogo nunca chama a
   ElevenLabs: toca os mp3 de `src/features/musica/trilhas/`.
 - **A gravação não é loop.** Cada uma tem 60 s com um final no último compasso. O loop é um

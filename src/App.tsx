@@ -55,8 +55,12 @@ function TelaAtual() {
 
   useEffect(() => {
     tocarTrilha(TRILHA_DA_TELA[tela])
-    // Da home o próximo passo é a história: os efeitos dela ficam prontos antes do Jogar.
-    if (tela === 'home') preCarregarEfeitosHistoria()
+    // Da home o próximo passo é a história e depois a corrida: os sons ficam prontos antes do Jogar.
+    if (tela === 'home') {
+      preCarregarEfeitosHistoria()
+      // Import dinâmico: os sons da corrida dependem do motor, que fica no pedaço da corrida.
+      void import('./features/corrida/som/sonsCorrida.ts').then((m) => m.preCarregarSonsCorrida())
+    }
   }, [tela])
 
   // Sem router, a tela nova herdaria o scroll da anterior.
