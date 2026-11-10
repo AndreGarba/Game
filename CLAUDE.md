@@ -22,7 +22,11 @@ lançamento: **a definir**.
 
 - **Frontend:** React + Vite + Tailwind
 - **Design system:** [pasta/pacote do DS — a definir]
-- **Backend:** Supabase, região [região — a definir] — projeto `[ID DO PROJETO — a definir]`
+- **Backend:** Supabase, região `sa-east-1` — projeto `hora-do-banho`, `[ID DO PROJETO — a definir]`.
+  **Ainda não foi criado:** custa US$ 10/mês na organização do André, que adiou a criação em
+  2026-11-08. O `the-immortal`, único projeto da conta, é de outro jogo: não usar. O job `deploy`
+  lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` das variáveis do repositório; sem elas,
+  o site sai sem ranking e nada acusa.
 - **Hospedagem:** Cloudflare Workers static assets. Configure o fallback de rota com
   cuidado: um fallback que responde `200 text/html` para qualquer caminho também responde assim
   para `/assets/<hash>.js` de um deploy antigo, e o `import()` do chunk falha com erro de MIME em
@@ -307,8 +311,8 @@ comm -23 <(echo "$SLUGS_DO_list_edge_functions" | sort) <(ls supabase/functions 
   para o aparelho novo, e o id clonado faria dois aparelhos gravarem como o mesmo jogador. O cliente lê pela RPC `ranking_top` (sem `jogador_id`: com ele, qualquer um gravaria
   no lugar de outro) e grava só pela Edge Function `registrar-partida`, que chama
   `registrar_partida` com `service_role`. A regra do nome (`normalizarNome`/`nomeValido`) mora no
-  motor para valer igual no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o ranking
-  some da tela e o jogo segue.
+  motor para valer igual no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o painel
+  aberto pelo ícone da home avisa que o ranking está fora do ar e o jogo segue.
 - **Pendentes:** seed emitida pelo servidor (hoje o cliente sorteia), Turnstile, filtro de nome
   ofensivo, e o que fazer com o ranking quando `VERSAO_REGRAS` mudar (hoje mistura versões).
 
@@ -432,9 +436,10 @@ com um bottom sheet aberto. Desde a primeira tela:
 
 | Camada | Como |
 | --- | --- |
-| Janela de configurações (aberta pela engrenagem da home) | `useVoltarNativoEmCamadas` (`src/features/navegacao/`); o X, o Esc e o toque no véu chamam `history.back()` |
+| Janela de configurações (aberta pelo ícone de configurações da home) | `useVoltarNativoEmCamadas` (`src/features/navegacao/`); o X, o Esc e o toque no véu chamam `history.back()` |
 | Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
 | História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
+| Painel do ranking aberto pelo ícone da home (`TelaHome`) | **pendente:** fecha só pelo próprio ícone; o voltar do celular fecha o app |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.
 Verificação manual: abrir a camada, ler `history.length`, chamar `history.back()`.

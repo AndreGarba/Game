@@ -17,10 +17,10 @@
     "continuar": "Tap to run"
   },
   "home": {
-    "jogar": "Play"
+    "jogar": "Play",
+    "configuracoes": "Settings"
   },
   "configuracoes": {
-    "abrir": "Settings",
     "titulo": "Settings",
     "fechar": "Close",
     "musica": "Music",

@@ -17,10 +17,10 @@
     "continuar": "Toca para correr"
   },
   "home": {
-    "jogar": "Jugar"
+    "jogar": "Jugar",
+    "configuracoes": "Ajustes"
   },
   "configuracoes": {
-    "abrir": "Ajustes",
     "titulo": "Ajustes",
     "fechar": "Cerrar",
     "musica": "Música",

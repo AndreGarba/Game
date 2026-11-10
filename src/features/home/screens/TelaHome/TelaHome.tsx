@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { IMAGENS_CONFIGURACOES } from '../../../configuracoes/imagens/index.ts'
 import { JanelaConfiguracoes } from '../../../configuracoes/JanelaConfiguracoes/JanelaConfiguracoes.tsx'
 import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
 import { PainelRanking } from '../../../ranking/PainelRanking.tsx'
@@ -13,14 +12,15 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
   aoJogarRef.current = aoJogar
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [efeitosProntos, setEfeitosProntos] = useState(false)
+  const [rankingAberto, setRankingAberto] = useState(false)
   const [configuracoesAbertas, setConfiguracoesAbertas] = useState(false)
   const configuracoesAbertasRef = useRef(false)
   configuracoesAbertasRef.current = configuracoesAbertas
-  const engrenagemRef = useRef<HTMLButtonElement>(null)
+  const botaoConfiguracoesRef = useRef<HTMLButtonElement>(null)
 
   useVoltarNativoEmCamadas(configuracoesAbertas, () => {
     setConfiguracoesAbertas(false)
-    engrenagemRef.current?.focus({ preventScroll: true })
+    botaoConfiguracoesRef.current?.focus({ preventScroll: true })
   })
 
   // Espaço/Enter jogam sem precisar de foco no botão: autoFocus desenharia o anel de foco até no toque.
@@ -28,9 +28,9 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       if (configuracoesAbertasRef.current) return
-      // Botão com foco (a engrenagem, depois de fechar a janela) responde à tecla sozinho.
-      if (evento.target instanceof HTMLButtonElement) return
       if (evento.code !== 'Space' && evento.code !== 'Enter') return
+      // Com foco num botão, a tecla é dele: sem isto, abrir o ranking pelo teclado começaria a partida.
+      if (evento.target instanceof Element && evento.target.closest('button')) return
       evento.preventDefault()
       aoJogarRef.current()
     }
@@ -77,16 +77,26 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
       <button className="tela-home__jogar" onClick={aoJogar} aria-label={t('home.jogar')}>
         <img className="tela-home__jogar-sprite" src={IMAGENS_HOME.botoes} alt="" draggable={false} />
       </button>
-      <PainelRanking />
-      <button
-        ref={engrenagemRef}
-        className="tela-home__configuracoes"
-        onClick={() => setConfiguracoesAbertas(true)}
-        aria-label={t('configuracoes.abrir')}
-        aria-haspopup="dialog"
-      >
-        <img src={IMAGENS_CONFIGURACOES.engrenagem} alt="" draggable={false} />
-      </button>
+      <div className="tela-home__icones">
+        <button
+          ref={botaoConfiguracoesRef}
+          className="tela-home__icone"
+          onClick={() => setConfiguracoesAbertas(true)}
+          aria-label={t('home.configuracoes')}
+          aria-haspopup="dialog"
+        >
+          <img src={IMAGENS_HOME.iconeConfiguracoes} alt="" draggable={false} />
+        </button>
+        <button
+          className="tela-home__icone"
+          onClick={() => setRankingAberto((aberto) => !aberto)}
+          aria-label={t('ranking.titulo')}
+          aria-expanded={rankingAberto}
+        >
+          <img src={IMAGENS_HOME.iconeRanking} alt="" draggable={false} />
+        </button>
+      </div>
+      {rankingAberto && <PainelRanking />}
       {configuracoesAbertas && <JanelaConfiguracoes />}
     </div>
   )

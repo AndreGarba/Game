@@ -136,12 +136,19 @@
   pointer-events: none;
 }
 
-/* Engrenagem no canto de cima à esquerda: o da direita é do ranking. */
-.tela-home__configuracoes {
+/* Coluna de ícones à direita. Mesma escala do botão de pausa do HUD (48 de 360 de altura), um pouco maior por ser alvo de toque. */
+.tela-home__icones {
   position: absolute;
-  top: 3cqh;
-  left: 3cqh;
-  width: 17cqh;
+  top: calc(5cqh + var(--safe-topo));
+  right: calc(2.5cqw + var(--safe-direita));
+  display: flex;
+  flex-direction: column;
+  gap: 2.5cqh;
+}
+
+.tela-home__icone {
+  display: block;
+  width: min(16cqh, 12cqw);
   padding: 0;
   border: 0;
   background: none;
@@ -150,17 +157,17 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.tela-home__configuracoes img {
-  display: block;
-  width: 100%;
-  pointer-events: none;
+.tela-home__icone:active {
+  transform: scale(0.9);
 }
 
-.tela-home__configuracoes:active {
-  transform: scale(0.92);
-}
-
-.tela-home__configuracoes:focus-visible {
+.tela-home__icone:focus-visible {
   outline: 3px solid var(--cor-destaque-texto);
   outline-offset: 3px;
+}
+
+.tela-home__icone img {
+  display: block;
+  width: 100%;
+  height: auto;
 }

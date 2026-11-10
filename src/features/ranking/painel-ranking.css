@@ -1,12 +1,13 @@
 /*
- * Painel do ranking na home, à direita do logo. Medido pelo contêiner da home (cqh/cqw), como o
- * resto da composição, para caber em qualquer celular deitado.
+ * Painel do ranking na home, aberto pelo ícone e encostado à esquerda da coluna de ícones. Estreito
+ * para caber entre o logo e os ícones. Medido pelo contêiner da home (cqh/cqw), como o resto da
+ * composição, para caber em qualquer celular deitado.
  */
 .painel-ranking {
   position: absolute;
   top: 7.8cqh;
-  right: 2.5cqw;
-  width: 24cqw;
+  right: calc(2.5cqw + min(16cqh, 12cqw) + 2cqw + var(--safe-direita));
+  width: 20cqw;
   max-height: 84cqh;
   display: flex;
   flex-direction: column;
