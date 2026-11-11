@@ -1,7 +1,7 @@
 # PRD — Conceito e regras do jogo
 
 **Projeto:** Hora do Banho
-**Status:** regras r4 implementadas no motor; valores de balanceamento ainda sem teste com pessoas
+**Status:** regras r9 implementadas no motor (ver seção 5); valores de balanceamento ainda sem teste com pessoas
 **Definições:** André · **Redação:** Claude
 **Data:** 02/11/2026
 
@@ -106,6 +106,23 @@ poças, linhas de ossinhos e lenços.
 4. Conta, data e âncora de lançamento.
 
 ## 5. Referência de balanceamento
+
+**r9 (11/11/2026):** a sequência passa a ser cidade → parque → bairro japonês → beco abandonado,
+1000 m cada (antes: cidade 800, parque 1000, rio 1000, centro 1200). Rio e centro saem. Os três
+cenários novos têm arte e obstáculos próprios e nenhum obstáculo de teto; a cidade não muda. A
+pista dos primeiros 800 m de cada seed continua igual à da r8. 30 partidas do bot, até 5 minutos
+cada:
+
+| | r8 | r9 |
+| --- | --- | --- |
+| Distância (mediana) | 4.139 m (teto de 5 min) | 4.139 m (teto de 5 min) |
+| Fim | 12 pegos, 18 no limite | 30 no limite |
+
+Sem batida, queda, pego ou divergência de replay. Os pegos da r8 vinham do centro, onde placa
+seguida de poça forçava lama; sem teto, o bot desvia de toda poça. Para o bot a r9 é mais fácil, e
+o teto de 5 minutos não deixa medir quanto. A primeira tentativa da r9 teve 8 batidas em 30: yatai
+(2,8 m) e caçamba (2,33 m) eram caixas retas. Ganharam o contorno da arte em `perfis.ts`, como o
+carro, e o carrinho de pipoca baixou de 2,8 para 2,6 m.
 
 **r8 (08/11/2026):** a lama deixa de frear o cachorro e de trazer o tutor aos poucos. Cada poça
 coloca o tutor num degrau fixo (20, 15, 10 e 5 m) e a 4ª encerra a partida como `pego`. Lenço

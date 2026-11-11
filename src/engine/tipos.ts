@@ -5,7 +5,7 @@ export type Acao = 'pular' | 'abaixar'
 // Formato compacto do log que vai para o servidor: [tick, 0 = pular | 1 = abaixar].
 export type ComandoLog = readonly [tick: number, codigo: 0 | 1]
 
-export type IdCenario = 'cidade' | 'parque' | 'rio' | 'centro'
+export type IdCenario = 'cidade' | 'parque' | 'bairroJapones' | 'becoAbandonado'
 
 // solido: caixa que bloqueia de frente e aceita pouso em cima (carro, banco, chafariz).
 // teto:   tudo acima de `y` bloqueia; passa abaixado (placa, galho, toldo).

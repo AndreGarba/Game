@@ -1,6 +1,6 @@
 """Prepara uma camada gerada por IA para o parallax: recorta, emenda as bordas e salva em WebP.
 
-uso: python preparar_camada.py entrada.png saida.webp --altura 512 [--opaca] [--emenda 0.08]
+uso: python preparar_camada.py entrada.png saida.webp --altura 512 [--opaca] [--emenda 0.08] [--busca 0.3]
 """
 import argparse
 
@@ -14,6 +14,7 @@ def main():
     p.add_argument("--altura", type=int, required=True, help="altura final em px")
     p.add_argument("--opaca", action="store_true", help="camada sem transparência (céu)")
     p.add_argument("--emenda", type=float, default=0.08, help="fração da largura usada no cruzamento")
+    p.add_argument("--busca", type=float, default=0.3, help="fração de cada ponta onde o corte pode cair")
     p.add_argument("--corte-topo", type=float, default=None, help="fração do topo a descartar")
     a = p.parse_args()
 
@@ -44,9 +45,10 @@ def main():
     peq[..., :3] *= peq[..., 3:4] / 255
     op = max(3, int(400 * a.emenda))
     melhor = (1e30, 0, 400)
-    for ini in range(0, 120):
+    busca = max(1, int(400 * a.busca))
+    for ini in range(0, busca):
         faixa_ini = peq[:, ini : ini + op]
-        for fim in range(400, 280, -1):
+        for fim in range(400, 400 - busca, -1):
             d = float(np.abs(peq[:, fim - op : fim] - faixa_ini).mean())
             if d < melhor[0]:
                 melhor = (d, ini, fim)

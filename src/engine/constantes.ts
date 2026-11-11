@@ -2,7 +2,7 @@
 // VERSAO_REGRAS, rode `npm run sim:partidas` e mostre o antes/depois no PR.
 // Unidades: metros, segundos, ticks.
 
-export const VERSAO_REGRAS = 'r8'
+export const VERSAO_REGRAS = 'r9'
 
 // Passo fixo: o motor nunca recebe "tempo decorrido". 60 ticks = 1 segundo de jogo,
 // em qualquer aparelho, e o servidor reproduz a partida tick a tick.

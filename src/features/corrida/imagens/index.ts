@@ -1,6 +1,10 @@
 // Arte da corrida. Cenário da cidade em 7 camadas de parallax, geradas por IA a partir da
 // referência de arte do jogo e preparadas por `scripts/arte/preparar_camada.py` (recorte, emenda
-// horizontal e WebP). Peças do HUD vêm do Figma "Hora do banho", frame 7960:8725.
+// horizontal e WebP). Parque, bairro japonês e beco abandonado têm 5 camadas cada, geradas no
+// ChatGPT com a cena da cidade (PRD/referencias/cena-cidade.jpg) como referência de estilo; os
+// pedidos estão em PRD/referencias/cenarios/prompts.md. Peças do HUD vêm do Figma "Hora do banho",
+// frame 7960:8725.
+import type { IdCenario } from '../../../engine/index.ts'
 import cachorroCorrendo from './cachorro-correndo.webp'
 import cachorroSlide from './cachorro-slide.webp'
 import ceu from './cidade/ceu.webp'
@@ -10,6 +14,21 @@ import casas from './cidade/casas.webp'
 import muro from './cidade/muro.webp'
 import piso from './cidade/piso.webp'
 import pista from './cidade/pista.webp'
+import parqueFundo from './parque/fundo.webp'
+import parqueMeio from './parque/meio.webp'
+import parquePerto from './parque/perto.webp'
+import parqueFrente from './parque/frente.webp'
+import parqueChao from './parque/chao.webp'
+import japaoFundo from './japao/fundo.webp'
+import japaoMeio from './japao/meio.webp'
+import japaoPerto from './japao/perto.webp'
+import japaoFrente from './japao/frente.webp'
+import japaoChao from './japao/chao.webp'
+import becoFundo from './beco/fundo.webp'
+import becoMeio from './beco/meio.webp'
+import becoPerto from './beco/perto.webp'
+import becoFrente from './beco/frente.webp'
+import becoChao from './beco/chao.webp'
 import sequenciasCasas from './cidade/casas/trechos.json'
 import dadosMuro from './cidade/muro/muro.json'
 import distancia from './hud-distancia.webp'
@@ -38,7 +57,9 @@ export const IMAGENS_FIM = { banho: fimBanho, painel: fimPainel, botao: fimBotao
 // Sprites dos objetos da pista, gerados na mesma conversa de IA das camadas. O nome do arquivo
 // é o `visual` do elemento do motor (ou o tipo, nos coletáveis): arquivo novo em `objetos/` já
 // entra no jogo, e visual sem arquivo continua em vetor. Sólidos são esticados na caixa de
-// colisão, então a proporção da arte tem que acompanhar a do molde.
+// colisão, então a proporção da arte tem que acompanhar a do molde. Os obstáculos de parque,
+// bairro japonês e beco vieram em folhas de 6 (PRD/referencias/cenarios/*-objetos.webp), separadas
+// por `scripts/arte/recortar_grade.py`.
 const ARQUIVOS_OBJETOS = import.meta.glob<string>('./objetos/*.webp', { eager: true, import: 'default' })
 const APELIDOS: Record<string, string> = { osso: 'moeda-osso', ossoOuro: 'moeda-osso-ouro', lago: 'agua', rio: 'agua' }
 // Peças soltas por nome de arquivo (sem extensão), de uma pasta.
@@ -132,7 +153,7 @@ const PLANO_BAIRRO = 0.25
 const PLANO_CASAS = 0.5
 const PLANO_FRENTE = 1
 
-export const CAMADAS_CIDADE: readonly Camada[] = [
+const CAMADAS_CIDADE: readonly Camada[] = [
   { src: ceu, parallax: PLANO_FUNDO, topo: 0, altura: 360 },
   { src: skyline, parallax: PLANO_FUNDO, topo: 16, altura: 180 },
   { src: bairro, parallax: PLANO_BAIRRO, topo: 62, altura: 122 },
@@ -146,6 +167,42 @@ export const CAMADAS_CIDADE: readonly Camada[] = [
   // A borda de cima do meio-fio fica a 10,7% da arte (os tufos de grama ficam acima dela).
   { src: pista, parallax: PLANO_FRENTE, topo: 247, altura: 125 },
 ]
+
+// Cenários novos: 5 camadas. `fundo` é opaco (céu e horizonte numa imagem só); `meio`, `perto` e
+// `frente` têm a base alinhada com a da cidade (o piso começa em LINHA_PISO); `chao` junta piso e
+// terra. Em cada chão, `topo` põe a primeira linha cheia do piso em 241 (a arte tem tufos acima
+// dela) e `altura` deixa a faixa onde o cachorro pisa com uns 21 de espessura, como a calçada.
+function camadasDe(
+  arte: { fundo: string; meio: string; perto: string; frente: string; chao: string },
+  medidas: { fundo?: { topo: number; altura: number }; meio: number; perto: number; frente: number; chao: number; tufos: number },
+): readonly Camada[] {
+  return [
+    { src: arte.fundo, parallax: PLANO_FUNDO, topo: 0, altura: 360, ...medidas.fundo },
+    { src: arte.meio, parallax: PLANO_BAIRRO, topo: 236 - medidas.meio, altura: medidas.meio },
+    { src: arte.perto, parallax: PLANO_CASAS, topo: 244 - medidas.perto, altura: medidas.perto },
+    { src: arte.frente, parallax: PLANO_FRENTE, topo: 243 - medidas.frente, altura: medidas.frente },
+    { src: arte.chao, parallax: PLANO_FRENTE, topo: 241 - medidas.tufos * medidas.chao, altura: medidas.chao },
+  ]
+}
+
+/** Camadas de cada cenário, do fundo para a frente (parallax nunca diminui ao longo da lista). */
+export const CAMADAS_POR_CENARIO: Record<IdCenario, readonly Camada[]> = {
+  cidade: CAMADAS_CIDADE,
+  parque: camadasDe(
+    { fundo: parqueFundo, meio: parqueMeio, perto: parquePerto, frente: parqueFrente, chao: parqueChao },
+    { meio: 120, perto: 250, frente: 80, chao: 145, tufos: 25 / 380 },
+  ),
+  bairroJapones: camadasDe(
+    { fundo: japaoFundo, meio: japaoMeio, perto: japaoPerto, frente: japaoFrente, chao: japaoChao },
+    // O fundo sobe e as casas de perto encolhem para o monte e o pagode aparecerem por cima dos telhados.
+    { fundo: { topo: -90, altura: 400 }, meio: 110, perto: 205, frente: 125, chao: 142, tufos: 16 / 380 },
+  ),
+  becoAbandonado: camadasDe(
+    { fundo: becoFundo, meio: becoMeio, perto: becoPerto, frente: becoFrente, chao: becoChao },
+    { meio: 130, perto: 250, frente: 160, chao: 135, tufos: 29 / 380 },
+  ),
+}
+const CENARIOS = Object.keys(CAMADAS_POR_CENARIO) as IdCenario[]
 
 // Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave), recortados de
 // PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
@@ -172,16 +229,16 @@ export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 348, altura: 400, pe
 // (PRD/referencias/tutor-slide.png) e recortada com `--quadros-minimos 6 --pes-no-rodape`.
 export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 482, altura: 400, pes: 6 } as const
 
-let arte: HTMLImageElement[] | null = null
+let arte: Record<IdCenario, HTMLImageElement[]> | null = null
 let sprites: Map<string, HTMLImageElement> | null = null
 let cachorro: HTMLImageElement | null = null
 let slide: HTMLImageElement | null = null
 let tutor: HTMLImageElement | null = null
 let tutorPulo: HTMLImageElement | null = null
 let tutorSlide: HTMLImageElement | null = null
-// Montagem de cada camada já com as imagens, no mesmo índice de CAMADAS_CIDADE. A mesma peça é
-// uma imagem só, reaproveitada onde aparecer.
-let montagens: (Montagem<HTMLImageElement> | null)[] | null = null
+// Montagem de cada camada já com as imagens, no mesmo índice das camadas do cenário. A mesma peça
+// é uma imagem só, reaproveitada onde aparecer.
+let montagens: Record<IdCenario, (Montagem<HTMLImageElement> | null)[]> | null = null
 
 function criar(src: string) {
   const imagem = new Image()
@@ -190,12 +247,14 @@ function criar(src: string) {
 }
 
 /** Cria as imagens uma vez; chamar cedo (na abertura) faz a corrida já abrir com a arte pronta. */
-export function preCarregarImagensCenario(): HTMLImageElement[] {
+export function preCarregarImagensCenario(): Record<IdCenario, HTMLImageElement[]> {
   if (!arte) {
-    arte = CAMADAS_CIDADE.map((c) => criar(c.src))
     const cache = new Map<string, HTMLImageElement>()
     const imagem = (src: string) => cache.get(src) ?? cache.set(src, criar(src)).get(src)!
-    montagens = CAMADAS_CIDADE.map((c): Montagem<HTMLImageElement> | null => {
+    const porCenario = <T>(f: (c: Camada) => T) =>
+      Object.fromEntries(CENARIOS.map((id) => [id, CAMADAS_POR_CENARIO[id].map(f)])) as Record<IdCenario, T[]>
+    arte = porCenario((c) => imagem(c.src))
+    montagens = porCenario((c): Montagem<HTMLImageElement> | null => {
       const m = c.montagem
       if (!m) return null
       if (m.tipo === 'trechos') return { tipo: 'trechos', trechos: m.trechos.map((pecas) => pecas.map(imagem)) }
@@ -252,16 +311,16 @@ export function spriteTutorPronto(): HTMLImageElement | null {
   return pronta(tutor)
 }
 
-/** As camadas, ou null enquanto alguma não carregou (o canvas desenha o cenário vetorial). */
-export function arteCenarioPronta(): HTMLImageElement[] | null {
-  const a = preCarregarImagensCenario()
+/** As camadas do cenário, ou null enquanto alguma não carregou (o canvas desenha o cenário vetorial). */
+export function arteCenarioPronta(id: IdCenario): HTMLImageElement[] | null {
+  const a = preCarregarImagensCenario()[id]
   return a.every((i) => i.complete && i.naturalWidth > 0) ? a : null
 }
 
-/** Montagem da camada `i` com todas as peças carregadas, ou null (aí ela repete a imagem única). */
-export function montagemDaCamada(i: number): Montagem<HTMLImageElement> | null {
+/** Montagem da camada `i` do cenário com todas as peças carregadas, ou null (aí ela repete a imagem única). */
+export function montagemDaCamada(id: IdCenario, i: number): Montagem<HTMLImageElement> | null {
   preCarregarImagensCenario()
-  const m = montagens?.[i]
+  const m = montagens?.[id][i]
   if (!m) return null
   const pecas = m.tipo === 'trechos' ? m.trechos.flat() : [...m.repetem, ...m.destaques, ...m.conexoes]
   return pecas.every((p) => p.complete && p.naturalWidth > 0) ? m : null
