@@ -294,7 +294,8 @@ function desenharCenarioArte(ctx: CanvasRenderingContext2D, cam: Camera): boolea
     } else {
       // Aparece no esfumado antes da divisa; inteira depois dela.
       if (xDivisa - esfumado >= cam.largura) continue
-      if (xDivisa <= 0) desenharCamada(ctx, cam, escala, c)
+      // Na largada não há cenário anterior para misturar: a cidade entra inteira, sem esfumado.
+      if (xDivisa <= 0 || divisa <= 0) desenharCamada(ctx, cam, escala, c)
       else desenharCamadaEsfumada(ctx, cam, escala, c, xDivisa - esfumado, xDivisa, 0)
     }
   }
