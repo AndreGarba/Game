@@ -14,7 +14,8 @@
     "recusa": "¡ni loco!",
     "grito": "¡¡¡Vuelve\naquí!!!",
     "pular": "Saltar",
-    "continuar": "Toca para correr"
+    "continuar": "Toca para correr",
+    "carregando": "Cargando… {{porcento}}%"
   },
   "home": {
     "jogar": "Jugar",

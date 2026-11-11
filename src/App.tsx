@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react'
 import { TelaAbertura } from './features/abertura/screens/TelaAbertura/TelaAbertura.tsx'
 import { preCarregarImagensConfiguracoes } from './features/configuracoes/imagens/index.ts'
-import { preCarregarImagensCenario } from './features/corrida/imagens/index.ts'
+import { carregarArteCorrida } from './features/corrida/imagens/index.ts'
+import { useCargaDaCorrida } from './features/corrida/useCargaDaCorrida.ts'
 import { preCarregarImagensHistoria } from './features/historia/imagens/index.ts'
 import { preCarregarEfeitosHistoria } from './features/historia/sons/efeitosHistoria.ts'
 import { TelaHistoria } from './features/historia/screens/TelaHistoria/TelaHistoria.tsx'
@@ -26,6 +27,8 @@ const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
 
 // Tudo que vem depois da abertura baixa enquanto ela toca (arte da home, da história e do
 // cenário, Three.js dos efeitos, a corrida): quando o logo termina, as telas seguintes abrem prontas.
+// A arte da corrida também é decodificada desde já (`useCargaDaCorrida`), e a história só entrega
+// o jogador à corrida quando ela está pronta: imagem decodificada no meio da partida trava o quadro.
 const importarCorrida = () => import('./features/corrida/screens/TelaCorrida/TelaCorrida.tsx')
 const TelaCorrida = lazy(() => importarCorrida().then((m) => ({ default: m.TelaCorrida })))
 
@@ -45,7 +48,7 @@ function TelaAtual() {
     preCarregarImagensConfiguracoes()
     void import('./features/home/efeitos/cenaAgua.ts')
     preCarregarImagensHistoria()
-    preCarregarImagensCenario()
+    void carregarArteCorrida()
     void importarCorrida()
   }, [])
 
@@ -74,10 +77,16 @@ function TelaAtual() {
   }
   if (tela === 'girarCelular') return <TelaGirarCelular aoTerminar={() => setTela('home')} />
   if (tela === 'home') return <TelaHome aoJogar={() => setTela('historia')} />
-  if (tela === 'historia') return <TelaHistoria aoTerminar={() => setTela('corrida')} />
+  if (tela === 'historia') return <HistoriaComCarga aoTerminar={() => setTela('corrida')} />
   return (
     <Suspense fallback={null}>
       <TelaCorrida />
     </Suspense>
   )
+}
+
+// O progresso da carga muda a cada imagem decodificada: só a história acompanha, para a abertura
+// e a home não renderizarem de novo por causa dele.
+function HistoriaComCarga({ aoTerminar }: { aoTerminar: () => void }) {
+  return <TelaHistoria aoTerminar={aoTerminar} carga={useCargaDaCorrida()} />
 }

@@ -14,7 +14,8 @@
     "recusa": "no way!",
     "grito": "Come\nback!!!",
     "pular": "Skip",
-    "continuar": "Tap to run"
+    "continuar": "Tap to run",
+    "carregando": "Loading… {{porcento}}%"
   },
   "home": {
     "jogar": "Play",

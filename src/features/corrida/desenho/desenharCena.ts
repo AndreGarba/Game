@@ -23,6 +23,7 @@ import {
   spriteTutorPuloPronto,
   spriteTutorSlidePronto,
   montagemDaCamada,
+  type Arte,
   type Montagem,
 } from '../imagens/index.ts'
 import { COR, PALETA_CENARIO } from './paleta.ts'
@@ -99,12 +100,12 @@ const ORIGEM_TRECHOS = 100_000
 
 interface Sequencia {
   inicio: number[]
-  peca: HTMLImageElement[]
+  peca: Arte[]
   grupos: number
   // Índice do último trecho sorteado (casas), para não repetir em seguida.
   ultimo: number
   // Último painel do muro e se ele foi um destaque.
-  ultimoPainel: HTMLImageElement | null
+  ultimoPainel: Arte | null
   destaqueAntes: boolean
 }
 // Uma por camada de cada cenário (`cenario:indice`).
@@ -115,7 +116,7 @@ function sorte(k: number, camada: number, sal: number) {
 }
 
 // Acrescenta o próximo grupo de peças da regra da camada.
-function proximoGrupo(seq: Sequencia, camada: number, m: Montagem<HTMLImageElement>): HTMLImageElement[] {
+function proximoGrupo(seq: Sequencia, camada: number, m: Montagem<Arte>): Arte[] {
   const k = seq.grupos++
   if (m.tipo === 'trechos') {
     let v = Math.floor(sorte(k, camada, 1) * m.trechos.length)
@@ -147,10 +148,10 @@ function desenharMontagem(
   chave: string,
   indice: number,
   camada: { parallax: number; topo: number; altura: number },
-  montagem: Montagem<HTMLImageElement>,
+  montagem: Montagem<Arte>,
 ) {
   const { parallax, topo, altura } = camada
-  const largura = (p: HTMLImageElement) => (p.naturalWidth / p.naturalHeight) * altura
+  const largura = (p: Arte) => (p.width / p.height) * altura
   const u0 = (cam.x0 * cam.ppm * parallax) / escala + ORIGEM_TRECHOS
   const u1 = u0 + cam.largura / escala
   let seq = sequencias.get(chave)
@@ -184,7 +185,7 @@ interface CamadaNaTela {
   cenario: IdCenario
   indice: number
   camada: (typeof CAMADAS_POR_CENARIO)[IdCenario][number]
-  imagem: HTMLImageElement
+  imagem: Arte
 }
 
 function desenharCamada(ctx: CanvasRenderingContext2D, cam: Camera, escala: number, c: CamadaNaTela) {
@@ -195,7 +196,7 @@ function desenharCamada(ctx: CanvasRenderingContext2D, cam: Camera, escala: numb
     return
   }
   const altura = camada.altura * escala
-  const largura = (imagem.naturalWidth / imagem.naturalHeight) * altura
+  const largura = (imagem.width / imagem.height) * altura
   const y = camada.topo * escala
   // parallax 1 = mesma velocidade dos obstáculos; as tiras emendam, então só repetem.
   const desloc = ((cam.x0 * cam.ppm * camada.parallax) % largura + largura) % largura
@@ -205,7 +206,7 @@ function desenharCamada(ctx: CanvasRenderingContext2D, cam: Camera, escala: numb
   }
   if (indice === 0 && y + altura < cam.chaoY) {
     // Tela de pé: o céu não chega no chão. Estica a última linha dele.
-    ctx.drawImage(imagem, 0, imagem.naturalHeight - 1, imagem.naturalWidth, 1, 0, y + altura - 1, cam.largura, cam.chaoY)
+    ctx.drawImage(imagem, 0, imagem.height - 1, imagem.width, 1, 0, y + altura - 1, cam.largura, cam.chaoY)
   }
 }
 
@@ -373,13 +374,13 @@ function desenharChao(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numbe
 const SPRITES_BURACO = ['buraco-pequeno', 'buraco-medio', 'buraco-grande'] as const
 const SOBRA_BURACO = 0.08
 
-function spriteDoBuraco(proporcao: number): HTMLImageElement | null {
-  let melhor: HTMLImageElement | null = null
+function spriteDoBuraco(proporcao: number): Arte | null {
+  let melhor: Arte | null = null
   let distancia = Number.POSITIVE_INFINITY
   for (const nome of SPRITES_BURACO) {
     const s = spriteObjeto(nome)
     if (!s) continue
-    const d = Math.abs(Math.log(s.naturalWidth / s.naturalHeight / proporcao))
+    const d = Math.abs(Math.log(s.width / s.height / proporcao))
     if (d < distancia) {
       melhor = s
       distancia = d
@@ -403,7 +404,7 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
     // Tela de pé: o chão continua abaixo do quadro, e o fundo do buraco também.
     if (topo + altura < cam.altura) {
       const resto = cam.altura - topo - altura + 1
-      ctx.drawImage(sprite, 0, sprite.naturalHeight - 1, sprite.naturalWidth, 1, x0, topo + altura - 1, largura, resto)
+      ctx.drawImage(sprite, 0, sprite.height - 1, sprite.width, 1, x0, topo + altura - 1, largura, resto)
     }
   } else {
     ctx.fillStyle = COR.buraco
@@ -415,7 +416,7 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   if (cone) {
     // Cone de 70 cm em tamanho real, na mesma régua dos obstáculos (ESCALA_REAL em cenarios.ts).
     const a = cam.ppm * 1.25
-    const lc = (cone.naturalWidth / cone.naturalHeight) * a
+    const lc = (cone.width / cone.height) * a
     ctx.drawImage(cone, x0 - lc * 0.9, cam.chaoY - a, lc, a)
   } else {
     emoji(ctx, '🚧', x0 - cam.ppm * 0.3, cam.chaoY, cam.ppm * 0.7)
@@ -437,7 +438,7 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
   if (sprite && e.y > 0) {
     // Plataforma suspensa (marquise): sem sombra no chão. A laje fica no topo da colisão e as
     // mãos-francesas penduram abaixo dela, na proporção da arte.
-    ctx.drawImage(sprite, x, topo, l, (sprite.naturalHeight / sprite.naturalWidth) * l)
+    ctx.drawImage(sprite, x, topo, l, (sprite.height / sprite.width) * l)
     return
   }
   if (sprite) {
@@ -576,7 +577,7 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
       if (lama) {
         if (e.usado) ctx.globalAlpha = 0.5
         const l = e.largura * u
-        const a = (lama.naturalHeight / lama.naturalWidth) * l
+        const a = (lama.height / lama.width) * l
         ctx.drawImage(lama, sx(cam, e.x), cam.chaoY - a * 0.55, l, a)
         ctx.globalAlpha = 1
         return
@@ -603,7 +604,7 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
       if (moeda) {
         // A moeda de ouro é maior: tem que se destacar na fila de moedas comuns.
         const d = u * (e.tipo === 'ossoOuro' ? 0.95 : e.tipo === 'lenco' ? 0.7 : 0.65)
-        const l = (moeda.naturalWidth / moeda.naturalHeight) * d
+        const l = (moeda.width / moeda.height) * d
         ctx.drawImage(moeda, cx - l / 2, cy - d / 2, l, d)
         return
       }

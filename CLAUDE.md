@@ -129,6 +129,15 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   `visual` em `imagens/objetos/`. Na divisa, cada camada troca com um esfumado num ponto da tela
   que depende do parallax dela (`desenharCenarioArte`). Como a arte foi pedida ao ChatGPT:
   `PRD/referencias/cenarios/prompts.md`.
+- **Carga da arte:** tudo que o canvas da corrida desenha é decodificado antes da largada, como
+  `ImageBitmap` (`carregarArteCorrida` em `imagens/index.ts`). A carga começa na abertura e roda por
+  trás da home e da história; a história só entrega o jogador à corrida com `liberada` (mostra
+  "Carregando… N%" e segue sozinha; depois de 15 s libera de qualquer jeito). Motivo: um `<img>` só
+  é decodificado no primeiro `drawImage`, dentro do quadro. Medido no desktop: até 22 ms por imagem
+  (um quadro tem 16,7 ms), e 22 das 111 passam de 8 ms. `img.decode()` **não** resolve para canvas
+  (medido: mesmo custo); `createImageBitmap` resolve (0,6 ms). A carga cobre uma volta inteira
+  (2000 m, os quatro cenários); a volta seguinte usa as mesmas imagens, então não há segunda carga.
+  Imagem nova do canvas entra na lista de `carregarArteCorrida`, nunca por `new Image()` solto.
 
 ### Regras técnicas
 
