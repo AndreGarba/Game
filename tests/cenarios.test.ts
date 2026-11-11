@@ -1,4 +1,4 @@
-// Regras de cenário da r9: a sequência troca a cada 1000 m e os cenários novos só têm obstáculos
+// Regras de cenário da r9: a sequência troca a cada 500 m e os cenários novos só têm obstáculos
 // próprios, nenhum deles vindo do teto.
 import { describe, expect, it } from 'vitest'
 import { cenarioEm, SEQUENCIA_CENARIOS, trechoDoCenarioEm } from '../src/engine/index.ts'
@@ -6,9 +6,9 @@ import { MOLDES_POR_CENARIO } from '../src/engine/cenarios.ts'
 import { criarRng } from '../src/engine/rng.ts'
 
 describe('sequência de cenários', () => {
-  it('cidade, parque, bairro japonês e beco, 1000 m cada, e recomeça', () => {
+  it('cidade, parque, bairro japonês e beco, 500 m cada, e recomeça', () => {
     expect(SEQUENCIA_CENARIOS.map((c) => c.id)).toEqual(['cidade', 'parque', 'bairroJapones', 'becoAbandonado'])
-    expect([0, 999, 1000, 1999, 2000, 2999, 3000, 3999, 4000].map(cenarioEm)).toEqual([
+    expect([0, 499, 500, 999, 1000, 1499, 1500, 1999, 2000].map(cenarioEm)).toEqual([
       'cidade',
       'cidade',
       'parque',
@@ -22,10 +22,10 @@ describe('sequência de cenários', () => {
   })
 
   it('o trecho bate com cenarioEm, também na segunda volta e antes da largada', () => {
-    expect(trechoDoCenarioEm(-5)).toEqual({ id: 'cidade', inicio: 0, fim: 1000 })
-    expect(trechoDoCenarioEm(2500)).toEqual({ id: 'bairroJapones', inicio: 2000, fim: 3000 })
-    expect(trechoDoCenarioEm(5000)).toEqual({ id: 'parque', inicio: 5000, fim: 6000 })
-    for (const x of [0, 1, 999.9, 1000, 3999, 4000, 7321]) expect(trechoDoCenarioEm(x).id).toBe(cenarioEm(x))
+    expect(trechoDoCenarioEm(-5)).toEqual({ id: 'cidade', inicio: 0, fim: 500 })
+    expect(trechoDoCenarioEm(1250)).toEqual({ id: 'bairroJapones', inicio: 1000, fim: 1500 })
+    expect(trechoDoCenarioEm(2500)).toEqual({ id: 'parque', inicio: 2500, fim: 3000 })
+    for (const x of [0, 1, 499.9, 500, 1999, 2000, 7321]) expect(trechoDoCenarioEm(x).id).toBe(cenarioEm(x))
   })
 })
 

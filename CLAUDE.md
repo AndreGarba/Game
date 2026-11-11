@@ -108,7 +108,7 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
 - **Fim:** `batida`, `queda` ou `pego`. Não existe vida extra.
 - **Pontuação:** `metros·PONTOS_POR_METRO + ossos·PONTOS_OSSO + ossosOuro·PONTOS_OSSO_OURO`.
 - **Cenários (r9):** sequência fixa e igual para todos (`SEQUENCIA_CENARIOS`: cidade → parque →
-  bairro japonês → beco abandonado, 1000 m cada, e recomeça). Os obstáculos de cada trecho são
+  bairro japonês → beco abandonado, 500 m cada, e recomeça: uma volta tem 2 km). Os obstáculos de cada trecho são
   sorteados pela seed da partida dentro dos moldes daquele cenário (`src/engine/cenarios.ts`).
   Parque, bairro japonês e beco só têm obstáculos do próprio cenário e **nenhum `teto`** (pedido do
   André): lá o abaixar serve só para mergulhar. A cidade continua com placa, toldo, galho e viga.
@@ -152,8 +152,8 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
-- Referência r9 (30 partidas do bot, 5 min cada): mediana 4,1 km, 30 de 30 no limite, sem batida,
-  queda ou pego. Ficou mais fácil para o bot que a r8: sem teto nos cenários novos, nenhum trecho
+- Referência r9 (30 partidas do bot, 5 min cada, cenários de 500 m): mediana 4,1 km, 30 de 30 no
+  limite, sem batida, queda ou pego. Ficou mais fácil para o bot que a r8: sem teto nos cenários novos, nenhum trecho
   força lama. Sólido alto sem perfil mata o bot: yatai e caçamba como caixa reta deram 8 batidas em
   30, porque a parede da frente ficava acima do que dá para subir no respiro entre dois trechos.
   Obstáculo novo acima de ~2 m nasce com perfil em `perfis.ts`.

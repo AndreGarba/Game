@@ -2,13 +2,13 @@ import { entre, inteiroEntre, proximo, type EstadoRng } from './rng.ts'
 import type { Elemento, IdCenario, TipoElemento } from './tipos.ts'
 
 // Sequência fixa, igual para todos os jogadores. Ao fim dela, recomeça do primeiro.
-// r9: o cenário muda a cada 1000 m. Rio e centro saíram da sequência (não tinham arte); os moldes
+// r9: o cenário muda a cada 500 m. Rio e centro saíram da sequência (não tinham arte); os moldes
 // deles continuam abaixo porque a cidade usa alguns.
 export const SEQUENCIA_CENARIOS: readonly { id: IdCenario; comprimento: number }[] = [
-  { id: 'cidade', comprimento: 1000 },
-  { id: 'parque', comprimento: 1000 },
-  { id: 'bairroJapones', comprimento: 1000 },
-  { id: 'becoAbandonado', comprimento: 1000 },
+  { id: 'cidade', comprimento: 500 },
+  { id: 'parque', comprimento: 500 },
+  { id: 'bairroJapones', comprimento: 500 },
+  { id: 'becoAbandonado', comprimento: 500 },
 ]
 
 const VOLTA_COMPLETA = SEQUENCIA_CENARIOS.reduce((soma, c) => soma + c.comprimento, 0)
