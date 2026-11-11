@@ -61,7 +61,7 @@ export const IMAGENS_FIM = { banho: fimBanho, painel: fimPainel, botao: fimBotao
 // bairro japonês e beco vieram em folhas de 6 (PRD/referencias/cenarios/*-objetos.webp), separadas
 // por `scripts/arte/recortar_grade.py`.
 const ARQUIVOS_OBJETOS = import.meta.glob<string>('./objetos/*.webp', { eager: true, import: 'default' })
-const APELIDOS: Record<string, string> = { osso: 'moeda-osso', ossoOuro: 'moeda-osso-ouro', lago: 'agua', rio: 'agua' }
+const APELIDOS: Record<string, string> = { osso: 'moeda-osso', ossoOuro: 'moeda-osso-ouro' }
 // Peças soltas por nome de arquivo (sem extensão), de uma pasta.
 function pecasDaPasta(arquivos: Record<string, string>): Record<string, string> {
   return Object.fromEntries(Object.entries(arquivos).map(([caminho, src]) => [caminho.replace(/^.*\/|\.webp$/g, ''), src]))

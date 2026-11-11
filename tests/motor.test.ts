@@ -176,7 +176,7 @@ describe('física', () => {
   })
 
   it('cai no vão sem pular', () => {
-    const estado = partidaCom([{ tipo: 'vao', x: 10, largura: 3, y: 0, altura: 0, visual: 'rio' }])
+    const estado = partidaCom([{ tipo: 'vao', x: 10, largura: 3, y: 0, altura: 0, visual: 'buraco' }])
     correrAte(estado, 30)
     expect(estado.fim?.motivo).toBe('queda')
   })

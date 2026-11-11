@@ -108,14 +108,20 @@ poças, linhas de ossinhos e lenços.
 ## 5. Referência de balanceamento
 
 **r9 (11/11/2026):** a sequência passa a ser cidade → parque → bairro japonês → beco abandonado,
-1000 m cada (antes: cidade 800, parque 1000, rio 1000, centro 1200). Rio e centro saem. Os três
+500 m cada (antes: cidade 800, parque 1000, rio 1000, centro 1200). A primeira versão da r9 trocava
+a cada 1000 m; o André pediu 500 m no mesmo PR. Uma volta pelos quatro cenários passa a ter 2 km. Também no mesmo PR, a pedido
+do André, saem os vãos de água (rio, lago e o rio com pedra no meio) e o buraco ganha três
+tamanhos (pequeno, médio e grande, este só a partir do nível 2) nos quatro cenários. Rio e centro saem. Os três
 cenários novos têm arte e obstáculos próprios e nenhum obstáculo de teto; a cidade não muda. A
-pista dos primeiros 800 m de cada seed continua igual à da r8. 30 partidas do bot, até 5 minutos
+pista dos primeiros 500 m de cada seed continua igual à da r8. 30 partidas do bot, até 5 minutos
 cada:
 
 | | r8 | r9 |
 | --- | --- | --- |
 | Distância (mediana) | 4.139 m (teto de 5 min) | 4.139 m (teto de 5 min) |
+| Pontos (mediana) | 6.554 | 6.649 |
+| Ossinhos (mediana) | 206 | 227,5 |
+| Ossinhos de ouro (mediana) | 8 | 4 |
 | Fim | 12 pegos, 18 no limite | 30 no limite |
 
 Sem batida, queda, pego ou divergência de replay. Os pegos da r8 vinham do centro, onde placa

@@ -2,13 +2,13 @@ import { entre, inteiroEntre, proximo, type EstadoRng } from './rng.ts'
 import type { Elemento, IdCenario, TipoElemento } from './tipos.ts'
 
 // Sequência fixa, igual para todos os jogadores. Ao fim dela, recomeça do primeiro.
-// r9: o cenário muda a cada 1000 m. Rio e centro saíram da sequência (não tinham arte); os moldes
+// r9: o cenário muda a cada 500 m. Rio e centro saíram da sequência (não tinham arte); os moldes
 // deles continuam abaixo porque a cidade usa alguns.
 export const SEQUENCIA_CENARIOS: readonly { id: IdCenario; comprimento: number }[] = [
-  { id: 'cidade', comprimento: 1000 },
-  { id: 'parque', comprimento: 1000 },
-  { id: 'bairroJapones', comprimento: 1000 },
-  { id: 'becoAbandonado', comprimento: 1000 },
+  { id: 'cidade', comprimento: 500 },
+  { id: 'parque', comprimento: 500 },
+  { id: 'bairroJapones', comprimento: 500 },
+  { id: 'becoAbandonado', comprimento: 500 },
 ]
 
 const VOLTA_COMPLETA = SEQUENCIA_CENARIOS.reduce((soma, c) => soma + c.comprimento, 0)
@@ -152,14 +152,19 @@ function moldeDupla(id: string, nivelMin: number, peso: number, a: Medida, visua
   }
 }
 
-function moldeVao(id: string, nivelMin: number, peso: number, visual: string, fatorMin: number, fatorMax: number): Molde {
+// Buraco no chão, com ossos no arco do pulo: um no meio e, nos largos, mais dois nas pontas.
+function moldeBuraco(id: string, nivelMin: number, peso: number, fatorMin: number, fatorMax: number): Molde {
   return {
     id,
     nivelMin,
     peso,
     montar: (ctx) => {
       const largura = larguraDeVao(ctx, fatorMin, fatorMax)
-      return { comprimento: largura, itens: [vao(0, largura, visual), item('osso', largura / 2, 1.6)] }
+      const ossos =
+        largura > 3
+          ? [item('osso', largura * 0.2, 1.3), item('osso', largura / 2, 1.8), item('osso', largura * 0.8, 1.3)]
+          : [item('osso', largura / 2, 1.6)]
+      return { comprimento: largura, itens: [vao(0, largura, 'buraco'), ...ossos] }
     },
   }
 }
@@ -175,6 +180,15 @@ function larguraDeVao(ctx: ContextoMolde, fatorMin: number, fatorMax: number): n
 function larguraDePoca(ctx: ContextoMolde): number {
   return Math.max(1.2, Math.min(3, ctx.alcance * 0.5))
 }
+
+// r9: buracos em três tamanhos, em fração do alcance do pulo. O médio é o da obra da cidade; o
+// grande só aparece no nível 2, quando a velocidade já pede pulo cedo. A água (rio e lago) saiu:
+// todo vão agora é buraco.
+const BURACO_PEQUENO = [0.15, 0.22] as const
+const BURACO_GRANDE = [0.5, 0.62] as const
+const buracoPequeno = moldeBuraco('buraco_pequeno', 0, 2, ...BURACO_PEQUENO)
+const buracoMedio = moldeBuraco('buraco_medio', 1, 2, 0.3, 0.45)
+const buracoGrande = moldeBuraco('buraco_grande', 2, 1, ...BURACO_GRANDE)
 
 const comuns: Molde[] = [
   {
@@ -251,6 +265,8 @@ const cidade: Molde[] = [
       return { comprimento: largura, itens: [vao(0, largura, 'buraco')] }
     },
   },
+  buracoPequeno,
+  buracoGrande,
   {
     id: 'carros_em_fila',
     nivelMin: 1,
@@ -349,50 +365,10 @@ const parque: Molde[] = [
       itens: [solido(0, CANTEIRO.largura, CANTEIRO.altura, 'canteiro'), ...linhaDeOssos(0.9, CANTEIRO.altura + 0.45, 3)],
     }),
   },
-  {
-    id: 'lago',
-    nivelMin: 2,
-    peso: 1,
-    montar: (ctx) => {
-      const largura = larguraDeVao(ctx, 0.35, 0.5)
-      return { comprimento: largura, itens: [vao(0, largura, 'lago'), item('osso', largura / 2, 1.6)] }
-    },
-  },
 ]
 
+// r9: o rio e o lago (vãos de água) saíram; ficaram os obstáculos que a cidade e o parque usam.
 const rio: Molde[] = [
-  {
-    id: 'rio',
-    nivelMin: 0,
-    peso: 3,
-    montar: (ctx) => {
-      const largura = larguraDeVao(ctx, 0.35, 0.55)
-      return {
-        comprimento: largura,
-        itens: [vao(0, largura, 'rio'), item('osso', largura * 0.3, 1.4), item('osso', largura * 0.7, 1.4)],
-      }
-    },
-  },
-  {
-    id: 'pedras',
-    nivelMin: 1,
-    peso: 2,
-    montar: (ctx) => {
-      // Rio largo com uma pedra no meio: dois pulos em sequência.
-      const a = larguraDeVao(ctx, 0.3, 0.4)
-      const b = larguraDeVao(ctx, 0.3, 0.4)
-      const pedra = 1.4
-      return {
-        comprimento: a + pedra + b,
-        itens: [
-          vao(0, a + pedra + b, 'rio'),
-          // A pedra desce até a água: quem cai no rio bate nela de lado.
-          solido(a, pedra, 5.4, 'pedra', -5),
-          item('ossoOuro', a + pedra / 2, 2.4),
-        ],
-      }
-    },
-  },
   {
     id: 'tora',
     nivelMin: 0,
@@ -453,7 +429,9 @@ const parqueNovo: Molde[] = [
   moldeSolido('cortador', 1, 2, CORTADOR),
   moldeSolido('pipoqueiro', 1, 2, PIPOQUEIRO, 2),
   moldeDupla('banco_e_lixeira', 1, 2, BANCO, 'banco', LIXEIRA, 'lixeira'),
-  moldeVao('lago', 1, 2, 'lago', 0.35, 0.5),
+  buracoPequeno,
+  buracoMedio,
+  buracoGrande,
   {
     // Os ossos seguem a subida da gangorra e o arco do lançamento.
     id: 'gangorra',
@@ -471,8 +449,8 @@ const parqueNovo: Molde[] = [
     }),
   },
   {
-    // Gangorra seguida de lago: o lançamento sozinho atravessa.
-    id: 'gangorra_lago',
+    // Gangorra seguida de buraco: o lançamento sozinho atravessa.
+    id: 'gangorra_buraco',
     nivelMin: 2,
     peso: 1,
     montar: (ctx) => {
@@ -481,7 +459,7 @@ const parqueNovo: Molde[] = [
         comprimento: GANGORRA.largura + 0.3 + largura,
         itens: [
           rampa(0, GANGORRA.largura, GANGORRA.altura, 'gangorra'),
-          vao(GANGORRA.largura + 0.3, largura, 'lago'),
+          vao(GANGORRA.largura + 0.3, largura, 'buraco'),
           item('ossoOuro', GANGORRA.largura + 0.3 + largura / 2, 2.6),
         ],
       }
@@ -497,7 +475,9 @@ const bairroJapones: Molde[] = [
   moldeSolido('riquixa', 1, 2, RIQUIXA),
   moldeSolido('yatai', 1, 2, YATAI, 2),
   moldeDupla('lanternas', 1, 2, LANTERNA, 'lanterna', LANTERNA, 'lanterna'),
-  moldeVao('lago_de_carpas', 1, 2, 'lago', 0.35, 0.5),
+  buracoPequeno,
+  buracoMedio,
+  buracoGrande,
   {
     // Do alto do yatai dá para alcançar o osso de ouro, acima do pulo duplo do chão.
     id: 'yatai_ouro',
@@ -547,7 +527,7 @@ function escolher(moldes: readonly Molde[], ids: readonly string[]): Molde[] {
 const cidadeCompleta: Molde[] = [
   ...cidade,
   ...escolher(parque, ['galho', 'chafariz', 'canteiro']),
-  ...escolher(rio, ['tora', 'ponte_baixa', 'pedras']),
+  ...escolher(rio, ['tora', 'ponte_baixa']),
   ...escolher(centro, ['banca', 'andaime', 'bueiro']),
 ]
 
@@ -560,11 +540,11 @@ export const MOLDES_POR_CENARIO: Record<IdCenario, readonly Molde[]> = {
     ...escolher(rio, ['tora']),
   ],
   bairroJapones: [...emQualquerCenario, ...bairroJapones],
-  // Caixote, buraco de obra e rampa de tábua já tinham arte e cabem num beco.
+  // Caixote, buracos e rampa de tábua cabem num beco.
   becoAbandonado: [
     ...emQualquerCenario,
     ...becoAbandonado,
     ...escolher(comuns, ['caixa']),
-    ...escolher(cidade, ['obra', 'rampa', 'rampa_buraco']),
+    ...escolher(cidade, ['obra', 'buraco_pequeno', 'buraco_grande', 'rampa', 'rampa_buraco']),
   ],
 }
