@@ -364,43 +364,59 @@ function desenharChao(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numbe
   }
 }
 
+// Buraco: só o interior escuro, desenhado por cima do chão de qualquer cenário (o piso de cada um
+// continua em volta). Três sprites em proporções diferentes; vale o de proporção mais próxima da
+// do vão, para esticar pouco. A arte passa um pouco das bordas da colisão: os lados são
+// irregulares, e sem a sobra ficaria piso inteiro dentro do vão, onde o cachorro cai.
+const SPRITES_BURACO = ['buraco-pequeno', 'buraco-medio', 'buraco-grande'] as const
+const SOBRA_BURACO = 0.08
+
+function spriteDoBuraco(proporcao: number): HTMLImageElement | null {
+  let melhor: HTMLImageElement | null = null
+  let distancia = Number.POSITIVE_INFINITY
+  for (const nome of SPRITES_BURACO) {
+    const s = spriteObjeto(nome)
+    if (!s) continue
+    const d = Math.abs(Math.log(s.naturalWidth / s.naturalHeight / proporcao))
+    if (d < distancia) {
+      melhor = s
+      distancia = d
+    }
+  }
+  return melhor
+}
+
 function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const x = sx(cam, e.x)
   const l = e.largura * cam.ppm
-  const agua = e.visual === 'rio' || e.visual === 'lago'
-  // O vão corta o piso inteiro da calçada, desde a base do muro: senão o piso parece passar por
-  // cima da água.
-  const topo = (cam.chaoY * LINHA_PISO) / LINHA_CHAO
-  const textura = spriteObjeto(agua ? 'agua' : 'buraco')
-  if (textura) {
-    // A textura repete na horizontal, presa ao mundo, para a água não "andar" com a câmera.
-    const altura = cam.altura - topo
-    const largura = (textura.naturalWidth / textura.naturalHeight) * altura
-    ctx.save()
-    ctx.beginPath()
-    ctx.rect(x, topo, l, altura)
-    ctx.clip()
-    const inicio = x - ((((e.x * cam.ppm) % largura) + largura) % largura)
-    for (let tx = inicio; tx < x + l; tx += largura) ctx.drawImage(textura, Math.floor(tx), topo, Math.ceil(largura) + 1, altura)
-    ctx.restore()
-  } else {
-    ctx.fillStyle = agua ? COR.agua : COR.buraco
-    ctx.fillRect(x, topo, l, cam.altura - topo)
-    if (agua) {
-      ctx.fillStyle = COR.aguaClara
-      ctx.fillRect(x, cam.chaoY + cam.ppm * 0.15, l, cam.ppm * 0.1)
+  const escala = cam.chaoY / LINHA_CHAO
+  // O buraco corta o piso inteiro, desde a base do muro, e desce até o fim do quadro de 360.
+  const topo = LINHA_PISO * escala
+  const altura = (FRAME_ALTURA - LINHA_PISO) * escala
+  const x0 = x - l * SOBRA_BURACO
+  const largura = l * (1 + 2 * SOBRA_BURACO)
+  const sprite = spriteDoBuraco(largura / altura)
+  if (sprite) {
+    ctx.drawImage(sprite, x0, topo, largura, altura)
+    // Tela de pé: o chão continua abaixo do quadro, e o fundo do buraco também.
+    if (topo + altura < cam.altura) {
+      const resto = cam.altura - topo - altura + 1
+      ctx.drawImage(sprite, 0, sprite.naturalHeight - 1, sprite.naturalWidth, 1, x0, topo + altura - 1, largura, resto)
     }
+  } else {
+    ctx.fillStyle = COR.buraco
+    ctx.fillRect(x, topo, l, cam.altura - topo)
   }
-  if (agua) return
-  // Cone de obra na beira do buraco: avisa antes de o buraco aparecer inteiro.
+  // Cone de obra na beira do buraco, só na cidade: avisa antes de o buraco aparecer inteiro.
+  if (cenarioEm(e.x) !== 'cidade') return
   const cone = spriteObjeto('cone')
   if (cone) {
     // Cone de 70 cm em tamanho real, na mesma régua dos obstáculos (ESCALA_REAL em cenarios.ts).
     const a = cam.ppm * 1.25
     const lc = (cone.naturalWidth / cone.naturalHeight) * a
-    ctx.drawImage(cone, x - lc * 0.9, cam.chaoY - a, lc, a)
+    ctx.drawImage(cone, x0 - lc * 0.9, cam.chaoY - a, lc, a)
   } else {
-    emoji(ctx, '🚧', x - cam.ppm * 0.3, cam.chaoY, cam.ppm * 0.7)
+    emoji(ctx, '🚧', x0 - cam.ppm * 0.3, cam.chaoY, cam.ppm * 0.7)
   }
 }
 
@@ -416,10 +432,6 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
   const a = base - topo
   const u = cam.ppm
   const sprite = spriteObjeto(e.visual)
-  if (sprite && e.visual === 'pedra') {
-    ctx.drawImage(sprite, x, topo, l, (sprite.naturalHeight / sprite.naturalWidth) * l)
-    return
-  }
   if (sprite && e.y > 0) {
     // Plataforma suspensa (marquise): sem sombra no chão. A laje fica no topo da colisão e as
     // mãos-francesas penduram abaixo dela, na proporção da arte.
@@ -478,13 +490,6 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
       retanguloArredondado(ctx, x, topo, l, a, u * 0.2)
       ctx.fillStyle = COR.aguaClara
       ctx.fillRect(x + u * 0.15, topo, l - u * 0.3, u * 0.15)
-      break
-    }
-    case 'pedra': {
-      ctx.fillStyle = COR.pedra
-      retanguloArredondado(ctx, x, topo, l, cam.altura - topo, u * 0.5)
-      ctx.fillStyle = COR.pedraClara
-      retanguloArredondado(ctx, x + u * 0.2, topo + u * 0.05, l * 0.4, u * 0.15, u * 0.08)
       break
     }
     case 'marquise': {

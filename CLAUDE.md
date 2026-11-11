@@ -96,7 +96,11 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
     topo no contorno da arte, e o cachorro sobe e desce por ele grudado; parede do contorno ainda
     bate. Os tamanhos seguem a régua do tutor (r5): 1 m de verdade = 1,79 m do jogo.
   - `teto` (placa, galho, toldo): só passa abaixado.
-  - `vao` (rio, buraco, bueiro): sem chão; cair encerra.
+  - `vao` (buraco, bueiro): sem chão; cair encerra. Desde a r9 não há vão de água (rio e lago
+    saíram). Buraco em três tamanhos (`buraco_pequeno`, `buraco_medio`/`obra`, `buraco_grande`), em
+    fração do alcance do pulo. Na tela, o sprite é só o interior escuro do buraco, com lados
+    irregulares, desenhado por cima do chão do cenário: vale o de proporção mais próxima da do vão
+    (`desenharVao`).
   - `rampa`: sobe de 0 até `altura` ao longo da largura; não bate. O cachorro anda grudado na
     superfície com `vy = velocidade·inclinação` e, ao passar do fim, sai lançado com essa
     velocidade. Pular na rampa funciona normalmente.
@@ -152,8 +156,8 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
-- Referência r9 (30 partidas do bot, 5 min cada, cenários de 500 m): mediana 4,1 km, 30 de 30 no
-  limite, sem batida, queda ou pego. Ficou mais fácil para o bot que a r8: sem teto nos cenários novos, nenhum trecho
+- Referência r9 (30 partidas do bot, 5 min cada, cenários de 500 m, sem água, buracos de 3
+  tamanhos): mediana 4,1 km, 30 de 30 no limite, sem batida, queda ou pego. Ficou mais fácil para o bot que a r8: sem teto nos cenários novos, nenhum trecho
   força lama. Sólido alto sem perfil mata o bot: yatai e caçamba como caixa reta deram 8 batidas em
   30, porque a parede da frente ficava acima do que dá para subir no respiro entre dois trechos.
   Obstáculo novo acima de ~2 m nasce com perfil em `perfis.ts`.

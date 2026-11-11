@@ -47,6 +47,15 @@ prédio com janelas tapadas, porta de enrolar e poste aceso; muro de tijolo com 
 grafite só de desenhos; paralelepípedo e asfalto rachado. Objetos: caçamba de lixo, pilha de
 pneus, sofá rasgado, tambor enferrujado, carrinho de supermercado, sacos de lixo com caixas.
 
+## Buracos
+
+Uma folha só para os quatro cenários ([buracos.webp](buracos.webp)): três formas opacas do
+interior do buraco (pequeno 1:1, médio 2:1, grande 3,5:1, mesma altura), com o topo quase reto, os
+cantos de cima lascados e os lados tortos e dentados, terra marrom com raízes e cano escurecendo
+até quase preto. Sem calçada nem piso desenhado: o jogo desenha a forma por cima do chão do
+cenário, que continua em volta. A primeira tentativa, com a calçada quebrada em volta, ficou
+parecendo uma ilha flutuante e com um piso que não era o de cada cenário.
+
 ## Do arquivo do ChatGPT para o jogo
 
 ```bash
@@ -59,6 +68,7 @@ python scripts/arte/preparar_camada.py chao.png   src/features/corrida/imagens/<
 # o chão do parque veio opaco, com fundo branco: antes, python scripts/arte/tirar_fundo.py
 # obstáculos: um arquivo por objeto, com o nome do `visual` do motor
 python scripts/arte/recortar_grade.py objetos.png src/features/corrida/imagens/objetos --folga 10 nome:altura ...
+python scripts/arte/recortar_grade.py buracos.png src/features/corrida/imagens/objetos buraco-pequeno:360 buraco-medio:360 buraco-grande:360
 ```
 
 Camada regerada = medir de novo a linha onde o piso fica cheio (`tufos` em
