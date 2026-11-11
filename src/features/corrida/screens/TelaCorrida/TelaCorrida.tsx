@@ -66,7 +66,7 @@ export function TelaCorrida() {
     setFase(nova)
   }, [])
 
-  // Pausado, a perseguição segue baixinho por trás do painel. No fim, game over e música do banho;
+  // Pausado, a perseguição segue baixinho por trás do véu. No fim, game over e música do banho;
   // De novo traz a perseguição de volta.
   useEffect(() => {
     abafarMusica(fase === 'pausado')
@@ -198,22 +198,19 @@ export function TelaCorrida() {
             <span className="tela-corrida__rotulo-selo">{t('hud.moedasRotulo')}</span>
             <span className="tela-corrida__valor tela-corrida__valor--moedas">{digitos(hud.moedas, 4)}</span>
           </div>
-          <button className="tela-corrida__pausa" onClick={pausar} aria-label={t('hud.pausar')} disabled={fase !== 'correndo'}>
-            <img src={IMAGENS_HUD.pausa} alt="" draggable={false} />
+          <button
+            className="tela-corrida__pausa"
+            onClick={fase === 'pausado' ? continuar : pausar}
+            aria-label={fase === 'pausado' ? t('continuar') : t('hud.pausar')}
+            disabled={fase === 'fim'}
+          >
+            <img src={fase === 'pausado' ? IMAGENS_HUD.continuar : IMAGENS_HUD.pausa} alt="" draggable={false} />
           </button>
         </div>
       )}
 
-      {fase === 'pausado' && (
-        <div className="tela-corrida__veu">
-          <div className="tela-corrida__cartao">
-            <h2 className="tela-corrida__titulo">{t('pausado')}</h2>
-            <button className="tela-corrida__botao" onClick={continuar} autoFocus>
-              {t('continuar')}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Pausado, só escurece: quem volta é o mesmo botão do HUD, que vira play acima do véu. */}
+      {fase === 'pausado' && <div className="tela-corrida__veu tela-corrida__veu--pausa" aria-hidden="true" />}
 
       {fase === 'fim' && fim && (
         <div

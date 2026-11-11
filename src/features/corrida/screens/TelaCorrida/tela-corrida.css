@@ -122,6 +122,8 @@
   cursor: pointer;
   pointer-events: auto;
   transition: transform 0.08s ease-out;
+  /* O HUD não cria contexto de empilhamento: isto põe o botão acima do véu da pausa. */
+  z-index: 1;
 }
 
 .tela-corrida__pausa:active {
@@ -146,38 +148,9 @@
   background: var(--cor-veu);
 }
 
-.tela-corrida__cartao {
-  width: min(420px, 100%);
-  max-height: 100%;
-  overflow: auto;
-  padding: var(--espaco-6);
-  border-radius: var(--raio-4);
-  background: var(--cor-superficie);
-  box-shadow: var(--sombra-2);
-  text-align: center;
-}
-
-.tela-corrida__titulo {
-  margin: 0 0 var(--espaco-2);
-  font-size: var(--texto-5);
-}
-
-.tela-corrida__botao {
-  margin-top: var(--espaco-3);
-  padding: var(--espaco-3) var(--espaco-8);
-  border: 0;
-  border-radius: var(--raio-total);
-  background: var(--cor-destaque);
-  color: var(--cor-destaque-texto);
-  font-size: var(--texto-4);
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: var(--sombra-1);
-}
-
-.tela-corrida__botao:focus-visible {
-  outline: 3px solid var(--cor-texto);
-  outline-offset: 3px;
+/* Escurece pista e selos; só o botão de play (z-index acima) fica claro e tocável. */
+.tela-corrida__veu--pausa {
+  animation: fim-escurece 0.15s ease-out both;
 }
 
 /*
