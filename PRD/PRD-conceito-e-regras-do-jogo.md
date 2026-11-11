@@ -1,7 +1,7 @@
 # PRD — Conceito e regras do jogo
 
 **Projeto:** Hora do Banho
-**Status:** regras r9 implementadas no motor (ver seção 5); valores de balanceamento ainda sem teste com pessoas
+**Status:** regras r10 implementadas no motor (ver seção 5); valores de balanceamento ainda sem teste com pessoas
 **Definições:** André · **Redação:** Claude
 **Data:** 02/11/2026
 
@@ -45,7 +45,7 @@ arte são próprios do Hora do Banho; não é recriação de nenhum jogo existen
 | Tipo | Exemplos | O que acontece |
 | --- | --- | --- |
 | Sólido | carro, cavalete, caixa, chafariz, canteiro, banca, tora, pedra, marquise | Bater de frente = fim. Dá para pousar e correr em cima. |
-| Teto | placa, galho, toldo, viga de ponte, andaime | Só passa abaixado. Encostar em pé = fim. |
+| Teto | letreiro, varal, buganvília, vasos pendurados, árvore atrás do muro (só na cidade) | Vem do muro do fundo. Os presos no muro vão de 0,6 m até o alto dele (2,1 m): passa abaixado ou com pulo duplo por cima. A árvore só passa abaixado (copa em cima). Encostar = fim. |
 | Vão | rio, lago, buraco de obra, bueiro | Sem chão. Cair = fim. |
 | Rampa | rampa de madeira (cidade) | Não bate. O cachorro sobe correndo e, no alto, sai lançado. Pular na rampa vai mais longe. Às vezes vem um buraco logo depois: o lançamento sozinho atravessa. |
 | Poça de lama | — | +1 de sujeira. O cachorro aguenta 3; a 4ª encerra a partida. Dá para pular por cima. |
@@ -106,6 +106,36 @@ poças, linhas de ossinhos e lenços.
 4. Conta, data e âncora de lançamento.
 
 ## 5. Referência de balanceamento
+
+**r10 (11/11/2026):** a pedido do André, os tetos da cidade deixam de vir do céu e passam a vir do
+muro do fundo. Placa, toldo, galho, viga e andaime foram trocados por obstáculos que fazem sentido
+com o muro, nas mesmas larguras e posições:
+
+| Antes | Agora | Altura da colisão |
+| --- | --- | --- |
+| placa | letreiro de pet shop num braço de ferro | 0,6 m até o alto do muro |
+| andaime | varal com toalhas e roupão | 0,6 m até o alto do muro |
+| toldo | buganvília caindo do muro | 0,6 m até o alto do muro |
+| viga | vasos de samambaia num trilho | 0,6 m até o alto do muro |
+| galho | árvore atrás do muro com o galho caindo para a frente | 0,6 m até o céu |
+
+O alto do muro é o alto dos painéis (`TOPO_TETO`, 2,1 m). Nos quatro presos no muro, além de passar
+abaixado, dá para passar por cima com o pulo duplo; o pico do pulo simples (2,11 m) mal encosta e
+não atravessa. A árvore tem tronco e copa acima do galho e só passa abaixado. A arte foi
+gerada no ChatGPT (`referencias/cenarios/prompts-tetos.md`). A pista de cada
+seed não muda; mudam só os visuais e a altura dos tetos. 30 partidas do bot, até 5 minutos cada:
+
+| | r9 | r10 |
+| --- | --- | --- |
+| Distância (mediana) | 4.139 m (teto de 5 min) | 4.139 m (teto de 5 min) |
+| Pontos (mediana) | 6.649 | 6.654 |
+| Ossinhos (mediana) | 227,5 | 227,5 |
+| Ossinhos de ouro (mediana) | 4 | 4 |
+| Fim | 30 no limite | 30 no limite |
+
+Sem batida, queda, pego ou divergência de replay. Para o bot quase nada muda: ele já passava
+abaixado por todos os tetos. A mudança é para quem joga, porque a arte agora mostra espaço livre
+acima do teto e o motor concorda com ela.
 
 **r9 (11/11/2026):** a sequência passa a ser cidade → parque → bairro japonês → beco abandonado,
 500 m cada (antes: cidade 800, parque 1000, rio 1000, centro 1200). A primeira versão da r9 trocava

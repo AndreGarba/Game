@@ -8,7 +8,8 @@ export type ComandoLog = readonly [tick: number, codigo: 0 | 1]
 export type IdCenario = 'cidade' | 'parque' | 'bairroJapones' | 'becoAbandonado'
 
 // solido: caixa que bloqueia de frente e aceita pouso em cima (carro, banco, chafariz).
-// teto:   tudo acima de `y` bloqueia; passa abaixado (placa, galho, toldo).
+// teto:   bloqueia de `y` a `y + altura` (o alto do muro, r10); passa abaixado ou com pulo
+//         duplo por cima (letreiro, varal, buganvília, vasos; a árvore vai até o céu).
 // vao:    sem chão entre x e x+largura (rio, buraco de obra).
 // poca:   lama no chão; pisar suja o cachorro.
 // rampa:  sobe de 0 (em x) até `altura` (em x+largura). Não bate: o cachorro corre por cima e,

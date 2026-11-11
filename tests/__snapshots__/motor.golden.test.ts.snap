@@ -11,7 +11,7 @@ exports[`golden master do motor > partidas com logs fixos 1`] = `
     "pontos": 73,
     "seed": 1,
     "ticks": 393,
-    "versaoRegras": "r9",
+    "versaoRegras": "r10",
   },
   {
     "distancia": 39,
@@ -22,7 +22,7 @@ exports[`golden master do motor > partidas com logs fixos 1`] = `
     "pontos": 39,
     "seed": 2,
     "ticks": 291,
-    "versaoRegras": "r9",
+    "versaoRegras": "r10",
   },
   {
     "distancia": 39,
@@ -33,7 +33,7 @@ exports[`golden master do motor > partidas com logs fixos 1`] = `
     "pontos": 39,
     "seed": 3,
     "ticks": 291,
-    "versaoRegras": "r9",
+    "versaoRegras": "r10",
   },
   {
     "distancia": 74,
@@ -44,7 +44,7 @@ exports[`golden master do motor > partidas com logs fixos 1`] = `
     "pontos": 104,
     "seed": 99,
     "ticks": 538,
-    "versaoRegras": "r9",
+    "versaoRegras": "r10",
   },
 ]
 `;
@@ -93,11 +93,11 @@ exports[`golden master do motor > pista gerada para a seed 1 1`] = `
   ],
   [
     "teto",
-    "placa",
+    "letreiro",
     54.654554405769744,
     1.2,
     0.6,
-    100,
+    1.5,
   ],
   [
     "solido",

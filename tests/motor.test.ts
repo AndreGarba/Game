@@ -11,6 +11,7 @@ import {
   velocidadeBase,
   alturaSuperficie,
   CACHORRO_LARGURA,
+  TOPO_TETO,
   type Acao,
   type Elemento,
   type EstadoPartida,
@@ -164,8 +165,10 @@ describe('física', () => {
     expect(estado.cachorro.y).toBe(0)
   })
 
+  // Como sai dos moldes: preso no muro, de 0,6 m até o alto dele (TOPO_TETO).
+  const teto = { tipo: 'teto' as const, x: 10, largura: 2, y: 0.6, altura: TOPO_TETO - 0.6, visual: 'letreiro' }
+
   it('teto: bate em pé, passa abaixado', () => {
-    const teto = { tipo: 'teto' as const, x: 10, largura: 2, y: 0.6, altura: 100, visual: 'placa' }
     const emPe = partidaCom([teto])
     correrAte(emPe, 15)
     expect(emPe.fim?.motivo).toBe('batida')
@@ -173,6 +176,23 @@ describe('física', () => {
     const abaixado = partidaCom([teto])
     correrAte(abaixado, 15, (e) => (e.cachorro.x > 8 && e.cachorro.abaixadoTicks === 0 ? 'abaixar' : null))
     expect(abaixado.fim).toBeNull()
+  })
+
+  it('teto (r10): o pulo simples bate, o duplo passa por cima', () => {
+    const simples = partidaCom([teto])
+    correrAte(simples, 15, (e) => (e.cachorro.x > 7 && e.cachorro.noChao ? 'pular' : null))
+    expect(simples.fim?.motivo).toBe('batida')
+
+    // Primeiro pulo antes do teto, segundo no alto do primeiro.
+    const duplo = partidaCom([teto])
+    let pulos = 0
+    correrAte(duplo, 15, (e) => {
+      const c = e.cachorro
+      if (pulos === 0 && c.x > 5.5 && c.noChao) return pulos++, 'pular'
+      if (pulos === 1 && !c.noChao && c.vy <= 0) return pulos++, 'pular'
+      return null
+    })
+    expect(duplo.fim).toBeNull()
   })
 
   it('cai no vão sem pular', () => {

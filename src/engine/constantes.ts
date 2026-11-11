@@ -2,7 +2,7 @@
 // VERSAO_REGRAS, rode `npm run sim:partidas` e mostre o antes/depois no PR.
 // Unidades: metros, segundos, ticks.
 
-export const VERSAO_REGRAS = 'r9'
+export const VERSAO_REGRAS = 'r10'
 
 // Passo fixo: o motor nunca recebe "tempo decorrido". 60 ticks = 1 segundo de jogo,
 // em qualquer aparelho, e o servidor reproduz a partida tick a tick.
@@ -24,6 +24,14 @@ export const VEL_PULO = 13
 // Abaixar no ar vira mergulho: cai rápido para o chão.
 export const VEL_MERGULHO = -18
 export const ABAIXAR_TICKS = 36
+
+// r10: os tetos da cidade vêm presos no muro do fundo (letreiro, varal, buganvília, vasos) e
+// terminam no alto dele (o alto dos painéis; só os pilares vão a 2,5 m), não no céu. Acima disso
+// está livre: o pico do pulo simples (2,11 m) mal encosta e não atravessa; o duplo passa.
+export const TOPO_TETO = 2.1
+// A árvore fica atrás do muro e só o galho passa para a frente; acima dele vêm o tronco e a copa,
+// então não há por cima: a colisão vai até o céu, como o teto antes da r10. Só passa abaixado.
+export const TOPO_ARVORE = 100
 
 export const CACHORRO_LARGURA = 0.9
 export const CACHORRO_ALTURA_EM_PE = 0.9

@@ -1,5 +1,6 @@
 import { entre, inteiroEntre, proximo, type EstadoRng } from './rng.ts'
 import type { Elemento, IdCenario, TipoElemento } from './tipos.ts'
+import { TOPO_ARVORE, TOPO_TETO } from './constantes.ts'
 
 // Sequência fixa, igual para todos os jogadores. Ao fim dela, recomeça do primeiro.
 // r9: o cenário muda a cada 500 m. Rio e centro saíram da sequência (não tinham arte); os moldes
@@ -58,8 +59,11 @@ function caixa(tipo: TipoElemento, x: number, largura: number, y: number, altura
 }
 const solido = (x: number, largura: number, altura: number, visual: string, y = 0) =>
   caixa('solido', x, largura, y, altura, visual)
-// Teto se estende até o céu: não dá para pular por cima, só passar abaixado.
-const teto = (x: number, largura: number, y: number, visual: string) => caixa('teto', x, largura, y, 100, visual)
+// Teto preso no muro vai de `y` até o alto dele (TOPO_TETO): passa abaixado por baixo ou com pulo
+// duplo por cima. A árvore fica atrás do muro e só o galho vem para a frente: acima dele está a copa,
+// então ela vai até TOPO_ARVORE, fora do alcance de qualquer pulo.
+const teto = (x: number, largura: number, y: number, visual: string, topo = TOPO_TETO) =>
+  caixa('teto', x, largura, y, topo - y, visual)
 const vao = (x: number, largura: number, visual: string) => caixa('vao', x, largura, 0, 0, visual)
 const poca = (x: number, largura: number) => caixa('poca', x, largura, 0, 0, 'poca')
 const rampa = (x: number, largura: number, altura: number, visual = 'rampa') =>
@@ -245,16 +249,16 @@ const cidade: Molde[] = [
     }),
   },
   {
-    id: 'placa',
+    id: 'letreiro',
     nivelMin: 0,
     peso: 2,
-    montar: () => ({ comprimento: 1.2, itens: [teto(0, 1.2, 0.6, 'placa')] }),
+    montar: () => ({ comprimento: 1.2, itens: [teto(0, 1.2, 0.6, 'letreiro')] }),
   },
   {
-    id: 'toldo',
+    id: 'buganvilia',
     nivelMin: 1,
     peso: 2,
-    montar: () => ({ comprimento: 3, itens: [teto(0, 3, 0.6, 'toldo'), ...linhaDeOssos(0.3, 0.25, 3)] }),
+    montar: () => ({ comprimento: 3, itens: [teto(0, 3, 0.6, 'buganvilia'), ...linhaDeOssos(0.3, 0.25, 3)] }),
   },
   {
     id: 'obra',
@@ -327,10 +331,10 @@ const cidade: Molde[] = [
 
 const parque: Molde[] = [
   {
-    id: 'galho',
+    id: 'arvore',
     nivelMin: 0,
     peso: 3,
-    montar: () => ({ comprimento: 2, itens: [teto(0, 2, 0.6, 'galho')] }),
+    montar: () => ({ comprimento: 2, itens: [teto(0, 2, 0.6, 'arvore', TOPO_ARVORE)] }),
   },
   {
     id: 'poca_dupla',
@@ -376,10 +380,10 @@ const rio: Molde[] = [
     montar: () => ({ comprimento: TORA.largura, itens: [solido(0, TORA.largura, TORA.altura, 'tora')] }),
   },
   {
-    id: 'ponte_baixa',
+    id: 'vasos',
     nivelMin: 1,
     peso: 2,
-    montar: () => ({ comprimento: 2.5, itens: [teto(0, 2.5, 0.6, 'viga'), item('osso', 1.25, 0.25)] }),
+    montar: () => ({ comprimento: 2.5, itens: [teto(0, 2.5, 0.6, 'vasos'), item('osso', 1.25, 0.25)] }),
   },
 ]
 
@@ -392,19 +396,19 @@ const centro: Molde[] = [
     montar: () => ({ comprimento: BANCA.largura, itens: [solido(0, BANCA.largura, BANCA.altura, 'banca')] }),
   },
   {
-    id: 'andaime',
+    id: 'varal',
     nivelMin: 1,
     peso: 2,
-    montar: () => ({ comprimento: 4, itens: [teto(0, 4, 0.6, 'andaime'), ...linhaDeOssos(0.4, 0.25, 3)] }),
+    montar: () => ({ comprimento: 4, itens: [teto(0, 4, 0.6, 'varal'), ...linhaDeOssos(0.4, 0.25, 3)] }),
   },
   {
-    id: 'placa_e_poca',
+    id: 'letreiro_e_poca',
     nivelMin: 2,
     peso: 1,
     montar: (ctx) => {
       const largura = larguraDePoca(ctx)
-      // Para não sujar, é preciso sair de baixo da placa e pular no tick certo.
-      return { comprimento: 1.2 + largura, itens: [teto(0, 1.2, 0.6, 'placa'), poca(1.2, largura)] }
+      // Para não sujar, é preciso sair de baixo do letreiro e pular no tick certo.
+      return { comprimento: 1.2 + largura, itens: [teto(0, 1.2, 0.6, 'letreiro'), poca(1.2, largura)] }
     },
   },
   {
@@ -526,9 +530,9 @@ function escolher(moldes: readonly Molde[], ids: readonly string[]): Molde[] {
 // outros cenários.
 const cidadeCompleta: Molde[] = [
   ...cidade,
-  ...escolher(parque, ['galho', 'chafariz', 'canteiro']),
-  ...escolher(rio, ['tora', 'ponte_baixa']),
-  ...escolher(centro, ['banca', 'andaime', 'bueiro']),
+  ...escolher(parque, ['arvore', 'chafariz', 'canteiro']),
+  ...escolher(rio, ['tora', 'vasos']),
+  ...escolher(centro, ['banca', 'varal', 'bueiro']),
 ]
 
 export const MOLDES_POR_CENARIO: Record<IdCenario, readonly Molde[]> = {
