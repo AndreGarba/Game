@@ -2,11 +2,13 @@ import { entre, inteiroEntre, proximo, type EstadoRng } from './rng.ts'
 import type { Elemento, IdCenario, TipoElemento } from './tipos.ts'
 
 // Sequência fixa, igual para todos os jogadores. Ao fim dela, recomeça do primeiro.
+// r9: o cenário muda a cada 1000 m. Rio e centro saíram da sequência (não tinham arte); os moldes
+// deles continuam abaixo porque a cidade usa alguns.
 export const SEQUENCIA_CENARIOS: readonly { id: IdCenario; comprimento: number }[] = [
-  { id: 'cidade', comprimento: 800 },
+  { id: 'cidade', comprimento: 1000 },
   { id: 'parque', comprimento: 1000 },
-  { id: 'rio', comprimento: 1000 },
-  { id: 'centro', comprimento: 1200 },
+  { id: 'bairroJapones', comprimento: 1000 },
+  { id: 'becoAbandonado', comprimento: 1000 },
 ]
 
 const VOLTA_COMPLETA = SEQUENCIA_CENARIOS.reduce((soma, c) => soma + c.comprimento, 0)
@@ -18,6 +20,21 @@ export function cenarioEm(x: number): IdCenario {
     resto -= c.comprimento
   }
   return SEQUENCIA_CENARIOS[0]!.id
+}
+
+/**
+ * Cenário em `x` com o trecho da pista que ele ocupa (`inicio` inclusive, `fim` exclusive). A UI
+ * usa para trocar a arte na fronteira.
+ */
+export function trechoDoCenarioEm(x: number): { id: IdCenario; inicio: number; fim: number } {
+  const positivo = Math.max(0, x)
+  let inicio = Math.floor(positivo / VOLTA_COMPLETA) * VOLTA_COMPLETA
+  for (const c of SEQUENCIA_CENARIOS) {
+    if (positivo < inicio + c.comprimento) return { id: c.id, inicio, fim: inicio + c.comprimento }
+    inicio += c.comprimento
+  }
+  const primeiro = SEQUENCIA_CENARIOS[0]!
+  return { id: primeiro.id, inicio, fim: inicio + primeiro.comprimento }
 }
 
 export type ItemMolde = Omit<Elemento, 'id' | 'usado'>
@@ -45,7 +62,8 @@ const solido = (x: number, largura: number, altura: number, visual: string, y = 
 const teto = (x: number, largura: number, y: number, visual: string) => caixa('teto', x, largura, y, 100, visual)
 const vao = (x: number, largura: number, visual: string) => caixa('vao', x, largura, 0, 0, visual)
 const poca = (x: number, largura: number) => caixa('poca', x, largura, 0, 0, 'poca')
-const rampa = (x: number, largura: number, altura: number) => caixa('rampa', x, largura, 0, altura, 'rampa')
+const rampa = (x: number, largura: number, altura: number, visual = 'rampa') =>
+  caixa('rampa', x, largura, 0, altura, visual)
 const item = (tipo: 'lenco' | 'osso' | 'ossoOuro', x: number, y: number) => caixa(tipo, x, 0, y, 0, tipo)
 
 // Altura do centro de um coletável no chão: no meio do corpo do cachorro em pé.
@@ -66,6 +84,85 @@ const CANTEIRO = { largura: 4.5, altura: 0.81 } // 0,45 m; arte 5,6:1
 const CHAFARIZ = { largura: 5.4, altura: 1.07 }
 // Banca baixa, um quiosque de 1,6 m: uma banca de jornal de verdade (2,2 m) ficaria acima do pulo.
 const BANCA = { largura: 4.3, altura: 2.86 } // arte 1,5:1
+
+// r9: obstáculos dos cenários novos, na mesma régua. Cada um só existe no cenário dele.
+// Parque
+const BANCO = { largura: 2.5, altura: 1.5 } // 0,85 m; arte 1,68:1
+const LIXEIRA = { largura: 1, altura: 1.6 } // 0,9 m; arte 0,63:1
+const PIPOQUEIRO = { largura: 2.3, altura: 2.6 } // 1,45 m; arte 0,89:1
+const CARRINHO_DE_MAO = { largura: 1.5, altura: 1.35 } // 0,75 m com a pá; arte 1,1:1
+const CORTADOR = { largura: 2.1, altura: 1.79 } // 1 m até o guidão; arte 1,16:1
+// A gangorra é uma rampa: ponta de trás no chão, ponta da frente no alto.
+const GANGORRA = { largura: 2.8, altura: 1.6 } // arte 1,75:1
+// Bairro japonês
+const LANTERNA = { largura: 1.35, altura: 2.15 } // tōrō de 1,2 m; arte 0,62:1
+const YATAI = { largura: 3, altura: 2.8 } // 1,55 m; arte 1,07:1
+const BARRIS = { largura: 2.1, altura: 1.97 } // 1,1 m; arte 1,06:1
+const BONSAI = { largura: 1.2, altura: 1.43 } // 0,8 m com o banquinho; arte 0,83:1
+const RIQUIXA = { largura: 2.7, altura: 2.6 } // 1,45 m; arte 1,04:1
+// A borda de pedra e as pedras (45% da arte) são a colisão; o bambu fica acima dela.
+const JARDIM_ZEN = { largura: 3.9, altura: 0.95 }
+// Beco abandonado
+const CACAMBA = { largura: 2.8, altura: 2.33 } // 1,3 m; arte 1,21:1
+const PNEUS = { largura: 1.3, altura: 1.6 } // 0,9 m; arte 0,82:1
+const SOFA = { largura: 2.7, altura: 1.6 } // 0,9 m; arte 1,67:1
+const TAMBOR = { largura: 1.05, altura: 1.6 } // 0,9 m; arte 0,66:1
+const CARRINHO_MERCADO = { largura: 1.95, altura: 1.79 } // 1 m; arte 1,09:1
+const SACOS_DE_LIXO = { largura: 2.3, altura: 1.8 } // 1 m; arte 1,27:1
+
+interface Medida {
+  largura: number
+  altura: number
+}
+
+// Sólido sozinho, com ossos opcionais em linha por cima dele.
+function moldeSolido(id: string, nivelMin: number, peso: number, m: Medida, ossosEmCima = 0): Molde {
+  return {
+    id,
+    nivelMin,
+    peso,
+    montar: () => ({
+      comprimento: m.largura,
+      itens: [
+        solido(0, m.largura, m.altura, id),
+        ...linhaDeOssos((m.largura - (ossosEmCima - 1) * 1.2) / 2, m.altura + 0.5, ossosEmCima),
+      ],
+    }),
+  }
+}
+
+// Dois sólidos com um intervalo curto entre eles e um osso no alto do intervalo.
+function moldeDupla(id: string, nivelMin: number, peso: number, a: Medida, visualA: string, b: Medida, visualB: string): Molde {
+  return {
+    id,
+    nivelMin,
+    peso,
+    montar: (ctx) => {
+      const intervalo = entre(ctx.rng, 2, 3)
+      const x2 = a.largura + intervalo
+      return {
+        comprimento: x2 + b.largura,
+        itens: [
+          solido(0, a.largura, a.altura, visualA),
+          solido(x2, b.largura, b.altura, visualB),
+          item('osso', a.largura + intervalo / 2, Math.max(a.altura, b.altura) + 1.2),
+        ],
+      }
+    },
+  }
+}
+
+function moldeVao(id: string, nivelMin: number, peso: number, visual: string, fatorMin: number, fatorMax: number): Molde {
+  return {
+    id,
+    nivelMin,
+    peso,
+    montar: (ctx) => {
+      const largura = larguraDeVao(ctx, fatorMin, fatorMax)
+      return { comprimento: largura, itens: [vao(0, largura, visual), item('osso', largura / 2, 1.6)] }
+    },
+  }
+}
 
 function linhaDeOssos(x: number, y: number, quantidade: number): ItemMolde[] {
   return Array.from({ length: quantidade }, (_, i) => item('osso', x + i * 1.2, y))
@@ -345,6 +442,98 @@ const centro: Molde[] = [
   },
 ]
 
+// r9: parque, bairro japonês e beco só têm obstáculos do próprio cenário e nenhum teto (nada
+// para passar abaixado). Lama, ossos e lenço valem em todos.
+const emQualquerCenario = comuns.filter((m) => m.id === 'poca' || m.id === 'ossos' || m.id === 'lenco')
+
+const parqueNovo: Molde[] = [
+  moldeSolido('banco', 0, 3, BANCO, 2),
+  moldeSolido('lixeira', 0, 2, LIXEIRA),
+  moldeSolido('carrinho_de_mao', 0, 2, CARRINHO_DE_MAO),
+  moldeSolido('cortador', 1, 2, CORTADOR),
+  moldeSolido('pipoqueiro', 1, 2, PIPOQUEIRO, 2),
+  moldeDupla('banco_e_lixeira', 1, 2, BANCO, 'banco', LIXEIRA, 'lixeira'),
+  moldeVao('lago', 1, 2, 'lago', 0.35, 0.5),
+  {
+    // Os ossos seguem a subida da gangorra e o arco do lançamento.
+    id: 'gangorra',
+    nivelMin: 0,
+    peso: 2,
+    montar: () => ({
+      comprimento: GANGORRA.largura,
+      itens: [
+        rampa(0, GANGORRA.largura, GANGORRA.altura, 'gangorra'),
+        item('osso', 1, 1.05),
+        item('osso', 2, 1.6),
+        item('osso', 3.3, 2.3),
+        item('osso', 4.5, 2.2),
+      ],
+    }),
+  },
+  {
+    // Gangorra seguida de lago: o lançamento sozinho atravessa.
+    id: 'gangorra_lago',
+    nivelMin: 2,
+    peso: 1,
+    montar: (ctx) => {
+      const largura = larguraDeVao(ctx, 0.3, 0.4)
+      return {
+        comprimento: GANGORRA.largura + 0.3 + largura,
+        itens: [
+          rampa(0, GANGORRA.largura, GANGORRA.altura, 'gangorra'),
+          vao(GANGORRA.largura + 0.3, largura, 'lago'),
+          item('ossoOuro', GANGORRA.largura + 0.3 + largura / 2, 2.6),
+        ],
+      }
+    },
+  },
+]
+
+const bairroJapones: Molde[] = [
+  moldeSolido('bonsai', 0, 3, BONSAI),
+  moldeSolido('barris', 0, 2, BARRIS),
+  moldeSolido('lanterna', 0, 2, LANTERNA),
+  moldeSolido('jardim_zen', 0, 2, JARDIM_ZEN, 3),
+  moldeSolido('riquixa', 1, 2, RIQUIXA),
+  moldeSolido('yatai', 1, 2, YATAI, 2),
+  moldeDupla('lanternas', 1, 2, LANTERNA, 'lanterna', LANTERNA, 'lanterna'),
+  moldeVao('lago_de_carpas', 1, 2, 'lago', 0.35, 0.5),
+  {
+    // Do alto do yatai dá para alcançar o osso de ouro, acima do pulo duplo do chão.
+    id: 'yatai_ouro',
+    nivelMin: 2,
+    peso: 1,
+    montar: () => ({
+      comprimento: YATAI.largura,
+      itens: [solido(0, YATAI.largura, YATAI.altura, 'yatai'), item('ossoOuro', YATAI.largura / 2, 5.6)],
+    }),
+  },
+]
+
+const becoAbandonado: Molde[] = [
+  moldeSolido('tambor', 0, 3, TAMBOR),
+  moldeSolido('pneus', 0, 2, PNEUS),
+  moldeSolido('sacos_de_lixo', 0, 2, SACOS_DE_LIXO),
+  moldeSolido('sofa', 0, 2, SOFA, 2),
+  moldeSolido('carrinho_mercado', 1, 2, CARRINHO_MERCADO),
+  moldeSolido('cacamba', 1, 2, CACAMBA, 2),
+  moldeDupla('tambor_e_pneus', 1, 2, TAMBOR, 'tambor', PNEUS, 'pneus'),
+  {
+    // Sofá encostado na caçamba: uma escada de dois degraus até o osso de ouro.
+    id: 'sofa_e_cacamba',
+    nivelMin: 2,
+    peso: 1,
+    montar: () => ({
+      comprimento: SOFA.largura + CACAMBA.largura,
+      itens: [
+        solido(0, SOFA.largura, SOFA.altura, 'sofa'),
+        solido(SOFA.largura, CACAMBA.largura, CACAMBA.altura, 'cacamba'),
+        item('ossoOuro', SOFA.largura + CACAMBA.largura / 2, 5.2),
+      ],
+    }),
+  },
+]
+
 function escolher(moldes: readonly Molde[], ids: readonly string[]): Molde[] {
   return ids.map((id) => {
     const molde = moldes.find((m) => m.id === id)
@@ -353,8 +542,8 @@ function escolher(moldes: readonly Molde[], ids: readonly string[]): Molde[] {
   })
 }
 
-// r4: a cidade recebe todos os obstáculos que têm arte, também os que nasceram em outros
-// cenários. Os outros cenários continuam com os seus, desenhados em vetor.
+// r4: a cidade recebe todos os obstáculos que tinham arte até então, também os que nasceram em
+// outros cenários.
 const cidadeCompleta: Molde[] = [
   ...cidade,
   ...escolher(parque, ['galho', 'chafariz', 'canteiro']),
@@ -364,7 +553,18 @@ const cidadeCompleta: Molde[] = [
 
 export const MOLDES_POR_CENARIO: Record<IdCenario, readonly Molde[]> = {
   cidade: [...comuns, ...cidadeCompleta],
-  parque: [...comuns, ...parque],
-  rio: [...comuns, ...rio],
-  centro: [...comuns, ...centro],
+  parque: [
+    ...emQualquerCenario,
+    ...parqueNovo,
+    ...escolher(parque, ['poca_dupla', 'canteiro', 'chafariz']),
+    ...escolher(rio, ['tora']),
+  ],
+  bairroJapones: [...emQualquerCenario, ...bairroJapones],
+  // Caixote, buraco de obra e rampa de tábua já tinham arte e cabem num beco.
+  becoAbandonado: [
+    ...emQualquerCenario,
+    ...becoAbandonado,
+    ...escolher(comuns, ['caixa']),
+    ...escolher(cidade, ['obra', 'rampa', 'rampa_buraco']),
+  ],
 }

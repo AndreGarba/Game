@@ -1,15 +1,17 @@
 import {
   cenarioEm,
   CACHORRO_LARGURA,
+  trechoDoCenarioEm,
   VANTAGEM_MAX,
   vantagemTutor,
   velocidadeBase,
   type Elemento,
+  type IdCenario,
 } from '../../../engine/index.ts'
 import type { PontoRastro, QuadroCorrida } from '../controladorCorrida.ts'
 import {
   arteCenarioPronta,
-  CAMADAS_CIDADE,
+  CAMADAS_POR_CENARIO,
   FRAME_ALTURA,
   LINHA_CHAO,
   LINHA_PISO,
@@ -79,7 +81,7 @@ function emoji(ctx: CanvasRenderingContext2D, texto: string, x: number, y: numbe
 }
 
 /*
- * Cenário em camadas (`CAMADAS_CIDADE`), em unidades de um quadro de 360 de altura. A escala sai
+ * Cenário em camadas (`CAMADAS_POR_CENARIO`), em unidades de um quadro de 360 de altura. A escala sai
  * da linha do chão: em paisagem dá altura/360; em pé, com o chão no meio da tela, a arte encolhe
  * junto.
  */
@@ -103,7 +105,8 @@ interface Sequencia {
   ultimoPainel: HTMLImageElement | null
   destaqueAntes: boolean
 }
-const sequencias = new Map<number, Sequencia>()
+// Uma por camada de cada cenário (`cenario:indice`).
+const sequencias = new Map<string, Sequencia>()
 
 function sorte(k: number, camada: number, sal: number) {
   return hash(k * 13 + sal * 101 + camada * 7919)
@@ -139,6 +142,7 @@ function desenharMontagem(
   ctx: CanvasRenderingContext2D,
   cam: Camera,
   escala: number,
+  chave: string,
   indice: number,
   camada: { parallax: number; topo: number; altura: number },
   montagem: Montagem<HTMLImageElement>,
@@ -147,10 +151,10 @@ function desenharMontagem(
   const largura = (p: HTMLImageElement) => (p.naturalWidth / p.naturalHeight) * altura
   const u0 = (cam.x0 * cam.ppm * parallax) / escala + ORIGEM_TRECHOS
   const u1 = u0 + cam.largura / escala
-  let seq = sequencias.get(indice)
+  let seq = sequencias.get(chave)
   if (!seq) {
     seq = { inicio: [0], peca: [], grupos: 0, ultimo: -1, ultimoPainel: null, destaqueAntes: false }
-    sequencias.set(indice, seq)
+    sequencias.set(chave, seq)
   }
   while (seq.inicio[seq.inicio.length - 1]! <= u1) {
     for (const p of proximoGrupo(seq, indice, montagem)) {
@@ -173,38 +177,128 @@ function desenharMontagem(
   }
 }
 
-function desenharCenarioArte(
+/** Uma camada de um cenário, pronta para desenhar. */
+interface CamadaNaTela {
+  cenario: IdCenario
+  indice: number
+  camada: (typeof CAMADAS_POR_CENARIO)[IdCenario][number]
+  imagem: HTMLImageElement
+}
+
+function desenharCamada(ctx: CanvasRenderingContext2D, cam: Camera, escala: number, c: CamadaNaTela) {
+  const { camada, imagem, indice } = c
+  const montagem = montagemDaCamada(c.cenario, indice)
+  if (montagem) {
+    desenharMontagem(ctx, cam, escala, `${c.cenario}:${indice}`, indice, camada, montagem)
+    return
+  }
+  const altura = camada.altura * escala
+  const largura = (imagem.naturalWidth / imagem.naturalHeight) * altura
+  const y = camada.topo * escala
+  // parallax 1 = mesma velocidade dos obstáculos; as tiras emendam, então só repetem.
+  const desloc = ((cam.x0 * cam.ppm * camada.parallax) % largura + largura) % largura
+  // Arredondar evita a fresta de 1 px entre cópias com escala fracionária.
+  for (let x = -desloc; x < cam.largura; x += largura) {
+    ctx.drawImage(imagem, Math.floor(x), y, Math.ceil(largura) + 1, altura)
+  }
+  if (indice === 0 && y + altura < cam.chaoY) {
+    // Tela de pé: o céu não chega no chão. Estica a última linha dele.
+    ctx.drawImage(imagem, 0, imagem.naturalHeight - 1, imagem.naturalWidth, 1, 0, y + altura - 1, cam.largura, cam.chaoY)
+  }
+}
+
+// Troca de cenário. Cada camada troca num ponto da tela que depende do parallax dela: todas as
+// fronteiras se alinham embaixo do cachorro no instante em que ele cruza a divisa, e as camadas
+// de trás (mais lentas) começam a trocar antes e terminam depois. A troca é um esfumado, não um
+// corte: largura em unidades do quadro de 360, maior no fundo (um céu vira outro) que na frente.
+const ESFUMADO_FUNDO = 160
+const ESFUMADO_FRENTE = 50
+let rascunho: HTMLCanvasElement | null = null
+
+// Desenha a camada com um degradê de opacidade na horizontal: `alfaEsquerda` até `x0`, o
+// contrário depois de `x1`. Passa por um canvas à parte, porque a máscara apagaria o que já está
+// na tela.
+function desenharCamadaEsfumada(
   ctx: CanvasRenderingContext2D,
   cam: Camera,
-  arte: NonNullable<ReturnType<typeof arteCenarioPronta>>,
+  escala: number,
+  c: CamadaNaTela,
+  x0: number,
+  x1: number,
+  alfaEsquerda: 0 | 1,
 ) {
+  const tela = ctx.canvas
+  rascunho ??= document.createElement('canvas')
+  if (rascunho.width !== tela.width || rascunho.height !== tela.height) {
+    rascunho.width = tela.width
+    rascunho.height = tela.height
+  }
+  const r = rascunho.getContext('2d')
+  if (!r) return
+  r.setTransform(1, 0, 0, 1, 0, 0)
+  r.globalCompositeOperation = 'source-over'
+  r.clearRect(0, 0, rascunho.width, rascunho.height)
+  r.setTransform(ctx.getTransform())
+  desenharCamada(r, cam, escala, c)
+  const mascara = r.createLinearGradient(x0, 0, x1, 0)
+  mascara.addColorStop(0, `rgba(0, 0, 0, ${alfaEsquerda})`)
+  mascara.addColorStop(1, `rgba(0, 0, 0, ${1 - alfaEsquerda})`)
+  r.globalCompositeOperation = 'destination-in'
+  r.fillStyle = mascara
+  r.fillRect(0, 0, cam.largura, cam.altura)
+  ctx.save()
+  ctx.setTransform(1, 0, 0, 1, 0, 0)
+  ctx.drawImage(rascunho, 0, 0)
+  ctx.restore()
+}
+
+function camadasDoCenario(id: IdCenario): CamadaNaTela[] | null {
+  const arte = arteCenarioPronta(id)
+  if (!arte) return null
+  return CAMADAS_POR_CENARIO[id].map((camada, indice) => ({ cenario: id, indice, camada, imagem: arte[indice]! }))
+}
+
+/** Desenha o cenário em arte; devolve false se a arte de algum cenário à vista ainda não carregou. */
+function desenharCenarioArte(ctx: CanvasRenderingContext2D, cam: Camera): boolean {
   const escala = cam.chaoY / LINHA_CHAO
+  const ancora = cam.largura * POSICAO_CACHORRO
+  const xCachorro = cam.x0 + ancora / cam.ppm
+  const trecho = trechoDoCenarioEm(xCachorro)
+  // A divisa mais próxima: a que ficou para trás ou a que vem pela frente. A largada (x = 0) não
+  // é divisa: não existe cenário antes dela.
+  const atras = xCachorro - trecho.inicio < trecho.fim - xCachorro
+  const divisa = atras ? trecho.inicio : trecho.fim
+  const antes = divisa > 0 ? camadasDoCenario(cenarioEm(divisa - 1)) : []
+  const depois = camadasDoCenario(cenarioEm(divisa))
+  if (!antes || !depois) return false
+
   // O céu é a primeira camada e é opaco; se a tela for mais alta que a arte, a cor de cima dele
   // completa.
   ctx.fillStyle = TERRA_BASE
   ctx.fillRect(0, 0, cam.largura, cam.altura)
 
-  CAMADAS_CIDADE.forEach((camada, i) => {
-    const montagem = montagemDaCamada(i)
-    if (montagem) {
-      desenharMontagem(ctx, cam, escala, i, camada, montagem)
-      return
+  // Do fundo para a frente, misturando os dois cenários pela profundidade; no empate, o que está
+  // saindo vai por baixo.
+  const fila = [...antes.map((c) => ({ c, sai: true })), ...depois.map((c) => ({ c, sai: false }))].sort(
+    (a, b) => a.c.camada.parallax - b.c.camada.parallax,
+  )
+  for (const { c, sai } of fila) {
+    const p = c.camada.parallax
+    const xDivisa = ancora + (divisa - xCachorro) * cam.ppm * p
+    const esfumado = (p < 1 ? ESFUMADO_FUNDO : ESFUMADO_FRENTE) * escala
+    if (sai) {
+      // Inteira até a divisa; some no esfumado depois dela (por baixo do cenário que entra).
+      if (xDivisa + esfumado <= 0) continue
+      if (xDivisa >= cam.largura) desenharCamada(ctx, cam, escala, c)
+      else desenharCamadaEsfumada(ctx, cam, escala, c, xDivisa, xDivisa + esfumado, 1)
+    } else {
+      // Aparece no esfumado antes da divisa; inteira depois dela.
+      if (xDivisa - esfumado >= cam.largura) continue
+      if (xDivisa <= 0) desenharCamada(ctx, cam, escala, c)
+      else desenharCamadaEsfumada(ctx, cam, escala, c, xDivisa - esfumado, xDivisa, 0)
     }
-    const imagem = arte[i]!
-    const altura = camada.altura * escala
-    const largura = (imagem.naturalWidth / imagem.naturalHeight) * altura
-    const y = camada.topo * escala
-    // parallax 1 = mesma velocidade dos obstáculos; as tiras emendam, então só repetem.
-    const desloc = ((cam.x0 * cam.ppm * camada.parallax) % largura + largura) % largura
-    // Arredondar evita a fresta de 1 px entre cópias com escala fracionária.
-    for (let x = -desloc; x < cam.largura; x += largura) {
-      ctx.drawImage(imagem, Math.floor(x), y, Math.ceil(largura) + 1, altura)
-    }
-    if (i === 0 && y + altura < cam.chaoY) {
-      // Tela de pé: o céu não chega no chão. Estica a última linha dele.
-      ctx.drawImage(imagem, 0, imagem.naturalHeight - 1, imagem.naturalWidth, 1, 0, y + altura - 1, cam.largura, cam.chaoY)
-    }
-  })
+  }
+  return true
 }
 
 /** Cenário vetorial: vale só nos primeiros quadros, enquanto a arte do Figma ainda carrega. */
@@ -234,7 +328,7 @@ function desenharFundo(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numb
   for (let i = primeiroMeio; i * passoMeio - deslocMeio < cam.largura + passoMeio; i++) {
     const x = i * passoMeio - deslocMeio
     const h = hash(i * 7 + 3)
-    if (cenario === 'parque' || cenario === 'rio') {
+    if (cenario === 'parque') {
       const raio = (0.8 + h * 0.7) * cam.ppm
       ctx.fillStyle = COR.madeiraEscura
       ctx.fillRect(x + passoMeio / 2 - cam.ppm * 0.12, cam.chaoY - raio * 2.2, cam.ppm * 0.24, raio * 2.2)
@@ -243,7 +337,7 @@ function desenharFundo(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numb
       ctx.arc(x + passoMeio / 2, cam.chaoY - raio * 2.4, raio, 0, Math.PI * 2)
       ctx.fill()
     } else {
-      const alturaPredio = (2 + h * (cenario === 'centro' ? 5 : 2.5)) * cam.ppm
+      const alturaPredio = (2 + h * (cenario === 'becoAbandonado' ? 5 : 2.5)) * cam.ppm
       ctx.fillStyle = paleta.meio
       ctx.fillRect(x, cam.chaoY - alturaPredio, passoMeio * 0.88, alturaPredio)
       ctx.fillStyle = paleta.meioDetalhe
@@ -269,12 +363,6 @@ function desenharChao(ctx: CanvasRenderingContext2D, cam: Camera, xCamera: numbe
   }
 }
 
-// A arte dos obstáculos foi feita para a cidade: nos outros cenários eles continuam em vetor
-// até ganharem arte própria. Coletáveis (ossos e lenço) usam o sprite em qualquer cenário.
-function spriteDe(e: Elemento, nome: string): HTMLImageElement | null {
-  return cenarioEm(e.x) === 'cidade' ? spriteObjeto(nome) : null
-}
-
 function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const x = sx(cam, e.x)
   const l = e.largura * cam.ppm
@@ -282,7 +370,7 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   // O vão corta o piso inteiro da calçada, desde a base do muro: senão o piso parece passar por
   // cima da água.
   const topo = (cam.chaoY * LINHA_PISO) / LINHA_CHAO
-  const textura = spriteDe(e, agua ? 'agua' : 'buraco')
+  const textura = spriteObjeto(agua ? 'agua' : 'buraco')
   if (textura) {
     // A textura repete na horizontal, presa ao mundo, para a água não "andar" com a câmera.
     const altura = cam.altura - topo
@@ -304,7 +392,7 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   }
   if (agua) return
   // Cone de obra na beira do buraco: avisa antes de o buraco aparecer inteiro.
-  const cone = spriteDe(e, 'cone')
+  const cone = spriteObjeto('cone')
   if (cone) {
     // Cone de 70 cm em tamanho real, na mesma régua dos obstáculos (ESCALA_REAL em cenarios.ts).
     const a = cam.ppm * 1.25
@@ -317,7 +405,7 @@ function desenharVao(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
 
 // Parte da arte que fica acima do topo da colisão: o jato do chafariz não é onde o cachorro
 // pisa, a borda da bacia é.
-const ARTE_ACIMA_DO_TOPO: Record<string, number> = { chafariz: 0.4 }
+const ARTE_ACIMA_DO_TOPO: Record<string, number> = { chafariz: 0.4, jardim_zen: 0.55 }
 
 function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const x = sx(cam, e.x)
@@ -326,7 +414,7 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
   const base = sy(cam, Math.max(e.y, 0))
   const a = base - topo
   const u = cam.ppm
-  const sprite = spriteDe(e, e.visual)
+  const sprite = spriteObjeto(e.visual)
   if (sprite && e.visual === 'pedra') {
     ctx.drawImage(sprite, x, topo, l, (sprite.naturalHeight / sprite.naturalWidth) * l)
     return
@@ -439,7 +527,7 @@ function desenharTeto(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
   const l = e.largura * cam.ppm
   const baseY = sy(cam, e.y)
   const u = cam.ppm
-  const sprite = spriteDe(e, e.visual)
+  const sprite = spriteObjeto(e.visual)
   if (sprite) {
     // O teto vai até o céu no motor: a arte tem que chegar no alto da tela, senão parece que dá
     // para pular por cima.
@@ -508,7 +596,7 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
       const x = sx(cam, e.x)
       const l = e.largura * u
       const a = e.altura * u
-      const sprite = spriteDe(e, 'rampa')
+      const sprite = spriteObjeto(e.visual)
       ctx.fillStyle = COR.sombra
       ctx.beginPath()
       ctx.ellipse(x + l * 0.6, cam.chaoY, l * 0.5, u * 0.09, 0, 0, Math.PI * 2)
@@ -526,7 +614,7 @@ function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Element
       return
     }
     case 'poca': {
-      const lama = spriteDe(e, 'lama')
+      const lama = spriteObjeto('lama')
       if (lama) {
         if (e.usado) ctx.globalAlpha = 0.5
         const l = e.largura * u
@@ -669,10 +757,7 @@ export function desenharCena(
   const ppm = cam.ppm
   const xFim = cam.x0 + largura / ppm
 
-  const arte = arteCenarioPronta()
-  if (arte) {
-    desenharCenarioArte(ctx, cam, arte)
-  } else {
+  if (!desenharCenarioArte(ctx, cam)) {
     desenharFundo(ctx, cam, x)
     desenharChao(ctx, cam, x)
   }

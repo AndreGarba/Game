@@ -32,16 +32,16 @@ export const PALETA_CENARIO: Record<IdCenario, PaletaCenario> = {
     chao: '#8cc56d',
     chaoLinha: '#76ad59',
   },
-  rio: {
-    ceuTopo: '#f3a96b',
-    ceuBase: '#ffe2b8',
+  bairroJapones: {
+    ceuTopo: '#b98fd0',
+    ceuBase: '#ffd0a8',
     fundo: '#a8a1c9',
-    meio: '#6c8f5e',
-    meioDetalhe: '#557548',
-    chao: '#c9a874',
-    chaoLinha: '#b08f5d',
+    meio: '#8a6a5a',
+    meioDetalhe: '#ffe2a0',
+    chao: '#b9b4ad',
+    chaoLinha: '#9f9a93',
   },
-  centro: {
+  becoAbandonado: {
     ceuTopo: '#3d4f8f',
     ceuBase: '#9aa6d6',
     fundo: '#56628f',
