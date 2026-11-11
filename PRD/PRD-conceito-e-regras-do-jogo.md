@@ -109,7 +109,7 @@ poças, linhas de ossinhos e lenços.
 
 **r9 (11/11/2026):** a sequência passa a ser cidade → parque → bairro japonês → beco abandonado,
 500 m cada (antes: cidade 800, parque 1000, rio 1000, centro 1200). A primeira versão da r9 trocava
-a cada 1000 m; o André pediu 500 m no mesmo PR, para o jogador ver os quatro cenários em 2 km. Rio e centro saem. Os três
+a cada 1000 m; o André pediu 500 m no mesmo PR. Uma volta pelos quatro cenários passa a ter 2 km. Rio e centro saem. Os três
 cenários novos têm arte e obstáculos próprios e nenhum obstáculo de teto; a cidade não muda. A
 pista dos primeiros 500 m de cada seed continua igual à da r8. 30 partidas do bot, até 5 minutos
 cada:
