@@ -77,7 +77,7 @@ PRD/              especificações de produto
 ## Motor do jogo
 
 Regras do motor ficam **nesta seção**. Regra de motor espalhada por outras seções é regra que
-alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
+alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
 
 ### O jogo, como o motor vê
 
@@ -95,7 +95,14 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
     em cima. Os que têm **perfil** (`src/engine/perfis.ts`: carro, tora, chafariz, banca) têm o
     topo no contorno da arte, e o cachorro sobe e desce por ele grudado; parede do contorno ainda
     bate. Os tamanhos seguem a régua do tutor (r5): 1 m de verdade = 1,79 m do jogo.
-  - `teto` (placa, galho, toldo): só passa abaixado.
+  - `teto` (r10, só na cidade): tudo vem do muro do fundo, nada do céu. Letreiro, varal,
+    buganvília e vasos ficam presos nele, de 0,6 m até `TOPO_TETO` (2,1 m, o alto dos painéis):
+    passa abaixado ou com pulo duplo por cima, e o pulo simples não passa. A árvore fica atrás do
+    muro e só o galho vem para a frente; acima dele estão o tronco e a copa, então ela vai até
+    `TOPO_ARVORE` e só passa abaixado. Desenho em `src/features/corrida/desenho/tetos.ts` (arte do
+    ChatGPT, com vetor enquanto o sprite carrega); como a arte foi pedida:
+    `PRD/referencias/cenarios/prompts-tetos.md`.
+    Se o muro mudar de altura, `TOPO_TETO` muda junto.
   - `vao` (buraco, bueiro): sem chão; cair encerra. Desde a r9 não há vão de água (rio e lago
     saíram). Buraco em três tamanhos (`buraco_pequeno`, `buraco_medio`/`obra`, `buraco_grande`), em
     fração do alcance do pulo. Na tela, o sprite é só o interior escuro do buraco, com lados
@@ -115,7 +122,7 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
   bairro japonês → beco abandonado, 500 m cada, e recomeça: uma volta tem 2 km). Os obstáculos de cada trecho são
   sorteados pela seed da partida dentro dos moldes daquele cenário (`src/engine/cenarios.ts`).
   Parque, bairro japonês e beco só têm obstáculos do próprio cenário e **nenhum `teto`** (pedido do
-  André): lá o abaixar serve só para mergulhar. A cidade continua com placa, toldo, galho e viga.
+  André): lá o abaixar serve só para mergulhar. A cidade continua com tetos, todos vindos do muro (r10).
   Rio e centro saíram da sequência; os moldes deles ficaram no arquivo porque a cidade usa alguns.
 - **Arte por cenário:** cada cenário tem as suas camadas (`CAMADAS_POR_CENARIO` em
   `src/features/corrida/imagens/index.ts`) e o sprite de cada obstáculo é o arquivo com o nome do
@@ -156,6 +163,8 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r9'`.
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
+- Referência r10 (30 partidas do bot, 5 min cada): igual à r9, com mediana de 4,1 km, 30 de 30 no limite e
+  6.654 pontos. O bot já passava abaixado por todo teto; o pulo duplo por cima é para o jogador.
 - Referência r9 (30 partidas do bot, 5 min cada, cenários de 500 m, sem água, buracos de 3
   tamanhos): mediana 4,1 km, 30 de 30 no limite, sem batida, queda ou pego. Ficou mais fácil para o bot que a r8: sem teto nos cenários novos, nenhum trecho
   força lama. Sólido alto sem perfil mata o bot: yatai e caçamba como caixa reta deram 8 batidas em

@@ -1,6 +1,7 @@
 import {
   cenarioEm,
   CACHORRO_LARGURA,
+  TOPO_TETO,
   trechoDoCenarioEm,
   VANTAGEM_MAX,
   vantagemTutor,
@@ -30,6 +31,7 @@ import { atualizarPoeira, desenharPoeira } from './poeira.ts'
 import { ANTECIPACAO_PULO_M, desenharTutorSprite } from './tutorSprite.ts'
 import type { PoseTutorSom } from '../som/sonsCorrida.ts'
 import { desenharCachorro, desenharTutor } from './personagens.ts'
+import { desenharTeto as desenharTetoDoMuro, type CaixaTeto } from './tetos.ts'
 
 // Desenho puro: lê o estado, nunca o altera. As 3 camadas do falso 3D (fundo, meio, pista)
 // andam a velocidades diferentes; só a pista corresponde ao mundo do motor.
@@ -526,69 +528,19 @@ function desenharSolido(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento)
   }
 }
 
-const LINHA_DE_ESTICAR: Record<string, number> = { galho: 0.25 }
-
 function desenharTeto(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
-  const x = sx(cam, e.x)
-  const l = e.largura * cam.ppm
   const baseY = sy(cam, e.y)
-  const u = cam.ppm
-  const sprite = spriteObjeto(e.visual)
-  if (sprite) {
-    // O teto vai até o céu no motor: a arte tem que chegar no alto da tela, senão parece que dá
-    // para pular por cima.
-    const a = (sprite.naturalHeight / sprite.naturalWidth) * l
-    const topo = baseY - a
-    ctx.drawImage(sprite, x, topo, l, a)
-    // A linha esticada tem que ser só "coluna" (poste, tronco, parede): no galho, as folhas do
-    // topo da arte virariam riscos, então estica uma linha mais abaixo, só de tronco.
-    const fracao = LINHA_DE_ESTICAR[e.visual] ?? 0
-    const yEsticar = topo + fracao * a
-    if (yEsticar > 0) {
-      const linha = Math.floor(fracao * sprite.naturalHeight)
-      ctx.drawImage(sprite, 0, linha, sprite.naturalWidth, 2, x, 0, l, yEsticar + 1)
-    }
-    return
+  // r10: o teto vem do muro do fundo. A colisão acaba no alto dele (a árvore vai até o céu).
+  const caixa: CaixaTeto = {
+    x: sx(cam, e.x),
+    l: e.largura * cam.ppm,
+    baseY,
+    topoY: Math.max(sy(cam, e.y + e.altura), sy(cam, TOPO_TETO)),
+    muroY: sy(cam, TOPO_TETO),
+    u: cam.ppm,
+    semente: e.id,
   }
-  switch (e.visual) {
-    case 'galho': {
-      ctx.fillStyle = COR.madeiraEscura
-      ctx.fillRect(x + l - u * 0.3, 0, u * 0.3, baseY)
-      ctx.fillRect(x, baseY - u * 0.25, l, u * 0.25)
-      ctx.fillStyle = COR.folha
-      for (let i = 0; i < 4; i++) {
-        ctx.beginPath()
-        ctx.arc(x + (l * (i + 0.5)) / 4, baseY - u * 0.4, u * 0.4, 0, Math.PI * 2)
-        ctx.fill()
-      }
-      break
-    }
-    case 'toldo': {
-      for (let i = 0; i * u * 0.5 < l; i++) {
-        ctx.fillStyle = i % 2 === 0 ? COR.toldoA : COR.toldoB
-        ctx.fillRect(x + i * u * 0.5, baseY - u * 0.5, Math.min(u * 0.5, l - i * u * 0.5), u * 0.5)
-      }
-      ctx.fillStyle = COR.metal
-      ctx.fillRect(x, 0, u * 0.08, baseY - u * 0.5)
-      ctx.fillRect(x + l - u * 0.08, 0, u * 0.08, baseY - u * 0.5)
-      break
-    }
-    case 'viga':
-    case 'andaime': {
-      ctx.fillStyle = COR.metal
-      ctx.fillRect(x, baseY - u * 0.4, l, u * 0.4)
-      ctx.fillRect(x, 0, u * 0.15, baseY)
-      ctx.fillRect(x + l - u * 0.15, 0, u * 0.15, baseY)
-      break
-    }
-    default: {
-      // placa
-      ctx.fillStyle = COR.metal
-      ctx.fillRect(x + l / 2 - u * 0.05, 0, u * 0.1, baseY)
-      ctx.fillStyle = COR.placa
-      retanguloArredondado(ctx, x, baseY - u * 0.6, l, u * 0.6, u * 0.1)
-    }
-  }
+  desenharTetoDoMuro(ctx, e.visual, caixa, spriteObjeto(e.visual))
 }
 
 function desenharElemento(ctx: CanvasRenderingContext2D, cam: Camera, e: Elemento) {
@@ -779,7 +731,7 @@ export function desenharCena(
   const fracao = fracaoTutorNaTela(Math.min(1, Math.max(0, vantagemTutor(estado.sujeira) / VANTAGEM_MAX)), c.x)
   const xTutor = xEncostado + (xMargem - xEncostado) * fracao
   // O tutor faz o que o cachorro fez quando passou por este mesmo ponto da pista: como os
-  // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob a mesma placa.
+  // obstáculos estão parados no mundo, ele pula o mesmo carro e se abaixa sob o mesmo letreiro.
   const pose = poseNoRastro(quadro.rastro, xTutor - CACHORRO_LARGURA / 2)
   const xNoRastro = xTutor - CACHORRO_LARGURA / 2
   const poseTutor = {
