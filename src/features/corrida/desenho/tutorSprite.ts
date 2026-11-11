@@ -2,6 +2,7 @@ import {
   SPRITE_TUTOR_CORRENDO as CORRIDA,
   SPRITE_TUTOR_PULANDO as PULO,
   SPRITE_TUTOR_SLIDE as SLIDE,
+  type Arte,
 } from '../imagens/index.ts'
 
 // Tutor da arte: folhas da corrida, do pulo com pouso desajeitado e do slide. (x, base) em pixels CSS:
@@ -122,9 +123,9 @@ function quadroDoPulo(o: OpcoesTutorSprite, agora: number): number | null {
 
 export function desenharTutorSprite(
   ctx: CanvasRenderingContext2D,
-  corrida: HTMLImageElement,
-  pulo: HTMLImageElement | null,
-  slide: HTMLImageElement | null,
+  corrida: Arte,
+  pulo: Arte | null,
+  slide: Arte | null,
   x: number,
   base: number,
   ppm: number,

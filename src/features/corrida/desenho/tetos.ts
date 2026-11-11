@@ -4,6 +4,7 @@
 // A arte (ChatGPT) é `imagens/objetos/<visual>.webp` e ocupa a caixa de colisão; a árvore também
 // desenha o que fica acima do muro. Como foi pedida: PRD/referencias/cenarios/prompts-tetos.md.
 // Enquanto o sprite carrega, cada um é desenhado aqui em vetor, com contorno escuro.
+import type { Arte } from '../imagens/index.ts'
 import { COR } from './paleta.ts'
 
 /** Tudo em pixels da tela. `muroY` é o alto do muro, `baseY` a borda de baixo da colisão. */
@@ -338,15 +339,15 @@ const ARVORE_CORTE_DE_BAIXO = 0.326
 
 // A folhagem abaixo do corte ocupa a colisão inteira, da borda de baixo ao alto do muro, para o
 // corte cair no muro; acima dele a copa segue a proporção da arte, na largura da colisão.
-function arvoreComArte(ctx: CanvasRenderingContext2D, c: CaixaTeto, sprite: HTMLImageElement) {
-  const { naturalWidth: w, naturalHeight: h } = sprite
+function arvoreComArte(ctx: CanvasRenderingContext2D, c: CaixaTeto, sprite: Arte) {
+  const { width: w, height: h } = sprite
   const corte = Math.round(h * (1 - ARVORE_CORTE_DE_BAIXO))
   ctx.drawImage(sprite, 0, corte, w, h - corte, c.x, c.muroY, c.l, c.baseY - c.muroY)
   const copa = (corte / w) * c.l
   ctx.drawImage(sprite, 0, 0, w, corte, c.x, c.muroY - copa, c.l, copa + 1)
 }
 
-export function desenharTeto(ctx: CanvasRenderingContext2D, visual: string, c: CaixaTeto, sprite: HTMLImageElement | null) {
+export function desenharTeto(ctx: CanvasRenderingContext2D, visual: string, c: CaixaTeto, sprite: Arte | null) {
   ctx.save()
   if (sprite) {
     if (visual === 'arvore') {

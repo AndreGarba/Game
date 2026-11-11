@@ -231,106 +231,199 @@ export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 348, altura: 400, pe
 // (PRD/referencias/tutor-slide.png) e recortada com `--quadros-minimos 6 --pes-no-rodape`.
 export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 482, altura: 400, pes: 6 } as const
 
-let arte: Record<IdCenario, HTMLImageElement[]> | null = null
-let sprites: Map<string, HTMLImageElement> | null = null
-let cachorro: HTMLImageElement | null = null
-let slide: HTMLImageElement | null = null
-let tutor: HTMLImageElement | null = null
-let tutorPulo: HTMLImageElement | null = null
-let tutorSlide: HTMLImageElement | null = null
-// Montagem de cada camada já com as imagens, no mesmo índice das camadas do cenário. A mesma peça
-// é uma imagem só, reaproveitada onde aparecer.
-let montagens: Record<IdCenario, (Montagem<HTMLImageElement> | null)[]> | null = null
+/**
+ * Uma imagem pronta para o canvas. `ImageBitmap` já está decodificado; o elemento `<img>` só é
+ * decodificado no primeiro `drawImage`, dentro do quadro (medido: até 22 ms por imagem no desktop,
+ * mais que um quadro inteiro), e `img.decode()` não muda isso para canvas. O elemento fica só
+ * como reserva, para navegador sem `createImageBitmap` ou falha de rede. Os dois têm `width` e
+ * `height` (num `<img>` fora do DOM, são o tamanho natural).
+ */
+export type Arte = ImageBitmap | HTMLImageElement
 
-function criar(src: string) {
-  const imagem = new Image()
-  imagem.src = src
-  return imagem
+interface ArteCarregada {
+  cenarios: Record<IdCenario, Arte[] | null>
+  // Montagem de cada camada, no mesmo índice das camadas do cenário. A mesma peça é uma imagem
+  // só, reaproveitada onde aparecer.
+  montagens: Record<IdCenario, (Montagem<Arte> | null)[]>
+  sprites: Map<string, Arte>
+  cachorro: Arte | null
+  slide: Arte | null
+  tutor: Arte | null
+  tutorPulo: Arte | null
+  tutorSlide: Arte | null
 }
 
-/** Cria as imagens uma vez; chamar cedo (na abertura) faz a corrida já abrir com a arte pronta. */
-export function preCarregarImagensCenario(): Record<IdCenario, HTMLImageElement[]> {
-  if (!arte) {
-    const cache = new Map<string, HTMLImageElement>()
-    const imagem = (src: string) => cache.get(src) ?? cache.set(src, criar(src)).get(src)!
-    const porCenario = <T>(f: (c: Camada) => T) =>
-      Object.fromEntries(CENARIOS.map((id) => [id, CAMADAS_POR_CENARIO[id].map(f)])) as Record<IdCenario, T[]>
-    arte = porCenario((c) => imagem(c.src))
-    montagens = porCenario((c): Montagem<HTMLImageElement> | null => {
-      const m = c.montagem
-      if (!m) return null
-      if (m.tipo === 'trechos') return { tipo: 'trechos', trechos: m.trechos.map((pecas) => pecas.map(imagem)) }
-      return {
-        ...m,
-        repetem: m.repetem.map(imagem),
-        destaques: m.destaques.map(imagem),
-        conexoes: m.conexoes.map(imagem),
-      }
-    })
-    sprites = new Map(Object.entries(SPRITES_OBJETOS).map(([nome, src]) => [nome, criar(src)]))
-    Object.values(IMAGENS_HUD).forEach(criar)
-    Object.values(IMAGENS_FIM).forEach(criar)
-    cachorro = criar(cachorroCorrendo)
-    slide = criar(cachorroSlide)
-    tutor = criar(tutorCorrendo)
-    tutorPulo = criar(tutorPulando)
-    tutorSlide = criar(tutorDeslizando)
+let carregada: ArteCarregada | null = null
+let carga: Promise<void> | null = null
+let total = 0
+let feitas = 0
+let liberada = false
+const ouvintes = new Set<() => void>()
+// Rede travada não pode prender o jogador na história: passado isto a corrida abre do mesmo jeito,
+// com o cenário vetorial até a arte chegar.
+const ESPERA_MAXIMA_MS = 15_000
+
+function avisar() {
+  for (const ouvinte of ouvintes) ouvinte()
+}
+
+function comoElemento(src: string): Promise<Arte | null> {
+  return new Promise((resolver) => {
+    const imagem = new Image()
+    imagem.onload = () => resolver(imagem)
+    imagem.onerror = () => resolver(null)
+    imagem.src = src
+  })
+}
+
+// Decodifica fora do quadro: createImageBitmap trabalha em outra thread.
+async function decodificar(src: string): Promise<Arte | null> {
+  let arte: Arte | null = null
+  try {
+    if (typeof createImageBitmap === 'function') arte = await createImageBitmap(await (await fetch(src)).blob())
+  } catch {
+    arte = null
   }
+  arte ??= await comoElemento(src)
+  feitas++
+  avisar()
   return arte
 }
 
-function pronta(imagem: HTMLImageElement | null) {
-  return imagem && imagem.complete && imagem.naturalWidth > 0 ? imagem : null
+function pecasDe<T>(m: Montagem<T>): readonly T[] {
+  return m.tipo === 'trechos' ? m.trechos.flat() : [...m.repetem, ...m.destaques, ...m.conexoes]
+}
+
+/**
+ * Carrega e decodifica toda a arte que o canvas da corrida usa numa volta pelos quatro cenários
+ * (2000 m): camadas, peças de muro e casas, obstáculos, cachorro e tutor. A sequência de cenários
+ * recomeça igual a cada volta, então os 2000 m seguintes usam as mesmas imagens, que continuam na
+ * memória: não há segunda carga a fazer. Chamar cedo (na abertura): a história passa enquanto
+ * isto roda por trás, e ela só libera a corrida quando `estadoDaCarga().liberada`.
+ */
+export function carregarArteCorrida(): Promise<void> {
+  carga ??= (async () => {
+    const camadas = CENARIOS.flatMap((id) => CAMADAS_POR_CENARIO[id])
+    const fontes = [
+      ...new Set([
+        ...camadas.map((c) => c.src),
+        ...camadas.flatMap((c) => (c.montagem ? pecasDe(c.montagem) : [])),
+        ...Object.values(SPRITES_OBJETOS),
+        cachorroCorrendo,
+        cachorroSlide,
+        tutorCorrendo,
+        tutorPulando,
+        tutorDeslizando,
+      ]),
+    ]
+    total = fontes.length
+    setTimeout(() => {
+      liberada = true
+      avisar()
+    }, ESPERA_MAXIMA_MS)
+    // HUD e fim de partida são <img> do DOM: basta o navegador já ter baixado.
+    for (const src of [...Object.values(IMAGENS_HUD), ...Object.values(IMAGENS_FIM)]) void comoElemento(src)
+
+    const prontas = new Map<string, Arte | null>()
+    await Promise.all(fontes.map(async (src) => prontas.set(src, await decodificar(src))))
+    const de = (src: string) => prontas.get(src) ?? null
+    const todas = (srcs: readonly string[]): Arte[] | null => {
+      const artes = srcs.map(de)
+      return artes.every((a): a is Arte => a !== null) ? artes : null
+    }
+    const montar = (m: Montagem<string>): Montagem<Arte> | null => {
+      if (!todas(pecasDe(m))) return null
+      const arte = (src: string) => de(src)!
+      if (m.tipo === 'trechos') return { tipo: 'trechos', trechos: m.trechos.map((pecas) => pecas.map(arte)) }
+      return { ...m, repetem: m.repetem.map(arte), destaques: m.destaques.map(arte), conexoes: m.conexoes.map(arte) }
+    }
+    const porCenario = <T>(f: (id: IdCenario) => T) =>
+      Object.fromEntries(CENARIOS.map((id) => [id, f(id)])) as Record<IdCenario, T>
+    carregada = {
+      cenarios: porCenario((id) => todas(CAMADAS_POR_CENARIO[id].map((c) => c.src))),
+      montagens: porCenario((id) => CAMADAS_POR_CENARIO[id].map((c) => (c.montagem ? montar(c.montagem) : null))),
+      sprites: new Map(
+        Object.entries(SPRITES_OBJETOS).flatMap(([nome, src]): [string, Arte][] => {
+          const arte = de(src)
+          return arte ? [[nome, arte]] : []
+        }),
+      ),
+      cachorro: de(cachorroCorrendo),
+      slide: de(cachorroSlide),
+      tutor: de(tutorCorrendo),
+      tutorPulo: de(tutorPulando),
+      tutorSlide: de(tutorDeslizando),
+    }
+    liberada = true
+    avisar()
+  })()
+  return carga
+}
+
+export interface EstadoDaCarga {
+  /** Quanto da arte já foi decodificado, de 0 a 1. */
+  progresso: number
+  /** A corrida já pode abrir: tudo decodificado, ou a espera máxima passou. */
+  liberada: boolean
+}
+
+let fotoDaCarga: EstadoDaCarga = { progresso: 0, liberada: false }
+
+/** Sempre o mesmo objeto enquanto nada muda (serve de snapshot para `useSyncExternalStore`). */
+export function estadoDaCarga(): EstadoDaCarga {
+  const progresso = total === 0 ? 0 : feitas / total
+  if (fotoDaCarga.progresso !== progresso || fotoDaCarga.liberada !== liberada) fotoDaCarga = { progresso, liberada }
+  return fotoDaCarga
+}
+
+/** Avisa a cada imagem decodificada e quando a corrida é liberada; devolve como cancelar. */
+export function assinarCarga(ouvinte: () => void): () => void {
+  ouvintes.add(ouvinte)
+  return () => ouvintes.delete(ouvinte)
+}
+
+// Quem desenha chama os getters abaixo a cada quadro: se ninguém pediu a carga antes, ela começa aqui.
+function arte(): ArteCarregada | null {
+  if (!carga) void carregarArteCorrida()
+  return carregada
 }
 
 /** A folha do cachorro, ou null enquanto não carregou (o canvas desenha o cachorro vetorial). */
-export function spriteCachorroPronto(): HTMLImageElement | null {
-  preCarregarImagensCenario()
-  return pronta(cachorro)
+export function spriteCachorroPronto(): Arte | null {
+  return arte()?.cachorro ?? null
 }
 
 /** A folha do slide, ou null enquanto não carregou (aí o abaixar achata o quadro do galope). */
-export function spriteSlidePronto(): HTMLImageElement | null {
-  preCarregarImagensCenario()
-  return pronta(slide)
+export function spriteSlidePronto(): Arte | null {
+  return arte()?.slide ?? null
 }
 
 /** A folha do pulo do tutor, ou null enquanto não carregou (aí ele pula com um quadro da corrida). */
-export function spriteTutorPuloPronto(): HTMLImageElement | null {
-  preCarregarImagensCenario()
-  return pronta(tutorPulo)
+export function spriteTutorPuloPronto(): Arte | null {
+  return arte()?.tutorPulo ?? null
 }
 
 /** A folha do slide do tutor, ou null enquanto não carregou (aí o abaixar achata o quadro da corrida). */
-export function spriteTutorSlidePronto(): HTMLImageElement | null {
-  preCarregarImagensCenario()
-  return pronta(tutorSlide)
+export function spriteTutorSlidePronto(): Arte | null {
+  return arte()?.tutorSlide ?? null
 }
 
 /** A folha do tutor, ou null enquanto não carregou (o canvas desenha o tutor vetorial). */
-export function spriteTutorPronto(): HTMLImageElement | null {
-  preCarregarImagensCenario()
-  return pronta(tutor)
+export function spriteTutorPronto(): Arte | null {
+  return arte()?.tutor ?? null
 }
 
-/** As camadas do cenário, ou null enquanto alguma não carregou (o canvas desenha o cenário vetorial). */
-export function arteCenarioPronta(id: IdCenario): HTMLImageElement[] | null {
-  const a = preCarregarImagensCenario()[id]
-  return a.every((i) => i.complete && i.naturalWidth > 0) ? a : null
+/** As camadas do cenário, ou null enquanto não carregaram (o canvas desenha o cenário vetorial). */
+export function arteCenarioPronta(id: IdCenario): Arte[] | null {
+  return arte()?.cenarios[id] ?? null
 }
 
 /** Montagem da camada `i` do cenário com todas as peças carregadas, ou null (aí ela repete a imagem única). */
-export function montagemDaCamada(id: IdCenario, i: number): Montagem<HTMLImageElement> | null {
-  preCarregarImagensCenario()
-  const m = montagens?.[id][i]
-  if (!m) return null
-  const pecas = m.tipo === 'trechos' ? m.trechos.flat() : [...m.repetem, ...m.destaques, ...m.conexoes]
-  return pecas.every((p) => p.complete && p.naturalWidth > 0) ? m : null
+export function montagemDaCamada(id: IdCenario, i: number): Montagem<Arte> | null {
+  return arte()?.montagens[id][i] ?? null
 }
 
 /** Sprite do objeto, ou null se não houver arte para ele (ou se ainda não carregou): vale o vetor. */
-export function spriteObjeto(nome: string): HTMLImageElement | null {
-  preCarregarImagensCenario()
-  const imagem = sprites?.get(APELIDOS[nome] ?? nome)
-  return imagem && imagem.complete && imagem.naturalWidth > 0 ? imagem : null
+export function spriteObjeto(nome: string): Arte | null {
+  return arte()?.sprites.get(APELIDOS[nome] ?? nome) ?? null
 }

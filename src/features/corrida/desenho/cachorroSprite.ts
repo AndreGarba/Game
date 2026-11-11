@@ -1,5 +1,5 @@
 import { ABAIXAR_TICKS } from '../../../engine/index.ts'
-import { SPRITE_CACHORRO_CORRENDO as CORRIDA, SPRITE_CACHORRO_SLIDE as SLIDE } from '../imagens/index.ts'
+import { SPRITE_CACHORRO_CORRENDO as CORRIDA, SPRITE_CACHORRO_SLIDE as SLIDE, type Arte } from '../imagens/index.ts'
 
 // Cachorro da arte: folha de 10 quadros de galope e folha de 6 quadros de slide (abaixado).
 // Coordenadas em pixels CSS da tela; (cx, base) é o ponto dos pés no centro da caixa de colisão.
@@ -51,8 +51,8 @@ function indiceDoCiclo(fase: number, quadros: number) {
 
 export function desenharCachorroSprite(
   ctx: CanvasRenderingContext2D,
-  corrida: HTMLImageElement,
-  slide: HTMLImageElement | null,
+  corrida: Arte,
+  slide: Arte | null,
   cx: number,
   base: number,
   ppm: number,

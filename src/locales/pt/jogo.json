@@ -13,7 +13,8 @@
     "recusa": "não mesmo!",
     "grito": "Volte\naqui!!!",
     "pular": "Pular",
-    "continuar": "Toque para correr"
+    "continuar": "Toque para correr",
+    "carregando": "Carregando… {{porcento}}%"
   },
   "home": {
     "jogar": "Jogar",

@@ -16,16 +16,40 @@ const ALTURA_PALCO = 360
 
 const movimentoReduzido = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 
+interface Props {
+  aoTerminar: () => void
+  /**
+   * A arte da corrida é decodificada por trás enquanto a história passa. Sem `liberada`, a história
+   * não entrega o jogador à corrida: mostra o progresso e segue sozinha quando a carga terminar.
+   */
+  carga: { progresso: number; liberada: boolean }
+}
+
 /**
  * A história em quatro quadros, um de cada vez, como numa página de HQ. Toque adianta o próximo
  * quadro; com todos na tela, toque segue para a corrida. "Pular" vai direto.
  */
-export function TelaHistoria({ aoTerminar }: { aoTerminar: () => void }) {
+export function TelaHistoria({ aoTerminar, carga }: Props) {
   const { t } = useTranslation()
   const telaRef = useRef<HTMLDivElement>(null)
   const [escala, setEscala] = useState(1)
   const [visiveis, setVisiveis] = useState(() => (movimentoReduzido() ? TOTAL_QUADROS : 0))
   const completa = visiveis >= TOTAL_QUADROS
+  // O jogador já pediu para sair (toque no fim ou Pular) antes de a carga terminar.
+  const [querSair, setQuerSair] = useState(false)
+  const { liberada } = carga
+
+  const sair = useCallback(() => {
+    if (liberada) aoTerminar()
+    else {
+      setVisiveis(TOTAL_QUADROS)
+      setQuerSair(true)
+    }
+  }, [liberada, aoTerminar])
+
+  useEffect(() => {
+    if (querSair && liberada) aoTerminar()
+  }, [querSair, liberada, aoTerminar])
 
   // O palco tem o tamanho do Figma e escala inteiro para caber na tela, como uma página de revista.
   useEffect(() => {
@@ -60,19 +84,19 @@ export function TelaHistoria({ aoTerminar }: { aoTerminar: () => void }) {
 
   const avancar = useCallback(() => {
     if (!completa) setVisiveis((v) => v + 1)
-    else if (performance.now() - completaEmRef.current > TRAVA_FIM_MS) aoTerminar()
-  }, [completa, aoTerminar])
+    else if (performance.now() - completaEmRef.current > TRAVA_FIM_MS) sair()
+  }, [completa, sair])
 
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
-      if (evento.code === 'Escape') aoTerminar()
+      if (evento.code === 'Escape') sair()
       else if (evento.code === 'Space' || evento.code === 'Enter') avancar()
       else return
       evento.preventDefault()
     }
     window.addEventListener('keydown', aoTeclar)
     return () => window.removeEventListener('keydown', aoTeclar)
-  }, [avancar, aoTerminar])
+  }, [avancar, sair])
 
   const quadro = (n: number) => `tela-historia__quadro tela-historia__quadro--${n}${visiveis >= n ? ' tela-historia__quadro--visivel' : ''}`
 
@@ -131,13 +155,15 @@ export function TelaHistoria({ aoTerminar }: { aoTerminar: () => void }) {
       </div>
 
       {completa ? (
-        <p className="tela-historia__continuar">{t('historia.continuar')}</p>
+        <p className="tela-historia__continuar" aria-live="polite">
+          {liberada ? t('historia.continuar') : t('historia.carregando', { porcento: Math.round(carga.progresso * 100) })}
+        </p>
       ) : (
         <button
           className="tela-historia__pular"
           onClick={(evento) => {
             evento.stopPropagation()
-            aoTerminar()
+            sair()
           }}
         >
           {t('historia.pular')}
