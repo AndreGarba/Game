@@ -211,7 +211,7 @@ const CENARIOS = Object.keys(CAMADAS_POR_CENARIO) as IdCenario[]
 // renderizados do modelo 3D (Meshy, a partir de PRD/referencias/cachorro-3d-vistas.webp) com o galope
 // animado no Blender: PRD/referencias/cachorro-3d/cachorro-3d-galope.blend. O quadro 8 é o voo.
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
-export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 403, altura: 320, pes: 11 } as const
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 361, altura: 320, pes: 11 } as const
 
 // Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no
 // ChatGPT a partir de PRD/referencias/cachorro-slide-referencia.png e recortada pelo mesmo script
@@ -258,11 +258,11 @@ export function desenharQuadroDaFolha(
 }
 
 // Folhas com mais resolução do que a tela mostra, em fração do arquivo (com uma folga de ~20%).
-// O cachorro: quadro de 320 px para 1,32 m (galope) e 1,13 m (slide), e a 720 px de altura de
-// tela a 7 m por altura, 1,32 m são 136 px e 1,13 m são 116 px. A folha do galope (4150 px de
-// largura) também passava do lado máximo de textura.
+// O cachorro: quadro de 320 px para 1,45 m (galope) e 1,13 m (slide), e a 720 px de altura de
+// tela a 7 m por altura, 1,45 m são 149 px e 1,13 m são 116 px. A folha do galope antiga (4150 px
+// de largura) também passava do lado máximo de textura.
 const ESCALA_UTIL = new Map<string, number>([
-  [cachorroCorrendo, 0.5],
+  [cachorroCorrendo, 0.55],
   [cachorroSlide, 0.45],
 ])
 

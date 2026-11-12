@@ -18,8 +18,10 @@ interface Folha {
 
 // Altura do quadro inteiro no mundo, em metros. O quadro tem folga para o quique do galope, então
 // o cachorro em si fica um pouco menor que isto.
-// 1,32 = 1,2 × 1,1: ajustado a olho para casar com o cenário de cidade.
-const ALTURA_QUADRO_M = 1.32
+// 1,32 = 1,2 × 1,1: ajustado a olho para casar com o cenário de cidade. A folha 3D tem mais folga
+// em cima e embaixo (o corpo balança no galope), e o cachorro ocupa ~10% menos do quadro: 1,45 o
+// deixa do mesmo tamanho na tela (medido no comprimento do corpo, no quadro do voo).
+const ALTURA_QUADRO_M = 1.45
 // A folha do slide veio com o cachorro ~1,5× maior que a do galope (medido no comprimento do
 // corpo, no quadro 1, que ainda é pose de corrida). Esta altura põe os dois na mesma escala.
 const ALTURA_SLIDE_M = 1.13
