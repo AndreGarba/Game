@@ -207,11 +207,11 @@ export const CAMADAS_POR_CENARIO: Record<IdCenario, readonly Camada[]> = {
 }
 const CENARIOS = Object.keys(CAMADAS_POR_CENARIO) as IdCenario[]
 
-// Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave), recortados de
-// PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
-// PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
+// Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave),
+// renderizados do modelo 3D (Meshy, a partir de PRD/referencias/cachorro-3d-vistas.webp) com o galope
+// animado no Blender: PRD/referencias/cachorro-3d/cachorro-3d-galope.blend. O quadro 8 é o voo.
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
-export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 415, altura: 320, pes: 11 } as const
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 403, altura: 320, pes: 11 } as const
 
 // Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no
 // ChatGPT a partir de PRD/referencias/cachorro-slide-referencia.png e recortada pelo mesmo script
