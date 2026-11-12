@@ -138,6 +138,16 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   (medido: mesmo custo); `createImageBitmap` resolve (0,6 ms). A carga cobre uma volta inteira
   (2000 m, os quatro cenários); a volta seguinte usa as mesmas imagens, então não há segunda carga.
   Imagem nova do canvas entra na lista de `carregarArteCorrida`, nunca por `new Image()` solto.
+- **Custo do quadro no celular** (`src/features/corrida/densidade.ts`): o canvas da corrida não passa
+  de densidade 2 (`DENSIDADE_MAX`). Com densidade 3 eram ~2340 × 1080 pixels por quadro, e a arte das
+  camadas é de 720 px de altura, então não havia detalhe a ganhar. A arte é decodificada já no
+  tamanho que a tela mostra (`fracaoDaArteNaTela`, mais `ESCALA_UTIL` para folhas com resolução
+  sobrando) e nunca acima de 4096 px de lado, o limite de textura de muita GPU Android (a folha do
+  galope tinha 4150). Por isso **quem desenha mede pelo tamanho real da imagem**: proporção, ou
+  `desenharQuadroDaFolha` para folhas de quadros. Recortar pelas medidas do arquivo
+  (`indice * folha.largura`) pega o quadro errado. O esfumado da divisa de cenário passa por um
+  canvas à parte só na faixa do degradê; com o canvas do tamanho da tela, cada camada em troca
+  limpava, mascarava e copiava a tela inteira, até ~10 vezes por quadro.
 
 ### Regras técnicas
 

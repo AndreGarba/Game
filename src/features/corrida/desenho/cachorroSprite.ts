@@ -1,5 +1,10 @@
 import { ABAIXAR_TICKS } from '../../../engine/index.ts'
-import { SPRITE_CACHORRO_CORRENDO as CORRIDA, SPRITE_CACHORRO_SLIDE as SLIDE, type Arte } from '../imagens/index.ts'
+import {
+  desenharQuadroDaFolha,
+  SPRITE_CACHORRO_CORRENDO as CORRIDA,
+  SPRITE_CACHORRO_SLIDE as SLIDE,
+  type Arte,
+} from '../imagens/index.ts'
 
 // Cachorro da arte: folha de 10 quadros de galope e folha de 6 quadros de slide (abaixado).
 // Coordenadas em pixels CSS da tela; (cx, base) é o ponto dos pés no centro da caixa de colisão.
@@ -91,6 +96,6 @@ export function desenharCachorroSprite(
   if (o.noAr && !deslizando) ctx.rotate(Math.max(-0.25, Math.min(0.25, -o.vy * 0.02)))
   // Sem a folha do slide (ainda carregando), o abaixar achata o galope como antes.
   if (o.abaixado && !deslizando) ctx.scale(1.12, 0.55)
-  ctx.drawImage(sprite, indice * folha.largura, 0, folha.largura, folha.altura, -l / 2, -a, l, a)
+  desenharQuadroDaFolha(ctx, sprite, folha, indice, -l / 2, -a, l, a)
   ctx.restore()
 }

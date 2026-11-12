@@ -11,6 +11,7 @@ import {
 } from '../../../../engine/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
+import { densidadeDaCorrida } from '../../densidade.ts'
 import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
 import { FimBanho } from '../../FimBanho.tsx'
@@ -81,13 +82,15 @@ export function TelaCorrida() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
+    // Opaco: o cenário cobre a tela inteira, e o navegador não precisa misturar o canvas com o
+    // que está atrás dele.
+    const ctx = canvas.getContext('2d', { alpha: false })
     if (!ctx) return
     let largura = 0
     let altura = 0
 
     const ajustarTamanho = () => {
-      const dpr = window.devicePixelRatio || 1
+      const dpr = densidadeDaCorrida()
       largura = canvas.clientWidth
       altura = canvas.clientHeight
       canvas.width = Math.round(largura * dpr)
