@@ -5,6 +5,7 @@
 // pedidos estão em PRD/referencias/cenarios/prompts.md. Peças do HUD vêm do Figma "Hora do banho",
 // frame 7960:8725.
 import type { IdCenario } from '../../../engine/index.ts'
+import { fracaoDaArteNaTela } from '../densidade.ts'
 import cachorroCorrendo from './cachorro-correndo.webp'
 import cachorroSlide from './cachorro-slide.webp'
 import ceu from './cidade/ceu.webp'
@@ -231,6 +232,40 @@ export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 348, altura: 400, pe
 // (PRD/referencias/tutor-slide.png) e recortada com `--quadros-minimos 6 --pes-no-rodape`.
 export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 482, altura: 400, pes: 6 } as const
 
+/** Uma folha de quadros lado a lado, com as medidas do arquivo. */
+export interface Folha {
+  quadros: number
+  largura: number
+  altura: number
+}
+
+/**
+ * Desenha o quadro `indice` da folha. A imagem pode ter sido decodificada menor que o arquivo
+ * (`decodificar`), então o recorte sai do tamanho real dela, não das medidas da folha.
+ */
+export function desenharQuadroDaFolha(
+  ctx: CanvasRenderingContext2D,
+  sprite: Arte,
+  folha: Folha,
+  indice: number,
+  x: number,
+  y: number,
+  l: number,
+  a: number,
+) {
+  const largura = sprite.width / folha.quadros
+  ctx.drawImage(sprite, indice * largura, 0, largura, sprite.height, x, y, l, a)
+}
+
+// Folhas com mais resolução do que a tela mostra, em fração do arquivo (com uma folga de ~20%).
+// O cachorro: quadro de 320 px para 1,32 m (galope) e 1,13 m (slide), e a 720 px de altura de
+// tela a 7 m por altura, 1,32 m são 136 px e 1,13 m são 116 px. A folha do galope (4150 px de
+// largura) também passava do lado máximo de textura.
+const ESCALA_UTIL = new Map<string, number>([
+  [cachorroCorrendo, 0.5],
+  [cachorroSlide, 0.45],
+])
+
 /**
  * Uma imagem pronta para o canvas. `ImageBitmap` já está decodificado; o elemento `<img>` só é
  * decodificado no primeiro `drawImage`, dentro do quadro (medido: até 22 ms por imagem no desktop,
@@ -276,11 +311,38 @@ function comoElemento(src: string): Promise<Arte | null> {
   })
 }
 
-// Decodifica fora do quadro: createImageBitmap trabalha em outra thread.
-async function decodificar(src: string): Promise<Arte | null> {
+// Lado máximo de textura em muitas placas de vídeo de celular Android. Acima disso o navegador
+// desenha a imagem pelo processador ou em pedaços, a cada quadro.
+const LADO_MAX_TEXTURA = 4096
+// Reduzir menos que isto não economiza o bastante para valer a perda de nitidez.
+const REDUCAO_MINIMA = 0.95
+
+// Decodifica fora do quadro: createImageBitmap trabalha em outra thread. Já decodifica no tamanho
+// em que a imagem aparece neste aparelho (`fracaoDaArteNaTela` × `escalaUtil`): 98 MB de arte
+// decodificada a 2× não cabem folgados na memória de vídeo de um celular médio, e o navegador
+// passa a descartar e reenviar textura no meio da corrida. Quem desenha mede pelo tamanho real da
+// imagem (proporção, ou `desenharQuadroDaFolha`), nunca pelo tamanho do arquivo.
+async function decodificar(src: string, escalaUtil = 1): Promise<Arte | null> {
   let arte: Arte | null = null
   try {
-    if (typeof createImageBitmap === 'function') arte = await createImageBitmap(await (await fetch(src)).blob())
+    if (typeof createImageBitmap === 'function') {
+      const inteira = await createImageBitmap(await (await fetch(src)).blob())
+      arte = inteira
+      const lado = Math.max(inteira.width, inteira.height)
+      const fator = Math.min(1, fracaoDaArteNaTela() * escalaUtil, LADO_MAX_TEXTURA / lado)
+      if (fator < REDUCAO_MINIMA) {
+        try {
+          arte = await createImageBitmap(inteira, {
+            resizeWidth: Math.max(1, Math.round(inteira.width * fator)),
+            resizeHeight: Math.max(1, Math.round(inteira.height * fator)),
+            resizeQuality: 'high',
+          })
+          inteira.close()
+        } catch {
+          arte = inteira
+        }
+      }
+    }
   } catch {
     arte = null
   }
@@ -325,7 +387,7 @@ export function carregarArteCorrida(): Promise<void> {
     for (const src of [...Object.values(IMAGENS_HUD), ...Object.values(IMAGENS_FIM)]) void comoElemento(src)
 
     const prontas = new Map<string, Arte | null>()
-    await Promise.all(fontes.map(async (src) => prontas.set(src, await decodificar(src))))
+    await Promise.all(fontes.map(async (src) => prontas.set(src, await decodificar(src, ESCALA_UTIL.get(src)))))
     const de = (src: string) => prontas.get(src) ?? null
     const todas = (srcs: readonly string[]): Arte[] | null => {
       const artes = srcs.map(de)

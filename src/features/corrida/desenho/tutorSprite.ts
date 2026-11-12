@@ -1,4 +1,6 @@
 import {
+  desenharQuadroDaFolha,
+  type Folha,
   SPRITE_TUTOR_CORRENDO as CORRIDA,
   SPRITE_TUTOR_PULANDO as PULO,
   SPRITE_TUTOR_SLIDE as SLIDE,
@@ -146,7 +148,7 @@ export function desenharTutorSprite(
   // Abaixado sem a folha do slide (ainda carregando), o quadro da corrida achata mais abaixo.
   const quadroPulo = pulo && quadroSlide === null && !o.abaixado ? quadroDoPulo(o, agora) : null
   let sprite = corrida
-  let folha: { largura: number; altura: number; pes: number } = CORRIDA
+  let folha: Folha & { pes: number } = CORRIDA
   let alturaM = ALTURA_CORRIDA_M
   let avancoM = 0
   let indice: number
@@ -175,6 +177,6 @@ export function desenharTutorSprite(
   ctx.translate(x + avancoM * ppm, base + folha.pes * escala)
   // Folha do slide ainda carregando: achata, como o tutor vetorial.
   if (o.abaixado && quadroSlide === null) ctx.scale(1.15, 0.5)
-  ctx.drawImage(sprite, indice * folha.largura, 0, folha.largura, folha.altura, -l / 2, -a, l, a)
+  desenharQuadroDaFolha(ctx, sprite, folha, indice, -l / 2, -a, l, a)
   ctx.restore()
 }

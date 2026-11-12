@@ -219,8 +219,10 @@ const ESFUMADO_FRENTE = 50
 let rascunho: HTMLCanvasElement | null = null
 
 // Desenha a camada com um degradê de opacidade na horizontal: `alfaEsquerda` até `x0`, o
-// contrário depois de `x1`. Passa por um canvas à parte, porque a máscara apagaria o que já está
-// na tela.
+// contrário depois de `x1`. A parte opaca vai direto para a tela, recortada. Só a faixa do
+// degradê passa por um canvas à parte (a máscara apagaria o que já está na tela): com o rascunho
+// do tamanho da tela inteira, cada camada em troca custava limpar, mascarar e copiar a tela toda,
+// até umas 10 vezes por quadro, e o celular engasgava em toda divisa de cenário.
 function desenharCamadaEsfumada(
   ctx: CanvasRenderingContext2D,
   cam: Camera,
@@ -230,28 +232,45 @@ function desenharCamadaEsfumada(
   x1: number,
   alfaEsquerda: 0 | 1,
 ) {
-  const tela = ctx.canvas
-  rascunho ??= document.createElement('canvas')
-  if (rascunho.width !== tela.width || rascunho.height !== tela.height) {
-    rascunho.width = tela.width
-    rascunho.height = tela.height
+  const opacoDe = alfaEsquerda === 1 ? 0 : Math.max(0, x1)
+  const opacoAte = alfaEsquerda === 1 ? Math.min(cam.largura, x0) : cam.largura
+  if (opacoAte > opacoDe) {
+    ctx.save()
+    ctx.beginPath()
+    ctx.rect(opacoDe, 0, opacoAte - opacoDe, cam.altura)
+    ctx.clip()
+    desenharCamada(ctx, cam, escala, c)
+    ctx.restore()
   }
+
+  const de = Math.max(0, Math.floor(x0))
+  const ate = Math.min(cam.largura, Math.ceil(x1))
+  if (ate <= de) return
+  // A tela usa só escala (a densidade), sem rotação nem deslocamento.
+  const densidade = ctx.getTransform().a
+  const larguraPx = Math.ceil((ate - de) * densidade)
+  const alturaPx = ctx.canvas.height
+  rascunho ??= document.createElement('canvas')
+  // Só cresce: trocar o tamanho de um canvas realoca a memória dele.
+  if (rascunho.width < larguraPx) rascunho.width = larguraPx
+  if (rascunho.height < alturaPx) rascunho.height = alturaPx
   const r = rascunho.getContext('2d')
   if (!r) return
   r.setTransform(1, 0, 0, 1, 0, 0)
   r.globalCompositeOperation = 'source-over'
-  r.clearRect(0, 0, rascunho.width, rascunho.height)
-  r.setTransform(ctx.getTransform())
+  r.clearRect(0, 0, larguraPx, alturaPx)
+  // O rascunho começa em `de`: o que a camada desenha fora da faixa cai fora do canvas.
+  r.setTransform(densidade, 0, 0, densidade, -de * densidade, 0)
   desenharCamada(r, cam, escala, c)
   const mascara = r.createLinearGradient(x0, 0, x1, 0)
   mascara.addColorStop(0, `rgba(0, 0, 0, ${alfaEsquerda})`)
   mascara.addColorStop(1, `rgba(0, 0, 0, ${1 - alfaEsquerda})`)
   r.globalCompositeOperation = 'destination-in'
   r.fillStyle = mascara
-  r.fillRect(0, 0, cam.largura, cam.altura)
+  r.fillRect(de, 0, ate - de, cam.altura)
   ctx.save()
   ctx.setTransform(1, 0, 0, 1, 0, 0)
-  ctx.drawImage(rascunho, 0, 0)
+  ctx.drawImage(rascunho, 0, 0, larguraPx, alturaPx, de * densidade, 0, larguraPx, alturaPx)
   ctx.restore()
 }
 
