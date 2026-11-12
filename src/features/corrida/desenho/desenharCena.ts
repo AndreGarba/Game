@@ -17,6 +17,7 @@ import {
   LINHA_CHAO,
   LINHA_PISO,
   spriteCachorroPronto,
+  spritePuloPronto,
   spriteSlidePronto,
   spriteObjeto,
   spriteTutorPronto,
@@ -803,7 +804,7 @@ export function desenharCena(
   // Folha de sprites da arte; enquanto ela não carrega, o cachorro vetorial.
   const sprite = spriteCachorroPronto()
   if (sprite) {
-    desenharCachorroSprite(ctx, sprite, spriteSlidePronto(), cx, base, ppm, {
+    desenharCachorroSprite(ctx, sprite, spriteSlidePronto(), spritePuloPronto(), cx, base, ppm, {
       ...poseCachorro,
       ticksAbaixado: c.abaixadoTicks,
       vy: c.vy,

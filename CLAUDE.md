@@ -129,12 +129,14 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   `visual` em `imagens/objetos/`. Na divisa, cada camada troca com um esfumado num ponto da tela
   que depende do parallax dela (`desenharCenarioArte`). Como a arte foi pedida ao ChatGPT:
   `PRD/referencias/cenarios/prompts.md`.
-- **Cachorro 3D:** as folhas do galope e do slide são renderizadas de um modelo do Meshy (vistas em
-  `PRD/referencias/cachorro-3d-vistas.webp`), com esqueleto e animação feitos no Blender
+- **Cachorro 3D:** as folhas do galope, do slide e do pulo são renderizadas de um modelo do Meshy
+  (vistas em `PRD/referencias/cachorro-3d-vistas.webp`), com esqueleto e animação feitos no Blender
   (`PRD/referencias/cachorro-3d/cachorro-3d-galope.blend`, cena "Cachorro Meshy": galope nos quadros
-  1 a 10, slide de 21 a 26; o rig do Meshy só faz humanoide). As duas folhas saem com os mesmos
-  pixels por metro e o mesmo chão, por isso `ALTURA_SLIDE_M` é igual a `ALTURA_QUADRO_M`: a do slide
-  se monta pela escala da do galope, nunca recortada sozinha. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
+  1 a 10, slide de 21 a 26, pulo de 31 a 38; o rig do Meshy só faz humanoide). As folhas saem com os
+  mesmos pixels por metro e o mesmo chão: slide e pulo se montam pela escala da do galope, nunca
+  recortados sozinhos, e a altura no mundo de cada uma é `ALTURA_QUADRO_M × altura / 320`. O pulo
+  do cachorro não tem antecipação (ele sai do chão no tick do comando): o impulso é o começo da
+  subida, escolhido por `vy`, e o pouso dura pelo relógio. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
   e o fundo transparente vaza na folha. Por isso há um `CachorroNucleo` fechado por dentro, na cor do
   pelo, preso ao mesmo esqueleto, e a barriga entre as patas só segue a coluna. Mexeu na pose ou na
   câmera: renderize os 10 quadros e confira as frestas num fundo escuro, não no viewport.

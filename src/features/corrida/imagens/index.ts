@@ -7,6 +7,7 @@
 import type { IdCenario } from '../../../engine/index.ts'
 import { fracaoDaArteNaTela } from '../densidade.ts'
 import cachorroCorrendo from './cachorro-correndo.webp'
+import cachorroPulo from './cachorro-pulo.webp'
 import cachorroSlide from './cachorro-slide.webp'
 import ceu from './cidade/ceu.webp'
 import skyline from './cidade/skyline.webp'
@@ -218,6 +219,11 @@ export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 361, altura: 320
 // mesmo chão da folha do galope, então as duas usam a mesma altura de quadro no mundo.
 export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 377, altura: 320, pes: 11 } as const
 
+// Folha do pulo do cachorro: 8 quadros (0 impulso, 1 subindo, 2 encolhido no alto, 3 descendo,
+// 4 chegando, 5 e 6 pouso, 7 de volta ao galope), quadros 31 a 38 do mesmo .blend. Mesma escala e
+// mesmo chão das outras; 2 px mais alta que a do galope porque o nariz sobe no impulso.
+export const SPRITE_CACHORRO_PULO = { quadros: 8, largura: 378, altura: 322, pes: 11 } as const
+
 // Folha do tutor correndo: 10 quadros (a arte veio numa grade 5×2, lida linha por linha),
 // recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
 export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, pes: 6 } as const
@@ -262,6 +268,7 @@ export function desenharQuadroDaFolha(
 const ESCALA_UTIL = new Map<string, number>([
   [cachorroCorrendo, 0.55],
   [cachorroSlide, 0.55],
+  [cachorroPulo, 0.55],
 ])
 
 /**
@@ -281,6 +288,7 @@ interface ArteCarregada {
   sprites: Map<string, Arte>
   cachorro: Arte | null
   slide: Arte | null
+  pulo: Arte | null
   tutor: Arte | null
   tutorPulo: Arte | null
   tutorSlide: Arte | null
@@ -371,6 +379,7 @@ export function carregarArteCorrida(): Promise<void> {
         ...Object.values(SPRITES_OBJETOS),
         cachorroCorrendo,
         cachorroSlide,
+        cachorroPulo,
         tutorCorrendo,
         tutorPulando,
         tutorDeslizando,
@@ -410,6 +419,7 @@ export function carregarArteCorrida(): Promise<void> {
       ),
       cachorro: de(cachorroCorrendo),
       slide: de(cachorroSlide),
+      pulo: de(cachorroPulo),
       tutor: de(tutorCorrendo),
       tutorPulo: de(tutorPulando),
       tutorSlide: de(tutorDeslizando),
@@ -456,6 +466,11 @@ export function spriteCachorroPronto(): Arte | null {
 /** A folha do slide, ou null enquanto não carregou (aí o abaixar achata o quadro do galope). */
 export function spriteSlidePronto(): Arte | null {
   return arte()?.slide ?? null
+}
+
+/** A folha do pulo do cachorro, ou null enquanto não carregou (aí ele pula com o quadro do voo do galope). */
+export function spritePuloPronto(): Arte | null {
+  return arte()?.pulo ?? null
 }
 
 /** A folha do pulo do tutor, ou null enquanto não carregou (aí ele pula com um quadro da corrida). */
