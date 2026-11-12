@@ -213,12 +213,10 @@ const CENARIOS = Object.keys(CAMADAS_POR_CENARIO) as IdCenario[]
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
 export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 361, altura: 320, pes: 11 } as const
 
-// Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no
-// ChatGPT a partir de PRD/referencias/cachorro-slide-referencia.png e recortada pelo mesmo script
-// (`--quadros-minimos 6 --alfa-fundo 215`: a folha veio com um véu branco em alfa 180-196).
-// `pes` medido na barriga/patas opacas (o script contou um halo quase invisível embaixo, 8 px, e o
-// cachorro flutuava); 32 = 28 do contato real + 4 para o corpo encostar no chão.
-export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pes: 32 } as const
+// Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), renderizada do
+// mesmo modelo 3D (quadros 21 a 26 do .blend do galope). Montada com os mesmos pixels por metro e o
+// mesmo chão da folha do galope, então as duas usam a mesma altura de quadro no mundo.
+export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 377, altura: 320, pes: 11 } as const
 
 // Folha do tutor correndo: 10 quadros (a arte veio numa grade 5×2, lida linha por linha),
 // recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
@@ -258,12 +256,12 @@ export function desenharQuadroDaFolha(
 }
 
 // Folhas com mais resolução do que a tela mostra, em fração do arquivo (com uma folga de ~20%).
-// O cachorro: quadro de 320 px para 1,45 m (galope) e 1,13 m (slide), e a 720 px de altura de
-// tela a 7 m por altura, 1,45 m são 149 px e 1,13 m são 116 px. A folha do galope antiga (4150 px
-// de largura) também passava do lado máximo de textura.
+// O cachorro: quadro de 320 px para 1,45 m (galope e slide), e a 720 px de altura de tela a 7 m por
+// altura, 1,45 m são 149 px. A folha do galope antiga (4150 px de largura) também passava do lado
+// máximo de textura.
 const ESCALA_UTIL = new Map<string, number>([
   [cachorroCorrendo, 0.55],
-  [cachorroSlide, 0.45],
+  [cachorroSlide, 0.55],
 ])
 
 /**

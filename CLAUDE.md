@@ -129,10 +129,12 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   `visual` em `imagens/objetos/`. Na divisa, cada camada troca com um esfumado num ponto da tela
   que depende do parallax dela (`desenharCenarioArte`). Como a arte foi pedida ao ChatGPT:
   `PRD/referencias/cenarios/prompts.md`.
-- **Cachorro 3D:** a folha do galope é renderizada de um modelo do Meshy (vistas em
-  `PRD/referencias/cachorro-3d-vistas.webp`), com esqueleto e galope feitos no Blender
-  (`PRD/referencias/cachorro-3d/cachorro-3d-galope.blend`, cena "Cachorro Meshy"; o rig do Meshy só
-  faz humanoide). O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
+- **Cachorro 3D:** as folhas do galope e do slide são renderizadas de um modelo do Meshy (vistas em
+  `PRD/referencias/cachorro-3d-vistas.webp`), com esqueleto e animação feitos no Blender
+  (`PRD/referencias/cachorro-3d/cachorro-3d-galope.blend`, cena "Cachorro Meshy": galope nos quadros
+  1 a 10, slide de 21 a 26; o rig do Meshy só faz humanoide). As duas folhas saem com os mesmos
+  pixels por metro e o mesmo chão, por isso `ALTURA_SLIDE_M` é igual a `ALTURA_QUADRO_M`: a do slide
+  se monta pela escala da do galope, nunca recortada sozinha. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
   e o fundo transparente vaza na folha. Por isso há um `CachorroNucleo` fechado por dentro, na cor do
   pelo, preso ao mesmo esqueleto, e a barriga entre as patas só segue a coluna. Mexeu na pose ou na
   câmera: renderize os 10 quadros e confira as frestas num fundo escuro, não no viewport.

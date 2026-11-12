@@ -22,9 +22,8 @@ interface Folha {
 // em cima e embaixo (o corpo balança no galope), e o cachorro ocupa ~10% menos do quadro: 1,45 o
 // deixa do mesmo tamanho na tela (medido no comprimento do corpo, no quadro do voo).
 const ALTURA_QUADRO_M = 1.45
-// A folha do slide veio com o cachorro ~1,5× maior que a do galope (medido no comprimento do
-// corpo, no quadro 1, que ainda é pose de corrida). Esta altura põe os dois na mesma escala.
-const ALTURA_SLIDE_M = 1.13
+// A folha do slide foi montada com os mesmos pixels por metro da do galope.
+const ALTURA_SLIDE_M = ALTURA_QUADRO_M
 // Quanto o desenho fica à frente do centro da caixa: a cabeça é a parte que bate.
 const AVANCO_M = 0.05
 // Um ciclo de passos (2π de fase) percorre os quadros da folha uma vez.
