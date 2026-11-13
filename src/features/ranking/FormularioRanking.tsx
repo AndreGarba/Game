@@ -44,7 +44,7 @@ export function FormularioRanking({ seed, log }: Props) {
         <p className="formulario-ranking__mensagem">
           {resposta.melhor
             ? t('ranking.melhorPartida', { nome: resposta.nome })
-            : t('ranking.melhorContinua', { valor: numero(resposta.melhorDistancia) })}
+            : t('ranking.melhorContinua', { valor: numero(resposta.melhorPontos) })}
         </p>
       </div>
     )

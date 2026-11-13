@@ -1,8 +1,12 @@
 # Casca Android (Kotlin + WebView)
 
 Casca nativa fina: uma `MainActivity` com `WebView` que carrega o site do jogo. Mudança no jogo
-vai pro ar com o deploy do site; versão nova na Play só quando a casca muda. Especificação e
-decisões: [`PRD/PRD-casca-android-hibrida.md`](../PRD/PRD-casca-android-hibrida.md).
+vai pro ar com o deploy do site; versão nova na Play só quando a casca muda.
+
+**Jogo novo:** troque o `applicationId`/`namespace` e a `origemProducao` em `app/build.gradle.kts`,
+mova o pacote `com.example.game` para o do jogo, troque o `app_name` em `res/values/strings.xml`,
+o `rootProject.name` em `settings.gradle.kts` e os ícones `res/mipmap-*` (os atuais são um quadrado
+provisório). O `applicationId` não muda depois da primeira publicação na Play.
 
 ## Arquivos
 
@@ -19,26 +23,27 @@ decisões: [`PRD/PRD-casca-android-hibrida.md`](../PRD/PRD-casca-android-hibrida
 
 | Sabor | Carrega | Para quê |
 | --- | --- | --- |
-| `producao` | `https://horadobanho.aquinoweb-wag.workers.dev/` | O único que vai pra Play |
+| `producao` | `https://game-template.example.workers.dev/` (placeholder) | O único que vai pra Play |
 | `local` (só debug) | o `dist/` dentro do APK, em `https://appassets.androidplatform.net/` | Jogar sem site e sem internet, testar um build que ainda não foi publicado |
 
 O sabor `local` tem `applicationId` com `.local` no fim: instala ao lado do de produção.
 
 ## Gerar o APK
 
-Pré-requisitos no PC (uma vez):
+Pré-requisitos (uma vez):
 
 - JDK 21 (Temurin): `winget install EclipseAdoptium.Temurin.21.JDK`
-- Android SDK em `C:\Android\Sdk`, com a plataforma `android-36`. O `local.properties` aponta para
-  lá e não é versionado.
+- Android SDK com a plataforma `android-36`. O `local.properties` aponta para ele e não é
+  versionado.
 
-**Caminho com acento:** o plugin Android do Gradle recusa projeto em caminho com caractere fora do
-ASCII (o "é" de `C:\Users\André`). Em vez de mover o projeto ou desligar a checagem, o build roda
-por uma letra de drive temporária (`subst`), e o cache do Gradle fica em `C:\Android\gradle`:
+**Caminho com acento (Windows):** o plugin Android do Gradle recusa projeto em caminho com
+caractere fora do ASCII (o "é" de `C:\Users\André`). Em vez de mover o projeto ou desligar a
+checagem, rode o build por uma letra de drive temporária (`subst`), com o cache do Gradle fora do
+perfil:
 
 ```powershell
-subst H: 'C:\Users\André\Desktop\Projetos\Code\Hora do Banho'
-$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot'
+subst H: '<caminho do projeto>'
+$env:JAVA_HOME = '<pasta do JDK 21>'
 $env:GRADLE_USER_HOME = 'C:\Android\gradle'
 Set-Location H:\
 npm run android:apk          # produção: android/app/build/outputs/apk/producao/debug/
@@ -50,7 +55,7 @@ O `android:apk:local` roda `npm run build` antes, porque o sabor local empacota 
 
 ## Instalar no celular
 
-Copiar o APK para o celular (cabo, Drive, WhatsApp para si mesmo), abrir pelo gerenciador de
+Copiar o APK para o celular (cabo, Drive, mensagem para si mesmo), abrir pelo gerenciador de
 arquivos e permitir "instalar apps desconhecidos" para o app que abriu o arquivo. Com cabo e
 depuração USB: `adb install -r <apk>`.
 
@@ -61,14 +66,16 @@ Para inspecionar a página dentro do app (só builds de debug): `chrome://inspec
 - Paisagem (`sensorLandscape`) e tela cheia imersiva; usa a área do recorte da câmera.
 - Splash do sistema na cor da abertura (`#f8f7fa`) até a página carregar, no máximo 4 s.
 - Voltar: fecha a tela cheia de vídeo, depois `goBack()` se houver histórico, senão o padrão do
-  sistema. Entregar o voltar ao site (pausa, fim, história) é o PR 2, com a ponte.
+  sistema. Entregar o voltar ao site (pausa, fim de partida) exige uma ponte JS↔nativo, que ainda
+  não existe.
 - Sem internet na primeira abertura: tela "Sem conexão" (pt/en/es) com "Tentar de novo". Depois
   da primeira visita, o service worker do site segura o offline.
-- Backup do Android leva só o `localStorage` da WebView (o recorde), sem caches.
-- Ícone provisório, gerado da arte da home.
+- Backup do Android leva só o `localStorage` da WebView (recorde e preferências), sem caches. O
+  IndexedDB (id anônimo do ranking) fica de fora de propósito.
+- Ícone provisório: quadrado na cor do jogador do jogo de exemplo.
 
 ## CI e publicação
 
 O job `android` do CI compila `assembleProducaoDebug`, `bundleProducaoRelease` (sem assinatura) e
 roda o lint. Assinatura com a chave de upload e envio à Play ainda não existem; quando existirem,
-a chave fica fora do repo e publicar continua manual, do André.
+a chave fica fora do repo e publicar continua manual.

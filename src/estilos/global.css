@@ -25,6 +25,57 @@ button {
   font: inherit;
 }
 
+/* Botão base do template. Jogo com DS troca por ele; sem DS, estiliza por aqui. */
+.botao {
+  display: inline-grid;
+  place-items: center;
+  padding: var(--espaco-2) var(--espaco-4);
+  border: 2px solid var(--cor-texto);
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font-size: var(--texto-3);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.08s ease-out;
+}
+
+.botao:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.botao:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.botao:focus-visible {
+  outline: 3px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+.botao--primario {
+  border-color: var(--cor-destaque);
+  background: var(--cor-destaque);
+  color: var(--cor-destaque-texto);
+}
+
+.botao--grande {
+  min-width: 12rem;
+  padding: var(--espaco-3) var(--espaco-8);
+  font-size: var(--texto-4);
+}
+
+.botao--icone {
+  width: var(--tamanho-botao-icone);
+  height: var(--tamanho-botao-icone);
+  padding: 0;
+  border-width: 0;
+  background: var(--cor-superficie-translucida);
+  box-shadow: var(--sombra-1);
+  line-height: 1;
+}
+
 #raiz {
   display: grid;
   place-items: center;

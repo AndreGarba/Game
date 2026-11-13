@@ -5,8 +5,5 @@ dist/
 !.env.example
 .mcp.json
 
-# Kit original; o conteúdo já está em PRD/kit-the-immortal
-kit-novo-jogo.zip
-
 # Cache local do wrangler
 .wrangler/

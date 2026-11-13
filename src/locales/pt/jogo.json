@@ -1,23 +1,13 @@
 {
-  "titulo": "Hora do Banho",
-  "subtitulo": "Fuja do tutor. Banho, hoje não!",
-  "comoJogarTeclado": "Espaço ou ↑ para pular (2× no ar: pulo duplo) · ↓ para abaixar",
-  "comoJogarToque": "Toque ou deslize para cima para pular (2× no ar: pulo duplo) · deslize para baixo para abaixar",
-  "dica": "Lama te deixa mais lento. Lenços te limpam.",
-  "correr": "Correr",
-  "deNovo": "Correr de novo",
+  "titulo": "Game Template",
+  "subtitulo": "Jogo de exemplo: corra, pule e pegue moedas.",
+  "deNovo": "Jogar de novo",
   "continuar": "Continuar",
-  "historia": {
-    "sonho": "Churrasco",
-    "chamado": "Pipoca...\ntá na hora do banho",
-    "recusa": "não mesmo!",
-    "grito": "Volte\naqui!!!",
-    "pular": "Pular",
-    "continuar": "Toque para correr",
-    "carregando": "Carregando… {{porcento}}%"
-  },
+  "menu": "Menu",
   "home": {
     "jogar": "Jogar",
+    "carregando": "Carregando… {{porcento}}%",
+    "comoJogar": "Espaço, ↑ ou toque para pular · Esc pausa",
     "configuracoes": "Configurações"
   },
   "configuracoes": {
@@ -37,22 +27,21 @@
     "pularTeclado": "Clique ou aperte qualquer tecla para pular a abertura"
   },
   "hud": {
+    "pontos": "{{valor}} pts",
     "metros": "{{valor}} m",
-    "moedas": "Moedas: {{valor}}",
-    "moedasRotulo": "Moedas",
-    "distancia": "Distância: {{valor}} m",
-    "velocidade": "Velocidade: {{valor}} km/h",
+    "moedas": "{{valor}} moedas",
     "pausar": "Pausar"
   },
+  "pausa": {
+    "titulo": "Pausado"
+  },
   "fim": {
-    "pego": "O tutor te pegou! Hora do banho 🛁",
-    "batida": "Bateu! O tutor te alcançou 🛁",
-    "queda": "Splash! Caiu na água… banho tomado 🛁",
-    "tempoEsgotado": "Fim da corrida",
+    "batida": "Bateu!",
+    "queda": "Caiu no buraco!",
+    "tempoEsgotado": "Fim da partida",
     "pontos": "Pontos",
     "distancia": "Distância",
-    "ossos": "Ossinhos",
-    "ossosOuro": "Ossinhos de ouro",
+    "moedas": "Moedas",
     "recorde": "Recorde: {{valor}}",
     "novoRecorde": "Novo recorde!"
   },
@@ -67,14 +56,14 @@
     "enviando": "Salvando…",
     "nomeLongo": "Use até {{max}} letras.",
     "posicao": "{{posicao}}º lugar no ranking!",
-    "melhorPartida": "Sua corrida mais longa, {{nome}}!",
-    "melhorContinua": "Seu melhor continua {{valor}} m.",
+    "melhorPartida": "Sua melhor partida, {{nome}}!",
+    "melhorContinua": "Seu melhor continua {{valor}} pontos.",
     "erro": {
-      "payload_invalido": "Não deu para salvar esta corrida.",
+      "payload_invalido": "Não deu para salvar esta partida.",
       "nome_invalido": "Esse nome não vale. Tente outro.",
       "versao_regras": "Atualize o jogo para entrar no ranking.",
-      "log_invalido": "Não deu para conferir esta corrida.",
-      "limite": "Muitas corridas seguidas. Espere um minutinho.",
+      "log_invalido": "Não deu para conferir esta partida.",
+      "limite": "Muitas partidas seguidas. Espere um minutinho.",
       "interno": "O ranking falhou. Tente de novo.",
       "rede": "Sem internet. Tente de novo.",
       "sem_configuracao": "Ranking indisponível."

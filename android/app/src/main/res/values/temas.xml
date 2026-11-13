@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Tema.HoraDoBanho.Base" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Tema.Jogo.Base" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/fundo</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="Tema.HoraDoBanho" parent="Tema.HoraDoBanho.Base" />
+    <style name="Tema.Jogo" parent="Tema.Jogo.Base" />
 
-    <style name="Tema.HoraDoBanho.Abertura" parent="Theme.SplashScreen">
+    <style name="Tema.Jogo.Abertura" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/fundo</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
-        <item name="postSplashScreenTheme">@style/Tema.HoraDoBanho</item>
+        <item name="postSplashScreenTheme">@style/Tema.Jogo</item>
     </style>
 </resources>

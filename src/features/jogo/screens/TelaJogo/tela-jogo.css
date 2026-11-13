@@ -1,0 +1,143 @@
+.tela-jogo {
+  container-type: size;
+  position: relative;
+  width: 100%;
+  height: var(--altura-tela, 100svh);
+  overflow: hidden;
+}
+
+.tela-jogo__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.tela-jogo__hud {
+  position: absolute;
+  top: calc(var(--espaco-3) + var(--safe-topo));
+  left: calc(var(--espaco-4) + var(--safe-esquerda));
+  right: calc(var(--espaco-4) + var(--safe-direita));
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  pointer-events: none;
+}
+
+.tela-jogo__selo {
+  margin: 0;
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie-translucida);
+  font-size: var(--texto-2);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-jogo__pausa {
+  margin-left: auto;
+  width: var(--tamanho-botao-icone);
+  height: var(--tamanho-botao-icone);
+  border: 0;
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie-translucida);
+  color: var(--cor-texto);
+  font-size: var(--texto-3);
+  font-weight: 900;
+  cursor: pointer;
+  pointer-events: auto;
+  /* O HUD não cria contexto de empilhamento: isto põe o botão acima do véu da pausa. */
+  z-index: 1;
+}
+
+.tela-jogo__pausa:disabled {
+  visibility: hidden;
+}
+
+.tela-jogo__pausa:focus-visible {
+  outline: 3px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+.tela-jogo__veu {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-4);
+  background: var(--cor-veu);
+  animation: tela-jogo-escurece 0.15s ease-out both;
+}
+
+@keyframes tela-jogo-escurece {
+  from {
+    background: transparent;
+  }
+}
+
+.tela-jogo__cartao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-2);
+  width: min(100%, 22rem);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--espaco-4) var(--espaco-6);
+  border-radius: var(--raio-4);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-2);
+  text-align: center;
+}
+
+.tela-jogo__titulo {
+  margin: 0;
+  font-size: var(--texto-4);
+  font-weight: 900;
+}
+
+.tela-jogo__pontos {
+  margin: 0;
+  font-size: var(--texto-6);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--cor-destaque);
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-jogo__rotulo,
+.tela-jogo__recorde {
+  margin: 0;
+  font-size: var(--texto-2);
+  color: var(--cor-texto-suave);
+}
+
+.tela-jogo__detalhes {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espaco-1) var(--espaco-4);
+  width: 100%;
+  margin: 0;
+  font-size: var(--texto-2);
+}
+
+.tela-jogo__detalhes dt {
+  font-weight: 700;
+  text-align: left;
+}
+
+.tela-jogo__detalhes dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-jogo__acoes {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.tela-jogo .formulario-ranking {
+  width: 100%;
+}

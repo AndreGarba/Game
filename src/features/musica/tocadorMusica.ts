@@ -1,42 +1,34 @@
 import { assinarMusica, lerMusicaLigada } from '../../data/preferencias.ts'
 import { decodificar, iniciarAudio, obterContextoAudio } from '../som/contextoAudio.ts'
-import urlBanho from './trilhas/banho.mp3'
-import urlCorrida from './trilhas/corrida.mp3'
-import urlHome from './trilhas/home.mp3'
+import { ARPEJO_JOGO, ARPEJO_MENU, sintetizarArpejo } from './trilhasExemplo.ts'
 
 /*
- * Música de fundo. As trilhas vieram da ElevenLabs Music (`scripts/musica/gerar-trilhas.ts`) como
- * gravações de 60 s com um final no último compasso. O loop é um trecho do meio, de compasso a
- * compasso (`inicio`/`fim`, medidos na forma de onda), e a emenda é feita aqui ao decodificar: o
- * começo do trecho é cruzado com o que vinha logo depois do `fim`, então o salto do fim para o
- * começo cai no mesmo ponto da música. Web Audio em vez de <audio loop>: o elemento deixa um
- * buraco audível a cada volta e não aceita ponto de loop.
+ * Música de fundo, em Web Audio em vez de <audio loop>: o elemento deixa um buraco audível a cada
+ * volta e não aceita ponto de loop.
  *
- * O fim de partida tem música própria: quando a imagem do banho entra, a trilha `banho`. Ela é
- * curta, da ElevenLabs de efeitos (`scripts/som/gerar-efeitos.ts`), e já veio como loop: toca
- * inteira, sem `inicio`/`fim`.
+ * Gravação de verdade quase nunca é loop: costuma ter introdução e um final no último compasso. O
+ * loop é então um trecho do meio, de compasso a compasso (`inicio`/`fim`, medidos na forma de
+ * onda), e a emenda é feita aqui ao decodificar: o começo do trecho é cruzado com o que vinha logo
+ * depois do `fim`. Trilha regravada = medir `inicio`/`fim` de novo; valores velhos numa gravação
+ * nova dão um tropeço a cada volta.
  */
-export type NomeTrilha = 'home' | 'corrida' | 'banho'
+export type NomeTrilha = 'menu' | 'jogo'
 
-interface Trilha {
-  url: string
-  // Trecho de compasso a compasso; sem eles, a gravação já é um loop e toca inteira.
-  inicio?: number
-  fim?: number
-  // As gravações curtas saíram mais baixas que as da ElevenLabs Music (RMS 0,07 contra 0,18).
-  volume?: number
-}
+type Trilha =
+  | {
+      url: string
+      // Trecho de compasso a compasso; sem eles, a gravação já é um loop e toca inteira.
+      inicio?: number
+      fim?: number
+      volume?: number
+    }
+  | { sintetizar: (ctx: AudioContext) => AudioBuffer; volume?: number }
 
+// Jogo novo: troque por `{ url: urlDoMp3, inicio, fim }` (import do mp3 como módulo).
 const TRILHAS: Record<NomeTrilha, Trilha> = {
-  // 100 BPM: 20 compassos de 2,4 s.
-  home: { url: urlHome, inicio: 0.042, fim: 48.044 },
-  // 150 BPM: 32 compassos de 1,6 s.
-  corrida: { url: urlCorrida, inicio: 0.472, fim: 51.67 },
-  banho: { url: urlBanho, volume: 2 },
+  menu: { sintetizar: (ctx) => sintetizarArpejo(ctx, ARPEJO_MENU) },
+  jogo: { sintetizar: (ctx) => sintetizarArpejo(ctx, ARPEJO_JOGO) },
 }
-
-// O banho entra com a imagem deslizando: depois da íris (`--fim-iris` 1 s + 0,05 s em tela-corrida.css).
-const ENTRADA_BANHO_MS = 1050
 
 const VOLUME = 0.5
 // Pausa e fim de partida: a música continua, mais baixa, para a volta não ser um susto.
@@ -77,7 +69,9 @@ function ajustarVolume() {
 }
 
 async function montarLoop(nome: NomeTrilha, ctx: AudioContext): Promise<AudioBuffer> {
-  const { url, inicio, fim } = TRILHAS[nome]
+  const trilha = TRILHAS[nome]
+  if ('sintetizar' in trilha) return trilha.sintetizar(ctx)
+  const { url, inicio, fim } = trilha
   const bruto = await decodificar(url, ctx)
   if (inicio === undefined || fim === undefined) return bruto
   const taxa = bruto.sampleRate
@@ -116,20 +110,8 @@ function soltar(atual: Tocando, ctx: AudioContext) {
   atual.fonte.stop(agora + TROCA_S + 0.05)
 }
 
-let esperaBanho: ReturnType<typeof setTimeout> | undefined
-
-// Troca de trilha pedida de fora (De novo, outra tela) desfaz o banho que ia entrar.
-function cancelarFim() {
-  clearTimeout(esperaBanho)
-}
-
-/** Troca a trilha de fundo, com fade. `null` para a música (abertura e história têm som próprio). */
+/** Troca a trilha de fundo, com fade. `null` para a música (a abertura tem som próprio). */
 export function tocarTrilha(nome: NomeTrilha | null) {
-  cancelarFim()
-  trocar(nome)
-}
-
-function trocar(nome: NomeTrilha | null) {
   pedida = nome
   const ctx = obterContextoAudio()
   if (!ctx) return
@@ -140,8 +122,6 @@ function trocar(nome: NomeTrilha | null) {
     tocando = null
   }
   if (!nome) return
-  // A partida pode acabar a qualquer momento: o banho fica decodificado antes.
-  if (nome === 'corrida') loop('banho', ctx).catch(() => {})
   loop(nome, ctx)
     .then((buffer) => {
       // A tela pode ter mudado enquanto decodificava.
@@ -159,17 +139,7 @@ function trocar(nome: NomeTrilha | null) {
     .catch(() => {})
 }
 
-/**
- * Fim de partida: a trilha da corrida sai na batida, sem vinheta, e o banho entra junto com a
- * imagem. Segue o switch como o resto da música (passa pelo mesmo ganho mestre).
- */
-export function tocarFimDePartida() {
-  cancelarFim()
-  trocar(null)
-  esperaBanho = setTimeout(() => trocar('banho'), ENTRADA_BANHO_MS)
-}
-
-/** Abaixa a música (pausa) sem parar a trilha. */
+/** Abaixa a música (pausa, fim de partida) sem parar a trilha. */
 export function abafarMusica(abafar: boolean) {
   abafada = abafar
   ajustarVolume()

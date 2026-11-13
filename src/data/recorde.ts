@@ -1,5 +1,7 @@
+import { ID_JOGO } from '../configuracao.ts'
+
 // Recorde local do aparelho. Quando houver conta e ranking, este passa a ser só o cache.
-const CHAVE = 'horadobanho:recorde'
+const CHAVE = `${ID_JOGO}:recorde`
 
 export function lerRecorde(): number {
   try {

@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "HoraDoBanho"
+rootProject.name = "GameTemplate"
 include(":app")

@@ -10,9 +10,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         id: '/',
-        name: 'Hora do Banho',
-        short_name: 'Hora do Banho',
-        description: 'Fuja do tutor. Banho, hoje não!',
+        // Jogo novo: nome, descrição e ícones (public/icones) aqui e no index.html.
+        name: 'Game Template',
+        short_name: 'Game Template',
+        description: 'Jogo de exemplo do template: corra, pule e pegue moedas.',
         lang: 'pt-BR',
         start_url: '/',
         scope: '/',
@@ -33,7 +34,7 @@ export default defineConfig({
         // Tudo no precache: depois da primeira abertura o jogo roda sem internet. woff fica de
         // fora porque todo navegador que instala PWA lê woff2.
         globPatterns: ['**/*.{js,css,html,webp,png,svg,mp3,woff2}'],
-        // O Three.js passa de 500 kB; o padrão de 2 MB do Workbox cobre, mas fica explícito.
+        // Arquivo acima disto fica fora do precache sem aviso no jogo: suba o teto se a arte crescer.
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cleanupOutdatedCaches: true,
       },

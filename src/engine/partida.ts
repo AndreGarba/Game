@@ -1,28 +1,30 @@
 import {
-  ABAIXAR_TICKS,
-  ADERENCIA_PERFIL,
-  ADERENCIA_RAMPA,
-  CACHORRO_LARGURA,
   DT,
   GRAVIDADE,
+  JOGADOR_LADO,
   LIMITE_QUEDA,
-  PONTOS_OSSO,
-  PONTOS_OSSO_OURO,
+  PONTOS_MOEDA,
   PONTOS_POR_METRO,
   RAIO_COLETAVEL,
-  SUJEIRA_MAX,
   TICKS_MAX,
   TOLERANCIA_POUSO,
   TRECHO_INICIAL_LIVRE,
-  VEL_MERGULHO,
   VEL_PULO,
   VERSAO_REGRAS,
 } from './constantes.ts'
-import { alturaCachorro, velocidadeBase } from './fisica.ts'
+import { velocidadeBase } from './fisica.ts'
 import { atualizarPista } from './gerador.ts'
-import { alturaSuperficie, temPerfil } from './perfis.ts'
 import { criarRng } from './rng.ts'
-import type { Acao, Cachorro, ComandoLog, Elemento, EstadoPartida, MotivoFim, ResultadoPartida } from './tipos.ts'
+import {
+  ACOES,
+  type Acao,
+  type ComandoLog,
+  type Elemento,
+  type EstadoPartida,
+  type Jogador,
+  type MotivoFim,
+  type ResultadoPartida,
+} from './tipos.ts'
 
 export function criarPartida(seed: number): EstadoPartida {
   const estado: EstadoPartida = {
@@ -30,11 +32,8 @@ export function criarPartida(seed: number): EstadoPartida {
     seed: seed >>> 0,
     tick: 0,
     rng: criarRng(seed),
-    cachorro: { x: 0, y: 0, vy: 0, noChao: true, abaixadoTicks: 0, puloDuplo: true },
-    sujeira: 0,
-    ossos: 0,
-    ossosOuro: 0,
-    lencos: 0,
+    jogador: { x: 0, y: 0, vy: 0, noChao: true },
+    moedas: 0,
     elementos: [],
     proximoId: 1,
     geradoAte: TRECHO_INICIAL_LIVRE,
@@ -44,76 +43,42 @@ export function criarPartida(seed: number): EstadoPartida {
   return estado
 }
 
-function sobrepoeEmX(c: Cachorro, e: Elemento): boolean {
-  return c.x < e.x + e.largura && c.x + CACHORRO_LARGURA > e.x
+function sobrepoeEmX(j: Jogador, e: Elemento): boolean {
+  return j.x < e.x + e.largura && j.x + JOGADOR_LADO > e.x
 }
 
 function topo(e: Elemento): number {
   return e.y + e.altura
 }
 
-interface Suporte {
-  altura: number
-  // Subida por metro andado: 0 no chão e nos sólidos, altura/largura na rampa.
-  inclinacao: number
-  // Topo de sólido com perfil: o cachorro gruda e segue o contorno, sem lançamento.
-  perfil: boolean
-}
-
-// Maior altura em que o cachorro pode se apoiar agora: o chão (se não estiver sobre um
-// vão), o topo de um sólido que ele estava acima no tick anterior, ou a superfície de uma
-// rampa sob o centro dele.
-function suporteAtual(estado: EstadoPartida, yAnterior: number): Suporte | null {
-  const c = estado.cachorro
-  const centro = c.x + CACHORRO_LARGURA / 2
-  let suporte: Suporte | null = null
+// Maior altura em que o jogador pode se apoiar agora: o chão (se o centro não estiver sobre um
+// vão) ou o topo de um bloco que ele estava acima no tick anterior. null = nada embaixo.
+function suporteAtual(estado: EstadoPartida, yAnterior: number): number | null {
+  const j = estado.jogador
+  const centro = j.x + JOGADOR_LADO / 2
+  let suporte: number | null = null
   let sobreVao = false
-  const considerar = (altura: number, inclinacao: number, perfil = false) => {
-    if (suporte === null || altura > suporte.altura) suporte = { altura, inclinacao, perfil }
-  }
   for (const e of estado.elementos) {
     if (e.tipo === 'vao' && centro >= e.x && centro <= e.x + e.largura) sobreVao = true
-    if (e.tipo === 'solido' && sobrepoeEmX(c, e)) {
-      if (temPerfil(e)) {
-        // Superfície sob o centro (presa à borda quando só parte do cachorro está em cima). A
-        // folga da rampa deixa subir o vidro traseiro do carro sem contar como batida.
-        const altura = alturaSuperficie(e, centro)
-        if (altura <= yAnterior + TOLERANCIA_POUSO + ADERENCIA_RAMPA) considerar(altura, 0, true)
-      } else if (topo(e) <= yAnterior + TOLERANCIA_POUSO) {
-        considerar(topo(e), 0)
-      }
-    }
-    if (e.tipo === 'rampa' && centro >= e.x && centro <= e.x + e.largura) {
-      const inclinacao = e.altura / e.largura
-      const superficie = (centro - e.x) * inclinacao
-      if (superficie <= yAnterior + TOLERANCIA_POUSO + ADERENCIA_RAMPA) considerar(superficie, inclinacao)
+    if (e.tipo === 'bloco' && sobrepoeEmX(j, e) && topo(e) <= yAnterior + TOLERANCIA_POUSO) {
+      suporte = Math.max(suporte ?? topo(e), topo(e))
     }
   }
-  if (!sobreVao) considerar(0, 0)
+  if (!sobreVao) suporte = Math.max(suporte ?? 0, 0)
   return suporte
 }
 
-function tocaColetavel(c: Cachorro, e: Elemento): boolean {
-  const altura = alturaCachorro(c)
-  const px = Math.min(Math.max(e.x, c.x), c.x + CACHORRO_LARGURA)
-  const py = Math.min(Math.max(e.y, c.y), c.y + altura)
+function tocaColetavel(j: Jogador, e: Elemento): boolean {
+  const px = Math.min(Math.max(e.x, j.x), j.x + JOGADOR_LADO)
+  const py = Math.min(Math.max(e.y, j.y), j.y + JOGADOR_LADO)
   const dx = e.x - px
   const dy = e.y - py
   return dx * dx + dy * dy <= RAIO_COLETAVEL * RAIO_COLETAVEL
 }
 
-function bateu(c: Cachorro, e: Elemento): boolean {
-  if (!sobrepoeEmX(c, e)) return false
-  const altura = alturaCachorro(c)
-  if (e.tipo === 'solido' && temPerfil(e)) {
-    // Bate quando a frente do cachorro encontra uma parede do contorno (a traseira do carro),
-    // não numa subida que dá para andar.
-    const frente = alturaSuperficie(e, c.x + CACHORRO_LARGURA)
-    return c.y < frente - TOLERANCIA_POUSO - ADERENCIA_RAMPA && c.y + altura > e.y
-  }
-  if (e.tipo === 'solido') return c.y < topo(e) - TOLERANCIA_POUSO && c.y + altura > e.y
-  if (e.tipo === 'teto') return c.y + altura > e.y && c.y < topo(e)
-  return false
+function bateu(j: Jogador, e: Elemento): boolean {
+  if (e.tipo !== 'bloco' || !sobrepoeEmX(j, e)) return false
+  return j.y < topo(e) - TOLERANCIA_POUSO && j.y + JOGADOR_LADO > e.y
 }
 
 function encerrar(estado: EstadoPartida, motivo: MotivoFim): void {
@@ -124,92 +89,50 @@ function encerrar(estado: EstadoPartida, motivo: MotivoFim): void {
 // (bot, replay de teste) clona antes com structuredClone.
 export function passo(estado: EstadoPartida, acao: Acao | null): void {
   if (estado.fim) return
-  const c = estado.cachorro
+  const j = estado.jogador
 
-  const estavaNoChao = c.noChao
-  const pulou = acao === 'pular' && c.noChao
-  if (pulou) {
-    c.vy = VEL_PULO
-    c.noChao = false
-    c.abaixadoTicks = 0
-  } else if (acao === 'pular' && c.puloDuplo) {
-    // Pulo duplo: o mesmo gesto de novo, no ar. Substitui a velocidade (não soma), então o
-    // segundo pulo vale mais no alto do primeiro do que logo depois de sair do chão.
-    c.vy = VEL_PULO
-    c.puloDuplo = false
-    c.abaixadoTicks = 0
-  } else if (acao === 'abaixar') {
-    c.abaixadoTicks = ABAIXAR_TICKS
-    if (!c.noChao) c.vy = Math.min(c.vy, VEL_MERGULHO)
+  if (acao === 'pular' && j.noChao) {
+    j.vy = VEL_PULO
+    j.noChao = false
   }
 
-  const v = velocidadeBase(c.x)
-
-  const yAnterior = c.y
-  c.x += v * DT
-  c.vy -= GRAVIDADE * DT
-  c.y += c.vy * DT
+  const yAnterior = j.y
+  j.x += velocidadeBase(j.x) * DT
+  j.vy -= GRAVIDADE * DT
+  j.y += j.vy * DT
 
   const suporte = suporteAtual(estado, yAnterior)
-  // Na rampa o cachorro anda grudado na superfície com a velocidade de subida. Ao passar do
-  // fim ela some como suporte e ele segue no ar com essa velocidade: é o lançamento. Pular na
-  // rampa dá vy maior que a de subida, então não gruda.
-  const subida = suporte ? v * suporte.inclinacao : 0
-  if (suporte !== null && suporte.perfil && estavaNoChao && !pulou && c.y >= suporte.altura - ADERENCIA_PERFIL) {
-    // Andando sobre um contorno: acompanha a superfície para cima e para baixo.
-    c.y = suporte.altura
-    c.vy = 0
-    c.noChao = true
-  } else if (suporte !== null && c.y <= suporte.altura && c.vy <= subida) {
-    c.y = suporte.altura
-    c.vy = subida
-    c.noChao = true
+  if (suporte !== null && j.y <= suporte && j.vy <= 0) {
+    j.y = suporte
+    j.vy = 0
+    j.noChao = true
   } else {
-    c.noChao = false
+    j.noChao = false
   }
-  if (c.noChao) c.puloDuplo = true
-  // No ar o abaixar não se gasta: o mergulho já pousa abaixado.
-  if (c.noChao && c.abaixadoTicks > 0) c.abaixadoTicks--
 
   for (const e of estado.elementos) {
-    if (bateu(c, e)) {
+    if (bateu(j, e)) {
       encerrar(estado, 'batida')
       break
     }
-    if (e.usado) continue
-    if (e.tipo === 'poca') {
-      if (c.noChao && c.y === 0 && sobrepoeEmX(c, e)) {
-        e.usado = true
-        estado.sujeira++
-        if (estado.sujeira > SUJEIRA_MAX) {
-          encerrar(estado, 'pego')
-          break
-        }
-      }
-    } else if ((e.tipo === 'lenco' || e.tipo === 'osso' || e.tipo === 'ossoOuro') && tocaColetavel(c, e)) {
+    if (e.tipo === 'moeda' && !e.usado && tocaColetavel(j, e)) {
       e.usado = true
-      if (e.tipo === 'lenco') {
-        estado.lencos++
-        estado.sujeira = Math.max(0, estado.sujeira - 1)
-      } else if (e.tipo === 'osso') estado.ossos++
-      else estado.ossosOuro++
+      estado.moedas++
     }
   }
 
-  if (!estado.fim && c.y < LIMITE_QUEDA) encerrar(estado, 'queda')
+  if (!estado.fim && j.y < LIMITE_QUEDA) encerrar(estado, 'queda')
 
   estado.tick++
   if (!estado.fim) atualizarPista(estado)
 }
 
 export function distancia(estado: EstadoPartida): number {
-  return Math.floor(estado.cachorro.x)
+  return Math.floor(estado.jogador.x)
 }
 
 export function pontuacao(estado: EstadoPartida): number {
-  return (
-    distancia(estado) * PONTOS_POR_METRO + estado.ossos * PONTOS_OSSO + estado.ossosOuro * PONTOS_OSSO_OURO
-  )
+  return distancia(estado) * PONTOS_POR_METRO + estado.moedas * PONTOS_MOEDA
 }
 
 export function resultado(estado: EstadoPartida): ResultadoPartida {
@@ -218,20 +141,18 @@ export function resultado(estado: EstadoPartida): ResultadoPartida {
     seed: estado.seed,
     ticks: estado.tick,
     distancia: distancia(estado),
-    ossos: estado.ossos,
-    ossosOuro: estado.ossosOuro,
-    lencos: estado.lencos,
+    moedas: estado.moedas,
     pontos: pontuacao(estado),
     motivo: estado.fim?.motivo ?? 'tempoEsgotado',
   }
 }
 
-export function codigoDaAcao(acao: Acao): 0 | 1 {
-  return acao === 'pular' ? 0 : 1
+export function codigoDaAcao(acao: Acao): number {
+  return ACOES.indexOf(acao)
 }
 
-export function acaoDoCodigo(codigo: 0 | 1): Acao {
-  return codigo === 0 ? 'pular' : 'abaixar'
+export function acaoDoCodigo(codigo: number): Acao | undefined {
+  return ACOES[codigo]
 }
 
 export class LogInvalido extends Error {}
@@ -244,7 +165,9 @@ export function simularPartida(seed: number, log: readonly ComandoLog[]): Result
     if (!Number.isInteger(tick) || tick <= tickAnterior || tick >= TICKS_MAX) {
       throw new LogInvalido(`tick fora de ordem ou de faixa: ${tick}`)
     }
-    if (codigo !== 0 && codigo !== 1) throw new LogInvalido(`código desconhecido: ${String(codigo)}`)
+    if (!Number.isInteger(codigo) || acaoDoCodigo(codigo) === undefined) {
+      throw new LogInvalido(`código desconhecido: ${String(codigo)}`)
+    }
     tickAnterior = tick
   }
 
@@ -254,7 +177,7 @@ export function simularPartida(seed: number, log: readonly ComandoLog[]): Result
     const comando = log[i]
     let acao: Acao | null = null
     if (comando && comando[0] === estado.tick) {
-      acao = acaoDoCodigo(comando[1])
+      acao = acaoDoCodigo(comando[1])!
       i++
     }
     passo(estado, acao)

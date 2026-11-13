@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Português é o idioma padrão e o fallback, como no site. -->
 <resources>
-    <string name="app_name" translatable="false">Hora do Banho</string>
+    <string name="app_name" translatable="false">Game Template</string>
     <string name="erro_titulo">Sem conexão</string>
     <string name="erro_texto">Na primeira vez, o jogo precisa de internet para baixar. Depois ele roda sem rede.</string>
     <string name="erro_tentar">Tentar de novo</string>

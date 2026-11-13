@@ -1,13 +1,12 @@
 /*
- * Painel do ranking na home, aberto pelo ícone e encostado à esquerda da coluna de ícones. Estreito
- * para caber entre o logo e os ícones. Medido pelo contêiner da home (cqh/cqw), como o resto da
- * composição, para caber em qualquer celular deitado.
+ * Painel do ranking na home, aberto pelo ícone e encostado à esquerda da coluna de ícones.
+ * Medido pelo contêiner da home (cqh/cqw), para caber em qualquer celular deitado.
  */
 .painel-ranking {
   position: absolute;
-  top: 7.8cqh;
-  right: calc(2.5cqw + min(16cqh, 12cqw) + 2cqw + var(--safe-direita));
-  width: 20cqw;
+  top: calc(var(--espaco-4) + var(--safe-topo));
+  right: calc(var(--espaco-4) + var(--tamanho-botao-icone) + var(--espaco-2) + var(--safe-direita));
+  width: max(12rem, 24cqw);
   max-height: 84cqh;
   display: flex;
   flex-direction: column;
@@ -20,9 +19,8 @@
 
 .painel-ranking__titulo {
   margin: 0 0 var(--espaco-1);
-  font-family: var(--fonte-hq);
   font-size: var(--texto-3);
-  font-weight: 400;
+  font-weight: 900;
   text-align: center;
   color: var(--cor-destaque);
 }
@@ -69,6 +67,6 @@
   text-overflow: ellipsis;
 }
 
-.painel-ranking__distancia {
+.painel-ranking__pontos {
   font-weight: 700;
 }

@@ -1,30 +1,20 @@
 {
-  "titulo": "Hora del Baño",
-  "subtitulo": "Huye de tu dueño. ¡Hoy no hay baño!",
-  "comoJogarTeclado": "Espacio o ↑ para saltar (2 veces en el aire: doble salto) · ↓ para agacharte",
-  "comoJogarToque": "Toca o desliza hacia arriba para saltar (2 veces en el aire: doble salto) · desliza hacia abajo para agacharte",
-  "dica": "El barro te hace más lento. Los pañuelos te limpian.",
-  "correr": "Correr",
-  "deNovo": "Correr otra vez",
+  "titulo": "Game Template",
+  "subtitulo": "Juego de ejemplo: corre, salta y atrapa monedas.",
+  "deNovo": "Jugar otra vez",
   "continuar": "Continuar",
-  "historia": {
-    "sonho": "Asado",
-    "chamado": "Pipoca...\nhora del baño",
-    "recusa": "¡ni loco!",
-    "grito": "¡¡¡Vuelve\naquí!!!",
-    "pular": "Saltar",
-    "continuar": "Toca para correr",
-    "carregando": "Cargando… {{porcento}}%"
-  },
+  "menu": "Menú",
   "home": {
     "jogar": "Jugar",
+    "carregando": "Cargando… {{porcento}}%",
+    "comoJogar": "Espacio, ↑ o toca para saltar · Esc pausa",
     "configuracoes": "Ajustes"
   },
   "configuracoes": {
     "titulo": "Ajustes",
     "fechar": "Cerrar",
     "musica": "Música",
-    "musicaDetalhe": "Banda sonora del juego"
+    "musicaDetalhe": "Música de fondo"
   },
   "orientacao": {
     "titulo": "Gira el móvil",
@@ -33,26 +23,25 @@
   },
   "abertura": {
     "marca": "GAS Games",
-    "pularToque": "Toca para saltar la intro",
-    "pularTeclado": "Haz clic o pulsa cualquier tecla para saltar la intro"
+    "pularToque": "Toca para saltar la introducción",
+    "pularTeclado": "Haz clic o pulsa cualquier tecla para saltar la introducción"
   },
   "hud": {
+    "pontos": "{{valor}} pts",
     "metros": "{{valor}} m",
-    "moedas": "Monedas: {{valor}}",
-    "moedasRotulo": "Monedas",
-    "distancia": "Distancia: {{valor}} m",
-    "velocidade": "Velocidad: {{valor}} km/h",
+    "moedas": "{{valor}} monedas",
     "pausar": "Pausar"
   },
+  "pausa": {
+    "titulo": "En pausa"
+  },
   "fim": {
-    "pego": "¡Tu dueño te atrapó! Hora del baño 🛁",
-    "batida": "¡Choque! Tu dueño te alcanzó 🛁",
-    "queda": "¡Splash! Al agua… baño hecho 🛁",
-    "tempoEsgotado": "Fin de la carrera",
+    "batida": "¡Chocaste!",
+    "queda": "¡Caíste en el hoyo!",
+    "tempoEsgotado": "Fin de la partida",
     "pontos": "Puntos",
     "distancia": "Distancia",
-    "ossos": "Huesitos",
-    "ossosOuro": "Huesitos de oro",
+    "moedas": "Monedas",
     "recorde": "Récord: {{valor}}",
     "novoRecorde": "¡Nuevo récord!"
   },
@@ -67,14 +56,14 @@
     "enviando": "Guardando…",
     "nomeLongo": "Usa hasta {{max}} letras.",
     "posicao": "¡Puesto {{posicao}} en el ranking!",
-    "melhorPartida": "¡Tu carrera más larga, {{nome}}!",
-    "melhorContinua": "Tu mejor sigue siendo {{valor}} m.",
+    "melhorPartida": "¡Tu mejor partida, {{nome}}!",
+    "melhorContinua": "Tu mejor sigue en {{valor}} puntos.",
     "erro": {
-      "payload_invalido": "No se pudo guardar esta carrera.",
+      "payload_invalido": "No se pudo guardar esta partida.",
       "nome_invalido": "Ese nombre no vale. Prueba otro.",
       "versao_regras": "Actualiza el juego para entrar en el ranking.",
-      "log_invalido": "No se pudo verificar esta carrera.",
-      "limite": "Demasiadas carreras seguidas. Espera un minuto.",
+      "log_invalido": "No se pudo verificar esta partida.",
+      "limite": "Demasiadas partidas seguidas. Espera un minuto.",
       "interno": "El ranking falló. Inténtalo de nuevo.",
       "rede": "Sin internet. Inténtalo de nuevo.",
       "sem_configuracao": "Ranking no disponible."

@@ -3,7 +3,7 @@
 //
 //   npm run sim:partidas -- --partidas 30 --minutos 5
 import { parseArgs } from 'node:util'
-import { cenarioEm, criarPartida, resultado, simularPartida, TICKS_POR_SEGUNDO } from '../src/engine/index.ts'
+import { criarPartida, nivelEm, resultado, simularPartida, TICKS_POR_SEGUNDO } from '../src/engine/index.ts'
 import { jogar } from './bot.ts'
 
 const { values } = parseArgs({
@@ -36,10 +36,8 @@ for (let i = 0; i < partidas; i++) {
     metros: r.distancia,
     pontos: r.pontos,
     segundos: Math.round(r.ticks / TICKS_POR_SEGUNDO),
-    ossos: r.ossos,
-    ouro: r.ossosOuro,
-    lencos: r.lencos,
-    cenario: cenarioEm(r.distancia),
+    moedas: r.moedas,
+    nivel: nivelEm(r.distancia),
     fim: estado.fim ? r.motivo : 'limite',
     comandos: log.length,
   })

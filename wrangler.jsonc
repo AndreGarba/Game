@@ -2,7 +2,8 @@
 // Quem publica é o job "deploy" do CI, depois do merge na main. Nunca `wrangler deploy` à mão.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "horadobanho",
+  // Jogo novo: troque o nome do Worker antes do primeiro deploy (vira <nome>.<conta>.workers.dev).
+  "name": "game-template",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
@@ -11,7 +12,8 @@
     // quebraria com erro de MIME em vez de 404. Offline, quem atende a navegação é o service worker.
     "not_found_handling": "404-page"
   },
-  // Domínio próprio ainda a definir; por enquanto, horadobanho.<conta>.workers.dev.
-  "workers_dev": true,
+  // Desligado até decidir quem pode abrir o jogo: o primeiro deploy sai sem URL pública. Ligar
+  // (true) é decisão do dono do jogo, depois de configurar o acesso no Cloudflare se precisar.
+  "workers_dev": false,
   "preview_urls": false
 }

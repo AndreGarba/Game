@@ -3,11 +3,13 @@
 //
 // O id mora no IndexedDB, não no localStorage: o backup da casca Android leva o localStorage da
 // WebView para o aparelho novo (res/xml/regras_*.xml) e deixa o IndexedDB de fora. Assim o
-// recorde e o nome vão junto, e a identidade não é clonada entre aparelhos (PRD da casca, §6.1).
-const BANCO = 'horadobanho'
+// recorde e o nome vão junto, e a identidade não é clonada entre aparelhos.
+import { ID_JOGO } from '../configuracao.ts'
+
+const BANCO = ID_JOGO
 const LOJA = 'identidade'
 const CHAVE_ID = 'jogadorId'
-const CHAVE_NOME = 'horadobanho:nome'
+const CHAVE_NOME = `${ID_JOGO}:nome`
 
 let idPrometido: Promise<string> | null = null
 

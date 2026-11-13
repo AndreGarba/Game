@@ -4,22 +4,22 @@ import { NOME_MAX, nomeValido, normalizarNome, simularPartida, VERSAO_REGRAS } f
 
 const base = {
   jogadorId: '3f6c1a2e-9b7d-4c1e-8a5f-0d2b4e6f8a10',
-  nome: 'Pipoca',
+  nome: 'Jogador',
   seed: 42,
   versaoRegras: VERSAO_REGRAS,
   log: [
     [30, 0],
-    [95, 1],
+    [95, 0],
   ],
 }
 
 describe('validarPartida', () => {
   it('refaz a partida com o motor em vez de aceitar placar', () => {
-    const validacao = validarPartida({ ...base, distancia: 999_999, pontos: 999_999 })
+    const validacao = validarPartida({ ...base, pontos: 999_999 })
     expect(validacao.ok).toBe(true)
     if (!validacao.ok) return
-    expect(validacao.partida.resultado).toEqual(simularPartida(42, [[30, 0], [95, 1]]))
-    expect(validacao.partida.resultado.distancia).toBeLessThan(999_999)
+    expect(validacao.partida.resultado).toEqual(simularPartida(42, [[30, 0], [95, 0]]))
+    expect(validacao.partida.resultado.pontos).toBeLessThan(999_999)
   })
 
   it('recusa por versão com código próprio, não como fraude', () => {
@@ -27,7 +27,7 @@ describe('validarPartida', () => {
   })
 
   it('recusa log fora de ordem, código desconhecido ou formato errado', () => {
-    for (const log of [[[10, 0], [10, 1]], [[10, 2]], [[10]], 'nada', [[-1, 0]]]) {
+    for (const log of [[[10, 0], [10, 0]], [[10, 7]], [[10]], 'nada', [[-1, 0]]]) {
       expect(validarPartida({ ...base, log })).toEqual({ ok: false, erro: 'log_invalido' })
     }
   })
@@ -40,8 +40,8 @@ describe('validarPartida', () => {
   })
 
   it('grava o nome normalizado e recusa nome vazio ou longo', () => {
-    const validacao = validarPartida({ ...base, nome: '  Pi​poca   da  Silva ' })
-    expect(validacao.ok && validacao.partida.nome).toBe('Pipoca da Silva')
+    const validacao = validarPartida({ ...base, nome: '  Jo\u200bgador   da  Silva ' })
+    expect(validacao.ok && validacao.partida.nome).toBe('Jogador da Silva')
     expect(validarPartida({ ...base, nome: '   ' })).toEqual({ ok: false, erro: 'nome_invalido' })
     expect(validarPartida({ ...base, nome: 'x'.repeat(NOME_MAX + 1) })).toEqual({ ok: false, erro: 'nome_invalido' })
   })
@@ -49,8 +49,8 @@ describe('validarPartida', () => {
 
 describe('nome do jogador', () => {
   it('conta emoji como um caractere, igual ao char_length do Postgres', () => {
-    expect(nomeValido('🐶'.repeat(NOME_MAX))).toBe(true)
-    expect(nomeValido('🐶'.repeat(NOME_MAX + 1))).toBe(false)
+    expect(nomeValido('🎮'.repeat(NOME_MAX))).toBe(true)
+    expect(nomeValido('🎮'.repeat(NOME_MAX + 1))).toBe(false)
   })
 
   it('tira caractere de controle', () => {
