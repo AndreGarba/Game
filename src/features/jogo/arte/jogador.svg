@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="64" viewBox="0 0 128 64">
+  <!-- Folha de 2 quadros (olhos abertos, piscando), para exercitar desenharQuadroDaFolha. -->
+  <rect x="2" y="2" width="60" height="60" rx="6" fill="#f76b15" stroke="#1f2a37" stroke-width="4"/>
+  <rect x="34" y="18" width="8" height="12" rx="2" fill="#1f2a37"/>
+  <rect x="48" y="18" width="8" height="12" rx="2" fill="#1f2a37"/>
+  <rect x="66" y="2" width="60" height="60" rx="6" fill="#f76b15" stroke="#1f2a37" stroke-width="4"/>
+  <rect x="98" y="24" width="8" height="3" rx="1" fill="#1f2a37"/>
+  <rect x="112" y="24" width="8" height="3" rx="1" fill="#1f2a37"/>
+</svg>

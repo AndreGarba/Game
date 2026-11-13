@@ -1,34 +1,24 @@
 {
-  "titulo": "Bath Time",
-  "subtitulo": "Run from your owner. No bath today!",
-  "comoJogarTeclado": "Space or ↑ to jump (twice in the air: double jump) · ↓ to duck",
-  "comoJogarToque": "Tap or swipe up to jump (twice in the air: double jump) · swipe down to duck",
-  "dica": "Mud slows you down. Tissues clean you up.",
-  "correr": "Run",
-  "deNovo": "Run again",
+  "titulo": "Game Template",
+  "subtitulo": "Sample game: run, jump and grab coins.",
+  "deNovo": "Play again",
   "continuar": "Continue",
-  "historia": {
-    "sonho": "Barbecue",
-    "chamado": "Pipoca...\nit's bath time",
-    "recusa": "no way!",
-    "grito": "Come\nback!!!",
-    "pular": "Skip",
-    "continuar": "Tap to run",
-    "carregando": "Loading… {{porcento}}%"
-  },
+  "menu": "Menu",
   "home": {
     "jogar": "Play",
+    "carregando": "Loading… {{porcento}}%",
+    "comoJogar": "Space, ↑ or tap to jump · Esc pauses",
     "configuracoes": "Settings"
   },
   "configuracoes": {
     "titulo": "Settings",
     "fechar": "Close",
     "musica": "Music",
-    "musicaDetalhe": "Background soundtrack"
+    "musicaDetalhe": "Background track"
   },
   "orientacao": {
-    "titulo": "Turn your phone",
-    "texto": "Sideways you see more of the track, and obstacles give you more time.",
+    "titulo": "Rotate your phone",
+    "texto": "Sideways you see more of the track and obstacles arrive with more time.",
     "continuarEmPe": "Play upright"
   },
   "abertura": {
@@ -37,47 +27,46 @@
     "pularTeclado": "Click or press any key to skip the intro"
   },
   "hud": {
+    "pontos": "{{valor}} pts",
     "metros": "{{valor}} m",
-    "moedas": "Coins: {{valor}}",
-    "moedasRotulo": "Coins",
-    "distancia": "Distance: {{valor}} m",
-    "velocidade": "Speed: {{valor}} km/h",
+    "moedas": "{{valor}} coins",
     "pausar": "Pause"
   },
+  "pausa": {
+    "titulo": "Paused"
+  },
   "fim": {
-    "pego": "Your owner caught you! Bath time 🛁",
-    "batida": "Bonk! Your owner caught up 🛁",
-    "queda": "Splash! Into the water… bath taken 🛁",
-    "tempoEsgotado": "Run over",
-    "pontos": "Score",
+    "batida": "Crashed!",
+    "queda": "Fell in the hole!",
+    "tempoEsgotado": "Game over",
+    "pontos": "Points",
     "distancia": "Distance",
-    "ossos": "Bones",
-    "ossosOuro": "Golden bones",
+    "moedas": "Coins",
     "recorde": "Best: {{valor}}",
     "novoRecorde": "New best!"
   },
   "ranking": {
-    "titulo": "Ranking",
+    "titulo": "Leaderboard",
     "carregando": "Loading…",
-    "indisponivel": "Ranking is down right now.",
-    "vazio": "No one here yet. Be the first!",
-    "seuNome": "Your name on the ranking",
-    "placeholderNome": "How should we call you?",
+    "indisponivel": "Leaderboard is down right now.",
+    "vazio": "Nobody on the leaderboard yet. Be the first!",
+    "seuNome": "Your leaderboard name",
+    "placeholderNome": "How should we show you?",
     "enviar": "Save",
     "enviando": "Saving…",
-    "nomeLongo": "Use up to {{max}} letters.",
-    "posicao": "#{{posicao}} on the ranking!",
-    "melhorPartida": "Your longest run yet, {{nome}}!",
-    "melhorContinua": "Your best is still {{valor}} m.",
+    "nomeLongo": "Use up to {{max}} characters.",
+    "posicao": "#{{posicao}} on the leaderboard!",
+    "melhorPartida": "Your best game, {{nome}}!",
+    "melhorContinua": "Your best is still {{valor}} points.",
     "erro": {
-      "payload_invalido": "Couldn't save this run.",
-      "nome_invalido": "That name won't work. Try another.",
-      "versao_regras": "Update the game to join the ranking.",
-      "log_invalido": "Couldn't verify this run.",
-      "limite": "Too many runs in a row. Wait a minute.",
-      "interno": "The ranking failed. Try again.",
+      "payload_invalido": "Couldn't save this game.",
+      "nome_invalido": "That name isn't allowed. Try another.",
+      "versao_regras": "Update the game to join the leaderboard.",
+      "log_invalido": "Couldn't verify this game.",
+      "limite": "Too many games in a row. Wait a minute.",
+      "interno": "The leaderboard failed. Try again.",
       "rede": "No internet. Try again.",
-      "sem_configuracao": "Ranking unavailable."
+      "sem_configuracao": "Leaderboard unavailable."
     }
   }
 }

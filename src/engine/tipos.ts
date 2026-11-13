@@ -1,21 +1,17 @@
 import type { EstadoRng } from './rng.ts'
 
-export type Acao = 'pular' | 'abaixar'
+// Ações que o jogador pode mandar. O código no log é o índice nesta lista: ação nova entra no
+// fim, nunca no meio, senão logs antigos passam a significar outra coisa.
+export const ACOES = ['pular'] as const
+export type Acao = (typeof ACOES)[number]
 
-// Formato compacto do log que vai para o servidor: [tick, 0 = pular | 1 = abaixar].
-export type ComandoLog = readonly [tick: number, codigo: 0 | 1]
+// Formato compacto do log que vai para o servidor: [tick, índice da ação em ACOES].
+export type ComandoLog = readonly [tick: number, codigo: number]
 
-export type IdCenario = 'cidade' | 'parque' | 'bairroJapones' | 'becoAbandonado'
-
-// solido: caixa que bloqueia de frente e aceita pouso em cima (carro, banco, chafariz).
-// teto:   bloqueia de `y` a `y + altura` (o alto do muro, r10); passa abaixado ou com pulo
-//         duplo por cima (letreiro, varal, buganvília, vasos; a árvore vai até o céu).
-// vao:    sem chão entre x e x+largura (rio, buraco de obra).
-// poca:   lama no chão; pisar suja o cachorro.
-// rampa:  sobe de 0 (em x) até `altura` (em x+largura). Não bate: o cachorro corre por cima e,
-//         no fim, sai lançado com a velocidade de subida.
-// lenco/osso/ossoOuro: coletáveis pontuais centrados em (x, y).
-export type TipoElemento = 'solido' | 'teto' | 'vao' | 'poca' | 'rampa' | 'lenco' | 'osso' | 'ossoOuro'
+// bloco: caixa que bloqueia de frente e aceita pouso em cima.
+// vao:   sem chão entre x e x+largura; cair encerra.
+// moeda: coletável pontual centrado em (x, y).
+export type TipoElemento = 'bloco' | 'vao' | 'moeda'
 
 export interface Elemento {
   id: number
@@ -24,35 +20,27 @@ export interface Elemento {
   largura: number
   y: number
   altura: number
-  // Nome do objeto para a UI desenhar ('carro', 'caixa'...). O motor não lê.
-  visual: string
-  // Coletável já pego ou poça já pisada.
+  // Coletável já pego.
   usado: boolean
 }
 
-export interface Cachorro {
+export interface Jogador {
   x: number
   y: number
   vy: number
   noChao: boolean
-  abaixadoTicks: number
-  // r7: o segundo pulo no ar ainda está disponível. Volta a valer ao tocar o chão.
-  puloDuplo: boolean
 }
 
-export type MotivoFim = 'pego' | 'batida' | 'queda'
+export type MotivoFim = 'batida' | 'queda'
 
+// Dado puro: structuredClone copia a partida inteira (o bot e os testes dependem disso).
 export interface EstadoPartida {
   versaoRegras: string
   seed: number
   tick: number
   rng: EstadoRng
-  cachorro: Cachorro
-  // Até SUJEIRA_MAX; a poça seguinte encerra a partida. Dela sai a distância do tutor (vantagemTutor).
-  sujeira: number
-  ossos: number
-  ossosOuro: number
-  lencos: number
+  jogador: Jogador
+  moedas: number
   elementos: Elemento[]
   proximoId: number
   geradoAte: number
@@ -64,9 +52,7 @@ export interface ResultadoPartida {
   seed: number
   ticks: number
   distancia: number
-  ossos: number
-  ossosOuro: number
-  lencos: number
+  moedas: number
   pontos: number
   motivo: MotivoFim | 'tempoEsgotado'
 }

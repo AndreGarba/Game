@@ -1,24 +1,17 @@
-import {
-  DESCARTAR_ATRAS,
-  FATOR_ALCANCE_PISTA,
-  GERAR_A_FRENTE,
-  GRAVIDADE,
-  VEL_PULO,
-} from './constantes.ts'
-import { cenarioEm, MOLDES_POR_CENARIO, type Molde } from './cenarios.ts'
-import { velocidadeBase } from './fisica.ts'
+import { DESCARTAR_ATRAS, GERAR_A_FRENTE } from './constantes.ts'
+import { alcancePulo, velocidadeBase } from './fisica.ts'
+import { MOLDES, type Molde } from './moldes.ts'
 import { entre, proximo, type EstadoRng } from './rng.ts'
 import type { EstadoPartida } from './tipos.ts'
 
 // Dificuldade sobe por degraus de distância: libera moldes novos e encurta o respiro.
-const DEGRAUS_NIVEL = [0, 250, 800, 2000] as const
+const DEGRAUS_NIVEL = [0, 250, 800] as const
 
 // Respiro entre trechos, em segundos de corrida na velocidade base daquele ponto.
 const FOLGA_POR_NIVEL: readonly (readonly [number, number])[] = [
-  [1.4, 2.2],
-  [1.0, 1.6],
+  [1.2, 2],
+  [0.9, 1.5],
   [0.75, 1.2],
-  [0.55, 0.9],
 ]
 
 export function nivelEm(x: number): number {
@@ -27,12 +20,6 @@ export function nivelEm(x: number): number {
     if (x >= inicio) nivel = i
   })
   return nivel
-}
-
-const TEMPO_DE_AR = (2 * VEL_PULO) / GRAVIDADE
-
-export function alcancePulo(x: number): number {
-  return velocidadeBase(x) * FATOR_ALCANCE_PISTA * TEMPO_DE_AR
 }
 
 function sortearMolde(rng: EstadoRng, moldes: readonly Molde[], nivel: number): Molde {
@@ -46,13 +33,13 @@ function sortearMolde(rng: EstadoRng, moldes: readonly Molde[], nivel: number): 
   return disponiveis[disponiveis.length - 1]!
 }
 
-// Garante pista até GERAR_A_FRENTE à frente do cachorro e descarta o que ficou para trás.
+// Garante pista até GERAR_A_FRENTE à frente do jogador e descarta o que ficou para trás.
 export function atualizarPista(estado: EstadoPartida): void {
-  const alvo = estado.cachorro.x + GERAR_A_FRENTE
+  const alvo = estado.jogador.x + GERAR_A_FRENTE
   while (estado.geradoAte < alvo) {
     const x = estado.geradoAte
     const nivel = nivelEm(x)
-    const molde = sortearMolde(estado.rng, MOLDES_POR_CENARIO[cenarioEm(x)], nivel)
+    const molde = sortearMolde(estado.rng, MOLDES, nivel)
     const { comprimento, itens } = molde.montar({ rng: estado.rng, nivel, alcance: alcancePulo(x) })
     for (const it of itens) {
       estado.elementos.push({ ...it, x: x + it.x, id: estado.proximoId++, usado: false })
@@ -61,8 +48,8 @@ export function atualizarPista(estado: EstadoPartida): void {
     estado.geradoAte = x + comprimento + velocidadeBase(x) * entre(estado.rng, folgaMin, folgaMax)
   }
 
-  const limite = estado.cachorro.x - DESCARTAR_ATRAS
-  if (estado.elementos.length > 0 && estado.elementos[0]!.x + estado.elementos[0]!.largura < limite) {
+  const limite = estado.jogador.x - DESCARTAR_ATRAS
+  if (estado.elementos.some((e) => e.x + e.largura < limite)) {
     estado.elementos = estado.elementos.filter((e) => e.x + e.largura >= limite)
   }
 }

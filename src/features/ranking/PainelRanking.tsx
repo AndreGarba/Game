@@ -8,7 +8,7 @@ const LINHAS = 10
 
 type Carga = { fase: 'carregando' } | { fase: 'pronto'; linhas: LinhaRanking[] } | { fase: 'erro' }
 
-// Top 10 por distância, aberto pelo ícone da home. Sem Supabase no build, avisa em vez de sumir: o ícone continua lá.
+// Top 10 por pontos, aberto pelo ícone da home. Sem Supabase no build, avisa em vez de sumir: o ícone continua lá.
 export function PainelRanking() {
   const { t } = useTranslation()
   const [carga, setCarga] = useState<Carga>(rankingDisponivel() ? { fase: 'carregando' } : { fase: 'erro' })
@@ -42,7 +42,7 @@ export function PainelRanking() {
             <li key={linha.posicao} className="painel-ranking__linha">
               <span className="painel-ranking__posicao">{numero(linha.posicao)}</span>
               <span className="painel-ranking__nome">{linha.nome}</span>
-              <span className="painel-ranking__distancia">{t('hud.metros', { valor: numero(linha.distancia) })}</span>
+              <span className="painel-ranking__pontos">{numero(linha.pontos)}</span>
             </li>
           ))}
         </ol>

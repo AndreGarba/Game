@@ -1,173 +1,42 @@
-/*
- * Medidas do frame Home do Figma (780 × 360, paisagem), em proporção da tela: cqh é 1% da altura
- * e cqw 1% da largura deste contêiner. Assim a composição vale para qualquer celular deitado; em pé,
- * o min() impede logo e botão de passarem da largura.
- */
+/* Home do jogo de exemplo. Medida pelo próprio contêiner (cqh/cqw), dentro da moldura de celular. */
 .tela-home {
   container-type: size;
   position: relative;
   height: var(--altura-tela, 100svh);
-  overflow: hidden;
-  background: var(--cinza-700);
+  padding: calc(var(--espaco-4) + var(--safe-topo)) calc(var(--espaco-4) + var(--safe-direita))
+    calc(var(--espaco-4) + var(--safe-base)) calc(var(--espaco-4) + var(--safe-esquerda));
+  background: linear-gradient(var(--cor-fundo), var(--cor-superficie));
 }
 
-.tela-home__azulejos,
-.tela-home__espuma {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+.tela-home__centro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-3);
   height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-}
-
-/* Mesmo corte vertical do Figma: os azulejos sobram quase todos embaixo, a espuma quase toda em cima. */
-.tela-home__azulejos {
-  object-position: 50% 10%;
-}
-
-.tela-home__espuma {
-  object-position: 50% 78%;
-}
-
-/* Mesmos azulejos e espuma, agora com gotas e vapor: cobre as imagens estáticas quando fica pronto. */
-.tela-home__efeitos {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.3s ease-out;
-  pointer-events: none;
-}
-
-.tela-home__efeitos--prontos {
-  opacity: 1;
+  text-align: center;
 }
 
 .tela-home__titulo {
-  position: absolute;
-  top: 7.8cqh;
-  left: calc(50% + 1cqh);
-  width: min(88.1cqh, 90cqw);
   margin: 0;
-  transform: translateX(-50%);
+  font-size: min(var(--texto-6), 12cqh);
+  font-weight: 900;
+  line-height: 1;
 }
 
-.tela-home__logo {
-  display: block;
-  width: 100%;
-  height: auto;
-  /*
-   * Flutuando: sobe-desce, vai-e-vem e inclinação em animações separadas, com durações que não
-   * se dividem entre si. Somadas, quase nunca repetem a mesma combinação e o movimento parece
-   * aleatório sem precisar de JS. Fica no img porque o h1 já usa transform para centralizar.
-   */
-  animation:
-    logo-flutua-y 5.3s ease-in-out infinite alternate,
-    logo-flutua-x 7.9s ease-in-out infinite alternate,
-    logo-inclina 11.3s ease-in-out infinite alternate;
-  will-change: translate, rotate;
+.tela-home__subtitulo,
+.tela-home__dica {
+  margin: 0;
+  font-size: var(--texto-2);
+  color: var(--cor-texto-suave);
 }
 
-/* Cada propriedade (translate e rotate) é animada por uma animação só: assim elas se somam. */
-@keyframes logo-flutua-y {
-  0% { translate: var(--logo-x, 0) -0.9cqh; }
-  45% { translate: var(--logo-x, 0) 0.4cqh; }
-  100% { translate: var(--logo-x, 0) 0.9cqh; }
-}
-
-@property --logo-x {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0px;
-}
-
-@keyframes logo-flutua-x {
-  0% { --logo-x: -0.6cqh; }
-  60% { --logo-x: 0.2cqh; }
-  100% { --logo-x: 0.6cqh; }
-}
-
-@keyframes logo-inclina {
-  0% { rotate: -0.7deg; }
-  35% { rotate: 0.3deg; }
-  100% { rotate: 0.7deg; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tela-home__logo {
-    animation: none;
-  }
-}
-
-.tela-home__jogar {
-  position: absolute;
-  top: 68cqh;
-  left: calc(50% + 1cqh);
-  width: min(45.6cqh, 60cqw);
-  aspect-ratio: 164 / 56;
-  padding: 0;
-  border: 0;
-  background: none;
-  overflow: hidden;
-  cursor: pointer;
-  transform: translateX(-50%);
-  transition: transform 0.08s ease-out;
-}
-
-.tela-home__jogar:active {
-  transform: translateX(-50%) scale(0.94);
-}
-
-.tela-home__jogar:focus-visible {
-  outline: 3px solid var(--cor-destaque-texto);
-  outline-offset: 3px;
-}
-
-/* Recorte do JOGAR na folha de botões, com as porcentagens do Figma. */
-.tela-home__jogar-sprite {
-  position: absolute;
-  top: 0;
-  left: -2.69%;
-  width: 205.38%;
-  height: 455.68%;
-  max-width: none;
-  pointer-events: none;
-}
-
-/* Coluna de ícones à direita. Mesma escala do botão de pausa do HUD (48 de 360 de altura), um pouco maior por ser alvo de toque. */
 .tela-home__icones {
   position: absolute;
-  top: calc(5cqh + var(--safe-topo));
-  right: calc(2.5cqw + var(--safe-direita));
+  top: calc(var(--espaco-4) + var(--safe-topo));
+  right: calc(var(--espaco-4) + var(--safe-direita));
   display: flex;
   flex-direction: column;
-  gap: 2.5cqh;
-}
-
-.tela-home__icone {
-  display: block;
-  width: min(16cqh, 12cqw);
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  transition: transform 0.08s ease-out;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.tela-home__icone:active {
-  transform: scale(0.9);
-}
-
-.tela-home__icone:focus-visible {
-  outline: 3px solid var(--cor-destaque-texto);
-  outline-offset: 3px;
-}
-
-.tela-home__icone img {
-  display: block;
-  width: 100%;
-  height: auto;
+  gap: var(--espaco-2);
 }

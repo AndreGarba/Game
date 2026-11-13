@@ -10,18 +10,18 @@ val nomeVersao = (findProperty("versionName") as String?) ?: "0.1.0"
 
 // Origem que a casca abre e as que ela aceita. Ficam no BuildConfig para o ClienteWeb e, no PR 2,
 // a ponte lerem a mesma lista: duas listas divergem e uma delas vira brecha.
-val origemProducao = "https://horadobanho.aquinoweb-wag.workers.dev"
+val origemProducao = "https://game-template.example.workers.dev"
 val origemLocal = "https://appassets.androidplatform.net"
 
 fun listaKotlin(vararg origens: String) =
     origens.joinToString(prefix = "new String[]{", postfix = "}") { "\"$it\"" }
 
 android {
-    namespace = "br.com.gasgames.horadobanho"
+    namespace = "com.example.game"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "br.com.gasgames.horadobanho"
+        applicationId = "com.example.game"
         minSdk = 24
         targetSdk = 36
         versionCode = codigoVersao

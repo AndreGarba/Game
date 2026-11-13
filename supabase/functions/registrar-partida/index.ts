@@ -73,16 +73,13 @@ Deno.serve(async (req) => {
     .rpc('registrar_partida', {
       p_jogador_id: jogadorId,
       p_nome: nome,
-      p_distancia: resultado.distancia,
       p_pontos: resultado.pontos,
-      p_ossos: resultado.ossos,
-      p_ossos_ouro: resultado.ossosOuro,
       p_ticks: resultado.ticks,
       p_seed: seed,
       p_versao_regras: resultado.versaoRegras,
       p_log: log,
     })
-    .single<{ melhor: boolean; distancia: number; posicao: number }>()
+    .single<{ melhor: boolean; pontos: number; posicao: number }>()
   if (error || !data) {
     console.error('registrar_partida falhou', error)
     return responder(500, { erro: 'interno' })
@@ -90,9 +87,9 @@ Deno.serve(async (req) => {
 
   return responder(200, {
     nome,
-    distanciaPartida: resultado.distancia,
+    pontosPartida: resultado.pontos,
     melhor: data.melhor,
-    melhorDistancia: data.distancia,
+    melhorPontos: data.pontos,
     posicao: data.posicao,
   })
 })

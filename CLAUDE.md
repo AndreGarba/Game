@@ -1,54 +1,46 @@
-# Hora do Banho
+# Game Template
 
-Corrida infinita (endless runner) 2D para todos os públicos. O jogador é o **cachorro**, que foge
-do tutor para não tomar banho: pula e se abaixa por cidade, parque, bairro japonês e beco
-abandonado, cada vez mais rápido. Cada lama traz o tutor um degrau para mais perto e a 4ª encerra a partida; lenços limpam.
-Ossinhos e ossinhos de ouro valem pontos. Quem vai mais longe, com mais ossos, sobe no ranking.
+Base para jogos 2D web (PWA) com casca Android, motor determinístico e ranking por replay. Veio
+do Hora do Banho, sem nada daquele jogo: o que roda hoje é um **jogo de exemplo** (um quadrado
+que corre sozinho, pula blocos e vãos e pega moedas), só para exercitar o motor, as telas, o
+áudio, a carga de arte e os testes. Jogo novo substitui o exemplo e mantém a base.
 
-Sessão curta: termina na primeira batida, queda ou quando o tutor alcança. Público livre, todas as idades. Conta, data e âncora de
-lançamento: **a definir**.
+Como começar um jogo novo e **a lista do que renomear**: [`README.md`](README.md).
 
 > **Antes de qualquer coisa:** o Claude abre PR e para. Merge, deploy e mudança em produção
 > são sempre do André — ver
 > [Merge, deploy e produção](#merge-deploy-e-produção-são-do-andré--nunca-do-claude).
 
-> Este arquivo nasceu do `CLAUDE.md` do THE IMMORTAL, sem os IDs e as regras do motor daquele
-> jogo. As regras de processo vêm de erros reais que custaram caro lá. Campos entre `[colchetes]`
-> são para preencher.
+> As regras de processo deste arquivo vêm de erros reais que custaram caro no THE IMMORTAL e no
+> Hora do Banho. Campos entre `[colchetes]` são para o jogo novo preencher.
 
 ---
 
 ## Stack
 
-- **Frontend:** React + Vite + Tailwind
-- **Design system:** [pasta/pacote do DS — a definir]
-- **Backend:** Supabase, região `sa-east-1` — projeto `hora-do-banho`, `[ID DO PROJETO — a definir]`.
-  **Ainda não foi criado:** custa US$ 10/mês na organização do André, que adiou a criação em
-  2026-11-08. O `the-immortal`, único projeto da conta, é de outro jogo: não usar. O job `deploy`
+- **Frontend:** React 19 + Vite 7 + TypeScript, Canvas 2D para o jogo
+- **Design system:** [a definir pelo jogo]. Até lá, tokens em `src/estilos/tokens.css` e o botão
+  base `.botao` em `src/estilos/global.css`.
+- **Backend:** Supabase — projeto `[nome]`, região `[região]`, `[ID DO PROJETO]`. O job `deploy`
   lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` das variáveis do repositório; sem elas,
   o site sai sem ranking e nada acusa.
-- **Hospedagem:** Cloudflare Workers static assets. Configure o fallback de rota com
-  cuidado: um fallback que responde `200 text/html` para qualquer caminho também responde assim
-  para `/assets/<hash>.js` de um deploy antigo, e o `import()` do chunk falha com erro de MIME em
-  vez de 404. Se o app não tem router, prefira `404-page`.
-  Worker `horadobanho`, configurado em `wrangler.jsonc` com `404-page` (o app não tem router).
+- **Hospedagem:** Cloudflare Workers static assets, Worker `game-template` (placeholder) em
+  `wrangler.jsonc`, com `not_found_handling: "404-page"`. Um fallback que responde `200 text/html`
+  para qualquer caminho também responde assim para `/assets/<hash>.js` de um deploy antigo, e o
+  `import()` do chunk falha com erro de MIME em vez de 404; o app não tem router, então `404-page`.
   Publica pelo job `deploy` do CI, só em push na `main` e depois do `verificar`. Secrets do
-  repositório: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`. No ar desde 2026-11-07 em
-  <https://horadobanho.aquinoweb-wag.workers.dev>. Domínio próprio: a definir.
-  O token é de conta (`github-deploy-horadobanho`, template "Edit Cloudflare Workers") e
-  **vence em 2027-11-06**. Vencido, o job `deploy` falha com erro de autenticação e o site fica
-  parado na última versão, sem aviso para o jogador: gere outro antes e troque o secret. Token de
-  conta não consegue descobrir a conta sozinho, por isso o `CLOUDFLARE_ACCOUNT_ID` é obrigatório.
+  repositório: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` (token de conta não descobre a
+  conta sozinho). Token vencido = job `deploy` falha e o site fica parado na última versão, sem
+  aviso para o jogador: anote aqui a data de vencimento, `[data]`. `workers_dev` nasce `false`:
+  o primeiro deploy sai sem URL pública, e ligar é decisão do dono do jogo.
 - **API:** Supabase Edge Functions (`supabase/functions/`), na mesma região do banco.
 - **Testes:** Vitest, com golden master no motor
 - **Lint:** oxlint
-- **PWA:** `vite-plugin-pwa`, `registerType: 'autoUpdate'`
-- **Cascas das lojas:** `android/` (Kotlin + WebView própria + ponte JS↔nativo) e `ios/`
-  (WKWebView, ainda não existe). Ver [Lojas e anúncios](#lojas-e-anúncios) e
-  `PRD/PRD-casca-android-hibrida.md`. **Não usar TWA:** sem ponte JS, no THE IMMORTAL tudo virou
-  parâmetro de URL e intent sem resposta. O sabor `producao` carrega o site publicado e é o único
-  que vai pra Play; o `local` (só debug) embute o `dist/` para testar sem site
-  (`android/README.md`).
+- **PWA:** `vite-plugin-pwa`, `registerType: 'autoUpdate'`, tudo no precache (roda offline)
+- **Cascas das lojas:** `android/` (Kotlin + WebView própria). Ver [Lojas e anúncios](#lojas-e-anúncios)
+  e `android/README.md`. **Não usar TWA:** sem ponte JS, no THE IMMORTAL tudo virou parâmetro de
+  URL e intent sem resposta. O sabor `producao` carrega o site publicado e é o único que vai pra
+  Play; o `local` (só debug) embute o `dist/` para testar sem site.
 
 Comunicação e nomes de arquivo/função em **português**. Comentário explica *por quê*, não *o quê*.
 
@@ -58,135 +50,73 @@ Comunicação e nomes de arquivo/função em **português**. Comentário explica
 
 ```
 src/
-├─ engine/        motor do jogo — puro, determinístico (ver "Motor do jogo")
-├─ data/          repositories, cliente Supabase, storage local, telemetria
-├─ features/      domínio + estado + telas de cada área do jogo
-├─ components/    componentes burros, sem conhecimento de domínio
-├─ types/         tipos compartilhados de domínio
-├─ i18n/          detecção de idioma e init do i18next
-├─ locales/       copy da UI, {pt,en,es}/<namespace>.json
-scripts/          simulações headless, fixtures, save de teste
-tests/            golden masters do motor
-supabase/         migrations versionadas, seeds, RLS e functions/
-android/ ios/     cascas das lojas
-PRD/              especificações de produto
+├─ configuracao.ts  ID_JOGO: prefixo do localStorage e nome do IndexedDB
+├─ engine/          motor do jogo — puro, determinístico (ver "Motor do jogo")
+├─ data/            ranking (Supabase), id do jogador, recorde, preferências
+├─ features/
+│  ├─ abertura/     logo animado da GAS Games (som + canvas)
+│  ├─ orientacao/   pedido de girar o celular (Lottie)
+│  ├─ home/         tela inicial (Jogar, configurações, ranking)
+│  ├─ jogo/         controlador (relógio → ticks), controles, desenho, carga de arte, TelaJogo
+│  ├─ ranking/      formulário de nome no fim e painel do top 10
+│  ├─ configuracoes/ janela com o switch da música
+│  ├─ musica/       tocador de trilhas em loop (Web Audio)
+│  ├─ som/          AudioContext único e efeitos sonoros
+│  └─ navegacao/    voltar nativo em camadas
+├─ components/      componentes burros, sem conhecimento de domínio (vazio por enquanto)
+├─ i18n/            detecção de idioma e init do i18next
+├─ locales/         copy da UI, {pt,en,es}/<namespace>.json
+scripts/            bot e simulação headless
+tests/              golden master e regras do motor, ranking, locales, fronteiras
+supabase/           migrations versionadas e functions/
+android/            casca da Play
+PRD/                especificações de produto do jogo (a escrever)
 ```
+
+O que é do **jogo de exemplo** (trocar num jogo novo): `src/engine/moldes.ts`, as constantes de
+balanceamento e a física em `src/engine/`, `src/features/jogo/desenho/`, `src/features/jogo/arte/`
+(menos `carregarArte.ts`), `src/features/musica/trilhasExemplo.ts`, `src/features/som/efeitosSonoros.ts`,
+a copy em `src/locales/` e os snapshots em `tests/__snapshots__/`.
 
 ---
 
 ## Motor do jogo
 
 Regras do motor ficam **nesta seção**. Regra de motor espalhada por outras seções é regra que
-alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
+alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
-### O jogo, como o motor vê
+### O jogo de exemplo, como o motor vê
 
-- Mundo 2D lateral. As 3 camadas do falso 3D são **só visuais** (parallax): o motor tem uma
-  linha de corrida, com altura. Unidades: metros e segundos.
-- O cachorro corre sozinho; o jogador só tem duas ações: **pular** e **abaixar** (no chão: fica
-  baixo por `ABAIXAR_TICKS`; no ar: mergulho rápido e pousa abaixado). Pular no ar é o **pulo
-  duplo** (r7): uma vez por pulo, dá de novo `VEL_PULO`; volta a valer ao tocar o chão. O log não
-  distingue os dois: é o mesmo código `0`.
-- Velocidade base `v(d) = VEL_MAX - (VEL_MAX - VEL_INICIAL)·VEL_K/(VEL_K + d)`: cresce rápido no
-  começo e se aproxima do teto sem passar. A dificuldade continua subindo pelos degraus de
-  `nivelEm` (moldes novos e menos respiro entre trechos).
-- Elementos da pista (`src/engine/tipos.ts`):
-  - `solido` (carro, caixa, cavalete, chafariz, marquise): bater de frente encerra; dá para pousar e correr
-    em cima. Os que têm **perfil** (`src/engine/perfis.ts`: carro, tora, chafariz, banca) têm o
-    topo no contorno da arte, e o cachorro sobe e desce por ele grudado; parede do contorno ainda
-    bate. Os tamanhos seguem a régua do tutor (r5): 1 m de verdade = 1,79 m do jogo.
-  - `teto` (r10, só na cidade): tudo vem do muro do fundo, nada do céu. Letreiro, varal,
-    buganvília e vasos ficam presos nele, de 0,6 m até `TOPO_TETO` (2,1 m, o alto dos painéis):
-    passa abaixado ou com pulo duplo por cima, e o pulo simples não passa. A árvore fica atrás do
-    muro e só o galho vem para a frente; acima dele estão o tronco e a copa, então ela vai até
-    `TOPO_ARVORE` e só passa abaixado. Desenho em `src/features/corrida/desenho/tetos.ts` (arte do
-    ChatGPT, com vetor enquanto o sprite carrega); como a arte foi pedida:
-    `PRD/referencias/cenarios/prompts-tetos.md`.
-    Se o muro mudar de altura, `TOPO_TETO` muda junto.
-  - `vao` (buraco, bueiro): sem chão; cair encerra. Desde a r9 não há vão de água (rio e lago
-    saíram). Buraco em três tamanhos (`buraco_pequeno`, `buraco_medio`/`obra`, `buraco_grande`), em
-    fração do alcance do pulo. Na tela, o sprite é só o interior escuro do buraco, com lados
-    irregulares, desenhado por cima do chão do cenário: vale o de proporção mais próxima da do vão
-    (`desenharVao`).
-  - `rampa`: sobe de 0 até `altura` ao longo da largura; não bate. O cachorro anda grudado na
-    superfície com `vy = velocidade·inclinação` e, ao passar do fim, sai lançado com essa
-    velocidade. Pular na rampa funciona normalmente.
-  - `poca` (lama): +1 de sujeira. `lenco`: −1 de sujeira. `osso` / `ossoOuro`: pontos.
-- **Tutor (r8):** a distância é um degrau fixo por nível de sujeira (`vantagemTutor`: 20, 15, 10 e
-  5 m), sem aproximação gradual, e a lama não freia o cachorro. Ele aguenta `SUJEIRA_MAX` (3)
-  poças; a seguinte é `pego`. Lenço tira 1 de sujeira: o tutor recua um degrau e sobra mais uma
-  poça. A largura de vãos e poças segue `FATOR_ALCANCE_PISTA`, para a pista de cada seed não mudar.
-- **Fim:** `batida`, `queda` ou `pego`. Não existe vida extra.
-- **Pontuação:** `metros·PONTOS_POR_METRO + ossos·PONTOS_OSSO + ossosOuro·PONTOS_OSSO_OURO`.
-- **Cenários (r9):** sequência fixa e igual para todos (`SEQUENCIA_CENARIOS`: cidade → parque →
-  bairro japonês → beco abandonado, 500 m cada, e recomeça: uma volta tem 2 km). Os obstáculos de cada trecho são
-  sorteados pela seed da partida dentro dos moldes daquele cenário (`src/engine/cenarios.ts`).
-  Parque, bairro japonês e beco só têm obstáculos do próprio cenário e **nenhum `teto`** (pedido do
-  André): lá o abaixar serve só para mergulhar. A cidade continua com tetos, todos vindos do muro (r10).
-  Rio e centro saíram da sequência; os moldes deles ficaram no arquivo porque a cidade usa alguns.
-- **Arte por cenário:** cada cenário tem as suas camadas (`CAMADAS_POR_CENARIO` em
-  `src/features/corrida/imagens/index.ts`) e o sprite de cada obstáculo é o arquivo com o nome do
-  `visual` em `imagens/objetos/`. Na divisa, cada camada troca com um esfumado num ponto da tela
-  que depende do parallax dela (`desenharCenarioArte`). Como a arte foi pedida ao ChatGPT:
-  `PRD/referencias/cenarios/prompts.md`.
-- **Cachorro 3D:** as folhas do galope, do slide e do pulo são renderizadas de um modelo do Meshy
-  (vistas em `PRD/referencias/cachorro-3d-vistas.webp`), com esqueleto e animação feitos no Blender
-  (`PRD/referencias/cachorro-3d/cachorro-3d-galope.blend`, cena "Cachorro Meshy": galope nos quadros
-  1 a 10, slide de 21 a 26, pulo de 31 a 38; o rig do Meshy só faz humanoide). As folhas saem com os
-  mesmos pixels por metro e o mesmo chão: slide e pulo se montam pela escala da do galope, nunca
-  recortados sozinhos, e a altura no mundo de cada uma é `ALTURA_QUADRO_M × altura / 320`. O pulo
-  do cachorro não tem antecipação (ele sai do chão no tick do comando): o impulso é o começo da
-  subida, escolhido por `vy`, e o pouso dura pelo relógio.
-- **Tutor 3D:** modelo e rig do Meshy (a partir de `PRD/referencias/tutor-3d-parado.webp`), em
-  `PRD/referencias/tutor-3d/tutor-3d.blend`, cena "Tutor Meshy". A corrida é a animação do Meshy com o
-  corpo inclinado 10°; pulo (quadros 1 a 10) e slide (21 a 26) foram posados à mão na ação
-  `poses_tutor`, copiando o movimento das folhas antigas do ChatGPT, porque o "Jump Run" e o "Slide
-  Light" da biblioteca não têm o impulso, a mão no chão nem o slide sentado. No slide, o corpo assenta
-  pelo ponto mais baixo (não pelo grupo `Hips`, que é a cintura: as nádegas são das coxas) e o braço
-  de perto é girado até a mão tocar o chão. As três folhas seguem a regra das do cachorro: pixels por
-  metro e chão da corrida. A
-  câmera olha um pouco de cima, então um pé mais perto dela aparece abaixo da linha do chão: o `pes`
-  de cada folha é medido, não fixo em 6, e o avanço de cada folha põe o corpo onde estava o da corrida. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
-  e o fundo transparente vaza na folha. Por isso há um `CachorroNucleo` fechado por dentro, na cor do
-  pelo, preso ao mesmo esqueleto, e a barriga entre as patas só segue a coluna. Mexeu na pose ou na
-  câmera: renderize os 10 quadros e confira as frestas num fundo escuro, não no viewport.
-- **Carga da arte:** tudo que o canvas da corrida desenha é decodificado antes da largada, como
-  `ImageBitmap` (`carregarArteCorrida` em `imagens/index.ts`). A carga começa na abertura e roda por
-  trás da home e da história; a história só entrega o jogador à corrida com `liberada` (mostra
-  "Carregando… N%" e segue sozinha; depois de 15 s libera de qualquer jeito). Motivo: um `<img>` só
-  é decodificado no primeiro `drawImage`, dentro do quadro. Medido no desktop: até 22 ms por imagem
-  (um quadro tem 16,7 ms), e 22 das 111 passam de 8 ms. `img.decode()` **não** resolve para canvas
-  (medido: mesmo custo); `createImageBitmap` resolve (0,6 ms). A carga cobre uma volta inteira
-  (2000 m, os quatro cenários); a volta seguinte usa as mesmas imagens, então não há segunda carga.
-  Imagem nova do canvas entra na lista de `carregarArteCorrida`, nunca por `new Image()` solto.
-- **Custo do quadro no celular** (`src/features/corrida/densidade.ts`): o canvas da corrida não passa
-  de densidade 2 (`DENSIDADE_MAX`). Com densidade 3 eram ~2340 × 1080 pixels por quadro, e a arte das
-  camadas é de 720 px de altura, então não havia detalhe a ganhar. A arte é decodificada já no
-  tamanho que a tela mostra (`fracaoDaArteNaTela`, mais `ESCALA_UTIL` para folhas com resolução
-  sobrando) e nunca acima de 4096 px de lado, o limite de textura de muita GPU Android (a folha do
-  galope tinha 4150). Por isso **quem desenha mede pelo tamanho real da imagem**: proporção, ou
-  `desenharQuadroDaFolha` para folhas de quadros. Recortar pelas medidas do arquivo
-  (`indice * folha.largura`) pega o quadro errado. O esfumado da divisa de cenário passa por um
-  canvas à parte só na faixa do degradê; com o canvas do tamanho da tela, cada camada em troca
-  limpava, mascarava e copiava a tela inteira, até ~10 vezes por quadro.
+- Mundo 2D lateral, uma linha de corrida com altura. Unidades: metros e segundos.
+- O jogador (quadrado de `JOGADOR_LADO`) corre sozinho; a única ação é **pular** (só do chão).
+  Velocidade `v(d) = VEL_MAX - (VEL_MAX - VEL_INICIAL)·VEL_K/(VEL_K + d)`: cresce rápido no começo
+  e se aproxima do teto sem passar. A dificuldade sobe também pelos degraus de `nivelEm`.
+- Elementos (`src/engine/tipos.ts`): `bloco` (bater de frente encerra; dá para pousar em cima),
+  `vao` (sem chão; cair encerra) e `moeda` (pontos). Moldes da pista em `src/engine/moldes.ts`,
+  sorteados pela seed em `gerador.ts`.
+- **Fim:** `batida` ou `queda`. **Pontuação:** `metros·PONTOS_POR_METRO + moedas·PONTOS_MOEDA`.
 
-### Regras técnicas
+### Regras técnicas (valem para qualquer jogo em cima do template)
 
 - **Passo fixo de 60 ticks/s.** `passo(estado, acao)` avança exatamente um tick; o motor nunca
-  recebe "tempo decorrido". A UI acumula o tempo real e chama `passo` quantas vezes precisar.
+  recebe "tempo decorrido". A UI acumula o tempo real e chama `passo` quantas vezes precisar
+  (`src/features/jogo/controladorJogo.ts`), e o desenho interpola entre o tick anterior e o atual.
 - **Só aritmética básica na simulação** (`+ − × ÷`, `Math.floor/min/max/imul`). `Math.pow`, `exp`
   e trigonometria podem dar resultados diferentes entre motores JS, e o servidor precisa chegar
   no mesmo número que o celular. Animação e desenho podem usar o que quiserem: ficam na UI.
 - **Aleatoriedade só em `src/engine/rng.ts`** (mulberry32, inteiros de 32 bits). O estado do rng
   mora dentro do `EstadoPartida`, que é dado puro: `structuredClone` copia a partida inteira (o
   bot de simulação depende disso). `Math.random()` fora do rng é proibido. Para ids,
-  `crypto.getRandomValues()`. *Pendente: trava de lint para isso.*
-- **Ranking por replay:** o cliente envia seed + log de decisões (`ComandoLog`: `[tick, 0 pular |
-  1 abaixar]`), nunca o placar. `simularPartida(seed, log)` refaz a partida inteira e é a mesma
-  função no navegador e na Edge Function. Log fora de ordem, tick repetido ou código desconhecido
-  lança `LogInvalido`. Partidas acima de `TICKS_MAX` (30 min) são inválidas.
+  `crypto.getRandomValues()`.
+- **Ranking por replay:** o cliente envia seed + log de decisões (`ComandoLog`: `[tick, código]`,
+  o código é o índice da ação em `ACOES`), nunca o placar. `simularPartida(seed, log)` refaz a
+  partida inteira e é a mesma função no navegador e na Edge Function. Log fora de ordem, tick
+  repetido ou código desconhecido lança `LogInvalido`. Partidas acima de `TICKS_MAX` (30 min) são
+  inválidas. **Ação nova entra no fim de `ACOES`**, nunca no meio: o código de um log antigo
+  passaria a significar outra ação.
 - **Motor puro:** não importa UI, DS, `data/`, `features/`; não toca em `localStorage`, `window`,
-  `document` ou `fetch`. Imports internos com extensão `.ts` explícita (Node e Deno rodam direto).
+  `document`, `fetch` ou relógio. Imports internos com extensão `.ts` explícita (Node e Deno rodam
+  direto). `tests/fronteiras.test.ts` trava isso.
 - **Dependência numa direção só:** `screens → features → data → engine`. `components/` é folha.
 - **Consumo pelo barrel** (`src/engine/index.ts`); só `scripts/` e `tests/` importam por dentro.
 
@@ -196,65 +126,59 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   `VERSAO_REGRAS`, roda a simulação e mostra o antes/depois no PR.
 - `tests/motor.golden.test.ts` é **contrato**: seed fixa entra, resultado fixo sai. Snapshot que
   quebra num refactor significa refactor errado. Só se atualiza quando mudar o jogo é o objetivo
-  declarado, junto com `VERSAO_REGRAS` nova.
+  declarado, junto com `VERSAO_REGRAS` nova (`npx vitest run -u`). Jogo novo começa apagando
+  `tests/__snapshots__/` e gerando os seus.
 - `tests/pista.sim.test.ts` garante que a pista é passável: o bot sobrevive 60 s em várias seeds.
   Falhou = o gerador montou um trecho impossível.
 - **Balanceamento se valida com simulação em volume**, não com uma partida no navegador:
   `npm run sim:partidas -- --partidas 30 --minutos 5`. O bot (`scripts/bot.ts`) olha o futuro e
   joga melhor que qualquer pessoa: é o teto de habilidade, não o jogador médio. A simulação também
   reproduz cada log com `simularPartida` e acusa divergência de determinismo.
-- Referência r10 (30 partidas do bot, 5 min cada): igual à r9, com mediana de 4,1 km, 30 de 30 no limite e
-  6.654 pontos. O bot já passava abaixado por todo teto; o pulo duplo por cima é para o jogador.
-- Referência r9 (30 partidas do bot, 5 min cada, cenários de 500 m, sem água, buracos de 3
-  tamanhos): mediana 4,1 km, 30 de 30 no limite, sem batida, queda ou pego. Ficou mais fácil para o bot que a r8: sem teto nos cenários novos, nenhum trecho
-  força lama. Sólido alto sem perfil mata o bot: yatai e caçamba como caixa reta deram 8 batidas em
-  30, porque a parede da frente ficava acima do que dá para subir no respiro entre dois trechos.
-  Obstáculo novo acima de ~2 m nasce com perfil em `perfis.ts`.
-- Referência r8 (30 partidas do bot, 5 min cada): mediana 4,1 km, 12 de 30 pegos e 18 no limite.
-  A mediana bate no teto de 5 min, então não mede até onde o bot iria.
-- Referência r7 (30 partidas do bot, 5 min cada): mediana 3,6 km, 22 de 30 pegos e 8 no limite.
-  r5 e r6 ficaram iguais em distância (3,6 km); detalhe em `PRD/PRD-conceito-e-regras-do-jogo.md` §5.
-- Referência r4 (30 partidas do bot, 5 min cada): mediana 3,8 km, 23 de 30 pegos pelo tutor e 7
-  no limite de tempo. Referência r3: mediana 3,7 km, 23 pegos e 7 no limite. Referência r2: mediana 3,7 km, 22 pegos e 8 no limite. Referência r1 (10 partidas do bot, 10 min cada): mediana 4,3 km; 8 de 10 terminam com o tutor
-  alcançando, porque alguns trechos do centro forçam lama.
-
-### Decisões em aberto
-
-- Batida e queda encerram na hora. Alternativa: tropeço que só custa vantagem.
-- A seed de partida para o ranking: sorteada pelo servidor a cada partida (protege contra
-  escolher seed fácil) ou seed diária igual para todos.
-- Valores de pontos, velocidades e sujeira são primeira tentativa, sem teste com pessoas.
+- Referência `exemplo-1` (10 partidas do bot, 3 min cada): 10 de 10 no limite, 1.703 m.
 
 ---
 
-## Música de fundo
+## Arte do canvas
 
-- Duas trilhas longas, geradas na ElevenLabs Music por `scripts/musica/gerar-trilhas.ts` (os prompts
-  ficam lá): `home` (100 BPM) e `corrida` (150 BPM). O `App.tsx` escolhe a trilha pela tela; a
-  abertura não tem (som do logo) nem a história: cada quadro dela toca duas camadas juntas, o
-  efeito puro e a cena com música de desenho (`scripts/som/gerar-efeitos.ts`, sons em
-  `src/features/historia/sons/`, volume de cada camada e limitador em `efeitosHistoria.ts`). Os efeitos não seguem o
-  switch da música.
-- Fim de partida (`tocarFimDePartida`): a trilha da corrida sai na batida, sem vinheta (o André
-  preferiu silêncio), e a trilha `banho` entra em loop junto com a imagem do banho. Vem do script
-  de efeitos, pedida como loop (sem `inicio`/`fim`), e segue o switch da música. A pausa só abafa a
-  trilha da corrida (`abafarMusica`).
-- Sons da corrida (`src/features/corrida/som/sonsCorrida.ts`, mesmo script): o cachorro ofegante
-  em loop enquanto corre, os passos do tutor e o pouso (o mesmo som para os dois). Saem do que `desenharCena`
-  acabou de desenhar (o tutor só existe ali, refazendo o rastro), não do motor. Os passos são
-  recortes de uma gravação só (`PASSOS`): regerou, mede os ataques de novo.
-- A chave (`ELEVENLABS_API_KEY`) mora em `.env.local` e só o script usa. O jogo nunca chama a
-  ElevenLabs: toca os mp3 de `src/features/musica/trilhas/`.
-- **A gravação não é loop.** Cada uma tem 60 s com um final no último compasso. O loop é um
-  trecho de compasso a compasso (`inicio`/`fim` em `tocadorMusica.ts`), e a emenda é feita ao
-  decodificar, cruzando o começo com o que vinha depois do `fim`. Trilha regerada = medir
-  `inicio`/`fim` de novo (andamento pela autocorrelação do envelope, fim pela correlação da forma
-  de onda); valores velhos numa gravação nova dão um tropeço a cada volta.
+- **Tudo que o canvas desenha é decodificado antes da partida**, como `ImageBitmap`
+  (`carregarArte` em `src/features/jogo/arte/carregarArte.ts`). A carga começa na abertura e a
+  home só libera o Jogar com `liberada` (mostra "Carregando… N%"; depois de 15 s libera de
+  qualquer jeito e o canvas desenha o vetor de reserva). Motivo: um `<img>` só é decodificado no
+  primeiro `drawImage`, dentro do quadro. Medido no desktop: até 22 ms por imagem (um quadro tem
+  16,7 ms). `img.decode()` **não** resolve para canvas (mesmo custo); `createImageBitmap` resolve
+  (0,6 ms). Imagem nova do canvas entra na lista de `carregarArteDoJogo`, nunca por `new Image()`
+  solto. SVG não passa por `createImageBitmap` em todo navegador e cai no `<img>` de reserva: para
+  arte pesada, use WebP/PNG.
+- **Custo do quadro no celular** (`src/features/jogo/densidade.ts`): o canvas não passa de
+  densidade 2 (`DENSIDADE_MAX`); com 3, eram ~2340 × 1080 pixels por quadro sem detalhe a ganhar.
+  A arte é decodificada já no tamanho que a tela mostra (`fracaoDaArteNaTela`, mais `escalaUtil`
+  para folhas com resolução sobrando) e nunca acima de 4096 px de lado, o limite de textura de
+  muita GPU Android. Por isso **quem desenha mede pelo tamanho real da imagem**: proporção, ou
+  `desenharQuadroDaFolha` para folhas de quadros. Recortar pelas medidas do arquivo pega o quadro
+  errado.
+- Efeito que precisa de máscara ou degradê sobre parte da tela passa por um canvas à parte só na
+  faixa do efeito: com o canvas do tamanho da tela, limpar, mascarar e copiar a tela inteira várias
+  vezes por quadro derrubou o Hora do Banho no celular.
+
+---
+
+## Música e efeitos
+
 - Web Audio, não `<audio loop>`: o elemento deixa um buraco a cada volta. Um `AudioContext` só
   para música e efeitos (`src/features/som/contextoAudio.ts`). O navegador só libera som depois de
   um gesto, então todo toque ou tecla tenta destravar (o iOS volta a suspender o áudio depois de
   uma ligação). O contexto dorme só com o jogo em segundo plano; música desligada é volume zero,
   não contexto suspenso, senão os efeitos ficariam mudos junto.
+- `tocadorMusica.ts` aceita trilha gravada (`url` + `inicio`/`fim`) ou sintetizada. O exemplo usa
+  arpejos sintetizados (`trilhasExemplo.ts`) para não carregar mp3. **Gravação de verdade quase
+  nunca é loop:** o loop é um trecho de compasso a compasso (`inicio`/`fim`), e a emenda é feita
+  ao decodificar, cruzando o começo com o que vinha depois do `fim`. Trilha regravada = medir
+  `inicio`/`fim` de novo; valores velhos numa gravação nova dão um tropeço a cada volta.
+- A pausa e o fim de partida só abafam a trilha (`abafarMusica`). Efeitos (`efeitosSonoros.ts`)
+  saem do que o motor já fez (moeda contada, saída do chão), não do toque, e não seguem o switch
+  da música.
+- Chave de API de geração de música/som (se houver) mora em `.env.local` e só o script usa. O
+  jogo nunca chama a API: toca os arquivos gerados.
 
 ---
 
@@ -262,9 +186,12 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
 
 [Onde mora o save: `localStorage`, conta, ambos.]
 
-Preferências do aparelho (`src/data/preferencias.ts`): música de fundo em
-`horadobanho:musica` (`'0'` desliga; ausente ou qualquer outro valor conta como ligada). Quem
-toca a música assina `assinarMusica` para reagir ao switch da janela de configurações na hora.
+Toda chave do aparelho usa o prefixo `ID_JOGO` (`src/configuracao.ts`): recorde em
+`<ID_JOGO>:recorde`, música em `<ID_JOGO>:musica` (`'0'` desliga; ausente ou qualquer outro
+valor conta como ligada), nome do ranking em `<ID_JOGO>:nome`, e o IndexedDB do id anônimo se
+chama `<ID_JOGO>`. Troque o `ID_JOGO` **antes** do primeiro deploy: depois, trocar é perder o
+save de quem já joga (regra 6 abaixo). Quem toca a música assina `assinarMusica` para reagir ao
+switch na hora.
 
 Se houver save local versionado (`VERSAO_ATUAL` + migrations encadeadas `migrarV<n>ParaV<n+1>`):
 
@@ -298,6 +225,9 @@ O nome do arquivo é `<version>_<name>.sql` com a versão **exata** do ledger
 (`supabase_migrations.schema_migrations`). Timestamp inventado é pior que arquivo ausente: o
 `db push` tenta reaplicar.
 
+A migration do template (`20261107024958_ranking.sql`) nunca foi aplicada em projeto nenhum. Jogo
+novo ajusta o placar do ranking nela **antes** do primeiro `db push`; depois disso, só migration nova.
+
 ### Migration vai pro ar pelo CLI, não pelo MCP
 
 `apply_migration` grava a versão da hora do apply, não a do nome do arquivo, e cada migration
@@ -320,7 +250,7 @@ O setdiff compara versões; DDL rodado direto por `execute_sql` não registra ve
 passa limpo. **Use `apply_migration`/arquivo para qualquer DDL.** A checagem que pega DDL
 escapado é reconstruir: criar uma **branch do Supabase** (reaplica a pasta num banco vazio) e
 comparar `information_schema.columns` contra produção. Faça isso cedo e de vez em quando: no
-projeto anterior, a pasta "reconstruía o schema" no papel e falhou em 54 de 87 migrations quando
+THE IMMORTAL, a pasta "reconstruía o schema" no papel e falhou em 54 de 87 migrations quando
 alguém finalmente testou.
 
 ---
@@ -369,24 +299,23 @@ comm -23 <(echo "$SLUGS_DO_list_edge_functions" | sort) <(ls supabase/functions 
 
 ---
 
-## Ranking e anti-fraude (se houver ranking)
+## Ranking e anti-fraude
 
 - O payload carrega **decisões, nunca resultados**. O servidor recalcula rodando o mesmo motor.
-- Versões separadas: formato do payload, dados de referência, e regras (hash das constantes de
-  balanceamento gerado no build, com teste que falha se a constante mudar sem a versão mudar).
-- Rejeição por versão ≠ rejeição por fraude: códigos de erro distintos, contados separados.
-- Id anônimo gerado no cliente é só agrupamento de telemetria, nunca segurança. Defesa real:
-  rate limit por IP + captcha (ex.: Turnstile) no servidor.
-- Tabela de ranking não legível direto pelo cliente quando houver jogadores simulados: leitura
-  só por RPC `security definer`.
-- **Como está hoje:** `public.ranking` guarda uma linha por jogador com a partida **mais longa**
-  (empate: mais pontos), mais seed + log para auditoria. O jogador é um id anônimo do aparelho, no
+- Versões separadas: formato do payload, dados de referência, e regras (`VERSAO_REGRAS`).
+  Rejeição por versão ≠ rejeição por fraude: códigos de erro distintos, contados separados.
+- Id anônimo gerado no cliente é só agrupamento, nunca segurança. Defesa real: rate limit por IP
+  + captcha (ex.: Turnstile) no servidor.
+- Tabela de ranking não legível direto pelo cliente: leitura só por RPC `security definer`.
+- **Como está no template:** `public.ranking` guarda uma linha por jogador com a partida de **mais
+  pontos**, mais seed + log para auditoria. O jogador é um id anônimo do aparelho, no
   **IndexedDB**, não no `localStorage`: o backup da casca Android leva o `localStorage` da WebView
-  para o aparelho novo, e o id clonado faria dois aparelhos gravarem como o mesmo jogador. O cliente lê pela RPC `ranking_top` (sem `jogador_id`: com ele, qualquer um gravaria
-  no lugar de outro) e grava só pela Edge Function `registrar-partida`, que chama
-  `registrar_partida` com `service_role`. A regra do nome (`normalizarNome`/`nomeValido`) mora no
-  motor para valer igual no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o painel
-  aberto pelo ícone da home avisa que o ranking está fora do ar e o jogo segue.
+  para o aparelho novo, e o id clonado faria dois aparelhos gravarem como o mesmo jogador. O
+  cliente lê pela RPC `ranking_top` (sem `jogador_id`: com ele, qualquer um gravaria no lugar de
+  outro) e grava só pela Edge Function `registrar-partida`, que chama `registrar_partida` com
+  `service_role`. A regra do nome (`normalizarNome`/`nomeValido`) mora no motor para valer igual
+  no navegador e na function. Sem `VITE_SUPABASE_URL` no build, o painel do ranking avisa que
+  está fora do ar e o jogo segue.
 - **Pendentes:** seed emitida pelo servidor (hoje o cliente sorteia), Turnstile, filtro de nome
   ofensivo, e o que fazer com o ranking quando `VERSAO_REGRAS` mudar (hoje mistura versões).
 
@@ -396,11 +325,11 @@ comm -23 <(echo "$SLUGS_DO_list_edge_functions" | sort) <(ls supabase/functions 
 
 O jogo é web; as lojas recebem cascas finas. Mudança no jogo vai pro ar com o deploy do site.
 Versão nova de loja só quando a casca muda (ícone, permissões, SDK nativo). Detalhes e checklist:
-`android/README.md`, `ios/README.md` e `LICOES-LOJAS-E-ANUNCIOS.md`.
+`android/README.md` e `LICOES-LOJAS-E-ANUNCIOS.md`.
 
-1. **A casca anuncia o que sabe fazer.** No Android, pela ponte: `versaoCasca()` devolve a lista
-   de `capacidades` (PR 2 da casca). Sem a ponte, ou sem a capacidade na lista, o site assume
-   casca antiga ou navegador. Nunca presuma a capacidade.
+1. **A casca anuncia o que sabe fazer.** Quando houver ponte JS↔nativo, uma chamada tipo
+   `versaoCasca()` devolve a lista de `capacidades`. Sem a ponte, ou sem a capacidade na lista, o
+   site assume casca antiga ou navegador. Nunca presuma a capacidade.
 2. **Recompensa só no servidor (SSV).** Nonce criado pelo site, AdMob chama a Edge Function, que
    confere a assinatura do Google. Nada é concedido no aparelho.
 3. **Bloco de anúncio novo = PR que adiciona o ID na lista da função SSV, antes de publicar a
@@ -414,8 +343,8 @@ Versão nova de loja só quando a casca muda (ícone, permissões, SDK nativo). 
 6. **iOS: `WKAppBoundDomains` bloqueia o SDK do AdMob.** Tirar a lista libera o anúncio e mata o
    cache offline no WKWebView. Decisão a tomar e registrar aqui: [decisão].
 7. **Android: dentro da WebView só roda a origem do jogo** (`BuildConfig.ORIGENS_PERMITIDAS`,
-   lida pelo `ClienteWeb` e pela ponte). Link para fora abre em Custom Tab. Domínio novo entra na
-   lista **antes** de o site mudar de endereço, senão o app abre o próprio jogo numa aba externa.
+   lida pelo `ClienteWeb`). Link para fora abre em Custom Tab. Domínio novo entra na lista
+   **antes** de o site mudar de endereço, senão o app abre o próprio jogo numa aba externa.
 8. Consentimento: UMP antes do primeiro anúncio onde a lei exigir; no iOS também ATT. Item no
    Perfil reabre o formulário.
 9. Build Release das cascas falha se faltar secret de anúncio: nunca publicar com ID de teste.
@@ -428,11 +357,12 @@ Versão nova de loja só quando a casca muda (ícone, permissões, SDK nativo). 
 
 ```bash
 npm run dev
-npm run lint            # lint + verificador de fronteiras
+npm run lint            # oxlint
 npm run typecheck
-npm run test            # golden master do motor
+npm run test            # golden master e regras do motor, ranking, locales, fronteiras
 npm run test:all
 npm run build
+npm run sim:partidas -- --partidas 30 --minutos 5
 ```
 
 **Antes de abrir qualquer PR:**
@@ -470,8 +400,8 @@ proteção, porque ninguém procura mais.
 Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: português.
 
 - Nenhum texto de UI literal no JSX nem em `features/`. Copy em `src/locales/{..}/<ns>.json`.
-- O idioma-fonte gera o tipo das chaves: chave inexistente não compila. Teste confere que toda
-  chave existe em todos os idiomas, com as mesmas variáveis.
+- O idioma-fonte gera o tipo das chaves: chave inexistente não compila. `tests/i18n.test.ts`
+  confere que toda chave existe em todos os idiomas, com as mesmas variáveis.
 - O motor não tem idioma. Traduz na exibição, não no dado gravado.
 - Número e ordinal por `toLocaleString(localeAtual())`; contagem por plural do i18next
   (`{ count }`, com `_zero` quando o zero existe).
@@ -480,19 +410,21 @@ Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: portu
 
 ## Estilo
 
-- CSS via tokens do DS. Sem hex, px de espaçamento ou font-size soltos. Token novo nasce no DS.
+- CSS via tokens (`tokens.css`, ou do DS quando existir). Sem hex, px de espaçamento ou font-size
+  soltos. Token novo nasce no arquivo de tokens. Cores do canvas ficam na paleta do desenho
+  (`desenharCena.ts`), não no CSS.
 - Sem `style={{...}}` para valor de design. Exceção: valor calculado em runtime, passado como
   custom property (`style={{ '--progresso': v }}`) com a regra no `.css`.
 - Toda tela em `features/*/screens/` tem pasta própria com `Tela.tsx` + `tela.css`.
 - Componente que conhece conceito do domínio pertence a `features/`, não a `components/`.
-- Antes de escrever componente novo, verifique o DS.
 - Bottom sheet, não navegação cheia, para detalhe no meio do fluxo.
 - **Sem router, troca de tela precisa resetar o scroll** (hook no componente que decide a tela).
 - **O jogo é sempre desenhado na proporção de celular deitado (780 × 360, 19,5:9).** `App.tsx`
   envolve tudo na `.moldura-celular` (`global.css`), o maior retângulo nessa proporção que cabe na
   janela; o resto vira faixa. A moldura define `--altura-tela`, e toda tela mede o resto pelo
   próprio contêiner (`cqh`/`cqw`, `clientWidth`). Tela nova não usa `vw`/`vh`, `window.inner*` nem
-  `position: fixed`: tudo isso escapa da moldura.
+  `position: fixed`: tudo isso escapa da moldura. Jogo em pé troca a proporção ali e a orientação
+  no manifesto (`vite.config.ts`) e na casca (`AndroidManifest.xml`).
 - **Altura de tela é `var(--altura-tela, 100svh)`**, não `100svh` puro: somado ao padding de
   safe-area, o documento fica maior que a tela no iPhone. No desktop o erro não aparece.
 
@@ -503,17 +435,17 @@ Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: portu
 Sem router e sem nada empurrado na History API, o voltar do celular **fecha o app**, inclusive
 com um bottom sheet aberto. Desde a primeira tela:
 
-- Um hook de camadas (ex.: `useVoltarNativoEmCamadas`) com **pilha única no módulo**, não por
+- `useVoltarNativoEmCamadas` (`src/features/navegacao/`), com **pilha única no módulo**, não por
   instância: um voltar é entregue só a quem está no topo.
 - O botão de voltar **em tela** chama `history.back()`, não o callback de fechar direto.
 - Toda tela ou camada nova que abre por cima de outra entra na tabela abaixo.
 
 | Camada | Como |
 | --- | --- |
-| Janela de configurações (aberta pelo ícone de configurações da home) | `useVoltarNativoEmCamadas` (`src/features/navegacao/`); o X, o Esc e o toque no véu chamam `history.back()` |
-| Pausa e fim de partida (sobreposições da `TelaCorrida`) | **pendente:** ainda não entram no histórico; o voltar do celular fecha o app |
-| História e corrida abertas pela home (`App.tsx`) | **pendente:** o voltar do celular fecha o app em vez de voltar para a home |
-| Painel do ranking aberto pelo ícone da home (`TelaHome`) | **pendente:** fecha só pelo próprio ícone; o voltar do celular fecha o app |
+| Jogo aberto pela home (`App.tsx`) | `useVoltarNativoEmCamadas`; o botão Menu da pausa e do fim chama `history.back()` |
+| Janela de configurações (ícone da home) | `useVoltarNativoEmCamadas`; o X, o Esc e o toque no véu chamam `history.back()` |
+| Painel do ranking (ícone da home) | `useVoltarNativoEmCamadas`; o próprio ícone fecha com `history.back()` |
+| Pausa e fim de partida (sobreposições da `TelaJogo`) | **pendente:** o voltar sai do jogo para a home, em vez de fechar só a sobreposição |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.
 Verificação manual: abrir a camada, ler `history.length`, chamar `history.back()`.
@@ -523,7 +455,7 @@ Verificação manual: abrir a camada, ler `history.length`, chamar `history.back
 ## Merge, deploy e produção são do André — nunca do Claude
 
 O Claude abre PR e para ali. Vale em qualquer ferramenta (git, `gh`, MCP do GitHub, MCP do
-Supabase, `wrangler`, API do Cloudflare). No projeto anterior, sessões do Claude mergearam PRs
+Supabase, `wrangler`, API do Cloudflare). No THE IMMORTAL, sessões do Claude mergearam PRs
 sozinhas (uma 2 minutos depois de aberta, antes do CI) e aplicaram migrations em produção antes
 do merge. Nada disso derruba CI, por isso vira regra escrita.
 
@@ -541,7 +473,8 @@ Se uma tarefa parecer exigir quebrar uma destas regras, pare e pergunte.
 
 ## Ao trabalhar neste repo
 
-- PRDs em `PRD/` são a fonte da verdade de produto. Leia o relevante antes de implementar.
+- PRDs em `PRD/` são a fonte da verdade de produto. Leia o relevante antes de implementar. No
+  template a pasta só tem o índice: o jogo novo escreve os seus.
 - PRDs também são registro histórico: instrução de conexão dentro de um PRD é superada por este
   arquivo. Documento obsoleto leva aviso no topo; o corpo não é reescrito.
 - Mudança que afeta balanceamento: rode a simulação e mostre o antes/depois.

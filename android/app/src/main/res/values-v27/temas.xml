@@ -2,7 +2,7 @@
 <resources>
     <!-- Deitado, o recorte da câmera fica na lateral. shortEdges deixa o jogo usar a tela toda;
          a ponte (PR 2) avisa o site onde o recorte está. -->
-    <style name="Tema.HoraDoBanho" parent="Tema.HoraDoBanho.Base">
+    <style name="Tema.Jogo" parent="Tema.Jogo.Base">
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 </resources>

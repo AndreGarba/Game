@@ -1,8 +1,11 @@
 // Constantes de balanceamento. Mudou qualquer valor daqui → mudou o jogo: suba
 // VERSAO_REGRAS, rode `npm run sim:partidas` e mostre o antes/depois no PR.
 // Unidades: metros, segundos, ticks.
+//
+// Os valores abaixo são do jogo de exemplo (quadrado que corre e pula). Jogo novo troca tudo,
+// menos o passo fixo e o teto de partida, que são do contrato de replay.
 
-export const VERSAO_REGRAS = 'r10'
+export const VERSAO_REGRAS = 'exemplo-1'
 
 // Passo fixo: o motor nunca recebe "tempo decorrido". 60 ticks = 1 segundo de jogo,
 // em qualquer aparelho, e o servidor reproduz a partida tick a tick.
@@ -11,61 +14,28 @@ export const DT = 1 / TICKS_POR_SEGUNDO
 // 30 minutos. Partida acima disso é tratada como inválida pelo servidor.
 export const TICKS_MAX = TICKS_POR_SEGUNDO * 60 * 30
 
-// Velocidade base cresce com a distância e se aproxima de VEL_MAX sem passar:
+// Velocidade cresce com a distância e se aproxima de VEL_MAX sem passar:
 // v(d) = VEL_MAX - (VEL_MAX - VEL_INICIAL) * VEL_K / (VEL_K + d)
-export const VEL_INICIAL = 8
-export const VEL_MAX = 20
-export const VEL_K = 1500
+export const VEL_INICIAL = 6
+export const VEL_MAX = 14
+export const VEL_K = 800
 
-// r7: o pulo volta ao de r4 (2,1 m, 0,65 s no ar). Para os obstáculos em tamanho real (carro de
-// 2,6 m) existe o pulo duplo: um segundo pular no ar, uma vez por pulo, dá de novo VEL_PULO.
+// Pulo de ~2,1 m de altura e 0,65 s no ar.
 export const GRAVIDADE = 40
 export const VEL_PULO = 13
-// Abaixar no ar vira mergulho: cai rápido para o chão.
-export const VEL_MERGULHO = -18
-export const ABAIXAR_TICKS = 36
 
-// r10: os tetos da cidade vêm presos no muro do fundo (letreiro, varal, buganvília, vasos) e
-// terminam no alto dele (o alto dos painéis; só os pilares vão a 2,5 m), não no céu. Acima disso
-// está livre: o pico do pulo simples (2,11 m) mal encosta e não atravessa; o duplo passa.
-export const TOPO_TETO = 2.1
-// A árvore fica atrás do muro e só o galho passa para a frente; acima dele vêm o tronco e a copa,
-// então não há por cima: a colisão vai até o céu, como o teto antes da r10. Só passa abaixado.
-export const TOPO_ARVORE = 100
-
-export const CACHORRO_LARGURA = 0.9
-export const CACHORRO_ALTURA_EM_PE = 0.9
-export const CACHORRO_ALTURA_ABAIXADO = 0.45
-// Quanto o cachorro pode estar abaixo do topo de uma plataforma e ainda pousar nela.
+export const JOGADOR_LADO = 0.8
+// Quanto o jogador pode estar abaixo do topo de um bloco e ainda pousar nele.
 // Sem essa folga, um pouso no limite do tick vira batida frontal.
 export const TOLERANCIA_POUSO = 0.15
-// Na rampa a superfície sobe a cada tick: quanto acima da altura do tick anterior ela ainda
-// segura o cachorro. Cobre a subida de um tick na velocidade máxima e a queda de um mergulho.
-export const ADERENCIA_RAMPA = 0.4
-// r6: sólido com perfil (carro, tora...) segura o cachorro grudado na superfície enquanto ela
-// desce até esta distância por tick; mais que isso (a ponta do capô), ele cai.
-export const ADERENCIA_PERFIL = 0.5
-// Abaixo disso, caiu no rio/buraco.
+// Abaixo disso, caiu no vão.
 export const LIMITE_QUEDA = -2
 
-// r8: cada poça de lama soma 1 de sujeira, cada lenço tira 1. O cachorro aguenta SUJEIRA_MAX
-// poças; a seguinte encerra a partida (motivo 'pego').
-export const SUJEIRA_MAX = 3
-
-// r8: a distância do tutor é um degrau fixo por nível de sujeira: limpo fica a VANTAGEM_MAX e cada
-// nível o traz para mais perto, sem aproximação gradual. Ver vantagemTutor em fisica.ts.
-export const VANTAGEM_MAX = 20
-
-// r8: a pista continua calibrada em 80% da velocidade base (o pior caso de sujeira até r7, quando
-// a lama freava o cachorro). Sem isso, a largura dos vãos e das poças mudaria junto com esta regra.
-export const FATOR_ALCANCE_PISTA = 0.8
-
-export const RAIO_COLETAVEL = 0.35
+export const RAIO_COLETAVEL = 0.4
 export const PONTOS_POR_METRO = 1
-export const PONTOS_OSSO = 10
-export const PONTOS_OSSO_OURO = 50
+export const PONTOS_MOEDA = 10
 
-// Geração preguiçosa: só existe pista até GERAR_A_FRENTE metros à frente do cachorro.
-export const GERAR_A_FRENTE = 150
+// Geração preguiçosa: só existe pista até GERAR_A_FRENTE metros à frente do jogador.
+export const GERAR_A_FRENTE = 120
 export const DESCARTAR_ATRAS = 30
-export const TRECHO_INICIAL_LIVRE = 40
+export const TRECHO_INICIAL_LIVRE = 30

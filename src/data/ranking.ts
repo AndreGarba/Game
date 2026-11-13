@@ -8,7 +8,6 @@ const CHAVE_PUBLICA = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | 
 export interface LinhaRanking {
   posicao: number
   nome: string
-  distancia: number
   pontos: number
 }
 
@@ -21,9 +20,9 @@ export interface PartidaParaRanking {
 
 export interface RespostaRegistro {
   nome: string
-  distanciaPartida: number
+  pontosPartida: number
   melhor: boolean
-  melhorDistancia: number
+  melhorPontos: number
   posicao: number
 }
 

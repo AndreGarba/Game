@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Tema.HoraDoBanho">
+        android:theme="@style/Tema.Jogo">
 
         <!-- configChanges: girar ou dobrar o aparelho não recria a Activity, para a WebView não
              recarregar no meio de uma partida.
@@ -36,7 +36,7 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/Tema.HoraDoBanho.Abertura">
+            android:theme="@style/Tema.Jogo.Abertura">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

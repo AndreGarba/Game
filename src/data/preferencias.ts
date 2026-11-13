@@ -1,6 +1,8 @@
 // Preferências do aparelho. Ficam no localStorage, que o backup da casca Android leva para o
 // aparelho novo: quem desligou a música não quer ouvir de novo depois de trocar de celular.
-const CHAVE_MUSICA = 'horadobanho:musica'
+import { ID_JOGO } from '../configuracao.ts'
+
+const CHAVE_MUSICA = `${ID_JOGO}:musica`
 
 type Ouvinte = () => void
 const ouvintes = new Set<Ouvinte>()

@@ -1,17 +1,12 @@
-# PRDs do Hora do Banho
+# PRD — índice
 
-Fonte da verdade de produto. Leia o PRD relevante antes de implementar (ver `CLAUDE.md`).
+Fonte da verdade de produto do jogo: jornadas, telas, regras de negócio, cálculos, textos,
+validações e critérios de aceite. O template não tem PRD de jogo; o jogo novo escreve os seus
+aqui e lista cada arquivo nesta tabela.
 
-| PRD | Assunto | Status |
-| --- | --- | --- |
-| [PRD-conceito-e-regras-do-jogo.md](PRD-conceito-e-regras-do-jogo.md) | O que é o jogo: cachorro, tutor, lama, lenços, ossinhos, cenários, fim e pontuação | regras r1 no motor |
-| [PRD-motor-e-ranking-por-replay.md](PRD-motor-e-ranking-por-replay.md) | Motor determinístico, geração da pista, ranking por replay, testes e simulação | motor pronto; servidor a construir |
-| [PRD-tela-de-corrida.md](PRD-tela-de-corrida.md) | Tela jogável: fluxo, controles, cena, cachorro e tutor, placar, idiomas, recorde | jogável no navegador |
-| [PRD-casca-android-hibrida.md](PRD-casca-android-hibrida.md) | Casca Android em Kotlin com WebView própria e ponte JS↔nativo (substitui o plano TWA) | aprovado; casca mínima feita |
-| [DESIGN-estilo-visual-hq-manga.md](DESIGN-estilo-visual-hq-manga.md) | Direção de arte HQ/mangá para imagens da interface: traço, cor, retícula, onomatopeias, prompt base | direção inicial |
+| Arquivo | Assunto |
+| --- | --- |
+| — | — |
 
-## Referência herdada
-
-[kit-the-immortal/](kit-the-immortal/00-LEIA-ME.md) guarda os PRDs que vieram no kit de novo jogo
-(arquitetura e backend, lojas e apps, monetização, sistemas e UX). São de outro jogo: servem de
-referência para quando chegarmos nesses assuntos, não são especificação do Hora do Banho.
+Sugestão de ordem: visão e público, loop principal, controles, progressão e dificuldade,
+pontuação e ranking, telas e copy, áudio e arte, monetização e lojas.

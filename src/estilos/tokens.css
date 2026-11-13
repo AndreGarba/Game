@@ -1,5 +1,5 @@
-/* Tokens provisórios até o design system existir. Token novo nasce aqui, nunca solto no CSS
-   de uma tela. */
+/* Tokens provisórios até o design system do jogo existir. Token novo nasce aqui, nunca solto no
+   CSS de uma tela. Jogo novo troca os valores (e, se tiver DS, aponta para ele). */
 :root {
   --cor-fundo: #7cc6f2;
   --cor-superficie: #ffffff;
@@ -12,14 +12,6 @@
   --cor-perigo: #e5484d;
   --cor-trilho: rgba(31, 42, 55, 0.15);
   --cor-veu: rgba(15, 23, 42, 0.45);
-  /* Preto de HQ: fundo da página da história, divisórias e texto dos balões. */
-  --cor-hq-preto: #000000;
-  /* Creme do fundo dos selos do HUD (amostrado da arte), para cobrir os zeros desenhados. */
-  --cor-hud-creme: #fdf3e3;
-  /* Azul da retícula do painel de fim de partida (amostrado da arte), para o rótulo "Pontos". */
-  --cor-hud-azul: #2f6fc4;
-  /* Figma: Grayscale/gray-700. */
-  --cinza-700: #0f131b;
   /* Faixas em volta da moldura de celular deitado, onde a janela sobra. */
   --cor-faixa-moldura: #000000;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */
@@ -37,8 +29,6 @@
   --raio-total: 999px;
 
   --fonte: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  /* Letreiro de HQ dos balões (Figma: Luckiest Guy), servida pelo próprio app via @fontsource. */
-  --fonte-hq: 'Luckiest Guy', var(--fonte);
   --texto-1: 12px;
   --texto-2: 14px;
   --texto-3: 16px;
@@ -47,6 +37,7 @@
   --texto-6: 40px;
 
   --tamanho-animacao-destaque: 160px;
+  --tamanho-botao-icone: 40px;
 
   --sombra-1: 0 2px 8px rgba(0, 0, 0, 0.15);
   --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.25);
