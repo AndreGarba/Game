@@ -224,19 +224,17 @@ export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 377, altura: 320, pe
 // mesmo chão das outras; 2 px mais alta que a do galope porque o nariz sobe no impulso.
 export const SPRITE_CACHORRO_PULO = { quadros: 8, largura: 378, altura: 322, pes: 11 } as const
 
-// Folhas da corrida e do pulo do tutor, renderizadas do modelo 3D do Meshy
-// (PRD/referencias/tutor-3d/tutor-3d.blend): a corrida é a animação do Meshy; o pulo foi posado à
-// mão no mesmo esqueleto. As duas têm os mesmos pixels por metro e o mesmo chão; `pes` passa de 6
-// onde um pé mais perto da câmera aparece abaixo da linha do chão.
+// Folhas do tutor, renderizadas do modelo 3D do Meshy (PRD/referencias/tutor-3d/tutor-3d.blend):
+// a corrida é a animação do Meshy; pulo e slide foram posados à mão no mesmo esqueleto, copiando o
+// movimento das folhas antigas do ChatGPT. As três têm os mesmos pixels por metro e o mesmo chão;
+// `pes` passa de 6 onde um pé mais perto da câmera aparece abaixo da linha do chão.
 export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 289, altura: 400, pes: 6 } as const
 
 // Pulo: 10 quadros, do último passo ao tropeço depois do pouso. A altura do pulo vem do motor.
 export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 373, altura: 400, pes: 22 } as const
 
-// Slide: continua a arte do ChatGPT (o André preferiu o movimento dela ao slide posado no 3D):
-// 6 quadros (2 descendo, 4 deslizando em loop), PRD/referencias/tutor-slide.png recortado com
-// `--quadros-minimos 6 --pes-no-rodape`. A pose 3D descartada está em `poses_tutor`, quadros 21 a 26.
-export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 482, altura: 400, pes: 6 } as const
+// Slide: 6 quadros (2 descendo, 4 sentado deslizando em loop, com a mão de perto no chão).
+export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 405, altura: 400, pes: 8 } as const
 
 /** Uma folha de quadros lado a lado, com as medidas do arquivo. */
 export interface Folha {

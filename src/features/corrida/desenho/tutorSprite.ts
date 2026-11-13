@@ -13,19 +13,15 @@ import {
 // Altura do quadro inteiro no mundo, em metros.
 // 3,51 = 1,95 × 1,8: ajustado a olho para casar com o cenário de cidade.
 const ALTURA_CORRIDA_M = 3.51
-// Corrida e pulo saem do mesmo render, com os mesmos pixels por metro: a altura do pulo no mundo é
-// proporcional à altura do arquivo.
+// As três folhas saem do mesmo render, com os mesmos pixels por metro: a altura de cada uma no
+// mundo é proporcional à altura do arquivo.
 const ALTURA_PULO_M = (ALTURA_CORRIDA_M * PULO.altura) / CORRIDA.altura
-// O slide é a arte antiga, de outra escala: 3,51 m × 105/113, porque o crânio mede 105 px de largura
-// na folha da corrida e 113 px na do slide. Medir pela cabeça evita o salto de tamanho na troca.
-const ALTURA_SLIDE_M = 3.26
+const ALTURA_SLIDE_M = (ALTURA_CORRIDA_M * SLIDE.altura) / CORRIDA.altura
 // O recorte de cada folha não fica centrado no mesmo ponto do corpo que o da corrida (pernas e
-// braços esticados para um lado). Estes avanços põem o corpo onde estava o da corrida; sem eles, o
-// tutor dá um salto para o lado ao pular ou abaixar. O do pulo foi medido nos renders; o do slide é
-// o 0,21 m que alinhava o slide à corrida antiga, mais os 0,21 m que a cabeça da corrida nova fica
-// à frente da antiga no quadro.
+// braços esticados para um lado). Estes avanços, medidos nos renders, põem o corpo onde estava o da
+// corrida; sem eles, o tutor dá um salto para o lado ao pular ou abaixar.
 const AVANCO_PULO_M = 0.422
-const AVANCO_SLIDE_M = 0.418
+const AVANCO_SLIDE_M = -0.557
 
 // Sem a folha do pulo (ainda carregando): o quadro da corrida com os dois pés fora do chão.
 const QUADRO_NO_AR_CORRIDA = 3
