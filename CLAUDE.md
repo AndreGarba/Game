@@ -136,7 +136,14 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   mesmos pixels por metro e o mesmo chão: slide e pulo se montam pela escala da do galope, nunca
   recortados sozinhos, e a altura no mundo de cada uma é `ALTURA_QUADRO_M × altura / 320`. O pulo
   do cachorro não tem antecipação (ele sai do chão no tick do comando): o impulso é o começo da
-  subida, escolhido por `vy`, e o pouso dura pelo relógio. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
+  subida, escolhido por `vy`, e o pouso dura pelo relógio.
+- **Tutor 3D:** modelo e rig do Meshy (a partir de `PRD/referencias/tutor-3d-parado.webp`), em
+  `PRD/referencias/tutor-3d/tutor-3d.blend`, cena "Tutor Meshy". A corrida é a animação do Meshy com o
+  corpo inclinado 10°; pulo (quadros 1 a 10) e slide (21 a 26) foram posados à mão na ação
+  `poses_tutor`, porque o "Jump Run" e o "Slide Light" da biblioteca não têm o impulso, a mão no chão
+  nem o slide sentado. Mesma regra das folhas do cachorro: pixels por metro e chão da corrida. A
+  câmera olha um pouco de cima, então um pé mais perto dela aparece abaixo da linha do chão: o `pes`
+  de cada folha é medido, não fixo em 6, e o avanço de cada folha põe o corpo onde estava o da corrida. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
   e o fundo transparente vaza na folha. Por isso há um `CachorroNucleo` fechado por dentro, na cor do
   pelo, preso ao mesmo esqueleto, e a barriga entre as patas só segue a coluna. Mexeu na pose ou na
   câmera: renderize os 10 quadros e confira as frestas num fundo escuro, não no viewport.
