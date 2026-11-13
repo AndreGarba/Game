@@ -26,10 +26,21 @@ function membro(f: Fabrica, cor: string, ponta: string, largura: number, comprim
   return pivo
 }
 
-export function criarPersonagem(f: Fabrica, a: Aparencia): Personagem {
+export interface OpcoesPersonagem {
+  // Figurante: menos peças e sem sombra no mapa (só a redonda), para caber muitos no celular.
+  leve?: boolean
+  // Altura dos pés (em cima do patinete).
+  elevacao?: number
+}
+
+export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonagem = {}): Personagem {
   const raiz = new THREE.Group()
   const corpo = new THREE.Group()
-  raiz.add(corpo)
+  const suporte = new THREE.Group()
+  suporte.position.y = opcoes.elevacao ?? 0
+  suporte.add(corpo)
+  raiz.add(suporte)
+  if (opcoes.leve) return personagemLeve(f, a, raiz, corpo)
 
   const pernaE = membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
   const pernaD = membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
@@ -68,6 +79,56 @@ export function criarPersonagem(f: Fabrica, a: Aparencia): Personagem {
   raiz.add(sombra)
 
   return { raiz, corpo, pernas: [pernaE, pernaD], bracos: [bracoE, bracoD], angulo: 0 }
+}
+
+function personagemLeve(f: Fabrica, a: Aparencia, raiz: THREE.Group, corpo: THREE.Group): Personagem {
+  const membroLeve = (cor: string, largura: number, comprimento: number, x: number, y: number) => {
+    const pivo = new THREE.Group()
+    pivo.add(f.caixa(largura, comprimento, largura * 1.1, f.material(cor), { y: -comprimento }))
+    pivo.position.set(x, y, 0)
+    return pivo
+  }
+  const pernaE = membroLeve(a.calca, 0.2, 0.76, -0.13, ALTURA_QUADRIL)
+  const pernaD = membroLeve(a.calca, 0.2, 0.76, 0.13, ALTURA_QUADRIL)
+  const bracoE = membroLeve(a.camisa, 0.15, 0.62, -0.34, ALTURA_OMBRO)
+  const bracoD = membroLeve(a.camisa, 0.15, 0.62, 0.34, ALTURA_OMBRO)
+  corpo.add(
+    pernaE,
+    pernaD,
+    bracoE,
+    bracoD,
+    f.caixa(0.52, 0.62, 0.3, f.material(a.detalhe ?? a.camisa), { y: ALTURA_QUADRIL - 0.04 }),
+    f.caixa(0.4, 0.4, 0.38, f.material(a.pele), { y: ALTURA_OMBRO + 0.06 }),
+    f.caixa(0.44, 0.16, 0.42, f.material(a.cabelo), { y: ALTURA_OMBRO + 0.38, z: -0.02 }),
+  )
+  corpo.traverse((o) => {
+    if (o instanceof THREE.Mesh) o.castShadow = false
+  })
+  const sombra = f.plano(0.7, 0.7, f.material('#000000', { transparente: 0.18 }))
+  sombra.rotation.x = -Math.PI / 2
+  sombra.position.y = 0.03
+  sombra.receiveShadow = false
+  raiz.add(sombra)
+  return { raiz, corpo, pernas: [pernaE, pernaD], bracos: [bracoE, bracoD], angulo: 0 }
+}
+
+/** Patinete elétrico, frente para +z: prancha, duas rodas, guidão. Fica na raiz do personagem. */
+export function criarPatinete(f: Fabrica, cor: string, detalhe: string): THREE.Group {
+  const g = new THREE.Group()
+  const quadro = f.material(cor)
+  const roda = f.material('#141414')
+  g.add(
+    f.caixa(0.18, 0.06, 0.9, quadro, { y: 0.1 }),
+    f.caixa(0.1, 0.16, 0.16, roda, { y: 0.02, z: 0.42 }),
+    f.caixa(0.1, 0.16, 0.16, roda, { y: 0.02, z: -0.42 }),
+    f.caixa(0.06, 1.05, 0.06, quadro, { y: 0.12, z: 0.46 }),
+    f.caixa(0.56, 0.05, 0.05, quadro, { y: 1.15, z: 0.46 }),
+    f.caixa(0.19, 0.02, 0.5, f.material(detalhe), { y: 0.16 }),
+  )
+  g.traverse((o) => {
+    if (o instanceof THREE.Mesh) o.castShadow = false
+  })
+  return g
 }
 
 /** Ângulo em y para olhar na direção (dx, dz) do mundo. */

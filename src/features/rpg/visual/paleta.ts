@@ -20,6 +20,8 @@ export const COR_PISO: Record<string, string> = {
   faixa: '#f2f0e6',
   'piso-agencia': '#e9e6df',
   'piso-escritorio': '#cfd6de',
+  ciclofaixa: '#b9473c',
+  'piso-feirao': '#8e949c',
   'piso-designers': '#f3d9a6',
   'tapete-gerente': '#1d3c6e',
   'piso-concessionaria': '#e6e8ec',
@@ -33,6 +35,8 @@ export const COR_PREDIO: Record<string, { parede: string; janela: string; detalh
   residencial: { parede: '#e7b58a', janela: '#6e95b5', detalhe: '#a8643c', placa: '#a8643c', textoPlaca: '#ffffff' },
   // BTG Pactual: azul-marinho com vidro. Cores provisórias até o logo oficial entrar pelo slot.
   banco: { parede: '#e8ecf2', janela: '#2c4f7c', detalhe: '#0b2341', placa: '#0b2341', textoPlaca: '#ffffff' },
+  mobiauto: { parede: '#ffffff', janela: '#7ec3e6', detalhe: '#1450c8', placa: '#1450c8', textoPlaca: '#ffffff' },
+  rua: { parede: '#ffffff', janela: '#ffffff', detalhe: '#1b4f9c', placa: '#1b4f9c', textoPlaca: '#ffffff' },
   concessionaria: { parede: '#f2f2f2', janela: '#7ec3e6', detalhe: '#d6402f', placa: '#d6402f', textoPlaca: '#ffffff' },
   comercial: { parede: '#c7a7c9', janela: '#5d6c8f', detalhe: '#6b4a72', placa: '#6b4a72', textoPlaca: '#ffffff' },
 }
@@ -48,6 +52,10 @@ export const COR_CARRO: Record<string, string> = {
 }
 
 export const COR_OBJETO = {
+  lona: '#f4f6fb',
+  lonaFaixa: '#1450c8',
+  patinete: '#2b2f36',
+  patineteDetalhe: '#3ddc84',
   vidro: '#bfe3f5',
   pneu: '#22252a',
   roda: '#b9bec6',
@@ -98,6 +106,14 @@ export interface Aparencia {
 
 export const APARENCIAS: Record<string, Aparencia> = {
   jogador: { pele: '#e2a97e', cabelo: '#3b2a1f', camisa: '#f76b15', calca: '#2f3f63', sapato: '#2b2b2b', detalhe: null },
+  figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
+  figurante_2: { pele: '#6b4430', cabelo: '#111111', camisa: '#f2f2f2', calca: '#4a4f57', sapato: '#1e1e1e', detalhe: null },
+  figurante_3: { pele: '#c98f65', cabelo: '#b5651d', camisa: '#7a4fb3', calca: '#2b2b2b', sapato: '#f2f2f2', detalhe: null },
+  figurante_4: { pele: '#f3d2b5', cabelo: '#e3c16f', camisa: '#3e9bd6', calca: '#c9b48a', sapato: '#6a4a30', detalhe: null },
+  figurante_5: { pele: '#8d5a3b', cabelo: '#2a1b12', camisa: '#2e4057', calca: '#1f2733', sapato: '#121212', detalhe: '#c9d3e0' },
+  figurante_6: { pele: '#e6b48c', cabelo: '#5a3a22', camisa: '#d94f6e', calca: '#3a5a8a', sapato: '#f2f2f2', detalhe: null },
+  figurante_7: { pele: '#f0c9a0', cabelo: '#222222', camisa: '#dfe6ee', calca: '#26303d', sapato: '#121212', detalhe: '#7a1f2b' },
+  figurante_8: { pele: '#a8714a', cabelo: '#141414', camisa: '#556b5a', calca: '#2c2c2c', sapato: '#1e1e1e', detalhe: null },
   pedestre: { pele: '#8d5a3b', cabelo: '#1d1612', camisa: '#4fb38a', calca: '#5b4636', sapato: '#3a2a20', detalhe: null },
   gerente: { pele: '#d9a47c', cabelo: '#2a1f18', camisa: '#0b2341', calca: '#0b2341', sapato: '#111111', detalhe: '#c9a227' },
   analista: { pele: '#f0c8a8', cabelo: '#6b3e22', camisa: '#7fa7d6', calca: '#3a3f4b', sapato: '#222222', detalhe: null },

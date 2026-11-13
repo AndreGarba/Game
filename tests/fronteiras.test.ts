@@ -17,6 +17,8 @@ describe('fronteiras do motor', () => {
   it.each(arquivos)('%s só importa de dentro do motor, com extensão .ts', (arquivo) => {
     const imports = [...codigo(arquivo).matchAll(/from\s+'([^']+)'/g)].map((m) => m[1]!)
     for (const origem of imports) {
+      // De uma subpasta, só o gerador do motor vem de fora (aleatoriedade mora em rng.ts).
+      if (arquivo.includes('/') && origem === '../rng.ts') continue
       expect(origem, origem).toMatch(/^\.\/[\w.-]+\.ts$/)
     }
   })
