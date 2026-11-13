@@ -139,9 +139,11 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   subida, escolhido por `vy`, e o pouso dura pelo relógio.
 - **Tutor 3D:** modelo e rig do Meshy (a partir de `PRD/referencias/tutor-3d-parado.webp`), em
   `PRD/referencias/tutor-3d/tutor-3d.blend`, cena "Tutor Meshy". A corrida é a animação do Meshy com o
-  corpo inclinado 10°; pulo (quadros 1 a 10) e slide (21 a 26) foram posados à mão na ação
-  `poses_tutor`, porque o "Jump Run" e o "Slide Light" da biblioteca não têm o impulso, a mão no chão
-  nem o slide sentado. Mesma regra das folhas do cachorro: pixels por metro e chão da corrida. A
+  corpo inclinado 10°; o pulo (quadros 1 a 10) foi posado à mão na ação `poses_tutor`, porque o
+  "Jump Run" da biblioteca não tem o impulso nem a mão no chão. O slide continua a arte do ChatGPT
+  (o André preferiu o movimento dela; a pose 3D ficou em `poses_tutor`, quadros 21 a 26), com a
+  escala acertada pela largura do crânio. Corrida e pulo seguem a regra das folhas do cachorro:
+  pixels por metro e chão da corrida. A
   câmera olha um pouco de cima, então um pé mais perto dela aparece abaixo da linha do chão: o `pes`
   de cada folha é medido, não fixo em 6, e o avanço de cada folha põe o corpo onde estava o da corrida. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
   e o fundo transparente vaza na folha. Por isso há um `CachorroNucleo` fechado por dentro, na cor do
