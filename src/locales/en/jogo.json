@@ -7,7 +7,7 @@
   "home": {
     "jogar": "Play",
     "carregando": "Loading… {{porcento}}%",
-    "comoJogar": "Arrows/WASD walk · A (Space, E) interacts · B (Esc, Q) goes back",
+    "comoJogar": "Arrows/WASD walk · Shift runs · A (Space, E) interacts · B (Esc, Q) goes back",
     "configuracoes": "Settings"
   },
   "configuracoes": {
@@ -102,7 +102,8 @@
       "direcional": "Directional pad",
       "interagir": "Interact",
       "fechar": "Close dialogue",
-      "menu": "Menu"
+      "menu": "Menu",
+      "correr": "Run (hold)"
     },
     "dialogos": {
       "pedestre": [

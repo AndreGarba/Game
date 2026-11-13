@@ -105,7 +105,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     const z = trocou ? j.z : quadro.zAnterior + (j.z - quadro.zAnterior) * alfa
     jogador.raiz.position.set(x, 0, z)
     if (trocou) jogador.angulo = anguloDaDirecao(j.dirX, j.dirZ)
-    animarPersonagem(jogador, j.ticksAndando * RADIANOS_POR_TICK, j.andando, tempo, anguloDaDirecao(j.dirX, j.dirZ), dt)
+    animarPersonagem(jogador, j.fasePasso * RADIANOS_POR_TICK, j.andando, tempo, anguloDaDirecao(j.dirX, j.dirZ), dt, j.correndo)
 
     for (const { npc, personagem } of montada?.npcs.values() ?? []) {
       // Quem está falando vira para o jogador; depois volta para a pose do mapa.

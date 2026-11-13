@@ -1,11 +1,19 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-1'
+export const VERSAO_MUNDO = 'rpg-2'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
 
 // 3,6 m/s: passo de caminhada rápida, para atravessar a rua (44 m) em ~12 s.
 export const VEL_ANDAR = 3.6 / TICKS_POR_SEGUNDO
+
+// Correndo (botão de correr segurado): 6,3 m/s, 1,75× o andar.
+export const VEL_CORRER = 6.3 / TICKS_POR_SEGUNDO
+
+// Quanto a fase do passo avança por tick. Correndo, a perna gira mais rápido, mas não 1,75×:
+// passada mais longa também conta, e a cadência cheia parecia pedalada.
+export const PASSO_ANDANDO = 1
+export const PASSO_CORRENDO = 1.45
 
 // 1/√2 escrito à mão: Math.sqrt fica fora do motor (CLAUDE.md, "Regras técnicas").
 export const FATOR_DIAGONAL = 0.7071067811865476

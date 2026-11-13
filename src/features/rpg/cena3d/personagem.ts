@@ -77,15 +77,28 @@ export function anguloDaDirecao(dx: number, dz: number): number {
 
 /**
  * Pose do quadro. `fase` em radianos (o passo), `andando` liga o balanço, `tempo` em segundos faz
- * a respiração de quem está parado, `dt` suaviza o giro.
+ * a respiração de quem está parado, `dt` suaviza o giro. Correndo, a passada abre mais, os braços
+ * dobram mais e o corpo inclina para a frente.
  */
-export function animarPersonagem(p: Personagem, fase: number, andando: boolean, tempo: number, anguloAlvo: number, dt: number) {
+export function animarPersonagem(
+  p: Personagem,
+  fase: number,
+  andando: boolean,
+  tempo: number,
+  anguloAlvo: number,
+  dt: number,
+  correndo = false,
+) {
   const balanco = andando ? Math.sin(fase) : 0
-  p.pernas[0].rotation.x = balanco * 0.7
-  p.pernas[1].rotation.x = -balanco * 0.7
-  p.bracos[0].rotation.x = -balanco * 0.6
-  p.bracos[1].rotation.x = balanco * 0.6
-  p.corpo.position.y = andando ? Math.abs(Math.cos(fase)) * 0.06 : Math.sin(tempo * 2.2) * 0.012
+  const perna = correndo ? 1 : 0.7
+  const braco = correndo ? 1.1 : 0.6
+  p.pernas[0].rotation.x = balanco * perna
+  p.pernas[1].rotation.x = -balanco * perna
+  p.bracos[0].rotation.x = -balanco * braco
+  p.bracos[1].rotation.x = balanco * braco
+  const inclinacao = correndo ? 0.22 : 0
+  p.corpo.rotation.x += (inclinacao - p.corpo.rotation.x) * Math.min(1, dt * 10)
+  p.corpo.position.y = andando ? Math.abs(Math.cos(fase)) * (correndo ? 0.11 : 0.06) : Math.sin(tempo * 2.2) * 0.012
 
   let delta = anguloAlvo - p.angulo
   delta = Math.atan2(Math.sin(delta), Math.cos(delta))

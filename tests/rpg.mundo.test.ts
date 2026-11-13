@@ -2,17 +2,17 @@
 // O golden é contrato como o do motor de exemplo: só muda junto com VERSAO_MUNDO nova.
 import { describe, expect, it } from 'vitest'
 import { CENAS, type Cena, type Entrada, type EstadoMundo } from '../src/engine/rpg/index.ts'
-import { RAIO_JOGADOR, RAIO_NPC } from '../src/engine/rpg/constantes.ts'
+import { PASSO_CORRENDO, RAIO_JOGADOR, RAIO_NPC, VEL_ANDAR, VEL_CORRER } from '../src/engine/rpg/constantes.ts'
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 import { direcaoNoMundo } from '../src/features/rpg/direcao.ts'
 import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-const PARADO: Entrada = { dx: 0, dz: 0, interagir: false, voltar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false }
 
-function andar(estado: EstadoMundo, dx: number, dz: number, ticks: number) {
-  for (let i = 0; i < ticks; i++) passoMundo(estado, { ...PARADO, dx, dz })
+function andar(estado: EstadoMundo, dx: number, dz: number, ticks: number, correr = false) {
+  for (let i = 0; i < ticks; i++) passoMundo(estado, { ...PARADO, dx, dz, correr })
 }
 
 const apertarA = (estado: EstadoMundo) => passoMundo(estado, { ...PARADO, interagir: true })
@@ -50,6 +50,23 @@ describe('mundo do RPG', () => {
     andar(diagonal, 1, 1, 60)
     const d2 = (e: EstadoMundo) => (e.jogador.x - 11) ** 2 + (e.jogador.z - 10.2) ** 2
     expect(d2(diagonal)).toBeCloseTo(d2(reto), 5)
+  })
+
+  it('correndo, anda VEL_CORRER por tick e o passo acelera; soltar volta a andar', () => {
+    const andando = criarMundo()
+    const correndo = criarMundo()
+    // Para a rua: na calçada, o poste estaria no caminho.
+    andar(andando, 0, 1, 60)
+    andar(correndo, 0, 1, 60, true)
+    expect(correndo.jogador.z - 10.2).toBeCloseTo(60 * VEL_CORRER)
+    expect(andando.jogador.z - 10.2).toBeCloseTo(60 * VEL_ANDAR)
+    expect(correndo.jogador.correndo).toBe(true)
+    expect(correndo.jogador.fasePasso).toBeCloseTo(60 * PASSO_CORRENDO)
+    andar(correndo, 0, 1, 1)
+    expect(correndo.jogador.correndo).toBe(false)
+    // Correr parado não é correr.
+    andar(correndo, 0, 0, 1, true)
+    expect(correndo.jogador.correndo).toBe(false)
   })
 
   it('entra no escritório, conversa com a recepcionista e sai', () => {
@@ -145,7 +162,8 @@ describe('mundo do RPG', () => {
     marcar()
     // Pela faixa da rua: na calçada o poste e a Dona Cida estão no caminho.
     andar(e, 0, 1, 42)
-    andar(e, 1, 0, 234)
+    andar(e, 1, 0, 100)
+    andar(e, 1, 0, 76, true)
     andar(e, 0, -1, 60)
     apertarA(e)
     marcar()

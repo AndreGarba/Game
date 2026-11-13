@@ -84,11 +84,12 @@ export interface Cena {
   decoracoes: Decoracao[]
 }
 
-// Entrada de um tick. dx e dz em −1, 0 ou 1, já em eixos do mundo; interagir e voltar valem só
-// no tick em que chegam (borda do botão, não botão segurado).
+// Entrada de um tick. dx e dz em −1, 0 ou 1, já em eixos do mundo; correr vale enquanto o botão
+// está segurado; interagir e voltar valem só no tick em que chegam (borda do botão).
 export interface Entrada {
   dx: number
   dz: number
+  correr: boolean
   interagir: boolean
   voltar: boolean
 }
@@ -99,8 +100,9 @@ export interface JogadorRpg {
   dirX: number
   dirZ: number
   andando: boolean
-  // Ticks andados desde o começo: a fase da animação do passo sai daqui.
-  ticksAndando: number
+  correndo: boolean
+  // Fase da animação do passo, em "ticks de andar": soma PASSO_ANDANDO ou PASSO_CORRENDO por tick.
+  fasePasso: number
 }
 
 export interface DialogoAberto {

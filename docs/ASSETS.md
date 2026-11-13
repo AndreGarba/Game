@@ -120,6 +120,8 @@ para a sombra não ser cortada.
 | `botao-a-apertado` | Botão A apertado (opcional) | 1 : 1 | 256 × 256 | 58 px |
 | `botao-b` | Botão B (voltar/menu), solto | 1 : 1 | 256 × 256 | 58 px |
 | `botao-b-apertado` | Botão B apertado (opcional) | 1 : 1 | 256 × 256 | 58 px |
+| `botao-correr` | Botão de correr (segurar), solto | 1 : 1 | 256 × 256 | 58 px |
+| `botao-correr-apertado` | Botão de correr segurado (opcional) | 1 : 1 | 256 × 256 | 58 px |
 | `botao-pausa` | Botão de pausa (canto superior direito) | 1 : 1 | 128 × 128 | 40 px |
 | `caixa-dialogo` | Moldura da caixa de fala (o texto vai por cima, à esquerda) | ~4,3 : 1 | 1600 × 370 | ~470 × 110 px |
 | `balao-acao` | Balão do aviso "A  Entrar: …" (pílula) | ~5 : 1 | 1000 × 200 | ~260 × 44 px |

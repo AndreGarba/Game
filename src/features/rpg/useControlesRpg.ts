@@ -2,8 +2,9 @@ import { useEffect, useRef } from 'react'
 import { digitando } from '../jogo/useControlesJogo.ts'
 import type { DirecaoTela } from './direcao.ts'
 
-// Teclado do RPG: setas ou WASD andam (segurar); A = Espaço, E ou Enter; B = Esc, Q ou Backspace.
-// O d-pad da tela escreve na mesma direção (`direcaoToque`), e quem lê soma os dois.
+// Teclado do RPG: setas ou WASD andam (segurar), Shift segurado corre; A = Espaço, E ou Enter;
+// B = Esc, Q ou Backspace. O d-pad e o botão de correr da tela escrevem em `direcaoToque` e
+// `correrToque`, e quem lê soma teclado e toque.
 
 const TECLAS_DIRECAO: Record<string, [eixo: keyof DirecaoTela, valor: number]> = {
   ArrowUp: ['cima', 1],
@@ -18,17 +19,21 @@ const TECLAS_DIRECAO: Record<string, [eixo: keyof DirecaoTela, valor: number]> =
 
 const TECLAS_A = new Set(['Space', 'KeyE', 'Enter', 'NumpadEnter'])
 const TECLAS_B = new Set(['Escape', 'KeyQ', 'Backspace'])
+const TECLAS_CORRER = new Set(['ShiftLeft', 'ShiftRight'])
 
 export interface ControlesRpg {
   // Direção atual (teclado + toque), lida a cada tick.
   direcao(): DirecaoTela
-  // O d-pad da tela grava aqui.
+  correndo(): boolean
+  // O d-pad e o botão de correr da tela gravam aqui.
   direcaoToque: { current: DirecaoTela }
+  correrToque: { current: boolean }
 }
 
 export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void): ControlesRpg {
   const seguradas = useRef(new Set<string>())
   const direcaoToque = useRef<DirecaoTela>({ direita: 0, cima: 0 })
+  const correrToque = useRef(false)
   const aoARef = useRef(aoA)
   aoARef.current = aoA
   const aoBRef = useRef(aoB)
@@ -41,7 +46,7 @@ export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void
       if (digitando(evento)) return
       // Com foco num botão (pausa, Menu), Enter e Espaço são dele.
       const emBotao = evento.target instanceof Element && evento.target.closest('button')
-      if (TECLAS_DIRECAO[evento.code]) {
+      if (TECLAS_DIRECAO[evento.code] || TECLAS_CORRER.has(evento.code)) {
         seguradas.current.add(evento.code)
         evento.preventDefault()
       } else if (TECLAS_A.has(evento.code) && !emBotao) {
@@ -59,6 +64,7 @@ export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void
     function aoPerderFoco() {
       seguradas.current.clear()
       direcaoToque.current = { direita: 0, cima: 0 }
+      correrToque.current = false
     }
     window.addEventListener('keydown', aoBaixar)
     window.addEventListener('keyup', aoSoltar)
@@ -79,7 +85,13 @@ export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void
       }
       return d
     },
+    correndo() {
+      if (correrToque.current) return true
+      for (const codigo of TECLAS_CORRER) if (seguradas.current.has(codigo)) return true
+      return false
+    },
     direcaoToque,
+    correrToque,
   })
   return controles.current
 }
