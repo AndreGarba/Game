@@ -1,9 +1,10 @@
 // Site estático do jogo: só static assets, sem código de Worker.
-// Quem publica é o job "deploy" do CI, depois do merge na main. Nunca `wrangler deploy` à mão.
+// Quem publica é o Workers Builds (integração Git do Cloudflare), a cada push na main:
+// build `npm ci && npm run build`, deploy `npx wrangler deploy`. Nunca `wrangler deploy` à mão.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Jogo novo: troque o nome do Worker antes do primeiro deploy (vira <nome>.<conta>.workers.dev).
-  "name": "game-template",
+  // Tem que ser igual ao nome do Worker no painel: o Workers Builds recusa o build se divergir.
+  "name": "game",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
@@ -12,8 +13,8 @@
     // quebraria com erro de MIME em vez de 404. Offline, quem atende a navegação é o service worker.
     "not_found_handling": "404-page"
   },
-  // Desligado até decidir quem pode abrir o jogo: o primeiro deploy sai sem URL pública. Ligar
-  // (true) é decisão do dono do jogo, depois de configurar o acesso no Cloudflare se precisar.
-  "workers_dev": false,
+  // Ligado no painel pelo dono do jogo (game.andre-garbeline.workers.dev). O deploy aplica este
+  // valor: false aqui desligaria a URL no próximo push.
+  "workers_dev": true,
   "preview_urls": false
 }

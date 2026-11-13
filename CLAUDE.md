@@ -22,18 +22,19 @@ Como começar um jogo novo e **a lista do que renomear**: [`README.md`](README.m
   (WebGL, `src/features/rpg/cena3d/`); o jogo de exemplo, em Canvas 2D
 - **Design system:** [a definir pelo jogo]. Até lá, tokens em `src/estilos/tokens.css` e o botão
   base `.botao` em `src/estilos/global.css`.
-- **Backend:** Supabase — projeto `[nome]`, região `[região]`, `[ID DO PROJETO]`. O job `deploy`
-  lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` das variáveis do repositório; sem elas,
-  o site sai sem ranking e nada acusa.
-- **Hospedagem:** Cloudflare Workers static assets, Worker `game-template` (placeholder) em
-  `wrangler.jsonc`, com `not_found_handling: "404-page"`. Um fallback que responde `200 text/html`
+- **Backend:** Supabase — projeto `[nome]`, região `[região]`, `[ID DO PROJETO]`. O build do
+  Workers Builds lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` das variáveis de build
+  do Worker no painel; sem elas, o site sai sem ranking e nada acusa.
+- **Hospedagem:** Cloudflare Workers static assets, Worker `game` em `wrangler.jsonc`
+  (`game.andre-garbeline.workers.dev`), com `not_found_handling: "404-page"`. Um fallback que responde `200 text/html`
   para qualquer caminho também responde assim para `/assets/<hash>.js` de um deploy antigo, e o
   `import()` do chunk falha com erro de MIME em vez de 404; o app não tem router, então `404-page`.
-  Publica pelo job `deploy` do CI, só em push na `main` e depois do `verificar`. Secrets do
-  repositório: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` (token de conta não descobre a
-  conta sozinho). Token vencido = job `deploy` falha e o site fica parado na última versão, sem
-  aviso para o jogador: anote aqui a data de vencimento, `[data]`. `workers_dev` nasce `false`:
-  o primeiro deploy sai sem URL pública, e ligar é decisão do dono do jogo.
+  Publica pelo **Workers Builds** (integração Git do Cloudflare), a cada push na `main`: build
+  `npm ci && npm run build`, deploy `npx wrangler deploy`. O CI do GitHub só verifica, não publica.
+  O `name` do `wrangler.jsonc` tem que ser igual ao do Worker no painel, senão o build é recusado.
+  Build que falha deixa o site parado na última versão, sem aviso para o jogador: o PR mergeado
+  não aparece no ar e o painel continua mostrando o deploy anterior. `workers_dev` é `true` porque
+  o dono ligou a URL no painel; o deploy aplica o valor do arquivo, então `false` aqui desliga a URL.
 - **API:** Supabase Edge Functions (`supabase/functions/`), na mesma região do banco.
 - **Testes:** Vitest, com golden master no motor
 - **Lint:** oxlint

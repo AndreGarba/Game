@@ -57,34 +57,5 @@ jobs:
 
       - run: ./gradlew assembleProducaoDebug bundleProducaoRelease lintProducaoDebug --console=plain
 
-  # Único caminho para produção: merge na main → verificar passou → deploy. Nunca à mão.
-  # Secrets do repositório: CLOUDFLARE_API_TOKEN (permissão "Workers Scripts: Edit") e
-  # CLOUDFLARE_ACCOUNT_ID.
-  # Variáveis do repositório (não são secrets: só URL e chave publishable, que vão no bundle):
-  # VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY. O Vite grava o valor no build: sem elas, o
-  # deploy passa e o site sai sem ranking, sem erro nenhum.
-  deploy:
-    needs: verificar
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: producao
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-
-      - run: npm ci
-      - run: npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-
-      # wrangler pinado no package.json: cada deploy usa a versão que alguém decidiu.
-      - run: npx wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+# Sem job de deploy: quem publica é o Workers Builds do Cloudflare, ligado ao repositório
+# (ver wrangler.jsonc). Um segundo deploy aqui só duplicaria a publicação.
