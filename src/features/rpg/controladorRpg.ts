@@ -10,6 +10,8 @@ export interface OpcoesControladorRpg {
   desenhar(quadro: QuadroRpg, instante: number): void
   // Direção segurada agora, já em eixos do mundo.
   direcao(): { dx: number; dz: number }
+  // Botão de correr (ou Shift) segurado agora.
+  correndo(): boolean
   // Só quando muda o que o HUD mostra (alvo, diálogo, cena): o React não renderiza a 60 fps.
   aoMudarHud(estado: EstadoMundo): void
 }
@@ -39,7 +41,7 @@ export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
         const { dx, dz } = opcoes.direcao()
         // Um botão por tick: dois toques no mesmo quadro viram ticks seguidos.
         const botao = fila.shift()
-        const entrada: Entrada = { dx, dz, interagir: botao === 'interagir', voltar: botao === 'voltar' }
+        const entrada: Entrada = { dx, dz, correr: opcoes.correndo(), interagir: botao === 'interagir', voltar: botao === 'voltar' }
         xAnterior = estado.jogador.x
         zAnterior = estado.jogador.z
         passoMundo(estado, entrada)

@@ -1,5 +1,5 @@
 /* Tela do RPG: canvas 3D por baixo, HUD por cima. Medida pelo próprio contêiner, dentro da moldura
-   de celular deitado. Slot de arte presente → modificador --arte e a imagem em --imagem. */
+   16:9; os tamanhos do HUD são tokens que escalam com a moldura. Slot de arte presente → modificador --arte e a imagem em --imagem. */
 .tela-rpg {
   container-type: size;
   position: relative;
@@ -141,9 +141,9 @@
 .tela-rpg__dialogo {
   position: absolute;
   left: calc(var(--tamanho-direcional) + var(--espaco-8) + var(--safe-esquerda));
-  right: calc(var(--tamanho-botao-acao) * 2 + var(--espaco-8) + var(--espaco-4) + var(--safe-direita));
+  right: calc(var(--tamanho-botao-acao) * 3 + var(--espaco-3) * 2 + var(--espaco-8) + var(--safe-direita));
   bottom: calc(var(--espaco-3) + var(--safe-base));
-  min-height: 30cqh;
+  min-height: 24cqh;
   padding: var(--espaco-3) var(--espaco-4);
   border: 3px solid var(--cor-dialogo-borda);
   border-radius: var(--raio-4);
@@ -206,7 +206,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--espaco-2);
-  width: min(100%, 22rem);
+  width: min(100%, var(--largura-cartao));
   max-height: 100%;
   overflow-y: auto;
   padding: var(--espaco-4) var(--espaco-6);

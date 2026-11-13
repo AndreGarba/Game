@@ -81,7 +81,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--espaco-2);
-  width: min(100%, 22rem);
+  width: min(100%, var(--largura-cartao));
   max-height: 100%;
   overflow-y: auto;
   padding: var(--espaco-4) var(--espaco-6);

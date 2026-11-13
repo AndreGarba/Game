@@ -1,13 +1,13 @@
 {
   "titulo": "Ciudad Isométrica",
-  "subtitulo": "Prototipo de RPG: camina por la calle, entra en la oficina y en la tienda de autos.",
+  "subtitulo": "Prototipo de RPG: camina por la calle, entra en el banco y en la tienda de autos.",
   "deNovo": "Jugar otra vez",
   "continuar": "Continuar",
   "menu": "Menú",
   "home": {
     "jogar": "Jugar",
     "carregando": "Cargando… {{porcento}}%",
-    "comoJogar": "Flechas/WASD caminan · A (Espacio, E) interactúa · B (Esc, Q) vuelve",
+    "comoJogar": "Flechas/WASD caminan · Shift corre · A (Espacio, E) interactúa · B (Esc, Q) vuelve",
     "configuracoes": "Ajustes"
   },
   "configuracoes": {
@@ -71,13 +71,16 @@
   },
   "rpg": {
     "cenas": {
-      "rua": "Calle de las Palmeras",
-      "escritorio": "Oficina Horizonte",
+      "rua": "Avenida Faria Lima",
+      "agencia": "Sucursal BTG Pactual",
+      "escritorio": "Oficina BTG Pactual",
       "concessionaria": "Tienda de Autos"
     },
     "placas": {
-      "escritorio": "OFICINA",
-      "concessionaria": "AUTOS"
+      "banco": "BTG Pactual",
+      "concessionaria": "AUTOS",
+      "rua": "Av. Faria Lima",
+      "mobiauto": "Mobiauto"
     },
     "nomes": {
       "pedestre": "Doña Cida",
@@ -86,7 +89,13 @@
       "bebedouro": "dispensador de agua",
       "carro_vermelho": "hatchback rojo",
       "carro_azul": "sedán azul",
-      "carro_amarelo": "deportivo amarillo"
+      "carro_amarelo": "deportivo amarillo",
+      "gerente": "Ricardo",
+      "analista": "Rafa",
+      "designer": "Bia",
+      "totem": "tótem de turnos",
+      "moodboard": "moodboard",
+      "vendedor_feirao": "Lu"
     },
     "acao": {
       "entrar": "Entrar: {{lugar}}",
@@ -102,18 +111,19 @@
       "direcional": "Cruceta",
       "interagir": "Interactuar",
       "fechar": "Cerrar diálogo",
-      "menu": "Menú"
+      "menu": "Menú",
+      "correr": "Correr (mantén)"
     },
     "dialogos": {
       "pedestre": [
         "¡Buenos días! ¿Eres nuevo en el barrio?",
-        "La oficina está ahí, la puerta azul. La tienda de autos está al lado.",
+        "Ese es el BTG Pactual, la puerta azul. La tienda de autos está al lado.",
         "Dicen que el deportivo amarillo tiene descuento hoy."
       ],
       "recepcionista": [
-        "¡Te damos la bienvenida a la Oficina Horizonte!",
-        "La reunión de las diez se movió. Puedes esperar en el sofá si quieres.",
-        "El dispensador de agua está a la derecha. Estás en tu casa."
+        "¡Te damos la bienvenida a BTG Pactual!",
+        "Ricardo, nuestro gerente, atiende ahí a la derecha.",
+        "La oficina está por la puerta del fondo."
       ],
       "vendedor": [
         "¡Hola! ¿Buscas un auto nuevo?",
@@ -134,6 +144,33 @@
       "carro_amarelo": [
         "Deportivo amarillo, de 0 a 100 en 6 segundos.",
         "US$ 49.800 — ¡hoy con descuento!"
+      ],
+      "gerente": [
+        "¡Hola! Soy Ricardo, gerente de la sucursal.",
+        "Puedo ayudarte con cuentas, inversiones o crédito.",
+        "Hoy la agenda está tranquila. Siéntate, por favor.",
+        "Si quieres conocer al equipo, la oficina está por la puerta del fondo."
+      ],
+      "totem": [
+        "Turno A-042. Espera a que te llamen."
+      ],
+      "analista": [
+        "Cerrando las planillas del mes. ¡El café ayuda!",
+        "Los diseñadores están del otro lado del vidrio."
+      ],
+      "designer": [
+        "¡Hola! Esta es el área de diseño.",
+        "Estamos armando la nueva campaña en el moodboard.",
+        "¡Pasa y dime qué te parecen los colores!"
+      ],
+      "moodboard": [
+        "Recortes, paletas y notas adhesivas de la nueva campaña.",
+        "Alguien escribió: “menos es más”."
+      ],
+      "vendedor_feirao": [
+        "¡Bienvenido a la feria de seminuevos de Mobiauto!",
+        "Todos los autos pasaron por inspección.",
+        "Elige uno y pregunta el precio en la carpa."
       ]
     }
   }

@@ -43,7 +43,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 
 | Arquivo | Prédio | Proporção (L × A) | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
-| `escritorio` | Escritório (porta azul) | 1 : 1 (10 × 10 m) | 1024 × 1024 | não |
+| `banco` | Banco BTG Pactual (porta azul) | 1 : 1 (10 × 10 m) | 1024 × 1024 | não |
 | `concessionaria` | Loja de veículos (vitrine) | 2,15 : 1 (14 × 6,5 m) | 1792 × 832 | não |
 | `residencial` | Prédio residencial à esquerda | 0,61 : 1 (5,5 × 9 m) | 704 × 1152 | não |
 | `comercial` | Prédio comercial à direita | 0,96 : 1 (11,5 × 12 m) | 1472 × 1536 | não |
@@ -51,7 +51,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 As laterais e o telhado continuam com a cor da paleta (`COR_PREDIO` e `COR_TELHADO`).
 
 Prompt de exemplo:
-> Fachada frontal de um prédio de escritórios de 3 andares, vista totalmente de frente, sem
+> Fachada frontal de um prédio de banco de 3 andares, azul-marinho e vidro, vista totalmente de frente, sem
 > perspectiva e sem céu, estilo cartoon low-poly com cores chapadas, janelas azuis em grade,
 > térreo com parede lisa no centro (sem porta e sem letreiro). Imagem quadrada, a parede ocupa a
 > imagem inteira.
@@ -60,12 +60,19 @@ Prompt de exemplo:
 
 Letreiro em cima da porta. **O texto da imagem não é traduzido**: placa com palavra aparece igual
 em pt, en e es. Para o jogo multilíngue, prefira logotipo/marca (ex.: "Horizonte", um carro
-estilizado) a palavras como "ESCRITÓRIO". Sem a imagem, o jogo escreve a palavra traduzida.
+estilizado) a palavras como "VEÍCULOS". Sem a imagem, o jogo escreve a palavra traduzida (o banco
+mostra "BTG Pactual" em texto branco sobre marinho). O logo oficial do BTG Pactual entra como
+`placas/banco.png`, com fundo transparente.
 
 | Arquivo | Onde | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
-| `escritorio` | Acima da porta do escritório | 4 : 1 (3,6 × 0,9 m) | 1024 × 256 | sim (recorte da placa) |
+| `banco` | Acima da porta do banco **e** na parede do fundo da agência (logo BTG Pactual) | 4 : 1 (4,4 × 1,1 m na rua, 3,2 × 0,8 m na agência) | 1024 × 256 | sim (recorte da placa) |
 | `concessionaria` | Acima da porta da loja | 4 : 1 (6,4 × 1,6 m) | 1024 × 256 | sim |
+| `mobiauto` | Portal do feirão de seminovos, no fim da rua (logo Mobiauto, azul) | 4,6 : 1 (6 × 1,3 m) | 1200 × 260 | sim |
+| `rua` | Placa de rua "Av. Faria Lima" no primeiro poste | 4,5 : 1 (1,9 × 0,42 m) | 900 × 200 | sim |
+
+O portal do feirão e a placa de rua são *letreiros* (`letreiros` em `cenas.ts`): painel solto em
+cima de postes, com o mesmo slot de `placas/` e o mesmo texto provisório quando não há imagem.
 
 ## 3. Portas (`portas/`)
 
@@ -73,7 +80,8 @@ A folha da porta, de frente. O batente colorido em volta já existe no jogo.
 
 | Arquivo | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- |
-| `porta-escritorio` | 0,52 : 1 (1,2 × 2,3 m) | 520 × 1000 | sim, se tiver vidro |
+| `porta-banco` | 0,52 : 1 (1,2 × 2,3 m) | 520 × 1000 | sim, se tiver vidro |
+| `porta-interna` (porta do fundo da agência para o escritório) | 0,62 : 1 (1,4 × 2,25 m) | 620 × 1000 | não |
 | `porta-concessionaria` | 0,7 : 1 (1,6 × 2,3 m) | 700 × 1000 | sim, se tiver vidro |
 
 ## 4. Texturas de chão e parede (`texturas/`)
@@ -88,7 +96,12 @@ a escala do desenho (tamanho do ladrilho, da pedra, das folhas de grama).
 | `grama` | Canteiros e fundo da rua | 4 × 4 m | 512 × 512 | não |
 | `calcada` | Calçadas | 2 × 2 m | 512 × 512 | não |
 | `asfalto` | Rua (as faixas brancas são desenhadas por cima) | 4 × 4 m | 512 × 512 | não |
-| `piso-escritorio` | Chão do escritório | 2 × 2 m | 512 × 512 | não |
+| `ciclofaixa` | Ciclofaixa vermelha da calçada de baixo (onde andam os patinetes) | 2 × 2 m | 512 × 512 | não |
+| `piso-feirao` | Chão do feirão de seminovos (pátio de asfalto claro) | 4 × 4 m | 512 × 512 | não |
+| `piso-agencia` | Chão da agência do banco | 2 × 2 m | 512 × 512 | não |
+| `piso-escritorio` | Chão do escritório (baias) | 2 × 2 m | 512 × 512 | não |
+| `piso-designers` | Área dos designers no escritório | 3 × 3 m | 512 × 512 | não |
+| `tapete-gerente` | Tapete da mesa do gerente | 3 × 3 m | 512 × 512 | não |
 | `piso-concessionaria` | Chão da loja | 3 × 3 m | 512 × 512 | não |
 | `tapete` | Tapetes dos interiores | 3 × 3 m | 512 × 512 | não |
 | `plataforma` | Base dos carros em exposição | 5 × 5 m | 512 × 512 | não |
@@ -98,7 +111,8 @@ do fundo é a mais visível.
 
 | Arquivo | Sala | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
-| `parede-escritorio` | Escritório (parede de 12 × 3 m) | 4 : 1 | 2048 × 512 | não |
+| `parede-agencia` | Agência (parede de 14 × 3 m) | 4,7 : 1 | 2240 × 480 | não |
+| `parede-escritorio` | Escritório (parede de 20 × 3 m) | 6,7 : 1 | 2400 × 360 | não |
 | `parede-concessionaria` | Loja (parede de 18 × 3 m) | 6 : 1 | 2400 × 400 | não |
 
 Prompt de exemplo:
@@ -112,17 +126,19 @@ com arte, o jogo mostra só a imagem. A caixa de diálogo e o balão vão **sem 
 falas e os avisos são escritos por cima, traduzidos. Desenhe com margem de ~4% dentro da imagem,
 para a sombra não ser cortada.
 
-| Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (quadro 780 × 360) |
+| Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (referência 1280 × 720; 1,5× em 1920 × 1080) |
 | --- | --- | --- | --- | --- |
-| `direcional-base` | Base redonda do direcional (sem as setas) | 1 : 1 | 512 × 512 | 120 px |
-| `direcional-seta` | **Uma** seta apontando para **cima** (o jogo gira para os outros lados e acende a apertada) | 1 : 1 | 128 × 128 | 34 px |
-| `botao-a` | Botão A (interagir), solto | 1 : 1 | 256 × 256 | 58 px |
-| `botao-a-apertado` | Botão A apertado (opcional) | 1 : 1 | 256 × 256 | 58 px |
-| `botao-b` | Botão B (voltar/menu), solto | 1 : 1 | 256 × 256 | 58 px |
-| `botao-b-apertado` | Botão B apertado (opcional) | 1 : 1 | 256 × 256 | 58 px |
-| `botao-pausa` | Botão de pausa (canto superior direito) | 1 : 1 | 128 × 128 | 40 px |
-| `caixa-dialogo` | Moldura da caixa de fala (o texto vai por cima, à esquerda) | ~4,3 : 1 | 1600 × 370 | ~470 × 110 px |
-| `balao-acao` | Balão do aviso "A  Entrar: …" (pílula) | ~5 : 1 | 1000 × 200 | ~260 × 44 px |
+| `direcional-base` | Base redonda do direcional (sem as setas) | 1 : 1 | 512 × 512 | 180 px |
+| `direcional-seta` | **Uma** seta apontando para **cima** (o jogo gira para os outros lados e acende a apertada) | 1 : 1 | 128 × 128 | 50 px |
+| `botao-a` | Botão A (interagir), solto | 1 : 1 | 256 × 256 | 88 px |
+| `botao-a-apertado` | Botão A apertado (opcional) | 1 : 1 | 256 × 256 | 88 px |
+| `botao-b` | Botão B (voltar/menu), solto | 1 : 1 | 256 × 256 | 88 px |
+| `botao-b-apertado` | Botão B apertado (opcional) | 1 : 1 | 256 × 256 | 88 px |
+| `botao-correr` | Botão de correr (segurar), solto | 1 : 1 | 256 × 256 | 88 px |
+| `botao-correr-apertado` | Botão de correr segurado (opcional) | 1 : 1 | 256 × 256 | 88 px |
+| `botao-pausa` | Botão de pausa (canto superior direito) | 1 : 1 | 128 × 128 | 60 px |
+| `caixa-dialogo` | Moldura da caixa de fala (o texto vai por cima, à esquerda) | ~4 : 1 | 1600 × 400 | ~700 × 175 px |
+| `balao-acao` | Balão do aviso "A  Entrar: …" (pílula) | ~6 : 1 | 1200 × 200 | ~400 × 66 px |
 
 A caixa de diálogo e o balão são **esticados** para a largura do texto: mantenha o miolo liso e
 os enfeites nas bordas, e bordas finas (esticar engrossa borda desigual).
@@ -138,6 +154,8 @@ Prompt de exemplo:
 
 - **Personagens, carros e móveis** são modelos de caixas feitos em código
   (`src/features/rpg/cena3d/personagem.ts` e `modelos.ts`). Para trocar por arte, o caminho é um
-  modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo.
+  modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo. Isso inclui os
+  figurantes, o patinete elétrico, a tenda e as bandeiras do feirão. As cores dos figurantes
+  (`figurante_1` a `figurante_8`) e do patinete ficam em `paleta.ts`.
 - **Céu, luz e sombra** são cores e intensidades em `paleta.ts` (`COR_CEU`, `LUZ`).
 - Ícones do app e da loja: `public/icones/` e `android/app/src/main/res/mipmap-*/` (ver `README.md`).

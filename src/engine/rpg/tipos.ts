@@ -1,8 +1,10 @@
+import type { EstadoRng } from '../rng.ts'
+
 // Mundo do RPG isométrico, como o motor vê: chão plano em metros (x para a direita, z para a
 // frente da câmera), sem altura. Altura e aparência são dados de desenho que viajam junto
 // (`altura`, `visual`, `variante`) e o motor ignora.
 
-export type IdCena = 'rua' | 'escritorio' | 'concessionaria'
+export type IdCena = 'rua' | 'agencia' | 'escritorio' | 'concessionaria'
 
 // Retângulo no chão: (x, z) é o canto de menor x e menor z.
 export interface Retangulo {
@@ -71,6 +73,27 @@ export interface Decoracao extends Retangulo {
   nivel: number
 }
 
+// Letreiro em postes (placa de rua, portal do feirão). Só desenho: os postes, se baterem, são
+// sólidos à parte. `y` é a altura da base do painel.
+export interface Letreiro {
+  variante: string
+  x: number
+  z: number
+  largura: number
+  altura: number
+  y: number
+}
+
+// Figurantes: gente que anda sozinha pela `area`, sem conversa. Batem nos sólidos e nos NPCs,
+// mas atravessam o jogador e uns aos outros, para nunca prender ninguém nem tampar porta.
+export interface GrupoFigurantes {
+  quantidade: number
+  area: Retangulo
+  visuais: string[]
+  // Sem veículo, anda a pé.
+  veiculo?: 'patinete'
+}
+
 export interface Cena {
   id: IdCena
   largura: number
@@ -78,17 +101,22 @@ export interface Cena {
   // Interior: a câmera corta as paredes da frente (x = largura e z = profundidade).
   interior: boolean
   piso: string
+  // Placa (logo) na parede do fundo do interior, com o centro em x. Só desenho.
+  placaParede?: { variante: string; x: number }
   solidos: Solido[]
   portas: Porta[]
   npcs: Npc[]
   decoracoes: Decoracao[]
+  letreiros?: Letreiro[]
+  figurantes?: GrupoFigurantes[]
 }
 
-// Entrada de um tick. dx e dz em −1, 0 ou 1, já em eixos do mundo; interagir e voltar valem só
-// no tick em que chegam (borda do botão, não botão segurado).
+// Entrada de um tick. dx e dz em −1, 0 ou 1, já em eixos do mundo; correr vale enquanto o botão
+// está segurado; interagir e voltar valem só no tick em que chegam (borda do botão).
 export interface Entrada {
   dx: number
   dz: number
+  correr: boolean
   interagir: boolean
   voltar: boolean
 }
@@ -99,8 +127,9 @@ export interface JogadorRpg {
   dirX: number
   dirZ: number
   andando: boolean
-  // Ticks andados desde o começo: a fase da animação do passo sai daqui.
-  ticksAndando: number
+  correndo: boolean
+  // Fase da animação do passo, em "ticks de andar": soma PASSO_ANDANDO ou PASSO_CORRENDO por tick.
+  fasePasso: number
 }
 
 export interface DialogoAberto {
@@ -109,6 +138,29 @@ export interface DialogoAberto {
   linhas: number
   // Quem fala (id do NPC ou do objeto), para o desenho virar o NPC para o jogador.
   origem: string
+}
+
+export interface Figurante {
+  id: string
+  visual: string
+  veiculo: 'patinete' | null
+  // Índice do grupo na cena: é a área por onde ele anda.
+  grupo: number
+  x: number
+  z: number
+  // Posição do tick anterior, para o desenho interpolar.
+  xAnterior: number
+  zAnterior: number
+  alvoX: number
+  alvoZ: number
+  // Ticks parado antes de escolher outro alvo.
+  espera: number
+  ticksNoTrajeto: number
+  // Direção do último passo (não normalizada a ±1: o desenho só tira o ângulo).
+  dirX: number
+  dirZ: number
+  andando: boolean
+  fasePasso: number
 }
 
 export type TipoAlvo = TipoInteracao
@@ -130,4 +182,7 @@ export interface EstadoMundo {
   dialogo: DialogoAberto | null
   // Quantas vezes o jogador trocou de cena: a UI usa para disparar o esmaecer.
   trocasDeCena: number
+  // Gerador dos figurantes. Só eles sorteiam: o jogador e as portas não dependem dele.
+  rng: EstadoRng
+  figurantes: Figurante[]
 }

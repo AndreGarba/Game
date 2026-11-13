@@ -6,6 +6,8 @@ interface Props {
   rotulo: string
   descricao: string
   aoApertar: () => void
+  // Para botão de segurar (correr): chamado quando o dedo sai, cancela ou desliza para fora.
+  aoSoltar?: () => void
   variante?: 'primario' | 'secundario'
   imagem?: string | null
   imagemApertado?: string | null
@@ -15,8 +17,13 @@ interface Props {
  * Botão redondo de controle. Dispara no pressionar (pointerdown), não no soltar: o click do
  * navegador espera o dedo subir e, no celular, isso atrasa a ação.
  */
-export function BotaoToque({ rotulo, descricao, aoApertar, variante = 'primario', imagem, imagemApertado }: Props) {
+export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 'primario', imagem, imagemApertado }: Props) {
   const [apertado, setApertado] = useState(false)
+  const soltar = () => {
+    if (!apertado) return
+    setApertado(false)
+    aoSoltar?.()
+  }
   const arte = apertado && imagemApertado ? imagemApertado : imagem
   const estilo = (arte ? { '--imagem': `url(${arte})` } : {}) as CSSProperties
   return (
@@ -34,9 +41,9 @@ export function BotaoToque({ rotulo, descricao, aoApertar, variante = 'primario'
         setApertado(true)
         aoApertar()
       }}
-      onPointerUp={() => setApertado(false)}
-      onPointerCancel={() => setApertado(false)}
-      onPointerLeave={() => setApertado(false)}
+      onPointerUp={soltar}
+      onPointerCancel={soltar}
+      onPointerLeave={soltar}
     >
       {!arte && <span aria-hidden="true">{rotulo}</span>}
     </button>

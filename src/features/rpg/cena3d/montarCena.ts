@@ -7,10 +7,10 @@ import { criarPersonagem, anguloDaDirecao, type Personagem } from './personagem.
 import { placaProcedural, texturaDePiso, texturaDoSlot } from './texturas.ts'
 
 // Monta o THREE.Group de uma cena do mapa: chão, faixas, paredes (interior), sólidos, portas,
-// placas e NPCs. Tudo sai dos dados da cena; nada aqui decide regra.
+// placas, letreiros e NPCs. Os figurantes mudam de lugar a cada tick e ficam no renderizador. Tudo sai dos dados da cena; nada aqui decide regra.
 
 export interface TextosDaCena {
-  // Texto provisório das placas, por variante do prédio (escritorio, concessionaria).
+  // Texto provisório das placas, por variante (banco, concessionaria, mobiauto, rua).
   placas: Record<string, string>
 }
 
@@ -26,7 +26,7 @@ const ESPESSURA_PAREDE = 0.2
 
 // Onde vai a placa de cada fachada, a partir do centro da porta.
 const PLACAS: Record<string, { largura: number; altura: number; y: number }> = {
-  escritorio: { largura: 3.6, altura: 0.9, y: 2.9 },
+  banco: { largura: 4.4, altura: 1.1, y: 3 },
   concessionaria: { largura: 6.4, altura: 1.6, y: 4.2 },
 }
 
@@ -42,7 +42,13 @@ function faixaDeChao(f: Fabrica, visual: string, x: number, z: number, largura: 
   return malha
 }
 
-function paredesDoInterior(f: Fabrica, cena: Cena): THREE.Object3D[] {
+function placaComTexto(f: Fabrica, variante: string, texto: string, largura: number, altura: number): THREE.Mesh {
+  const cores = COR_PREDIO[variante] ?? COR_PREDIO.residencial!
+  const textura = texturaDoSlot('placas', variante) ?? f.guardar(placaProcedural(texto, cores.placa, cores.textoPlaca))
+  return f.plano(largura, altura, f.materialComTextura(textura, { transparente: true }))
+}
+
+function paredesDoInterior(f: Fabrica, cena: Cena, placas: TextosDaCena['placas']): THREE.Object3D[] {
   const corParede = cena.id === 'concessionaria' ? C.paredeLoja : C.parede
   const arte = texturaDoSlot('texturas', `parede-${cena.id}`)
   const parede = arte ? f.materialComTextura(arte) : f.material(corParede)
@@ -65,8 +71,21 @@ function paredesDoInterior(f: Fabrica, cena: Cena): THREE.Object3D[] {
   }
   saida.push(f.caixa(L + e - inicio, ALTURA_PAREDE_CORTADA, e, parede, { x: (inicio + L + e) / 2, z: P + e / 2 }))
 
-  // Quadros e janelas na parede do fundo, só para a sala não ficar lisa.
+  // Porta interna e logo na parede do fundo; quadros e janelas preenchem o resto.
+  const ocupado: [number, number][] = []
+  for (const p of cena.portas.filter((p) => p.z <= 0.01)) {
+    ocupado.push([p.x - 0.3, p.x + p.largura + 0.3])
+    saida.push(...portaInterna(f, p))
+  }
+  if (cena.placaParede && placas[cena.placaParede.variante]) {
+    const { variante, x } = cena.placaParede
+    const placa = placaComTexto(f, variante, placas[variante]!, 3.2, 0.8)
+    placa.position.set(x, 2.1, 0.04)
+    saida.push(placa)
+    ocupado.push([x - 1.9, x + 1.9])
+  }
   for (let x = 2; x < L - 1; x += 4) {
+    if (ocupado.some(([a, b]) => x + 2.2 > a && x - 0.2 < b)) continue
     const janela = cena.id === 'concessionaria'
     saida.push(
       f.caixa(janela ? 2.4 : 1.2, janela ? 1.4 : 0.8, 0.04, f.material(janela ? C.vidro : C.madeira), {
@@ -77,6 +96,17 @@ function paredesDoInterior(f: Fabrica, cena: Cena): THREE.Object3D[] {
     )
   }
   return saida
+}
+
+function portaInterna(f: Fabrica, porta: Porta): THREE.Object3D[] {
+  const cx = porta.x + porta.largura / 2
+  const arte = texturaDoSlot('portas', porta.visual)
+  const folha = arte ? f.materialComTextura(arte, { transparente: true }) : f.material(C.porta)
+  return [
+    f.caixa(porta.largura + 0.24, 2.4, 0.06, f.material(C.marinho), { x: cx, z: 0.03 }),
+    f.caixa(porta.largura, 2.25, 0.04, folha, { x: cx, z: 0.07 }),
+    f.caixa(0.06, 0.06, 0.08, f.material(C.dourado), { x: cx + porta.largura * 0.35, y: 1.05, z: 0.1 }),
+  ]
 }
 
 function portaDaRua(f: Fabrica, porta: Porta, placas: TextosDaCena['placas']): THREE.Object3D[] {
@@ -94,9 +124,7 @@ function portaDaRua(f: Fabrica, porta: Porta, placas: TextosDaCena['placas']): T
   const medidas = PLACAS[variante]
   const texto = placas[variante]
   if (medidas && texto) {
-    const cores = COR_PREDIO[variante]!
-    const textura = texturaDoSlot('placas', variante) ?? f.guardar(placaProcedural(texto, cores.placa, cores.textoPlaca))
-    const placa = f.plano(medidas.largura, medidas.altura, f.materialComTextura(textura, { transparente: true }))
+    const placa = placaComTexto(f, variante, texto, medidas.largura, medidas.altura)
     placa.position.set(cx, medidas.y, porta.z + 0.2)
     saida.push(placa)
   }
@@ -118,15 +146,24 @@ export function montarCena(f: Fabrica, cena: Cena, textos: TextosDaCena): CenaMo
     fora.rotation.x = -Math.PI / 2
     fora.position.y = -0.02
     grupo.add(fora)
-    grupo.add(...paredesDoInterior(f, cena))
+    grupo.add(...paredesDoInterior(f, cena, textos.placas))
   }
   for (const d of [...cena.decoracoes].sort((a, b) => a.nivel - b.nivel)) {
     grupo.add(faixaDeChao(f, d.visual, d.x, d.z, d.largura, d.profundidade, 0.01 * d.nivel))
   }
   for (const s of cena.solidos) grupo.add(modeloDoSolido(f, s))
   for (const p of cena.portas) {
+    if (cena.interior && p.z <= 0.01) continue
     if (cena.interior) grupo.add(saidaDoInterior(f, p))
     else grupo.add(...portaDaRua(f, p, textos.placas))
+  }
+
+  for (const l of cena.letreiros ?? []) {
+    const texto = textos.placas[l.variante]
+    if (!texto) continue
+    const placa = placaComTexto(f, l.variante, texto, l.largura, l.altura)
+    placa.position.set(l.x, l.y + l.altura / 2, l.z)
+    grupo.add(placa)
   }
 
   const npcs: CenaMontada['npcs'] = new Map()

@@ -120,6 +120,20 @@ const mesa: Construtor = (f, l, a, p, variante) => {
       f.caixa(0.5, 0.03, 0.18, f.material(C.metalEscuro), { y: a, z: p * 0.1 }),
     )
   }
+  if (variante === 'designer') {
+    // Dois monitores largos e uma mesa digitalizadora com caneta.
+    for (const x of [-0.5, 0.5]) {
+      g.add(
+        f.caixa(0.9, 0.5, 0.05, f.material(C.tela), { x, y: a + 0.12, z: -p * 0.3 }),
+        f.caixa(0.82, 0.42, 0.01, f.material(x < 0 ? '#f08a5d' : '#7bd389', { emissivo: true }), { x, y: a + 0.16, z: -p * 0.3 + 0.03 }),
+        f.caixa(0.08, 0.12, 0.08, f.material(C.tela), { x, y: a, z: -p * 0.3 }),
+      )
+    }
+    g.add(
+      f.caixa(0.6, 0.03, 0.4, f.material(C.mesaDigital), { x: 0.2, y: a, z: p * 0.15 }),
+      f.caixa(0.04, 0.03, 0.3, f.material('#ffffff'), { x: 0.6, y: a + 0.03, z: p * 0.15 }),
+    )
+  }
   if (variante === 'vendas') {
     g.add(
       f.caixa(0.4, 0.02, 0.3, f.material('#ffffff'), { y: a, x: -0.3 }),
@@ -178,7 +192,78 @@ const bebedouro: Construtor = (f, l, a, p) => {
 const mesinha: Construtor = (f, l, a, p) =>
   grupo(f.caixa(l, 0.05, p, f.material(C.madeira), { y: a - 0.05 }), f.caixa(l * 0.6, a - 0.05, p * 0.6, f.material(C.madeira)))
 
+// Totem de senha da agência: coluna marinho com tela e a fresta do papel.
+const totem: Construtor = (f, l, a, p) =>
+  grupo(
+    f.caixa(l, a, p, f.material(C.marinho)),
+    f.caixa(l * 0.8, a * 0.3, 0.02, f.material(C.telaLigada, { emissivo: true }), { y: a * 0.6, z: p / 2 + 0.01 }),
+    f.caixa(l * 0.5, 0.04, 0.02, f.material(C.dourado), { y: a * 0.4, z: p / 2 + 0.01 }),
+  )
+
+// Divisória de vidro com moldura: separa as baias da área dos designers sem esconder ninguém.
+const divisoria: Construtor = (f, l, a, p) =>
+  grupo(
+    f.caixa(l, a, p, f.material(C.vidroDivisoria, { transparente: 0.45 })),
+    f.caixa(l + 0.04, 0.08, p, f.material(C.metalEscuro), { y: a - 0.08 }),
+    f.caixa(l + 0.04, 0.08, p, f.material(C.metalEscuro)),
+  )
+
+// Moodboard: painel de cortiça com recortes coloridos e post-its.
+const moodboard: Construtor = (f, l, a, p) => {
+  const g = grupo(f.caixa(l, a - 0.5, p, f.material(C.cortica), { y: 0.5 }))
+  const cores = ['#f08a5d', '#7bd389', '#5b8def', '#f2c94c', '#c2386b', '#ffffff', C.postIts, '#9b6bd6']
+  let i = 0
+  for (let x = -l / 2 + 0.45; x < l / 2 - 0.3; x += 0.62) {
+    for (const y of [0.85, 1.35, 1.8]) {
+      const largura = 0.3 + ((i * 7) % 3) * 0.08
+      g.add(f.caixa(largura, 0.32, 0.02, f.material(cores[i % cores.length]!), { x, y, z: p / 2 + 0.01 }))
+      i += 1
+    }
+  }
+  return g
+}
+
+const pufe: Construtor = (f, l, a, p, variante) => {
+  const bola = f.bola(Math.min(l, p) * 0.55, f.material(variante === 'b' ? C.pufe2 : C.pufe))
+  bola.scale.y = a / (Math.min(l, p) * 1.1)
+  bola.position.y = a / 2
+  return grupo(bola)
+}
+
+// Tenda de feirão: lona branca com faixa azul em quatro pés e uma mesa de vendas embaixo.
+const tenda: Construtor = (f, l, a, p) => {
+  const pe = f.material(C.metal)
+  const g = grupo(
+    f.caixa(l, 0.12, p, f.material(C.lona), { y: a - 0.5 }),
+    f.caixa(l * 0.6, 0.4, p, f.material(C.lona), { y: a - 0.4 }),
+    f.caixa(l + 0.02, 0.22, 0.04, f.material(C.lonaFaixa), { y: a - 0.62, z: p / 2 }),
+    f.caixa(l * 0.5, 0.75, 0.7, f.material(C.madeiraClara), { z: p * 0.15 }),
+  )
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(f.caixa(0.08, a - 0.4, 0.08, pe, { x: (sx * (l - 0.1)) / 2, z: (sz * (p - 0.1)) / 2 }))
+  return g
+}
+
+// Poste do portal: o painel do letreiro vem de `letreiros`, por cima dos dois postes.
+const postePortal: Construtor = (f, l, a, p) => grupo(f.caixa(l, a, p, f.material(C.lonaFaixa)))
+
+// Bandeira de feirão ("wind banner"): mastro fino e a vela alta de um lado só.
+const bandeira: Construtor = (f, l, a, _p, variante) => {
+  const vela = f.material(variante === 'branca' ? C.lona : C.lonaFaixa)
+  return grupo(
+    f.caixa(l * 0.3, a, l * 0.3, f.material(C.metal)),
+    f.caixa(0.04, a * 0.7, 0.55, vela, { y: a * 0.28, z: 0.3 }),
+    f.caixa(0.03, a * 0.1, 0.4, f.material(variante === 'branca' ? C.lonaFaixa : C.lona), { y: a * 0.75, z: 0.3 }),
+  )
+}
+
 const CONSTRUTORES: Record<string, Construtor> = {
+  tenda,
+  'poste-portal': postePortal,
+  bandeira,
+  totem,
+  divisoria,
+  moodboard,
+  pufe,
   predio,
   carro,
   arvore,

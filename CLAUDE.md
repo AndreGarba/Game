@@ -101,8 +101,16 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
 ### O RPG isométrico (o que o Jogar abre hoje)
 
-Protótipo de RPG: o jogador anda por uma rua e entra num escritório e numa loja de veículos.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-1'` (`src/engine/rpg/constantes.ts`).
+Protótipo de RPG: o jogador anda pela Avenida Faria Lima (66 m), entra no banco BTG Pactual e numa
+loja de veículos, e no fim da rua há o feirão de seminovos Mobiauto, a céu aberto (sem porta: é
+parte da cena `rua`).
+O banco tem duas cenas: a `agencia` (recepção, totem de senha, mesa do gerente) e, pela porta do
+fundo, o `escritorio` (baias com computador, divisória de vidro e área dos designers com moodboard).
+Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
+capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
+regra de Cloudflare Access para marcas BTG/Pan.
+Versão do mundo: `VERSAO_MUNDO = 'rpg-4'` (rpg-2: botão de correr; rpg-3: banco com agência e
+escritório; rpg-4: Faria Lima, feirão e figurantes) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -113,10 +121,24 @@ Versão do mundo: `VERSAO_MUNDO = 'rpg-1'` (`src/engine/rpg/constantes.ts`).
   motor. `altura`, `visual`, `variante` e `giro` dos elementos são dados de desenho que o motor
   ignora. Mapa em `src/engine/rpg/cenas.ts`: `solidos` (retângulos que bloqueiam), `portas`
   (zonas com `destino`), `npcs` (bloqueiam num quadrado de `RAIO_NPC`) e `decoracoes` (chão).
-- **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, e `interagir`/
-  `voltar` só no tick em que o botão desceu. O d-pad é da tela: "cima" é andar para −x e −z, e
+- **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, `correr`
+  enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar` só no tick em que o botão
+  desceu. Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência do passo (`PASSO_ANDANDO`,
+  `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em `constantes.ts`; o desenho só lê
+  `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar para −x e −z, e
   quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
-- **Colisão** um eixo de cada vez (desliza na parede). **Interação**: o A vale para o elemento mais
+- **Figurantes** (`src/engine/rpg/figurantes.ts`): gente e patinetes elétricos andando à toa, sem
+  conversa. Cada cena declara grupos (`figurantes`: quantidade, área, aparências, `veiculo`); quem
+  está no estado (`estado.figurantes`) é só a cena atual, sorteada de novo a cada troca de cena.
+  Sorteio só pelo `estado.rng` (o `rng.ts` do motor, semente `SEMENTE_PADRAO` ou a de
+  `criarMundo(semente)`): é o único import de fora da pasta que `tests/fronteiras.test.ts` aceita.
+  Figurante bate em sólido e NPC, mas **atravessa o jogador e os outros figurantes**: assim nunca
+  tampa porta nem prende ninguém, e o caminho do jogador é o mesmo com ou sem eles (há teste).
+  Preso atrás de um móvel, desiste e sorteia outro alvo. Velocidades, paradas e raio em
+  `constantes.ts`. No desenho, figurante é o personagem `leve` (7 caixas, sem sombra no mapa), para
+  a rua com 15 deles caber no celular.
+- **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
+  aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
   publica esse alvo em `estado.alvo` e o HUD mostra o aviso. Diálogo aberto trava o andar; A
   passa a fala, B fecha. Fora do diálogo, o B abre o menu (pausa), e isso é da tela, não do motor.
@@ -459,10 +481,15 @@ Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: portu
 - Componente que conhece conceito do domínio pertence a `features/`, não a `components/`.
 - Bottom sheet, não navegação cheia, para detalhe no meio do fluxo.
 - **Sem router, troca de tela precisa resetar o scroll** (hook no componente que decide a tela).
-- **O jogo é sempre desenhado na proporção de celular deitado (780 × 360, 19,5:9).** `App.tsx`
-  envolve tudo na `.moldura-celular` (`global.css`), o maior retângulo nessa proporção que cabe na
-  janela; o resto vira faixa. A moldura define `--altura-tela`, e toda tela mede o resto pelo
-  próprio contêiner (`cqh`/`cqw`, `clientWidth`). Tela nova não usa `vw`/`vh`, `window.inner*` nem
+- **O jogo é sempre desenhado na proporção de tela de computador (16:9, referência 1280 × 720).**
+  `App.tsx` envolve tudo na `.moldura-tela` (`global.css`), o maior retângulo nessa proporção que
+  cabe na janela; o resto vira faixa (*letterbox*). A moldura define `--altura-tela` e `--px` (um
+  pixel da tela de referência) e recalcula a partir dele os tokens de tamanho (espaços, textos,
+  raios, HUD: `tokens.css`, bloco `.moldura-tela`): numa janela 1920 × 1080 tudo fica 1,5×, sem
+  mudar o desenho. Por isso tamanho novo é token em `--px`, nunca `px` ou `rem` solto. Toda tela
+  mede o resto pelo próprio contêiner (`cqh`/`cqw`, `clientWidth`). O canvas 3D do RPG segue o
+  tamanho real do contêiner (`ResizeObserver`), com densidade até `DENSIDADE_MAX`, e a câmera
+  ortográfica tira a largura da proporção real (`ALTURA_VISIVEL` em metros na vertical). Tela nova não usa `vw`/`vh`, `window.inner*` nem
   `position: fixed`: tudo isso escapa da moldura. Jogo em pé troca a proporção ali e a orientação
   no manifesto (`vite.config.ts`) e na casca (`AndroidManifest.xml`).
 - **Altura de tela é `var(--altura-tela, 100svh)`**, não `100svh` puro: somado ao padding de
