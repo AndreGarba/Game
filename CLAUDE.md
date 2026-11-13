@@ -101,8 +101,14 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
 ### O RPG isométrico (o que o Jogar abre hoje)
 
-Protótipo de RPG: o jogador anda por uma rua e entra num escritório e numa loja de veículos.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-2'` (rpg-2: botão de correr) (`src/engine/rpg/constantes.ts`).
+Protótipo de RPG: o jogador anda por uma rua e entra no banco BTG Pactual e numa loja de veículos.
+O banco tem duas cenas: a `agencia` (recepção, totem de senha, mesa do gerente) e, pela porta do
+fundo, o `escritorio` (baias com computador, divisória de vidro e área dos designers com moodboard).
+Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
+capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
+regra de Cloudflare Access para marcas BTG/Pan.
+Versão do mundo: `VERSAO_MUNDO = 'rpg-3'` (rpg-2: botão de correr; rpg-3: banco com agência e
+escritório) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à

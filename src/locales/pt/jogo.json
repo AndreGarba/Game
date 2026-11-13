@@ -1,6 +1,6 @@
 {
   "titulo": "Cidade Isométrica",
-  "subtitulo": "Protótipo de RPG: ande pela rua, entre no escritório e na loja de veículos.",
+  "subtitulo": "Protótipo de RPG: ande pela rua, entre no banco e na loja de veículos.",
   "deNovo": "Jogar de novo",
   "continuar": "Continuar",
   "menu": "Menu",
@@ -72,11 +72,12 @@
   "rpg": {
     "cenas": {
       "rua": "Rua das Palmeiras",
-      "escritorio": "Escritório Horizonte",
+      "agencia": "Agência BTG Pactual",
+      "escritorio": "Escritório BTG Pactual",
       "concessionaria": "Loja de Veículos"
     },
     "placas": {
-      "escritorio": "ESCRITÓRIO",
+      "banco": "BTG Pactual",
       "concessionaria": "VEÍCULOS"
     },
     "nomes": {
@@ -86,7 +87,12 @@
       "bebedouro": "bebedouro",
       "carro_vermelho": "hatch vermelho",
       "carro_azul": "sedã azul",
-      "carro_amarelo": "esportivo amarelo"
+      "carro_amarelo": "esportivo amarelo",
+      "gerente": "Ricardo",
+      "analista": "Rafa",
+      "designer": "Bia",
+      "totem": "totem de senhas",
+      "moodboard": "moodboard"
     },
     "acao": {
       "entrar": "Entrar: {{lugar}}",
@@ -108,13 +114,13 @@
     "dialogos": {
       "pedestre": [
         "Bom dia! Você é novo no bairro?",
-        "O escritório fica ali, na porta azul. A loja de carros é logo ao lado.",
+        "Aquele é o BTG Pactual, na porta azul. A loja de carros é logo ao lado.",
         "Dizem que o esportivo amarelo saiu com desconto hoje."
       ],
       "recepcionista": [
-        "Boas-vindas ao Escritório Horizonte!",
-        "A reunião das dez foi remarcada. Pode esperar no sofá, se quiser.",
-        "O bebedouro fica à direita. Fique à vontade."
+        "Boas-vindas ao BTG Pactual!",
+        "O Ricardo, nosso gerente, atende ali à direita.",
+        "O escritório fica pela porta do fundo."
       ],
       "vendedor": [
         "Olá! Procurando um carro novo?",
@@ -135,6 +141,28 @@
       "carro_amarelo": [
         "Esportivo amarelo, 0 a 100 em 6 segundos.",
         "R$ 249.000 — hoje com desconto!"
+      ],
+      "gerente": [
+        "Olá! Sou o Ricardo, gerente da agência.",
+        "Posso ajudar com conta, investimentos ou crédito.",
+        "Hoje a agenda está tranquila. Sente-se, por favor.",
+        "Se quiser conhecer o time, o escritório é pela porta do fundo."
+      ],
+      "totem": [
+        "Senha A-042. Aguarde ser chamado."
+      ],
+      "analista": [
+        "Fechando as planilhas do mês. Café ajuda!",
+        "Os designers ficam do outro lado do vidro."
+      ],
+      "designer": [
+        "Oi! Aqui é a área de design.",
+        "Estamos montando a campanha nova no moodboard.",
+        "Passa lá e me diz o que achou das cores!"
+      ],
+      "moodboard": [
+        "Recortes, paletas e post-its da campanha nova.",
+        "Alguém escreveu: “menos é mais”."
       ]
     }
   }

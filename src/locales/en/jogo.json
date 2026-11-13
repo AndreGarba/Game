@@ -1,6 +1,6 @@
 {
   "titulo": "Isometric City",
-  "subtitulo": "RPG prototype: walk down the street, enter the office and the car dealership.",
+  "subtitulo": "RPG prototype: walk down the street, enter the bank and the car dealership.",
   "deNovo": "Play again",
   "continuar": "Continue",
   "menu": "Menu",
@@ -72,11 +72,12 @@
   "rpg": {
     "cenas": {
       "rua": "Palm Street",
-      "escritorio": "Horizon Office",
+      "agencia": "BTG Pactual Branch",
+      "escritorio": "BTG Pactual Office",
       "concessionaria": "Car Dealership"
     },
     "placas": {
-      "escritorio": "OFFICE",
+      "banco": "BTG Pactual",
       "concessionaria": "CARS"
     },
     "nomes": {
@@ -86,7 +87,12 @@
       "bebedouro": "water cooler",
       "carro_vermelho": "red hatchback",
       "carro_azul": "blue sedan",
-      "carro_amarelo": "yellow sports car"
+      "carro_amarelo": "yellow sports car",
+      "gerente": "Ricardo",
+      "analista": "Rafa",
+      "designer": "Bia",
+      "totem": "ticket kiosk",
+      "moodboard": "moodboard"
     },
     "acao": {
       "entrar": "Enter: {{lugar}}",
@@ -108,13 +114,13 @@
     "dialogos": {
       "pedestre": [
         "Good morning! Are you new in the neighborhood?",
-        "The office is right there, the blue door. The car shop is next to it.",
+        "That is BTG Pactual, the blue door. The car shop is right next to it.",
         "They say the yellow sports car is on sale today."
       ],
       "recepcionista": [
-        "Welcome to Horizon Office!",
-        "The ten o’clock meeting was moved. You can wait on the sofa if you like.",
-        "The water cooler is on the right. Make yourself at home."
+        "Welcome to BTG Pactual!",
+        "Ricardo, our manager, is right there on the right.",
+        "The office is through the back door."
       ],
       "vendedor": [
         "Hi! Looking for a new car?",
@@ -135,6 +141,28 @@
       "carro_amarelo": [
         "Yellow sports car, 0 to 60 in 6 seconds.",
         "$49,800 — on sale today!"
+      ],
+      "gerente": [
+        "Hi! I am Ricardo, the branch manager.",
+        "I can help with accounts, investments or loans.",
+        "The schedule is calm today. Please have a seat.",
+        "If you want to meet the team, the office is through the back door."
+      ],
+      "totem": [
+        "Ticket A-042. Please wait to be called."
+      ],
+      "analista": [
+        "Closing this month’s spreadsheets. Coffee helps!",
+        "The designers are on the other side of the glass."
+      ],
+      "designer": [
+        "Hi! This is the design area.",
+        "We are putting the new campaign together on the moodboard.",
+        "Take a look and tell me what you think of the colors!"
+      ],
+      "moodboard": [
+        "Clippings, palettes and sticky notes for the new campaign.",
+        "Someone wrote: “less is more”."
       ]
     }
   }

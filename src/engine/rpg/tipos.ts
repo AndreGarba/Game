@@ -2,7 +2,7 @@
 // frente da câmera), sem altura. Altura e aparência são dados de desenho que viajam junto
 // (`altura`, `visual`, `variante`) e o motor ignora.
 
-export type IdCena = 'rua' | 'escritorio' | 'concessionaria'
+export type IdCena = 'rua' | 'agencia' | 'escritorio' | 'concessionaria'
 
 // Retângulo no chão: (x, z) é o canto de menor x e menor z.
 export interface Retangulo {
@@ -78,6 +78,8 @@ export interface Cena {
   // Interior: a câmera corta as paredes da frente (x = largura e z = profundidade).
   interior: boolean
   piso: string
+  // Placa (logo) na parede do fundo do interior, com o centro em x. Só desenho.
+  placaParede?: { variante: string; x: number }
   solidos: Solido[]
   portas: Porta[]
   npcs: Npc[]

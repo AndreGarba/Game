@@ -17,7 +17,7 @@ export interface QuadroRpg {
 }
 
 // Metros visíveis na vertical da tela. No quadro de 780 × 360 a rua mostra ~20 m de largura.
-const ALTURA_VISIVEL: Record<IdCena, number> = { rua: 9.5, escritorio: 8.5, concessionaria: 9.5 }
+const ALTURA_VISIVEL: Record<IdCena, number> = { rua: 9.5, agencia: 9, escritorio: 10, concessionaria: 9.5 }
 // Direção (1, 1, 1): isométrico de verdade, 35,26° de elevação e 45° de azimute.
 const DESLOCAMENTO_CAMERA = new THREE.Vector3(30, 30, 30)
 // Passo do jogador: um ciclo de perna a cada 26 ticks a 3,6 m/s.
