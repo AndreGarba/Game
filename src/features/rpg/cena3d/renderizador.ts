@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { CENAS, type EstadoMundo, type IdCena } from '../../../engine/rpg/index.ts'
-import { APARENCIAS, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
+import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
 import { Fabrica } from './fabrica.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
 import { anguloDaDirecao, animarPersonagem, criarPatinete, criarPersonagem, type Personagem } from './personagem.ts'
@@ -56,7 +56,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
 
   // O jogador vive a sessão inteira; a cena e os NPCs são refeitos a cada troca.
   const fabricaJogador = new Fabrica()
-  const jogador = criarPersonagem(fabricaJogador, APARENCIAS.jogador!)
+  const jogador = criarPersonagem(fabricaJogador, APARENCIAS.jogador!, { anel: COR_ANEL_JOGADOR })
   cena.add(jogador.raiz)
 
   let fabricaCena = new Fabrica()

@@ -26,11 +26,45 @@ function membro(f: Fabrica, cor: string, ponta: string, largura: number, comprim
   return pivo
 }
 
+// Braço de camiseta: manga curta na cor da camisa, pele até a mão e tatuagens em tinta. Cada lado
+// tem um desenho, e as peças de tinta saem um pouco para fora do braço para não piscarem com a
+// pele (z-fighting). Grossas de propósito: na câmera isométrica um braço tem poucos pixels.
+function bracoTatuado(f: Fabrica, a: Aparencia, tinta: string, lado: -1 | 1): THREE.Group {
+  const pivo = new THREE.Group()
+  const l = 0.15
+  const comprimento = 0.5
+  const manga = 0.16
+  const pele = f.material(a.pele)
+  const t = f.material(tinta)
+  pivo.add(
+    f.caixa(l * 1.18, manga, l * 1.25, f.material(a.camisa), { y: -manga }),
+    f.caixa(l, comprimento - manga, l * 1.1, pele, { y: -comprimento }),
+    f.caixa(l * 1.05, 0.14, l * 1.4, pele, { y: -comprimento - 0.084, z: 0.03 }),
+  )
+  const anel = (y: number, altura: number) => f.caixa(l + 0.012, altura, l * 1.1 + 0.012, t, { y: -y })
+  if (lado < 0) {
+    // Esquerdo: duas faixas no antebraço e uma no bíceps.
+    pivo.add(anel(0.24, 0.035), anel(0.36, 0.06), anel(0.45, 0.035))
+  } else {
+    // Direito: desenho grande na face de fora, uma faixa no bíceps e outra no pulso.
+    pivo.add(
+      f.caixa(0.012, 0.2, l * 0.8, t, { x: l / 2 + 0.006, y: -0.42 }),
+      f.caixa(0.012, 0.06, l * 0.5, f.material(a.pele), { x: l / 2 + 0.013, y: -0.33 }),
+      f.caixa(l * 1.1 + 0.012, 0.06, 0.012, t, { y: -0.35, z: (l * 1.1) / 2 + 0.006 }),
+      anel(0.25, 0.05),
+      anel(0.47, 0.03),
+    )
+  }
+  return pivo
+}
+
 export interface OpcoesPersonagem {
   // Figurante: menos peças e sem sombra no mapa (só a redonda), para caber muitos no celular.
   leve?: boolean
   // Altura dos pés (em cima do patinete).
   elevacao?: number
+  // Anel colorido no chão, para achar o jogador no meio da cena.
+  anel?: string
 }
 
 export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonagem = {}): Personagem {
@@ -47,8 +81,8 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   pernaE.position.set(-0.13, ALTURA_QUADRIL, 0)
   pernaD.position.set(0.13, ALTURA_QUADRIL, 0)
 
-  const bracoE = membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
-  const bracoD = membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
+  const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
+  const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
   bracoE.position.set(-0.34, ALTURA_OMBRO, 0)
   bracoD.position.set(0.34, ALTURA_OMBRO, 0)
 
@@ -77,6 +111,15 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   sombra.position.y = 0.03
   sombra.receiveShadow = false
   raiz.add(sombra)
+  if (opcoes.anel) {
+    const anel = new THREE.Mesh(
+      f.guardar(new THREE.RingGeometry(0.4, 0.5, 28)),
+      f.guardar(new THREE.MeshBasicMaterial({ color: opcoes.anel, transparent: true, opacity: 0.8, depthWrite: false })),
+    )
+    anel.rotation.x = -Math.PI / 2
+    anel.position.y = 0.035
+    raiz.add(anel)
+  }
 
   return { raiz, corpo, pernas: [pernaE, pernaD], bracos: [bracoE, bracoD], angulo: 0 }
 }

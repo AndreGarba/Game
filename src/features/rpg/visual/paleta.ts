@@ -102,10 +102,21 @@ export interface Aparencia {
   sapato: string
   // Detalhe de uniforme (gravata, crachá): null para nenhum.
   detalhe: string | null
+  // Camiseta de manga curta com tatuagens nos braços: a cor da tinta. Sem ela, manga comprida.
+  tatuagem?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
-  jogador: { pele: '#e2a97e', cabelo: '#3b2a1f', camisa: '#f76b15', calca: '#2f3f63', sapato: '#2b2b2b', detalhe: null },
+  // Tudo preto, mas não #000: com luz chapada, preto puro vira recorte sem volume.
+  jogador: {
+    pele: '#e2a97e',
+    cabelo: '#0c0c0e',
+    camisa: '#1b1b1f',
+    calca: '#141417',
+    sapato: '#0a0a0c',
+    detalhe: null,
+    tatuagem: '#1f2b3d',
+  },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
   figurante_2: { pele: '#6b4430', cabelo: '#111111', camisa: '#f2f2f2', calca: '#4a4f57', sapato: '#1e1e1e', detalhe: null },
   figurante_3: { pele: '#c98f65', cabelo: '#b5651d', camisa: '#7a4fb3', calca: '#2b2b2b', sapato: '#f2f2f2', detalhe: null },
@@ -121,3 +132,6 @@ export const APARENCIAS: Record<string, Aparencia> = {
   recepcionista: { pele: '#f0c3a0', cabelo: '#a0522d', camisa: '#ffffff', calca: '#2a2f3a', sapato: '#111111', detalhe: '#2f6fd6' },
   vendedor: { pele: '#c68a62', cabelo: '#2a2a2a', camisa: '#d6402f', calca: '#222831', sapato: '#111111', detalhe: '#f2b81d' },
 }
+
+// Anel no chão embaixo do jogador: de roupa preta, ele some no asfalto e no meio dos figurantes.
+export const COR_ANEL_JOGADOR = '#f76b15'
