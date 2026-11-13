@@ -1,0 +1,108 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mundo do RPG > golden master: passeio fixo pelas três cenas 1`] = `
+[
+  {
+    "alvo": {
+      "destino": "rua",
+      "id": "saida_escritorio",
+      "tipo": "porta",
+    },
+    "cena": "escritorio",
+    "dialogo": null,
+    "jogador": {
+      "andando": false,
+      "dirX": 0,
+      "dirZ": -1,
+      "ticksAndando": 40,
+      "x": 6,
+      "z": 8.9,
+    },
+    "tick": 41,
+    "trocasDeCena": 1,
+    "versao": "rpg-1",
+  },
+  {
+    "alvo": null,
+    "cena": "escritorio",
+    "dialogo": {
+      "id": "recepcionista",
+      "linha": 1,
+      "linhas": 3,
+      "origem": "recepcionista",
+    },
+    "jogador": {
+      "andando": false,
+      "dirX": 0,
+      "dirZ": -1,
+      "ticksAndando": 130,
+      "x": 6,
+      "z": 6.1,
+    },
+    "tick": 133,
+    "trocasDeCena": 1,
+    "versao": "rpg-1",
+  },
+  {
+    "alvo": {
+      "destino": "escritorio",
+      "id": "porta_escritorio",
+      "tipo": "porta",
+    },
+    "cena": "rua",
+    "dialogo": null,
+    "jogador": {
+      "andando": false,
+      "dirX": 0,
+      "dirZ": 1,
+      "ticksAndando": 220,
+      "x": 11,
+      "z": 9,
+    },
+    "tick": 226,
+    "trocasDeCena": 2,
+    "versao": "rpg-1",
+  },
+  {
+    "alvo": {
+      "destino": "rua",
+      "id": "saida_concessionaria",
+      "tipo": "porta",
+    },
+    "cena": "concessionaria",
+    "dialogo": null,
+    "jogador": {
+      "andando": false,
+      "dirX": 0,
+      "dirZ": -1,
+      "ticksAndando": 556,
+      "x": 9,
+      "z": 10.9,
+    },
+    "tick": 563,
+    "trocasDeCena": 3,
+    "versao": "rpg-1",
+  },
+  {
+    "alvo": null,
+    "cena": "concessionaria",
+    "dialogo": {
+      "id": "carro_azul",
+      "linha": 0,
+      "linhas": 2,
+      "origem": "carro_azul",
+    },
+    "jogador": {
+      "andando": false,
+      "dirX": 0,
+      "dirZ": -1,
+      "ticksAndando": 676,
+      "x": 8.15147186257613,
+      "z": 4.1,
+    },
+    "tick": 684,
+    "trocasDeCena": 3,
+    "versao": "rpg-1",
+  },
+]
+`;

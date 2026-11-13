@@ -38,6 +38,17 @@
 
   --tamanho-animacao-destaque: 160px;
   --tamanho-botao-icone: 40px;
+  /* Controles de toque do RPG. O quadro de referência tem 360 de altura: o direcional ocupa um
+     terço dela, e os botões ficam no alcance do polegar. */
+  --tamanho-direcional: 120px;
+  --tamanho-botao-acao: 58px;
+  --cor-controle-fundo: rgba(255, 255, 255, 0.38);
+  --cor-controle-seta: rgba(31, 42, 55, 0.72);
+  --cor-controle-borda: rgba(255, 255, 255, 0.9);
+  --cor-controle-secundario: #4b5768;
+  --cor-dialogo-fundo: rgba(255, 255, 255, 0.96);
+  --cor-dialogo-borda: #1f2a37;
+  --cor-transicao: #0f172a;
 
   --sombra-1: 0 2px 8px rgba(0, 0, 0, 0.15);
   --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.25);

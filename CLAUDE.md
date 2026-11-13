@@ -18,7 +18,8 @@ Como começar um jogo novo e **a lista do que renomear**: [`README.md`](README.m
 
 ## Stack
 
-- **Frontend:** React 19 + Vite 7 + TypeScript, Canvas 2D para o jogo
+- **Frontend:** React 19 + Vite 7 + TypeScript. O RPG isométrico desenha em 3D com three.js
+  (WebGL, `src/features/rpg/cena3d/`); o jogo de exemplo, em Canvas 2D
 - **Design system:** [a definir pelo jogo]. Até lá, tokens em `src/estilos/tokens.css` e o botão
   base `.botao` em `src/estilos/global.css`.
 - **Backend:** Supabase — projeto `[nome]`, região `[região]`, `[ID DO PROJETO]`. O job `deploy`
@@ -51,19 +52,20 @@ Comunicação e nomes de arquivo/função em **português**. Comentário explica
 ```
 src/
 ├─ configuracao.ts  ID_JOGO: prefixo do localStorage e nome do IndexedDB
-├─ engine/          motor do jogo — puro, determinístico (ver "Motor do jogo")
+├─ engine/          motor do jogo — puro, determinístico (ver "Motor do jogo"); engine/rpg/ é o mundo do RPG
 ├─ data/            ranking (Supabase), id do jogador, recorde, preferências
 ├─ features/
 │  ├─ abertura/     logo animado da GAS Games (som + canvas)
 │  ├─ orientacao/   pedido de girar o celular (Lottie)
 │  ├─ home/         tela inicial (Jogar, configurações, ranking)
-│  ├─ jogo/         controlador (relógio → ticks), controles, desenho, carga de arte, TelaJogo
+│  ├─ rpg/          RPG isométrico: TelaRpg, controlador, controles, cena 3D, paleta e slots de arte
+│  ├─ jogo/         jogo de exemplo (fora do fluxo): controlador, controles, desenho, carga de arte, TelaJogo
 │  ├─ ranking/      formulário de nome no fim e painel do top 10
 │  ├─ configuracoes/ janela com o switch da música
 │  ├─ musica/       tocador de trilhas em loop (Web Audio)
 │  ├─ som/          AudioContext único e efeitos sonoros
 │  └─ navegacao/    voltar nativo em camadas
-├─ components/      componentes burros, sem conhecimento de domínio (vazio por enquanto)
+├─ components/      componentes burros, sem conhecimento de domínio (direcional e botão de toque)
 ├─ i18n/            detecção de idioma e init do i18next
 ├─ locales/         copy da UI, {pt,en,es}/<namespace>.json
 scripts/            bot e simulação headless
@@ -71,6 +73,7 @@ tests/              golden master e regras do motor, ranking, locales, fronteira
 supabase/           migrations versionadas e functions/
 android/            casca da Play
 PRD/                especificações de produto do jogo (a escrever)
+docs/ASSETS.md      que imagens desenhar para o RPG, com nome, proporção e pasta
 ```
 
 O que é do **jogo de exemplo** (trocar num jogo novo): `src/engine/moldes.ts`, as constantes de
@@ -95,6 +98,43 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
   `vao` (sem chão; cair encerra) e `moeda` (pontos). Moldes da pista em `src/engine/moldes.ts`,
   sorteados pela seed em `gerador.ts`.
 - **Fim:** `batida` ou `queda`. **Pontuação:** `metros·PONTOS_POR_METRO + moedas·PONTOS_MOEDA`.
+
+### O RPG isométrico (o que o Jogar abre hoje)
+
+Protótipo de RPG: o jogador anda por uma rua e entra num escritório e numa loja de veículos.
+Versão do mundo: `VERSAO_MUNDO = 'rpg-1'` (`src/engine/rpg/constantes.ts`).
+
+- **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
+  técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
+  mão, não `Math.sqrt`), estado puro. Barrel separado porque a Edge Function do ranking importa
+  `src/engine/index.ts` e não precisa do mapa. O ranking segue do jogo de exemplo e está fora da
+  home (`RANKING_NA_HOME` em `configuracao.ts`).
+- **Mundo plano em metros**: x para a direita da rua, z para a frente da câmera, sem altura no
+  motor. `altura`, `visual`, `variante` e `giro` dos elementos são dados de desenho que o motor
+  ignora. Mapa em `src/engine/rpg/cenas.ts`: `solidos` (retângulos que bloqueiam), `portas`
+  (zonas com `destino`), `npcs` (bloqueiam num quadrado de `RAIO_NPC`) e `decoracoes` (chão).
+- **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, e `interagir`/
+  `voltar` só no tick em que o botão desceu. O d-pad é da tela: "cima" é andar para −x e −z, e
+  quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
+- **Colisão** um eixo de cada vez (desliza na parede). **Interação**: o A vale para o elemento mais
+  perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
+  publica esse alvo em `estado.alvo` e o HUD mostra o aviso. Diálogo aberto trava o andar; A
+  passa a fala, B fecha. Fora do diálogo, o B abre o menu (pausa), e isso é da tela, não do motor.
+- **Falas** em `rpg.dialogos.<id>` como lista, e o mapa diz quantas são (`linhas`):
+  `tests/rpg.mundo.test.ts` confere os dois nos três idiomas. `tests/i18n.test.ts` trata lista
+  como chaves `0`, `1`…, então fala a menos num idioma acusa.
+- **Golden master** do mundo em `tests/rpg.mundo.test.ts` (passeio fixo pelas três cenas): muda
+  só junto com `VERSAO_MUNDO` nova.
+- **Desenho 3D** (`src/features/rpg/cena3d/`): câmera ortográfica isométrica de verdade (direção
+  1, 1, 1), seguindo o jogador; interiores com as paredes da frente baixas para a câmera ver a
+  sala. Cada `visual` do mapa tem um construtor em `modelos.ts`; visual sem construtor vira caixa
+  cinza. Tudo que a troca de cena aloca na GPU passa pela `Fabrica` e é liberado junto.
+- **Arte data-driven:** todas as cores em `src/features/rpg/visual/paleta.ts`. Imagens entram por
+  slot: arquivo com o nome certo em `src/features/rpg/arte/<pasta>/` substitui o provisório, sem
+  código (`import.meta.glob` em `slotsDeArte.ts`). Lista de slots, proporções e transparência:
+  `docs/ASSETS.md`. Slot novo entra lá e no `slotsDeArte`/`arteDoHud`. As texturas do three.js
+  carregam depois da cena aparecer (o provisório aparece primeiro); quando a arte pesar, passar
+  por uma carga antes do Jogar, como a do canvas 2D.
 
 ### Regras técnicas (valem para qualquer jogo em cima do template)
 
@@ -445,6 +485,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | Jogo aberto pela home (`App.tsx`) | `useVoltarNativoEmCamadas`; o botão Menu da pausa e do fim chama `history.back()` |
 | Janela de configurações (ícone da home) | `useVoltarNativoEmCamadas`; o X, o Esc e o toque no véu chamam `history.back()` |
 | Painel do ranking (ícone da home) | `useVoltarNativoEmCamadas`; o próprio ícone fecha com `history.back()` |
+| Pausa do RPG (`TelaRpg`; B, Esc ou o botão II) | **pendente:** como a do exemplo, o voltar do celular sai para a home em vez de fechar só a pausa |
 | Pausa e fim de partida (sobreposições da `TelaJogo`) | **pendente:** o voltar sai do jogo para a home, em vez de fechar só a sobreposição |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.

@@ -1,13 +1,13 @@
 {
-  "titulo": "Game Template",
-  "subtitulo": "Sample game: run, jump and grab coins.",
+  "titulo": "Isometric City",
+  "subtitulo": "RPG prototype: walk down the street, enter the office and the car dealership.",
   "deNovo": "Play again",
   "continuar": "Continue",
   "menu": "Menu",
   "home": {
     "jogar": "Play",
     "carregando": "Loading… {{porcento}}%",
-    "comoJogar": "Space, ↑ or tap to jump · Esc pauses",
+    "comoJogar": "Arrows/WASD walk · A (Space, E) interacts · B (Esc, Q) goes back",
     "configuracoes": "Settings"
   },
   "configuracoes": {
@@ -67,6 +67,74 @@
       "interno": "The leaderboard failed. Try again.",
       "rede": "No internet. Try again.",
       "sem_configuracao": "Leaderboard unavailable."
+    }
+  },
+  "rpg": {
+    "cenas": {
+      "rua": "Palm Street",
+      "escritorio": "Horizon Office",
+      "concessionaria": "Car Dealership"
+    },
+    "placas": {
+      "escritorio": "OFFICE",
+      "concessionaria": "CARS"
+    },
+    "nomes": {
+      "pedestre": "Mrs. Cida",
+      "recepcionista": "Julia",
+      "vendedor": "Mark",
+      "bebedouro": "water cooler",
+      "carro_vermelho": "red hatchback",
+      "carro_azul": "blue sedan",
+      "carro_amarelo": "yellow sports car"
+    },
+    "acao": {
+      "entrar": "Enter: {{lugar}}",
+      "sair": "Go out to the street",
+      "conversar": "Talk to {{nome}}",
+      "olhar": "Check the {{nome}}"
+    },
+    "dialogo": {
+      "proxima": "A ▸ next",
+      "fechar": "A ▸ close"
+    },
+    "controles": {
+      "direcional": "Directional pad",
+      "interagir": "Interact",
+      "fechar": "Close dialogue",
+      "menu": "Menu"
+    },
+    "dialogos": {
+      "pedestre": [
+        "Good morning! Are you new in the neighborhood?",
+        "The office is right there, the blue door. The car shop is next to it.",
+        "They say the yellow sports car is on sale today."
+      ],
+      "recepcionista": [
+        "Welcome to Horizon Office!",
+        "The ten o’clock meeting was moved. You can wait on the sofa if you like.",
+        "The water cooler is on the right. Make yourself at home."
+      ],
+      "vendedor": [
+        "Hi! Looking for a new car?",
+        "All three in the showroom are ready for a test drive.",
+        "Take a look and call me when you decide!"
+      ],
+      "bebedouro": [
+        "Fresh water. You feel refreshed."
+      ],
+      "carro_vermelho": [
+        "Red hatchback, 1.0 engine, very economical.",
+        "$14,900 cash."
+      ],
+      "carro_azul": [
+        "Blue sedan, automatic, huge trunk.",
+        "$23,700 cash."
+      ],
+      "carro_amarelo": [
+        "Yellow sports car, 0 to 60 in 6 seconds.",
+        "$49,800 — on sale today!"
+      ]
     }
   }
 }

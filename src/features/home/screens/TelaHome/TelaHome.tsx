@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { RANKING_NA_HOME } from '../../../../configuracao.ts'
 import { JanelaConfiguracoes } from '../../../configuracoes/JanelaConfiguracoes/JanelaConfiguracoes.tsx'
 import { useCargaDaArte } from '../../../jogo/useCargaDaArte.ts'
 import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
@@ -61,14 +62,16 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
         >
           <span aria-hidden="true">⚙</span>
         </button>
-        <button
-          className="botao botao--icone"
-          onClick={() => (rankingAberto ? history.back() : setRankingAberto(true))}
-          aria-label={t('ranking.titulo')}
-          aria-expanded={rankingAberto}
-        >
-          <span aria-hidden="true">🏆</span>
-        </button>
+        {RANKING_NA_HOME && (
+          <button
+            className="botao botao--icone"
+            onClick={() => (rankingAberto ? history.back() : setRankingAberto(true))}
+            aria-label={t('ranking.titulo')}
+            aria-expanded={rankingAberto}
+          >
+            <span aria-hidden="true">🏆</span>
+          </button>
+        )}
       </div>
       {rankingAberto && <PainelRanking />}
       {configuracoesAbertas && <JanelaConfiguracoes />}

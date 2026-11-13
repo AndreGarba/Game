@@ -5,14 +5,15 @@ import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-type Arvore = { [chave: string]: string | Arvore }
+// Lista (falas de um diálogo) conta como árvore de chaves "0", "1"...: fala a menos num idioma acusa.
+type Arvore = { [chave: string]: string | string[] | Arvore }
 
 function folhas(arvore: Arvore, prefixo = ''): Map<string, string> {
   const saida = new Map<string, string>()
   for (const [chave, valor] of Object.entries(arvore)) {
     const caminho = prefixo ? `${prefixo}.${chave}` : chave
     if (typeof valor === 'string') saida.set(caminho, valor)
-    else for (const [c, v] of folhas(valor, caminho)) saida.set(c, v)
+    else for (const [c, v] of folhas(valor as Arvore, caminho)) saida.set(c, v)
   }
   return saida
 }

@@ -40,5 +40,8 @@ export default defineConfig({
       },
     }),
   ],
+  // O pedaço da TelaRpg leva o three.js (~520 kB, 140 kB com gzip). Ele é import() à parte e baixa
+  // durante a abertura, então o aviso padrão de 500 kB não diz nada aqui.
+  build: { chunkSizeWarningLimit: 600 },
   server: { host: true },
 })

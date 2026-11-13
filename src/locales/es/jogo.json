@@ -1,13 +1,13 @@
 {
-  "titulo": "Game Template",
-  "subtitulo": "Juego de ejemplo: corre, salta y atrapa monedas.",
+  "titulo": "Ciudad Isométrica",
+  "subtitulo": "Prototipo de RPG: camina por la calle, entra en la oficina y en la tienda de autos.",
   "deNovo": "Jugar otra vez",
   "continuar": "Continuar",
   "menu": "Menú",
   "home": {
     "jogar": "Jugar",
     "carregando": "Cargando… {{porcento}}%",
-    "comoJogar": "Espacio, ↑ o toca para saltar · Esc pausa",
+    "comoJogar": "Flechas/WASD caminan · A (Espacio, E) interactúa · B (Esc, Q) vuelve",
     "configuracoes": "Ajustes"
   },
   "configuracoes": {
@@ -67,6 +67,74 @@
       "interno": "El ranking falló. Inténtalo de nuevo.",
       "rede": "Sin internet. Inténtalo de nuevo.",
       "sem_configuracao": "Ranking no disponible."
+    }
+  },
+  "rpg": {
+    "cenas": {
+      "rua": "Calle de las Palmeras",
+      "escritorio": "Oficina Horizonte",
+      "concessionaria": "Tienda de Autos"
+    },
+    "placas": {
+      "escritorio": "OFICINA",
+      "concessionaria": "AUTOS"
+    },
+    "nomes": {
+      "pedestre": "Doña Cida",
+      "recepcionista": "Julia",
+      "vendedor": "Marcos",
+      "bebedouro": "dispensador de agua",
+      "carro_vermelho": "hatchback rojo",
+      "carro_azul": "sedán azul",
+      "carro_amarelo": "deportivo amarillo"
+    },
+    "acao": {
+      "entrar": "Entrar: {{lugar}}",
+      "sair": "Salir a la calle",
+      "conversar": "Hablar con {{nome}}",
+      "olhar": "Ver el {{nome}}"
+    },
+    "dialogo": {
+      "proxima": "A ▸ seguir",
+      "fechar": "A ▸ cerrar"
+    },
+    "controles": {
+      "direcional": "Cruceta",
+      "interagir": "Interactuar",
+      "fechar": "Cerrar diálogo",
+      "menu": "Menú"
+    },
+    "dialogos": {
+      "pedestre": [
+        "¡Buenos días! ¿Eres nuevo en el barrio?",
+        "La oficina está ahí, la puerta azul. La tienda de autos está al lado.",
+        "Dicen que el deportivo amarillo tiene descuento hoy."
+      ],
+      "recepcionista": [
+        "¡Te damos la bienvenida a la Oficina Horizonte!",
+        "La reunión de las diez se movió. Puedes esperar en el sofá si quieres.",
+        "El dispensador de agua está a la derecha. Estás en tu casa."
+      ],
+      "vendedor": [
+        "¡Hola! ¿Buscas un auto nuevo?",
+        "Los tres de la vitrina están listos para una prueba.",
+        "¡Échales un vistazo y llámame cuando decidas!"
+      ],
+      "bebedouro": [
+        "Agua fresca. Te sientes renovado."
+      ],
+      "carro_vermelho": [
+        "Hatchback rojo, motor 1.0, muy económico.",
+        "US$ 14.900 al contado."
+      ],
+      "carro_azul": [
+        "Sedán azul, automático, maletero enorme.",
+        "US$ 23.700 al contado."
+      ],
+      "carro_amarelo": [
+        "Deportivo amarillo, de 0 a 100 en 6 segundos.",
+        "US$ 49.800 — ¡hoy con descuento!"
+      ]
     }
   }
 }

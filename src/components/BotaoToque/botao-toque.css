@@ -1,0 +1,40 @@
+.botao-toque {
+  display: grid;
+  place-items: center;
+  width: var(--tamanho-botao-acao);
+  height: var(--tamanho-botao-acao);
+  padding: 0;
+  border: 3px solid var(--cor-controle-borda);
+  border-radius: var(--raio-total);
+  color: var(--cor-destaque-texto);
+  font-size: var(--texto-4);
+  font-weight: 900;
+  box-shadow: var(--sombra-1);
+  touch-action: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.06s ease-out;
+}
+
+.botao-toque--primario {
+  background: var(--cor-destaque);
+}
+
+.botao-toque--secundario {
+  background: var(--cor-controle-secundario);
+}
+
+.botao-toque--arte {
+  border: 0;
+  background: var(--imagem) center / contain no-repeat;
+  box-shadow: none;
+}
+
+.botao-toque--apertado {
+  transform: scale(0.9);
+}
+
+.botao-toque:focus-visible {
+  outline: 3px solid var(--cor-superficie);
+  outline-offset: 2px;
+}

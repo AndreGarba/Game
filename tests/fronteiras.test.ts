@@ -5,7 +5,8 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const PASTA_MOTOR = join(import.meta.dirname, '../src/engine')
-const arquivos = readdirSync(PASTA_MOTOR).filter((f) => f.endsWith('.ts'))
+// Subpastas também (o mundo do RPG mora em engine/rpg/), cada uma só importando de si mesma.
+const arquivos = (readdirSync(PASTA_MOTOR, { recursive: true }) as string[]).filter((f) => f.endsWith('.ts'))
 // Comentário não conta: a regra é sobre código.
 const codigo = (f: string) =>
   readFileSync(join(PASTA_MOTOR, f), 'utf8')
