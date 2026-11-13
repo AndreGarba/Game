@@ -126,19 +126,19 @@ com arte, o jogo mostra só a imagem. A caixa de diálogo e o balão vão **sem 
 falas e os avisos são escritos por cima, traduzidos. Desenhe com margem de ~4% dentro da imagem,
 para a sombra não ser cortada.
 
-| Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (quadro 780 × 360) |
+| Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (referência 1280 × 720; 1,5× em 1920 × 1080) |
 | --- | --- | --- | --- | --- |
-| `direcional-base` | Base redonda do direcional (sem as setas) | 1 : 1 | 512 × 512 | 120 px |
-| `direcional-seta` | **Uma** seta apontando para **cima** (o jogo gira para os outros lados e acende a apertada) | 1 : 1 | 128 × 128 | 34 px |
-| `botao-a` | Botão A (interagir), solto | 1 : 1 | 256 × 256 | 58 px |
-| `botao-a-apertado` | Botão A apertado (opcional) | 1 : 1 | 256 × 256 | 58 px |
-| `botao-b` | Botão B (voltar/menu), solto | 1 : 1 | 256 × 256 | 58 px |
-| `botao-b-apertado` | Botão B apertado (opcional) | 1 : 1 | 256 × 256 | 58 px |
-| `botao-correr` | Botão de correr (segurar), solto | 1 : 1 | 256 × 256 | 58 px |
-| `botao-correr-apertado` | Botão de correr segurado (opcional) | 1 : 1 | 256 × 256 | 58 px |
-| `botao-pausa` | Botão de pausa (canto superior direito) | 1 : 1 | 128 × 128 | 40 px |
-| `caixa-dialogo` | Moldura da caixa de fala (o texto vai por cima, à esquerda) | ~4,3 : 1 | 1600 × 370 | ~470 × 110 px |
-| `balao-acao` | Balão do aviso "A  Entrar: …" (pílula) | ~5 : 1 | 1000 × 200 | ~260 × 44 px |
+| `direcional-base` | Base redonda do direcional (sem as setas) | 1 : 1 | 512 × 512 | 180 px |
+| `direcional-seta` | **Uma** seta apontando para **cima** (o jogo gira para os outros lados e acende a apertada) | 1 : 1 | 128 × 128 | 50 px |
+| `botao-a` | Botão A (interagir), solto | 1 : 1 | 256 × 256 | 88 px |
+| `botao-a-apertado` | Botão A apertado (opcional) | 1 : 1 | 256 × 256 | 88 px |
+| `botao-b` | Botão B (voltar/menu), solto | 1 : 1 | 256 × 256 | 88 px |
+| `botao-b-apertado` | Botão B apertado (opcional) | 1 : 1 | 256 × 256 | 88 px |
+| `botao-correr` | Botão de correr (segurar), solto | 1 : 1 | 256 × 256 | 88 px |
+| `botao-correr-apertado` | Botão de correr segurado (opcional) | 1 : 1 | 256 × 256 | 88 px |
+| `botao-pausa` | Botão de pausa (canto superior direito) | 1 : 1 | 128 × 128 | 60 px |
+| `caixa-dialogo` | Moldura da caixa de fala (o texto vai por cima, à esquerda) | ~4 : 1 | 1600 × 400 | ~700 × 175 px |
+| `balao-acao` | Balão do aviso "A  Entrar: …" (pílula) | ~6 : 1 | 1200 × 200 | ~400 × 66 px |
 
 A caixa de diálogo e o balão são **esticados** para a largura do texto: mantenha o miolo liso e
 os enfeites nas bordas, e bordas finas (esticar engrossa borda desigual).

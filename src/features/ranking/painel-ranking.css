@@ -1,12 +1,12 @@
 /*
  * Painel do ranking na home, aberto pelo ícone e encostado à esquerda da coluna de ícones.
- * Medido pelo contêiner da home (cqh/cqw), para caber em qualquer celular deitado.
+ * Medido pelo contêiner da home (cqh/cqw), para caber em qualquer tamanho de moldura 16:9.
  */
 .painel-ranking {
   position: absolute;
   top: calc(var(--espaco-4) + var(--safe-topo));
   right: calc(var(--espaco-4) + var(--tamanho-botao-icone) + var(--espaco-2) + var(--safe-direita));
-  width: max(12rem, 24cqw);
+  width: max(var(--largura-botao-grande), 24cqw);
   max-height: 84cqh;
   display: flex;
   flex-direction: column;

@@ -61,7 +61,7 @@ button {
 }
 
 .botao--grande {
-  min-width: 12rem;
+  min-width: var(--largura-botao-grande);
   padding: var(--espaco-3) var(--espaco-8);
   font-size: var(--texto-4);
 }
@@ -82,15 +82,16 @@ button {
 }
 
 /*
- * O jogo é sempre desenhado na proporção de um celular deitado: 780 × 360, a do frame do Figma
- * (19,5:9). A moldura é o maior retângulo nessa proporção que cabe na janela; o que sobra vira
- * faixa. Toda tela usa var(--altura-tela) e mede o resto pelo próprio contêiner (cqh/cqw), então
- * herdar a altura daqui basta para tudo caber dentro da moldura, no desktop e no celular.
+ * O jogo é sempre desenhado na proporção de tela de computador: 16:9, com 1280 × 720 de
+ * referência. A moldura é o maior retângulo nessa proporção que cabe na janela; o que sobra vira
+ * faixa. Toda tela usa var(--altura-tela) e mede o resto pelo próprio contêiner (cqh/cqw) ou pelos
+ * tokens de tamanho, que a moldura recalcula a partir da própria altura (tokens.css): herdar daqui
+ * basta para tudo caber e escalar junto, numa janela de 1280 × 720 ou de 4K.
  */
-.moldura-celular {
-  --altura-tela: min(100svh, calc(100vw * 360 / 780));
+.moldura-tela {
+  --altura-tela: min(100svh, calc(100vw * 9 / 16));
   position: relative;
-  width: calc(var(--altura-tela) * 780 / 360);
+  width: calc(var(--altura-tela) * 16 / 9);
   height: var(--altura-tela);
   overflow: hidden;
   background: var(--cor-fundo);
