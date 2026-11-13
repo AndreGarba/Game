@@ -128,6 +128,10 @@ escritório; rpg-4: Faria Lima, feirão e figurantes) (`src/engine/rpg/constante
   `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em `constantes.ts`; o desenho só lê
   `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar para −x e −z, e
   quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
+- **O jogador** veste tudo preto (camiseta de manga curta, calça, tênis, cabelo) e tem tatuagens
+  nos braços: `APARENCIAS.jogador` em `paleta.ts`, com `tatuagem` (cor da tinta) ligando o braço
+  de manga curta em `personagem.ts`. Preto chapado some no asfalto e no meio dos figurantes, por
+  isso o jogador tem um anel laranja no chão (`COR_ANEL_JOGADOR`).
 - **Figurantes** (`src/engine/rpg/figurantes.ts`): gente e patinetes elétricos andando à toa, sem
   conversa. Cada cena declara grupos (`figurantes`: quantidade, área, aparências, `veiculo`); quem
   está no estado (`estado.figurantes`) é só a cena atual, sorteada de novo a cada troca de cena.
