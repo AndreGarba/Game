@@ -13,6 +13,7 @@ import { localeAtual } from '../../../../i18n/index.ts'
 import { criarControladorCorrida, type ControladorCorrida } from '../../controladorCorrida.ts'
 import { densidadeDaCorrida } from '../../densidade.ts'
 import { desenharCena, posicaoCachorroNaTela } from '../../desenho/desenharCena.ts'
+import { desenharRespingoLama } from '../../desenho/respingoLama.ts'
 import { IMAGENS_FIM, IMAGENS_HUD } from '../../imagens/index.ts'
 import { FimBanho } from '../../FimBanho.tsx'
 import { digitando, useControlesCorrida } from '../../useControlesCorrida.ts'
@@ -104,6 +105,7 @@ export function TelaCorrida() {
     const controlador = criarControladorCorrida({
       desenhar: (quadro) => {
         const { tutor } = desenharCena(ctx, largura, altura, quadro)
+        desenharRespingoLama(ctx, largura, altura, quadro.estado)
         atualizarSonsCorrida(quadro.estado, tutor)
       },
       aoAtualizarHud: (estado) => setHud(hudDe(estado)),
