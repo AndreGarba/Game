@@ -69,16 +69,18 @@ describe('mundo do RPG', () => {
     expect(correndo.jogador.correndo).toBe(false)
   })
 
-  it('entra no escritório, conversa com a recepcionista e sai', () => {
+  it('entra no banco, fala com a recepcionista e o gerente, e sai', () => {
     const e = criarMundo()
     andar(e, 0, -1, 40)
-    expect(e.alvo).toMatchObject({ id: 'porta_escritorio', tipo: 'porta', destino: 'escritorio' })
+    expect(e.alvo).toMatchObject({ id: 'porta_banco', tipo: 'porta', destino: 'agencia' })
     apertarA(e)
-    expect(e.cena).toBe('escritorio')
+    expect(e.cena).toBe('agencia')
     expect(e.trocasDeCena).toBe(1)
 
-    // Até o balcão: a recepcionista fica do outro lado e ainda dá para falar.
-    andar(e, 0, -1, 90)
+    // Recepção: o balcão fica entre as duas e ainda dá para falar.
+    andar(e, 0, -1, 60)
+    andar(e, -1, 0, 72)
+    andar(e, 0, -1, 30)
     expect(e.alvo).toMatchObject({ id: 'recepcionista', tipo: 'conversa' })
     apertarA(e)
     expect(e.dialogo).toMatchObject({ id: 'recepcionista', linha: 0, linhas: 3 })
@@ -91,25 +93,52 @@ describe('mundo do RPG', () => {
     apertarB(e)
     expect(e.dialogo).toBeNull()
 
-    andar(e, 0, 1, 90)
+    // Mesa do gerente, do lado direito.
+    andar(e, 0, 1, 15)
+    andar(e, 1, 0, 170)
+    andar(e, 0, -1, 60)
+    expect(e.alvo).toMatchObject({ id: 'gerente', tipo: 'conversa' })
+    apertarA(e)
+    for (let i = 0; i < 4; i++) apertarA(e)
+    expect(e.dialogo).toBeNull()
+
+    andar(e, 0, 1, 40)
+    andar(e, -1, 0, 100)
+    andar(e, 0, 1, 120)
     expect(e.alvo).toMatchObject({ tipo: 'porta', destino: 'rua' })
     apertarA(e)
     expect(e.cena).toBe('rua')
     expect(e.jogador).toMatchObject({ x: 11, z: 9 })
   })
 
-  it('A na última fala fecha o diálogo', () => {
+  it('a porta do fundo da agência leva ao escritório, e volta', () => {
     const e = criarMundo()
     andar(e, 0, -1, 40)
     apertarA(e)
-    // Encosta na planta do canto e sobe até a altura do bebedouro.
-    andar(e, 1, 0, 120)
-    andar(e, 0, -1, 75)
-    expect(e.alvo).toMatchObject({ id: 'bebedouro', tipo: 'olhar' })
+    andar(e, 0, -1, 150)
+    expect(e.alvo).toMatchObject({ id: 'porta_escritorio_interno', destino: 'escritorio' })
     apertarA(e)
-    expect(e.dialogo).toMatchObject({ id: 'bebedouro', linhas: 1 })
+    expect(e.cena).toBe('escritorio')
+    andar(e, 0, 1, 30)
+    expect(e.alvo).toMatchObject({ id: 'saida_escritorio', destino: 'agencia' })
     apertarA(e)
-    expect(e.dialogo).toBeNull()
+    expect(e.cena).toBe('agencia')
+    expect(e.jogador).toMatchObject({ x: 6.7, z: 1.1 })
+  })
+
+  it('no escritório, a designer atende do lado da área de design', () => {
+    const e = criarMundo()
+    andar(e, 0, -1, 40)
+    apertarA(e)
+    andar(e, 0, -1, 150)
+    apertarA(e)
+    // Pelo corredor de baixo, longe das cadeiras e dos pufes, e sobe pela parede da direita.
+    andar(e, 0, -1, 22)
+    andar(e, 1, 0, 170)
+    andar(e, 0, -1, 120)
+    expect(e.alvo).toMatchObject({ id: 'designer', tipo: 'conversa' })
+    apertarA(e)
+    expect(e.dialogo).toMatchObject({ id: 'designer', linhas: 3 })
   })
 
   it('d-pad: cima na tela anda para o fundo da rua, e as diagonais da tela viram eixos do mundo', () => {
@@ -144,31 +173,44 @@ describe('mundo do RPG', () => {
     }
   })
 
-  it('golden master: passeio fixo pelas três cenas', () => {
+  it('golden master: passeio fixo por todas as cenas', () => {
     const e = criarMundo()
     const marcos: unknown[] = []
     const marcar = () => marcos.push(structuredClone(e))
+    // Rua → agência, conversa com o gerente.
     andar(e, 0, -1, 40)
     apertarA(e)
     marcar()
-    andar(e, 0, -1, 90)
+    andar(e, 0, -1, 60)
+    andar(e, 1, 0, 98, true)
+    andar(e, 0, -1, 40)
     apertarA(e)
     apertarA(e)
     marcar()
-    apertarA(e)
-    apertarA(e)
-    andar(e, 0, 1, 90)
+    apertarB(e)
+    // Porta do fundo → escritório → moodboard, pela passagem acima da divisória.
+    andar(e, 0, 1, 30)
+    andar(e, -1, 0, 100)
+    andar(e, 0, -1, 150)
     apertarA(e)
     marcar()
-    // Pela faixa da rua: na calçada o poste e a Dona Cida estão no caminho.
+    andar(e, 1, 0, 7)
+    andar(e, 0, -1, 165)
+    andar(e, 1, 0, 40, true)
+    apertarA(e)
+    marcar()
+    apertarB(e)
+    // Volta pela agência até a rua e entra na loja de veículos pela faixa.
+    andar(e, -1, 0, 70)
+    andar(e, 0, 1, 200)
+    apertarA(e)
+    andar(e, 0, 1, 150)
+    apertarA(e)
+    marcar()
     andar(e, 0, 1, 42)
     andar(e, 1, 0, 100)
     andar(e, 1, 0, 76, true)
     andar(e, 0, -1, 60)
-    apertarA(e)
-    marcar()
-    andar(e, -1, -1, 20)
-    andar(e, 0, -1, 100)
     apertarA(e)
     marcar()
     expect(marcos).toMatchSnapshot()

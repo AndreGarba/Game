@@ -43,7 +43,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 
 | Arquivo | Prédio | Proporção (L × A) | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
-| `escritorio` | Escritório (porta azul) | 1 : 1 (10 × 10 m) | 1024 × 1024 | não |
+| `banco` | Banco BTG Pactual (porta azul) | 1 : 1 (10 × 10 m) | 1024 × 1024 | não |
 | `concessionaria` | Loja de veículos (vitrine) | 2,15 : 1 (14 × 6,5 m) | 1792 × 832 | não |
 | `residencial` | Prédio residencial à esquerda | 0,61 : 1 (5,5 × 9 m) | 704 × 1152 | não |
 | `comercial` | Prédio comercial à direita | 0,96 : 1 (11,5 × 12 m) | 1472 × 1536 | não |
@@ -51,7 +51,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 As laterais e o telhado continuam com a cor da paleta (`COR_PREDIO` e `COR_TELHADO`).
 
 Prompt de exemplo:
-> Fachada frontal de um prédio de escritórios de 3 andares, vista totalmente de frente, sem
+> Fachada frontal de um prédio de banco de 3 andares, azul-marinho e vidro, vista totalmente de frente, sem
 > perspectiva e sem céu, estilo cartoon low-poly com cores chapadas, janelas azuis em grade,
 > térreo com parede lisa no centro (sem porta e sem letreiro). Imagem quadrada, a parede ocupa a
 > imagem inteira.
@@ -60,11 +60,13 @@ Prompt de exemplo:
 
 Letreiro em cima da porta. **O texto da imagem não é traduzido**: placa com palavra aparece igual
 em pt, en e es. Para o jogo multilíngue, prefira logotipo/marca (ex.: "Horizonte", um carro
-estilizado) a palavras como "ESCRITÓRIO". Sem a imagem, o jogo escreve a palavra traduzida.
+estilizado) a palavras como "VEÍCULOS". Sem a imagem, o jogo escreve a palavra traduzida (o banco
+mostra "BTG Pactual" em texto branco sobre marinho). O logo oficial do BTG Pactual entra como
+`placas/banco.png`, com fundo transparente.
 
 | Arquivo | Onde | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
-| `escritorio` | Acima da porta do escritório | 4 : 1 (3,6 × 0,9 m) | 1024 × 256 | sim (recorte da placa) |
+| `banco` | Acima da porta do banco **e** na parede do fundo da agência (logo BTG Pactual) | 4 : 1 (4,4 × 1,1 m na rua, 3,2 × 0,8 m na agência) | 1024 × 256 | sim (recorte da placa) |
 | `concessionaria` | Acima da porta da loja | 4 : 1 (6,4 × 1,6 m) | 1024 × 256 | sim |
 
 ## 3. Portas (`portas/`)
@@ -73,7 +75,8 @@ A folha da porta, de frente. O batente colorido em volta já existe no jogo.
 
 | Arquivo | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- |
-| `porta-escritorio` | 0,52 : 1 (1,2 × 2,3 m) | 520 × 1000 | sim, se tiver vidro |
+| `porta-banco` | 0,52 : 1 (1,2 × 2,3 m) | 520 × 1000 | sim, se tiver vidro |
+| `porta-interna` (porta do fundo da agência para o escritório) | 0,62 : 1 (1,4 × 2,25 m) | 620 × 1000 | não |
 | `porta-concessionaria` | 0,7 : 1 (1,6 × 2,3 m) | 700 × 1000 | sim, se tiver vidro |
 
 ## 4. Texturas de chão e parede (`texturas/`)
@@ -88,7 +91,10 @@ a escala do desenho (tamanho do ladrilho, da pedra, das folhas de grama).
 | `grama` | Canteiros e fundo da rua | 4 × 4 m | 512 × 512 | não |
 | `calcada` | Calçadas | 2 × 2 m | 512 × 512 | não |
 | `asfalto` | Rua (as faixas brancas são desenhadas por cima) | 4 × 4 m | 512 × 512 | não |
-| `piso-escritorio` | Chão do escritório | 2 × 2 m | 512 × 512 | não |
+| `piso-agencia` | Chão da agência do banco | 2 × 2 m | 512 × 512 | não |
+| `piso-escritorio` | Chão do escritório (baias) | 2 × 2 m | 512 × 512 | não |
+| `piso-designers` | Área dos designers no escritório | 3 × 3 m | 512 × 512 | não |
+| `tapete-gerente` | Tapete da mesa do gerente | 3 × 3 m | 512 × 512 | não |
 | `piso-concessionaria` | Chão da loja | 3 × 3 m | 512 × 512 | não |
 | `tapete` | Tapetes dos interiores | 3 × 3 m | 512 × 512 | não |
 | `plataforma` | Base dos carros em exposição | 5 × 5 m | 512 × 512 | não |
@@ -98,7 +104,8 @@ do fundo é a mais visível.
 
 | Arquivo | Sala | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
-| `parede-escritorio` | Escritório (parede de 12 × 3 m) | 4 : 1 | 2048 × 512 | não |
+| `parede-agencia` | Agência (parede de 14 × 3 m) | 4,7 : 1 | 2240 × 480 | não |
+| `parede-escritorio` | Escritório (parede de 20 × 3 m) | 6,7 : 1 | 2400 × 360 | não |
 | `parede-concessionaria` | Loja (parede de 18 × 3 m) | 6 : 1 | 2400 × 400 | não |
 
 Prompt de exemplo:
