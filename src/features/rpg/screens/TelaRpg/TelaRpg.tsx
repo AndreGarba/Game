@@ -91,6 +91,7 @@ export function TelaRpg() {
     const controlador = criarControladorRpg({
       desenhar: renderizador.desenhar,
       direcao: () => direcaoNoMundo(controles.direcao()),
+      correndo: () => controles.correndo(),
       aoMudarHud: (estado) => {
         const novo = hudDe(estado)
         // Efeitos saem do que o mundo fez (abriu diálogo, trocou de cena), não do botão.
@@ -185,6 +186,15 @@ export function TelaRpg() {
             />
           </div>
           <div className="tela-rpg__botoes">
+            <BotaoToque
+              rotulo="»"
+              descricao={t('rpg.controles.correr')}
+              aoApertar={() => (controles.correrToque.current = true)}
+              aoSoltar={() => (controles.correrToque.current = false)}
+              variante="secundario"
+              imagem={ARTE_HUD.botaoCorrer}
+              imagemApertado={ARTE_HUD.botaoCorrerApertado}
+            />
             <BotaoToque
               rotulo="B"
               descricao={dialogo ? t('rpg.controles.fechar') : t('rpg.controles.menu')}

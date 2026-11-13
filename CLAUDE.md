@@ -102,7 +102,7 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 ### O RPG isométrico (o que o Jogar abre hoje)
 
 Protótipo de RPG: o jogador anda por uma rua e entra num escritório e numa loja de veículos.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-1'` (`src/engine/rpg/constantes.ts`).
+Versão do mundo: `VERSAO_MUNDO = 'rpg-2'` (rpg-2: botão de correr) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -113,8 +113,11 @@ Versão do mundo: `VERSAO_MUNDO = 'rpg-1'` (`src/engine/rpg/constantes.ts`).
   motor. `altura`, `visual`, `variante` e `giro` dos elementos são dados de desenho que o motor
   ignora. Mapa em `src/engine/rpg/cenas.ts`: `solidos` (retângulos que bloqueiam), `portas`
   (zonas com `destino`), `npcs` (bloqueiam num quadrado de `RAIO_NPC`) e `decoracoes` (chão).
-- **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, e `interagir`/
-  `voltar` só no tick em que o botão desceu. O d-pad é da tela: "cima" é andar para −x e −z, e
+- **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, `correr`
+  enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar` só no tick em que o botão
+  desceu. Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência do passo (`PASSO_ANDANDO`,
+  `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em `constantes.ts`; o desenho só lê
+  `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar para −x e −z, e
   quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
 - **Colisão** um eixo de cada vez (desliza na parede). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor

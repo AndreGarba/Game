@@ -2,9 +2,12 @@ import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import {
   ALCANCE_INTERACAO,
   FATOR_DIAGONAL,
+  PASSO_ANDANDO,
+  PASSO_CORRENDO,
   RAIO_JOGADOR,
   RAIO_NPC,
   VEL_ANDAR,
+  VEL_CORRER,
   VERSAO_MUNDO,
 } from './constantes.ts'
 import type { Alvo, Cena, Entrada, EstadoMundo, Interacao, Retangulo } from './tipos.ts'
@@ -13,14 +16,14 @@ import type { Alvo, Cena, Entrada, EstadoMundo, Interacao, Retangulo } from './t
 // no lugar. Só aritmética básica, como o motor do template: o mesmo log de entradas dá sempre o
 // mesmo mundo, em qualquer aparelho.
 
-export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, interagir: false, voltar: false }
+export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false }
 
 export function criarMundo(): EstadoMundo {
   return {
     versao: VERSAO_MUNDO,
     tick: 0,
     cena: CENA_INICIAL,
-    jogador: { ...POSICAO_INICIAL, andando: false, ticksAndando: 0 },
+    jogador: { ...POSICAO_INICIAL, andando: false, correndo: false, fasePasso: 0 },
     alvo: null,
     dialogo: null,
     trocasDeCena: 0,
@@ -132,6 +135,7 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.jogador.dirX = d.dirX
     estado.jogador.dirZ = d.dirZ
     estado.jogador.andando = false
+    estado.jogador.correndo = false
     estado.trocasDeCena += 1
     return
   }
@@ -147,6 +151,7 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   // Com diálogo aberto o jogador não anda: A passa a fala, B fecha.
   if (estado.dialogo) {
     j.andando = false
+    j.correndo = false
     if (entrada.voltar) estado.dialogo = null
     else if (entrada.interagir) {
       estado.dialogo.linha += 1
@@ -156,12 +161,13 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
     const dx = sinal(entrada.dx)
     const dz = sinal(entrada.dz)
     j.andando = dx !== 0 || dz !== 0
+    j.correndo = j.andando && entrada.correr
     if (j.andando) {
-      const fator = dx !== 0 && dz !== 0 ? FATOR_DIAGONAL : 1
-      mover(estado, cenaAtual(estado), dx * VEL_ANDAR * fator, dz * VEL_ANDAR * fator)
+      const fator = (dx !== 0 && dz !== 0 ? FATOR_DIAGONAL : 1) * (j.correndo ? VEL_CORRER : VEL_ANDAR)
+      mover(estado, cenaAtual(estado), dx * fator, dz * fator)
       j.dirX = dx
       j.dirZ = dz
-      j.ticksAndando += 1
+      j.fasePasso += j.correndo ? PASSO_CORRENDO : PASSO_ANDANDO
     }
     if (entrada.interagir) interagir(estado, cenaAtual(estado))
   }

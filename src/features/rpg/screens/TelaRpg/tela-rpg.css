@@ -141,7 +141,7 @@
 .tela-rpg__dialogo {
   position: absolute;
   left: calc(var(--tamanho-direcional) + var(--espaco-8) + var(--safe-esquerda));
-  right: calc(var(--tamanho-botao-acao) * 2 + var(--espaco-8) + var(--espaco-4) + var(--safe-direita));
+  right: calc(var(--tamanho-botao-acao) * 3 + var(--espaco-3) * 2 + var(--espaco-8) + var(--safe-direita));
   bottom: calc(var(--espaco-3) + var(--safe-base));
   min-height: 30cqh;
   padding: var(--espaco-3) var(--espaco-4);
