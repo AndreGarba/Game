@@ -71,14 +71,16 @@
   },
   "rpg": {
     "cenas": {
-      "rua": "Calle de las Palmeras",
+      "rua": "Avenida Faria Lima",
       "agencia": "Sucursal BTG Pactual",
       "escritorio": "Oficina BTG Pactual",
       "concessionaria": "Tienda de Autos"
     },
     "placas": {
       "banco": "BTG Pactual",
-      "concessionaria": "AUTOS"
+      "concessionaria": "AUTOS",
+      "rua": "Av. Faria Lima",
+      "mobiauto": "Mobiauto"
     },
     "nomes": {
       "pedestre": "Doña Cida",
@@ -92,7 +94,8 @@
       "analista": "Rafa",
       "designer": "Bia",
       "totem": "tótem de turnos",
-      "moodboard": "moodboard"
+      "moodboard": "moodboard",
+      "vendedor_feirao": "Lu"
     },
     "acao": {
       "entrar": "Entrar: {{lugar}}",
@@ -163,6 +166,11 @@
       "moodboard": [
         "Recortes, paletas y notas adhesivas de la nueva campaña.",
         "Alguien escribió: “menos es más”."
+      ],
+      "vendedor_feirao": [
+        "¡Bienvenido a la feria de seminuevos de Mobiauto!",
+        "Todos los autos pasaron por inspección.",
+        "Elige uno y pregunta el precio en la carpa."
       ]
     }
   }

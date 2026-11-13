@@ -28,6 +28,8 @@ export const METROS_POR_REPETICAO: Record<string, number> = {
   grama: 4,
   calcada: 2,
   asfalto: 4,
+  ciclofaixa: 2,
+  'piso-feirao': 4,
   'piso-agencia': 2,
   'piso-escritorio': 2,
   'piso-designers': 3,

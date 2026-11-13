@@ -71,14 +71,16 @@
   },
   "rpg": {
     "cenas": {
-      "rua": "Palm Street",
+      "rua": "Faria Lima Avenue",
       "agencia": "BTG Pactual Branch",
       "escritorio": "BTG Pactual Office",
       "concessionaria": "Car Dealership"
     },
     "placas": {
       "banco": "BTG Pactual",
-      "concessionaria": "CARS"
+      "concessionaria": "CARS",
+      "rua": "Faria Lima Ave.",
+      "mobiauto": "Mobiauto"
     },
     "nomes": {
       "pedestre": "Mrs. Cida",
@@ -92,7 +94,8 @@
       "analista": "Rafa",
       "designer": "Bia",
       "totem": "ticket kiosk",
-      "moodboard": "moodboard"
+      "moodboard": "moodboard",
+      "vendedor_feirao": "Lu"
     },
     "acao": {
       "entrar": "Enter: {{lugar}}",
@@ -163,6 +166,11 @@
       "moodboard": [
         "Clippings, palettes and sticky notes for the new campaign.",
         "Someone wrote: “less is more”."
+      ],
+      "vendedor_feirao": [
+        "Welcome to the Mobiauto used-car fair!",
+        "Every car here has passed inspection.",
+        "Pick one and ask for the price at the tent."
       ]
     }
   }

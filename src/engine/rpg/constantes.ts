@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-3'
+export const VERSAO_MUNDO = 'rpg-4'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -24,3 +24,19 @@ export const RAIO_NPC = 0.35
 
 // Distância máxima (da borda do jogador à borda do elemento) para o A valer.
 export const ALCANCE_INTERACAO = 0.9
+
+// Figurantes (gente andando à toa). Pessoa a 1,3 m/s; patinete elétrico a 4,8 m/s.
+export const SEMENTE_PADRAO = 20261113
+export const VEL_FIGURANTE = 1.3 / TICKS_POR_SEGUNDO
+export const VEL_PATINETE = 4.8 / TICKS_POR_SEGUNDO
+export const PASSO_FIGURANTE = 0.55
+export const RAIO_FIGURANTE = 0.28
+// Parada ao chegar, em ticks (0,5 a 3 s a pé; o patinete quase não para).
+export const ESPERA_FIGURANTE_MIN = 30
+export const ESPERA_FIGURANTE_MAX = 180
+export const ESPERA_PATINETE_MIN = 6
+export const ESPERA_PATINETE_MAX = 40
+// Trajeto que passa disso (preso atrás de um móvel) desiste e sorteia outro alvo.
+export const TICKS_MAX_TRAJETO = 600
+// Tentativas de achar lugar livre ao nascer ou ao sortear o alvo.
+export const TENTATIVAS_LUGAR = 12

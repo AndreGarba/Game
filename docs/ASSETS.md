@@ -68,6 +68,11 @@ mostra "BTG Pactual" em texto branco sobre marinho). O logo oficial do BTG Pactu
 | --- | --- | --- | --- | --- |
 | `banco` | Acima da porta do banco **e** na parede do fundo da agência (logo BTG Pactual) | 4 : 1 (4,4 × 1,1 m na rua, 3,2 × 0,8 m na agência) | 1024 × 256 | sim (recorte da placa) |
 | `concessionaria` | Acima da porta da loja | 4 : 1 (6,4 × 1,6 m) | 1024 × 256 | sim |
+| `mobiauto` | Portal do feirão de seminovos, no fim da rua (logo Mobiauto, azul) | 4,6 : 1 (6 × 1,3 m) | 1200 × 260 | sim |
+| `rua` | Placa de rua "Av. Faria Lima" no primeiro poste | 4,5 : 1 (1,9 × 0,42 m) | 900 × 200 | sim |
+
+O portal do feirão e a placa de rua são *letreiros* (`letreiros` em `cenas.ts`): painel solto em
+cima de postes, com o mesmo slot de `placas/` e o mesmo texto provisório quando não há imagem.
 
 ## 3. Portas (`portas/`)
 
@@ -91,6 +96,8 @@ a escala do desenho (tamanho do ladrilho, da pedra, das folhas de grama).
 | `grama` | Canteiros e fundo da rua | 4 × 4 m | 512 × 512 | não |
 | `calcada` | Calçadas | 2 × 2 m | 512 × 512 | não |
 | `asfalto` | Rua (as faixas brancas são desenhadas por cima) | 4 × 4 m | 512 × 512 | não |
+| `ciclofaixa` | Ciclofaixa vermelha da calçada de baixo (onde andam os patinetes) | 2 × 2 m | 512 × 512 | não |
+| `piso-feirao` | Chão do feirão de seminovos (pátio de asfalto claro) | 4 × 4 m | 512 × 512 | não |
 | `piso-agencia` | Chão da agência do banco | 2 × 2 m | 512 × 512 | não |
 | `piso-escritorio` | Chão do escritório (baias) | 2 × 2 m | 512 × 512 | não |
 | `piso-designers` | Área dos designers no escritório | 3 × 3 m | 512 × 512 | não |
@@ -147,6 +154,8 @@ Prompt de exemplo:
 
 - **Personagens, carros e móveis** são modelos de caixas feitos em código
   (`src/features/rpg/cena3d/personagem.ts` e `modelos.ts`). Para trocar por arte, o caminho é um
-  modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo.
+  modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo. Isso inclui os
+  figurantes, o patinete elétrico, a tenda e as bandeiras do feirão. As cores dos figurantes
+  (`figurante_1` a `figurante_8`) e do patinete ficam em `paleta.ts`.
 - **Céu, luz e sombra** são cores e intensidades em `paleta.ts` (`COR_CEU`, `LUZ`).
 - Ícones do app e da loja: `public/icones/` e `android/app/src/main/res/mipmap-*/` (ver `README.md`).

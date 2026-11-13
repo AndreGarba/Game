@@ -1,4 +1,6 @@
+import { criarRng } from '../rng.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
+import { bloqueios, moverCaixa } from './colisao.ts'
 import {
   ALCANCE_INTERACAO,
   FATOR_DIAGONAL,
@@ -6,10 +8,12 @@ import {
   PASSO_CORRENDO,
   RAIO_JOGADOR,
   RAIO_NPC,
+  SEMENTE_PADRAO,
   VEL_ANDAR,
   VEL_CORRER,
   VERSAO_MUNDO,
 } from './constantes.ts'
+import { criarFigurantes, passoFigurantes } from './figurantes.ts'
 import type { Alvo, Cena, Entrada, EstadoMundo, Interacao, Retangulo } from './tipos.ts'
 
 // Passo fixo do mundo: `passoMundo(estado, entrada)` avança exatamente um tick e muda `estado`
@@ -18,7 +22,8 @@ import type { Alvo, Cena, Entrada, EstadoMundo, Interacao, Retangulo } from './t
 
 export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false }
 
-export function criarMundo(): EstadoMundo {
+export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
+  const rng = criarRng(semente)
   return {
     versao: VERSAO_MUNDO,
     tick: 0,
@@ -27,6 +32,8 @@ export function criarMundo(): EstadoMundo {
     alvo: null,
     dialogo: null,
     trocasDeCena: 0,
+    rng,
+    figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng),
   }
 }
 
@@ -38,42 +45,11 @@ function sinal(n: number): number {
   return n > 0 ? 1 : n < 0 ? -1 : 0
 }
 
-// Tudo que bloqueia na cena, já como retângulo: sólidos e o quadrado de cada NPC.
-function bloqueios(cena: Cena): Retangulo[] {
-  const saida: Retangulo[] = cena.solidos.slice()
-  for (const npc of cena.npcs) {
-    saida.push({ x: npc.x - RAIO_NPC, z: npc.z - RAIO_NPC, largura: 2 * RAIO_NPC, profundidade: 2 * RAIO_NPC })
-  }
-  return saida
-}
-
-function sobrepoe(x: number, z: number, r: Retangulo): boolean {
-  return (
-    x + RAIO_JOGADOR > r.x &&
-    x - RAIO_JOGADOR < r.x + r.largura &&
-    z + RAIO_JOGADOR > r.z &&
-    z - RAIO_JOGADOR < r.z + r.profundidade
-  )
-}
-
-// Um eixo de cada vez: batendo de quina, o jogador desliza pela parede em vez de grudar.
 function mover(estado: EstadoMundo, cena: Cena, passoX: number, passoZ: number) {
   const j = estado.jogador
-  const obstaculos = bloqueios(cena)
-
-  let x = Math.min(Math.max(j.x + passoX, RAIO_JOGADOR), cena.largura - RAIO_JOGADOR)
-  for (const r of obstaculos) {
-    if (!sobrepoe(x, j.z, r)) continue
-    x = passoX > 0 ? r.x - RAIO_JOGADOR : r.x + r.largura + RAIO_JOGADOR
-  }
-  j.x = x
-
-  let z = Math.min(Math.max(j.z + passoZ, RAIO_JOGADOR), cena.profundidade - RAIO_JOGADOR)
-  for (const r of obstaculos) {
-    if (!sobrepoe(j.x, z, r)) continue
-    z = passoZ > 0 ? r.z - RAIO_JOGADOR : r.z + r.profundidade + RAIO_JOGADOR
-  }
-  j.z = z
+  const novo = moverCaixa(cena, bloqueios(cena), RAIO_JOGADOR, j.x, j.z, passoX, passoZ)
+  j.x = novo.x
+  j.z = novo.z
 }
 
 // Distância ao quadrado entre a borda do jogador e o retângulo (0 se encostado ou dentro).
@@ -137,6 +113,7 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.jogador.andando = false
     estado.jogador.correndo = false
     estado.trocasDeCena += 1
+    estado.figurantes = criarFigurantes(CENAS[d.cena], estado.rng)
     return
   }
   if (interacao.dialogo && interacao.linhas) {
@@ -171,6 +148,8 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
     }
     if (entrada.interagir) interagir(estado, cenaAtual(estado))
   }
+
+  passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng)
 
   const c = estado.dialogo ? null : maisPerto(cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null

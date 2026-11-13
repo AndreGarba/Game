@@ -7,10 +7,10 @@ import { criarPersonagem, anguloDaDirecao, type Personagem } from './personagem.
 import { placaProcedural, texturaDePiso, texturaDoSlot } from './texturas.ts'
 
 // Monta o THREE.Group de uma cena do mapa: chão, faixas, paredes (interior), sólidos, portas,
-// placas e NPCs. Tudo sai dos dados da cena; nada aqui decide regra.
+// placas, letreiros e NPCs. Os figurantes mudam de lugar a cada tick e ficam no renderizador. Tudo sai dos dados da cena; nada aqui decide regra.
 
 export interface TextosDaCena {
-  // Texto provisório das placas, por variante do prédio (banco, concessionaria).
+  // Texto provisório das placas, por variante (banco, concessionaria, mobiauto, rua).
   placas: Record<string, string>
 }
 
@@ -156,6 +156,14 @@ export function montarCena(f: Fabrica, cena: Cena, textos: TextosDaCena): CenaMo
     if (cena.interior && p.z <= 0.01) continue
     if (cena.interior) grupo.add(saidaDoInterior(f, p))
     else grupo.add(...portaDaRua(f, p, textos.placas))
+  }
+
+  for (const l of cena.letreiros ?? []) {
+    const texto = textos.placas[l.variante]
+    if (!texto) continue
+    const placa = placaComTexto(f, l.variante, texto, l.largura, l.altura)
+    placa.position.set(l.x, l.y + l.altura / 2, l.z)
+    grupo.add(placa)
   }
 
   const npcs: CenaMontada['npcs'] = new Map()

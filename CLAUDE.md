@@ -101,14 +101,16 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
 ### O RPG isométrico (o que o Jogar abre hoje)
 
-Protótipo de RPG: o jogador anda por uma rua e entra no banco BTG Pactual e numa loja de veículos.
+Protótipo de RPG: o jogador anda pela Avenida Faria Lima (66 m), entra no banco BTG Pactual e numa
+loja de veículos, e no fim da rua há o feirão de seminovos Mobiauto, a céu aberto (sem porta: é
+parte da cena `rua`).
 O banco tem duas cenas: a `agencia` (recepção, totem de senha, mesa do gerente) e, pela porta do
 fundo, o `escritorio` (baias com computador, divisória de vidro e área dos designers com moodboard).
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-3'` (rpg-2: botão de correr; rpg-3: banco com agência e
-escritório) (`src/engine/rpg/constantes.ts`).
+Versão do mundo: `VERSAO_MUNDO = 'rpg-4'` (rpg-2: botão de correr; rpg-3: banco com agência e
+escritório; rpg-4: Faria Lima, feirão e figurantes) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -125,7 +127,18 @@ escritório) (`src/engine/rpg/constantes.ts`).
   `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em `constantes.ts`; o desenho só lê
   `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar para −x e −z, e
   quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
-- **Colisão** um eixo de cada vez (desliza na parede). **Interação**: o A vale para o elemento mais
+- **Figurantes** (`src/engine/rpg/figurantes.ts`): gente e patinetes elétricos andando à toa, sem
+  conversa. Cada cena declara grupos (`figurantes`: quantidade, área, aparências, `veiculo`); quem
+  está no estado (`estado.figurantes`) é só a cena atual, sorteada de novo a cada troca de cena.
+  Sorteio só pelo `estado.rng` (o `rng.ts` do motor, semente `SEMENTE_PADRAO` ou a de
+  `criarMundo(semente)`): é o único import de fora da pasta que `tests/fronteiras.test.ts` aceita.
+  Figurante bate em sólido e NPC, mas **atravessa o jogador e os outros figurantes**: assim nunca
+  tampa porta nem prende ninguém, e o caminho do jogador é o mesmo com ou sem eles (há teste).
+  Preso atrás de um móvel, desiste e sorteia outro alvo. Velocidades, paradas e raio em
+  `constantes.ts`. No desenho, figurante é o personagem `leve` (7 caixas, sem sombra no mapa), para
+  a rua com 15 deles caber no celular.
+- **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
+  aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
   publica esse alvo em `estado.alvo` e o HUD mostra o aviso. Diálogo aberto trava o andar; A
   passa a fala, B fecha. Fora do diálogo, o B abre o menu (pausa), e isso é da tela, não do motor.

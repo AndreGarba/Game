@@ -2,7 +2,8 @@
 // O golden é contrato como o do motor de exemplo: só muda junto com VERSAO_MUNDO nova.
 import { describe, expect, it } from 'vitest'
 import { CENAS, type Cena, type Entrada, type EstadoMundo } from '../src/engine/rpg/index.ts'
-import { PASSO_CORRENDO, RAIO_JOGADOR, RAIO_NPC, VEL_ANDAR, VEL_CORRER } from '../src/engine/rpg/constantes.ts'
+import { PASSO_CORRENDO, RAIO_FIGURANTE, RAIO_JOGADOR, RAIO_NPC, VEL_ANDAR, VEL_CORRER } from '../src/engine/rpg/constantes.ts'
+import { bloqueios, sobrepoe } from '../src/engine/rpg/colisao.ts'
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 import { direcaoNoMundo } from '../src/features/rpg/direcao.ts'
 import en from '../src/locales/en/jogo.json'
@@ -171,6 +172,99 @@ describe('mundo do RPG', () => {
       ]
       for (const [id, linhas] of falas) expect(dialogos[id]?.length, id).toBe(linhas)
     }
+  })
+
+  it('no fim da Faria Lima, o feirão Mobiauto: entra a pé e fala com a vendedora', () => {
+    const e = criarMundo()
+    andar(e, 0, -1, 22)
+    andar(e, 1, 0, 482, true)
+    andar(e, 0, -1, 100)
+    expect(e.jogador.x).toBeGreaterThan(61)
+    expect(e.alvo).toMatchObject({ id: 'vendedor_feirao', tipo: 'conversa' })
+    apertarA(e)
+    expect(e.dialogo).toMatchObject({ id: 'vendedor_feirao', linhas: 3 })
+  })
+
+  // Passeio que troca de cena e anda bastante: serve aos testes dos figurantes.
+  function passeioLongo(e: EstadoMundo, aoTick: (e: EstadoMundo) => void) {
+    const passos: [number, number, number, boolean][] = [
+      [0, 1, 200, false],
+      [1, 0, 300, true],
+      [0, -1, 120, false],
+      [-1, 0, 400, true],
+      [0, -1, 40, false],
+    ]
+    for (const [dx, dz, ticks, correr] of passos) {
+      for (let i = 0; i < ticks; i++) {
+        passoMundo(e, { ...PARADO, dx, dz, correr })
+        aoTick(e)
+      }
+    }
+    apertarA(e)
+    for (let i = 0; i < 1500; i++) {
+      passoMundo(e, PARADO)
+      aoTick(e)
+    }
+  }
+
+  it('figurantes: a mesma semente e as mesmas entradas dão as mesmas pessoas nos mesmos lugares', () => {
+    const a = criarMundo()
+    const b = criarMundo()
+    passeioLongo(a, () => {})
+    passeioLongo(b, () => {})
+    expect(b).toEqual(a)
+    const c = criarMundo(7)
+    passeioLongo(c, () => {})
+    expect(c.jogador).toEqual(a.jogador)
+    expect(c.figurantes).not.toEqual(a.figurantes)
+  })
+
+  it.each(Object.keys(CENAS))("'%s': figurantes nascem todos, não entram em móvel nem saem da área", (id) => {
+    const cena = CENAS[id as keyof typeof CENAS]
+    const e = criarMundo()
+    e.cena = cena.id
+    e.figurantes = []
+    // Entra pela porta da cena, como o jogador faria, para nascerem pelo caminho normal.
+    const porta = Object.values(CENAS)
+      .flatMap((c) => c.portas.map((p) => ({ c, p })))
+      .find(({ p }) => p.destino.cena === cena.id)!
+    e.cena = porta.c.id
+    e.jogador.x = porta.p.x + porta.p.largura / 2
+    e.jogador.z = porta.p.z + porta.p.profundidade / 2
+    apertarA(e)
+    expect(e.cena).toBe(cena.id)
+    const esperado = (cena.figurantes ?? []).reduce((n, g) => n + g.quantidade, 0)
+    expect(e.figurantes).toHaveLength(esperado)
+    expect(esperado).toBeGreaterThan(0)
+    const obstaculos = bloqueios(cena)
+    let andaram = 0
+    const inicio = e.figurantes.map((f) => [f.x, f.z] as const)
+    for (let t = 0; t < 3600; t++) {
+      passoMundo(e, PARADO)
+      for (const f of e.figurantes) {
+        expect(obstaculos.some((r) => sobrepoe(f.x, f.z, RAIO_FIGURANTE - 1e-9, r)), f.id).toBe(false)
+        const area = cena.figurantes![f.grupo]!.area
+        expect(f.x >= area.x && f.x <= area.x + area.largura && f.z >= area.z && f.z <= area.z + area.profundidade, f.id).toBe(true)
+      }
+    }
+    e.figurantes.forEach((f, i) => {
+      const [x, z] = inicio[i]!
+      if (Math.abs(f.x - x) + Math.abs(f.z - z) > 1) andaram++
+    })
+    // Quase todo mundo sai do lugar em um minuto.
+    expect(andaram).toBeGreaterThanOrEqual(Math.ceil(esperado * 0.6))
+  })
+
+  it('figurantes não bloqueiam o jogador nem viram alvo do A', () => {
+    const com = criarMundo()
+    const sem = criarMundo()
+    sem.figurantes = []
+    passeioLongo(com, (e) => {
+      expect(e.alvo?.id ?? '').not.toContain('figurante')
+    })
+    passeioLongo(sem, () => {})
+    expect(com.jogador).toEqual(sem.jogador)
+    expect(com.cena).toBe(sem.cena)
   })
 
   it('golden master: passeio fixo por todas as cenas', () => {
