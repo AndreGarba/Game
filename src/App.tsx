@@ -28,7 +28,7 @@ const TelaRpg = lazy(() => importarJogo().then((m) => ({ default: m.TelaRpg })))
 
 export function App() {
   return (
-    <div className="moldura-celular">
+    <div className="moldura-tela">
       <TelaAtual />
     </div>
   )

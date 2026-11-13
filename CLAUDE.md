@@ -481,10 +481,15 @@ Português, inglês e espanhol (pt/en/es) desde a primeira tela. Fallback: portu
 - Componente que conhece conceito do domínio pertence a `features/`, não a `components/`.
 - Bottom sheet, não navegação cheia, para detalhe no meio do fluxo.
 - **Sem router, troca de tela precisa resetar o scroll** (hook no componente que decide a tela).
-- **O jogo é sempre desenhado na proporção de celular deitado (780 × 360, 19,5:9).** `App.tsx`
-  envolve tudo na `.moldura-celular` (`global.css`), o maior retângulo nessa proporção que cabe na
-  janela; o resto vira faixa. A moldura define `--altura-tela`, e toda tela mede o resto pelo
-  próprio contêiner (`cqh`/`cqw`, `clientWidth`). Tela nova não usa `vw`/`vh`, `window.inner*` nem
+- **O jogo é sempre desenhado na proporção de tela de computador (16:9, referência 1280 × 720).**
+  `App.tsx` envolve tudo na `.moldura-tela` (`global.css`), o maior retângulo nessa proporção que
+  cabe na janela; o resto vira faixa (*letterbox*). A moldura define `--altura-tela` e `--px` (um
+  pixel da tela de referência) e recalcula a partir dele os tokens de tamanho (espaços, textos,
+  raios, HUD: `tokens.css`, bloco `.moldura-tela`): numa janela 1920 × 1080 tudo fica 1,5×, sem
+  mudar o desenho. Por isso tamanho novo é token em `--px`, nunca `px` ou `rem` solto. Toda tela
+  mede o resto pelo próprio contêiner (`cqh`/`cqw`, `clientWidth`). O canvas 3D do RPG segue o
+  tamanho real do contêiner (`ResizeObserver`), com densidade até `DENSIDADE_MAX`, e a câmera
+  ortográfica tira a largura da proporção real (`ALTURA_VISIVEL` em metros na vertical). Tela nova não usa `vw`/`vh`, `window.inner*` nem
   `position: fixed`: tudo isso escapa da moldura. Jogo em pé troca a proporção ali e a orientação
   no manifesto (`vite.config.ts`) e na casca (`AndroidManifest.xml`).
 - **Altura de tela é `var(--altura-tela, 100svh)`**, não `100svh` puro: somado ao padding de

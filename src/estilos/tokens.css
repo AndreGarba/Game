@@ -12,7 +12,7 @@
   --cor-perigo: #e5484d;
   --cor-trilho: rgba(31, 42, 55, 0.15);
   --cor-veu: rgba(15, 23, 42, 0.45);
-  /* Faixas em volta da moldura de celular deitado, onde a janela sobra. */
+  /* Faixas em volta da moldura 16:9, onde a janela sobra. */
   --cor-faixa-moldura: #000000;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */
   --cor-abertura-fundo: #f8f7fa;
@@ -28,6 +28,10 @@
   --raio-4: 16px;
   --raio-total: 999px;
 
+  --largura-cartao: 22rem;
+  --largura-janela: 24rem;
+  --largura-botao-grande: 12rem;
+
   --fonte: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --texto-1: 12px;
   --texto-2: 14px;
@@ -38,8 +42,7 @@
 
   --tamanho-animacao-destaque: 160px;
   --tamanho-botao-icone: 40px;
-  /* Controles de toque do RPG. O quadro de referência tem 360 de altura: o direcional ocupa um
-     terço dela, e os botões ficam no alcance do polegar. */
+  /* Controles de toque do RPG (valores de fora da moldura; dentro dela, ver .moldura-tela). */
   --tamanho-direcional: 120px;
   --tamanho-botao-acao: 58px;
   --cor-controle-fundo: rgba(255, 255, 255, 0.38);
@@ -57,4 +60,39 @@
   --safe-base: env(safe-area-inset-bottom, 0px);
   --safe-esquerda: env(safe-area-inset-left, 0px);
   --safe-direita: env(safe-area-inset-right, 0px);
+}
+
+/* Dentro da moldura, todo tamanho sai da altura dela. A tela de referência é 1280 × 720 e --px é
+   um pixel dela: numa janela 1920 × 1080 tudo fica 1,5×, e a proporção do HUD não muda. Os valores
+   de :root ficam só como reserva para o que estiver fora da moldura. */
+.moldura-tela {
+  --px: calc(var(--altura-tela) / 720);
+
+  --espaco-1: calc(var(--px) * 6);
+  --espaco-2: calc(var(--px) * 12);
+  --espaco-3: calc(var(--px) * 18);
+  --espaco-4: calc(var(--px) * 24);
+  --espaco-6: calc(var(--px) * 36);
+  --espaco-8: calc(var(--px) * 48);
+
+  --raio-2: calc(var(--px) * 12);
+  --raio-4: calc(var(--px) * 24);
+
+  --texto-1: calc(var(--px) * 18);
+  --texto-2: calc(var(--px) * 21);
+  --texto-3: calc(var(--px) * 24);
+  --texto-4: calc(var(--px) * 30);
+  --texto-5: calc(var(--px) * 42);
+  --texto-6: calc(var(--px) * 60);
+
+  --tamanho-animacao-destaque: calc(var(--px) * 240);
+  --tamanho-botao-icone: calc(var(--px) * 60);
+  /* Direcional com um quarto da altura e botões no alcance do polegar no tablet; no desktop o
+     teclado manda, e o HUD não pode tampar a rua. */
+  --tamanho-direcional: calc(var(--px) * 180);
+  --tamanho-botao-acao: calc(var(--px) * 88);
+
+  --largura-cartao: calc(var(--px) * 520);
+  --largura-janela: calc(var(--px) * 560);
+  --largura-botao-grande: calc(var(--px) * 280);
 }
