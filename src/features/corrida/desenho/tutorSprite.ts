@@ -13,14 +13,15 @@ import {
 // Altura do quadro inteiro no mundo, em metros.
 // 3,51 = 1,95 × 1,8: ajustado a olho para casar com o cenário de cidade.
 const ALTURA_CORRIDA_M = 3.51
-// Mesma escala da corrida: 3,51 m × 88/94, porque a cabeça mede 88 px na folha da corrida e 94 px
-// na do pulo. Medir pela cabeça evita o salto de tamanho na troca de folha.
-const ALTURA_PULO_M = 3.29
-// Mesma conta para o slide: a cabeça mede 97 px nesta folha.
-const ALTURA_SLIDE_M = 3.18
-// As pernas esticadas deixam o tronco atrás do centro do quadro. Este avanço põe o tronco do slide
-// onde estava o da corrida (medido nas folhas); sem ele, o corpo recua ao abaixar.
-const AVANCO_SLIDE_M = 0.21
+// As três folhas saem do mesmo render, com os mesmos pixels por metro: a altura de cada uma no
+// mundo é proporcional à altura do arquivo.
+const ALTURA_PULO_M = (ALTURA_CORRIDA_M * PULO.altura) / CORRIDA.altura
+const ALTURA_SLIDE_M = (ALTURA_CORRIDA_M * SLIDE.altura) / CORRIDA.altura
+// O recorte de cada folha não fica centrado no mesmo ponto do corpo que o da corrida (pernas e
+// braços esticados para um lado). Estes avanços, medidos nos renders, põem o corpo onde estava o da
+// corrida; sem eles, o tutor dá um salto para o lado ao pular ou abaixar.
+const AVANCO_PULO_M = 0.422
+const AVANCO_SLIDE_M = -0.557
 
 // Sem a folha do pulo (ainda carregando): o quadro da corrida com os dois pés fora do chão.
 const QUADRO_NO_AR_CORRIDA = 3
@@ -162,6 +163,7 @@ export function desenharTutorSprite(
     sprite = pulo
     folha = PULO
     alturaM = ALTURA_PULO_M
+    avancoM = AVANCO_PULO_M
     indice = quadroPulo
   } else if (o.noAr) {
     indice = QUADRO_NO_AR_CORRIDA

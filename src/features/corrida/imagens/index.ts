@@ -7,6 +7,7 @@
 import type { IdCenario } from '../../../engine/index.ts'
 import { fracaoDaArteNaTela } from '../densidade.ts'
 import cachorroCorrendo from './cachorro-correndo.webp'
+import cachorroPulo from './cachorro-pulo.webp'
 import cachorroSlide from './cachorro-slide.webp'
 import ceu from './cidade/ceu.webp'
 import skyline from './cidade/skyline.webp'
@@ -207,30 +208,33 @@ export const CAMADAS_POR_CENARIO: Record<IdCenario, readonly Camada[]> = {
 }
 const CENARIOS = Object.keys(CAMADAS_POR_CENARIO) as IdCenario[]
 
-// Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave), recortados de
-// PRD/referencias/cachorro-correndo.png (gerada no ChatGPT com o prompt em
-// PRD/referencias/prompt-cachorro-correndo.md) por scripts/sprites/recortar-corrida.py.
+// Folha do cachorro correndo (galope): 10 quadros lado a lado (mínimo para o passo ficar suave),
+// renderizados do modelo 3D (Meshy, a partir de PRD/referencias/cachorro-3d-vistas.webp) com o galope
+// animado no Blender: PRD/referencias/cachorro-3d/cachorro-3d-galope.blend. O quadro 8 é o voo.
 // `pes`: pixels entre a pata mais baixa da folha e a base do quadro.
-export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 415, altura: 320, pes: 11 } as const
+export const SPRITE_CACHORRO_CORRENDO = { quadros: 10, largura: 361, altura: 320, pes: 11 } as const
 
-// Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no
-// ChatGPT a partir de PRD/referencias/cachorro-slide-referencia.png e recortada pelo mesmo script
-// (`--quadros-minimos 6 --alfa-fundo 215`: a folha veio com um véu branco em alfa 180-196).
-// `pes` medido na barriga/patas opacas (o script contou um halo quase invisível embaixo, 8 px, e o
-// cachorro flutuava); 32 = 28 do contato real + 4 para o corpo encostar no chão.
-export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 505, altura: 320, pes: 32 } as const
+// Folha do cachorro abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), renderizada do
+// mesmo modelo 3D (quadros 21 a 26 do .blend do galope). Montada com os mesmos pixels por metro e o
+// mesmo chão da folha do galope, então as duas usam a mesma altura de quadro no mundo.
+export const SPRITE_CACHORRO_SLIDE = { quadros: 6, largura: 377, altura: 320, pes: 11 } as const
 
-// Folha do tutor correndo: 10 quadros (a arte veio numa grade 5×2, lida linha por linha),
-// recortados de PRD/referencias/tutor-correndo.webp pelo mesmo script.
-export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 292, altura: 400, pes: 6 } as const
+// Folha do pulo do cachorro: 8 quadros (0 impulso, 1 subindo, 2 encolhido no alto, 3 descendo,
+// 4 chegando, 5 e 6 pouso, 7 de volta ao galope), quadros 31 a 38 do mesmo .blend. Mesma escala e
+// mesmo chão das outras; 2 px mais alta que a do galope porque o nariz sobe no impulso.
+export const SPRITE_CACHORRO_PULO = { quadros: 8, largura: 378, altura: 322, pes: 11 } as const
 
-// Folha do tutor pulando: 10 quadros, do último passo ao tropeço depois do pouso, gerada no ChatGPT
-// (PRD/referencias/tutor-pulo-correndo.png) e recortada com `--pes-no-rodape`: a altura do pulo vem do motor, não da arte.
-export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 348, altura: 400, pes: 6 } as const
+// Folhas do tutor, renderizadas do modelo 3D do Meshy (PRD/referencias/tutor-3d/tutor-3d.blend):
+// a corrida é a animação do Meshy; pulo e slide foram posados à mão no mesmo esqueleto, copiando o
+// movimento das folhas antigas do ChatGPT. As três têm os mesmos pixels por metro e o mesmo chão;
+// `pes` passa de 6 onde um pé mais perto da câmera aparece abaixo da linha do chão.
+export const SPRITE_TUTOR_CORRENDO = { quadros: 10, largura: 289, altura: 400, pes: 6 } as const
 
-// Folha do tutor abaixado, em slide: 6 quadros (2 descendo, 4 deslizando em loop), gerada no ChatGPT
-// (PRD/referencias/tutor-slide.png) e recortada com `--quadros-minimos 6 --pes-no-rodape`.
-export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 482, altura: 400, pes: 6 } as const
+// Pulo: 10 quadros, do último passo ao tropeço depois do pouso. A altura do pulo vem do motor.
+export const SPRITE_TUTOR_PULANDO = { quadros: 10, largura: 373, altura: 400, pes: 22 } as const
+
+// Slide: 6 quadros (2 descendo, 4 sentado deslizando em loop, com a mão de perto no chão).
+export const SPRITE_TUTOR_SLIDE = { quadros: 6, largura: 405, altura: 400, pes: 8 } as const
 
 /** Uma folha de quadros lado a lado, com as medidas do arquivo. */
 export interface Folha {
@@ -258,12 +262,13 @@ export function desenharQuadroDaFolha(
 }
 
 // Folhas com mais resolução do que a tela mostra, em fração do arquivo (com uma folga de ~20%).
-// O cachorro: quadro de 320 px para 1,32 m (galope) e 1,13 m (slide), e a 720 px de altura de
-// tela a 7 m por altura, 1,32 m são 136 px e 1,13 m são 116 px. A folha do galope (4150 px de
-// largura) também passava do lado máximo de textura.
+// O cachorro: quadro de 320 px para 1,45 m (galope e slide), e a 720 px de altura de tela a 7 m por
+// altura, 1,45 m são 149 px. A folha do galope antiga (4150 px de largura) também passava do lado
+// máximo de textura.
 const ESCALA_UTIL = new Map<string, number>([
-  [cachorroCorrendo, 0.5],
-  [cachorroSlide, 0.45],
+  [cachorroCorrendo, 0.55],
+  [cachorroSlide, 0.55],
+  [cachorroPulo, 0.55],
 ])
 
 /**
@@ -283,6 +288,7 @@ interface ArteCarregada {
   sprites: Map<string, Arte>
   cachorro: Arte | null
   slide: Arte | null
+  pulo: Arte | null
   tutor: Arte | null
   tutorPulo: Arte | null
   tutorSlide: Arte | null
@@ -373,6 +379,7 @@ export function carregarArteCorrida(): Promise<void> {
         ...Object.values(SPRITES_OBJETOS),
         cachorroCorrendo,
         cachorroSlide,
+        cachorroPulo,
         tutorCorrendo,
         tutorPulando,
         tutorDeslizando,
@@ -412,6 +419,7 @@ export function carregarArteCorrida(): Promise<void> {
       ),
       cachorro: de(cachorroCorrendo),
       slide: de(cachorroSlide),
+      pulo: de(cachorroPulo),
       tutor: de(tutorCorrendo),
       tutorPulo: de(tutorPulando),
       tutorSlide: de(tutorDeslizando),
@@ -458,6 +466,11 @@ export function spriteCachorroPronto(): Arte | null {
 /** A folha do slide, ou null enquanto não carregou (aí o abaixar achata o quadro do galope). */
 export function spriteSlidePronto(): Arte | null {
   return arte()?.slide ?? null
+}
+
+/** A folha do pulo do cachorro, ou null enquanto não carregou (aí ele pula com o quadro do voo do galope). */
+export function spritePuloPronto(): Arte | null {
+  return arte()?.pulo ?? null
 }
 
 /** A folha do pulo do tutor, ou null enquanto não carregou (aí ele pula com um quadro da corrida). */

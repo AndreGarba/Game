@@ -129,6 +129,27 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'r10'`.
   `visual` em `imagens/objetos/`. Na divisa, cada camada troca com um esfumado num ponto da tela
   que depende do parallax dela (`desenharCenarioArte`). Como a arte foi pedida ao ChatGPT:
   `PRD/referencias/cenarios/prompts.md`.
+- **Cachorro 3D:** as folhas do galope, do slide e do pulo são renderizadas de um modelo do Meshy
+  (vistas em `PRD/referencias/cachorro-3d-vistas.webp`), com esqueleto e animação feitos no Blender
+  (`PRD/referencias/cachorro-3d/cachorro-3d-galope.blend`, cena "Cachorro Meshy": galope nos quadros
+  1 a 10, slide de 21 a 26, pulo de 31 a 38; o rig do Meshy só faz humanoide). As folhas saem com os
+  mesmos pixels por metro e o mesmo chão: slide e pulo se montam pela escala da do galope, nunca
+  recortados sozinhos, e a altura no mundo de cada uma é `ALTURA_QUADRO_M × altura / 320`. O pulo
+  do cachorro não tem antecipação (ele sai do chão no tick do comando): o impulso é o começo da
+  subida, escolhido por `vy`, e o pouso dura pelo relógio.
+- **Tutor 3D:** modelo e rig do Meshy (a partir de `PRD/referencias/tutor-3d-parado.webp`), em
+  `PRD/referencias/tutor-3d/tutor-3d.blend`, cena "Tutor Meshy". A corrida é a animação do Meshy com o
+  corpo inclinado 10°; pulo (quadros 1 a 10) e slide (21 a 26) foram posados à mão na ação
+  `poses_tutor`, copiando o movimento das folhas antigas do ChatGPT, porque o "Jump Run" e o "Slide
+  Light" da biblioteca não têm o impulso, a mão no chão nem o slide sentado. No slide, o corpo assenta
+  pelo ponto mais baixo (não pelo grupo `Hips`, que é a cintura: as nádegas são das coxas) e o braço
+  de perto é girado até a mão tocar o chão. As três folhas seguem a regra das do cachorro: pixels por
+  metro e chão da corrida. A
+  câmera olha um pouco de cima, então um pé mais perto dela aparece abaixo da linha do chão: o `pes`
+  de cada folha é medido, não fixo em 6, e o avanço de cada folha põe o corpo onde estava o da corrida. O pelo do Meshy é feito de mechas finas sobrepostas: ao girar a perna, elas se abrem
+  e o fundo transparente vaza na folha. Por isso há um `CachorroNucleo` fechado por dentro, na cor do
+  pelo, preso ao mesmo esqueleto, e a barriga entre as patas só segue a coluna. Mexeu na pose ou na
+  câmera: renderize os 10 quadros e confira as frestas num fundo escuro, não no viewport.
 - **Carga da arte:** tudo que o canvas da corrida desenha é decodificado antes da largada, como
   `ImageBitmap` (`carregarArteCorrida` em `imagens/index.ts`). A carga começa na abertura e roda por
   trás da home e da história; a história só entrega o jogador à corrida com `liberada` (mostra
