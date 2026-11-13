@@ -18,11 +18,13 @@ const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
 }
 
 // Tudo que vem depois da abertura baixa enquanto ela toca (arte do canvas, o pedaço do jogo com o
-// motor): quando o logo termina, as telas seguintes abrem prontas. A arte é decodificada desde já,
-// e a home só libera o Jogar quando ela está pronta: imagem decodificada no meio da partida trava
-// o quadro.
-const importarJogo = () => import('./features/jogo/screens/TelaJogo/TelaJogo.tsx')
-const TelaJogo = lazy(() => importarJogo().then((m) => ({ default: m.TelaJogo })))
+// motor e o three.js): quando o logo termina, as telas seguintes abrem prontas. A arte é
+// decodificada desde já, e a home só libera o Jogar quando ela está pronta: imagem decodificada no
+// meio da partida trava o quadro.
+// O Jogar abre o RPG isométrico. O jogo de exemplo (`TelaJogo`) fica no repositório porque o
+// ranking e a Edge Function ainda usam o motor dele.
+const importarJogo = () => import('./features/rpg/screens/TelaRpg/TelaRpg.tsx')
+const TelaRpg = lazy(() => importarJogo().then((m) => ({ default: m.TelaRpg })))
 
 export function App() {
   return (
@@ -64,7 +66,7 @@ function TelaAtual() {
   if (tela === 'home') return <TelaHome aoJogar={() => setTela('jogo')} />
   return (
     <Suspense fallback={null}>
-      <TelaJogo />
+      <TelaRpg />
     </Suspense>
   )
 }

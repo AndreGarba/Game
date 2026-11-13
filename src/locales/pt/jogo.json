@@ -1,13 +1,13 @@
 {
-  "titulo": "Game Template",
-  "subtitulo": "Jogo de exemplo: corra, pule e pegue moedas.",
+  "titulo": "Cidade Isométrica",
+  "subtitulo": "Protótipo de RPG: ande pela rua, entre no escritório e na loja de veículos.",
   "deNovo": "Jogar de novo",
   "continuar": "Continuar",
   "menu": "Menu",
   "home": {
     "jogar": "Jogar",
     "carregando": "Carregando… {{porcento}}%",
-    "comoJogar": "Espaço, ↑ ou toque para pular · Esc pausa",
+    "comoJogar": "Setas/WASD andam · A (Espaço, E) interage · B (Esc, Q) volta",
     "configuracoes": "Configurações"
   },
   "configuracoes": {
@@ -67,6 +67,74 @@
       "interno": "O ranking falhou. Tente de novo.",
       "rede": "Sem internet. Tente de novo.",
       "sem_configuracao": "Ranking indisponível."
+    }
+  },
+  "rpg": {
+    "cenas": {
+      "rua": "Rua das Palmeiras",
+      "escritorio": "Escritório Horizonte",
+      "concessionaria": "Loja de Veículos"
+    },
+    "placas": {
+      "escritorio": "ESCRITÓRIO",
+      "concessionaria": "VEÍCULOS"
+    },
+    "nomes": {
+      "pedestre": "Dona Cida",
+      "recepcionista": "Júlia",
+      "vendedor": "Marcos",
+      "bebedouro": "bebedouro",
+      "carro_vermelho": "hatch vermelho",
+      "carro_azul": "sedã azul",
+      "carro_amarelo": "esportivo amarelo"
+    },
+    "acao": {
+      "entrar": "Entrar: {{lugar}}",
+      "sair": "Sair para a rua",
+      "conversar": "Falar com {{nome}}",
+      "olhar": "Ver {{nome}}"
+    },
+    "dialogo": {
+      "proxima": "A ▸ continuar",
+      "fechar": "A ▸ fechar"
+    },
+    "controles": {
+      "direcional": "Direcional",
+      "interagir": "Interagir",
+      "fechar": "Fechar diálogo",
+      "menu": "Menu"
+    },
+    "dialogos": {
+      "pedestre": [
+        "Bom dia! Você é novo no bairro?",
+        "O escritório fica ali, na porta azul. A loja de carros é logo ao lado.",
+        "Dizem que o esportivo amarelo saiu com desconto hoje."
+      ],
+      "recepcionista": [
+        "Boas-vindas ao Escritório Horizonte!",
+        "A reunião das dez foi remarcada. Pode esperar no sofá, se quiser.",
+        "O bebedouro fica à direita. Fique à vontade."
+      ],
+      "vendedor": [
+        "Olá! Procurando um carro novo?",
+        "Os três da vitrine estão prontos para test drive.",
+        "Dê uma olhada e me chame quando decidir!"
+      ],
+      "bebedouro": [
+        "Água fresquinha. Você se sente renovado."
+      ],
+      "carro_vermelho": [
+        "Hatch vermelho, 1.0, econômico.",
+        "R$ 72.900 à vista."
+      ],
+      "carro_azul": [
+        "Sedã azul, câmbio automático, porta-malas enorme.",
+        "R$ 118.500 à vista."
+      ],
+      "carro_amarelo": [
+        "Esportivo amarelo, 0 a 100 em 6 segundos.",
+        "R$ 249.000 — hoje com desconto!"
+      ]
     }
   }
 }

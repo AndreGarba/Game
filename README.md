@@ -4,8 +4,13 @@ Base para jogos 2D web (PWA) com casca Android: motor determinístico de passo f
 replay no Supabase, i18n (pt/en/es), música e efeitos em Web Audio, carga de arte para canvas,
 testes de golden master e deploy no Cloudflare Workers pelo CI.
 
-O que roda hoje é um jogo de exemplo: um quadrado corre sozinho, pula blocos e vãos (toque,
-Espaço, ↑ ou W) e pega moedas. Ele existe para exercitar a base; o jogo novo entra no lugar dele.
+O Jogar abre hoje um **protótipo de RPG isométrico** em three.js: o personagem anda por uma rua
+e entra num escritório e numa loja de veículos, com direcional e botões A/B na tela (setas/WASD,
+Espaço/E e Esc/Q no teclado). A arte é provisória e troca por imagens soltas numa pasta: ver
+[`docs/ASSETS.md`](docs/ASSETS.md).
+
+O jogo de exemplo do template (um quadrado que corre, pula e pega moedas) continua no código,
+fora do fluxo, porque o ranking e a Edge Function ainda usam o motor dele.
 
 Regras de arquitetura e de processo: [`CLAUDE.md`](CLAUDE.md).
 

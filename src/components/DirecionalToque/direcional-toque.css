@@ -1,0 +1,60 @@
+/* Direcional de toque. Sem arte: círculo translúcido com quatro setas em CSS. Com arte
+   (--imagem-base, --imagem-seta), as imagens tomam o lugar e o CSS só posiciona. */
+.direcional-toque {
+  position: relative;
+  width: var(--tamanho-direcional);
+  height: var(--tamanho-direcional);
+  border-radius: var(--raio-total);
+  background: var(--cor-controle-fundo);
+  box-shadow: var(--sombra-1);
+  touch-action: none;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.direcional-toque--arte {
+  background: var(--imagem-base) center / contain no-repeat;
+  box-shadow: none;
+}
+
+.direcional-toque__seta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--tamanho-direcional) * 0.28);
+  height: calc(var(--tamanho-direcional) * 0.28);
+  margin: calc(var(--tamanho-direcional) * -0.14);
+  /* Seta para cima desenhada com a ponta de um triângulo; os outros lados giram esta. */
+  clip-path: polygon(50% 8%, 92% 78%, 8% 78%);
+  background: var(--cor-controle-seta);
+  transition: background 0.06s linear;
+}
+
+.direcional-toque--seta-arte .direcional-toque__seta {
+  clip-path: none;
+  background: var(--imagem-seta) center / contain no-repeat;
+}
+
+.direcional-toque__seta--cima {
+  transform: translateY(calc(var(--tamanho-direcional) * -0.3));
+}
+
+.direcional-toque__seta--baixo {
+  transform: translateY(calc(var(--tamanho-direcional) * 0.3)) rotate(180deg);
+}
+
+.direcional-toque__seta--direita {
+  transform: translateX(calc(var(--tamanho-direcional) * 0.3)) rotate(90deg);
+}
+
+.direcional-toque__seta--esquerda {
+  transform: translateX(calc(var(--tamanho-direcional) * -0.3)) rotate(-90deg);
+}
+
+.direcional-toque__seta--ligada {
+  background: var(--cor-destaque);
+}
+
+.direcional-toque--seta-arte .direcional-toque__seta--ligada {
+  filter: brightness(1.3) drop-shadow(0 0 4px var(--cor-destaque));
+}

@@ -1,0 +1,229 @@
+/* Tela do RPG: canvas 3D por baixo, HUD por cima. Medida pelo próprio contêiner, dentro da moldura
+   de celular deitado. Slot de arte presente → modificador --arte e a imagem em --imagem. */
+.tela-rpg {
+  container-type: size;
+  position: relative;
+  width: 100%;
+  height: var(--altura-tela, 100svh);
+  overflow: hidden;
+}
+
+.tela-rpg__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.tela-rpg__transicao {
+  position: absolute;
+  inset: 0;
+  background: var(--cor-transicao);
+  pointer-events: none;
+  animation: tela-rpg-clareia 0.45s ease-out both;
+}
+
+@keyframes tela-rpg-clareia {
+  to {
+    opacity: 0;
+  }
+}
+
+.tela-rpg__hud {
+  position: absolute;
+  inset: 0;
+  padding: calc(var(--espaco-3) + var(--safe-topo)) calc(var(--espaco-4) + var(--safe-direita))
+    calc(var(--espaco-3) + var(--safe-base)) calc(var(--espaco-4) + var(--safe-esquerda));
+  pointer-events: none;
+}
+
+.tela-rpg__lugar {
+  display: inline-block;
+  margin: 0;
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie-translucida);
+  font-size: var(--texto-2);
+  font-weight: 900;
+}
+
+.tela-rpg__pausa {
+  position: absolute;
+  top: calc(var(--espaco-3) + var(--safe-topo));
+  right: calc(var(--espaco-4) + var(--safe-direita));
+  width: var(--tamanho-botao-icone);
+  height: var(--tamanho-botao-icone);
+  border: 0;
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie-translucida);
+  color: var(--cor-texto);
+  font-size: var(--texto-3);
+  font-weight: 900;
+  cursor: pointer;
+  pointer-events: auto;
+  /* Acima do véu da pausa: o HUD não cria contexto de empilhamento. */
+  z-index: 1;
+}
+
+.tela-rpg__pausa--arte {
+  background: var(--imagem) center / contain no-repeat;
+}
+
+.tela-rpg__pausa:focus-visible {
+  outline: 3px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+.tela-rpg__direcional {
+  position: absolute;
+  left: calc(var(--espaco-4) + var(--safe-esquerda));
+  bottom: calc(var(--espaco-3) + var(--safe-base));
+}
+
+.tela-rpg__botoes {
+  position: absolute;
+  right: calc(var(--espaco-4) + var(--safe-direita));
+  bottom: calc(var(--espaco-3) + var(--safe-base));
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espaco-3);
+}
+
+/* A fica mais alto e mais perto do polegar, como nos controles de console. */
+.tela-rpg__botoes > :last-child {
+  margin-bottom: var(--espaco-6);
+}
+
+.tela-rpg__acao {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--espaco-4) + var(--safe-base));
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  max-width: 44cqw;
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-4) var(--espaco-2) var(--espaco-2);
+  border-radius: var(--raio-total);
+  background: var(--cor-dialogo-fundo);
+  box-shadow: var(--sombra-1);
+  font-size: var(--texto-3);
+  font-weight: 800;
+  transform: translateX(-50%);
+  animation: tela-rpg-surge 0.15s ease-out both;
+}
+
+.tela-rpg__acao--arte {
+  background: var(--imagem) center / 100% 100% no-repeat;
+  box-shadow: none;
+}
+
+@keyframes tela-rpg-surge {
+  from {
+    opacity: 0;
+    transform: translate(-50%, var(--espaco-2));
+  }
+}
+
+.tela-rpg__tecla {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--espaco-8);
+  height: var(--espaco-8);
+  border-radius: var(--raio-total);
+  background: var(--cor-destaque);
+  color: var(--cor-destaque-texto);
+  font-weight: 900;
+}
+
+/* Caixa de diálogo entre o direcional e os botões, sem cobrir nenhum dos dois. */
+.tela-rpg__dialogo {
+  position: absolute;
+  left: calc(var(--tamanho-direcional) + var(--espaco-8) + var(--safe-esquerda));
+  right: calc(var(--tamanho-botao-acao) * 2 + var(--espaco-8) + var(--espaco-4) + var(--safe-direita));
+  bottom: calc(var(--espaco-3) + var(--safe-base));
+  min-height: 30cqh;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: 3px solid var(--cor-dialogo-borda);
+  border-radius: var(--raio-4);
+  background: var(--cor-dialogo-fundo);
+  box-shadow: var(--sombra-2);
+  animation: tela-rpg-surge-dialogo 0.15s ease-out both;
+}
+
+.tela-rpg__dialogo--arte {
+  border: 0;
+  background: var(--imagem) center / 100% 100% no-repeat;
+  box-shadow: none;
+}
+
+@keyframes tela-rpg-surge-dialogo {
+  from {
+    opacity: 0;
+    transform: translateY(var(--espaco-2));
+  }
+}
+
+.tela-rpg__falante {
+  margin: 0 0 var(--espaco-1);
+  font-size: var(--texto-2);
+  font-weight: 900;
+  color: var(--cor-destaque);
+}
+
+/* O nome do objeto vem em minúscula para caber no meio da frase ("Ver sedã azul"). */
+.tela-rpg__falante::first-letter {
+  text-transform: uppercase;
+}
+
+.tela-rpg__fala {
+  margin: 0;
+  font-size: var(--texto-3);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.tela-rpg__continuar {
+  margin: var(--espaco-2) 0 0;
+  font-size: var(--texto-1);
+  font-weight: 800;
+  color: var(--cor-texto-suave);
+  text-align: right;
+}
+
+.tela-rpg__veu {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-4);
+  background: var(--cor-veu);
+}
+
+.tela-rpg__cartao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-2);
+  width: min(100%, 22rem);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--espaco-4) var(--espaco-6);
+  border-radius: var(--raio-4);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-2);
+  text-align: center;
+}
+
+.tela-rpg__titulo {
+  margin: 0;
+  font-size: var(--texto-4);
+  font-weight: 900;
+}
+
+.tela-rpg__dica {
+  margin: 0;
+  font-size: var(--texto-1);
+  color: var(--cor-texto-suave);
+}
