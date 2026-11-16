@@ -3,18 +3,26 @@ import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
 import {
   ALCANCE_INTERACAO,
+  EMPURRAO_PATINETE,
   FATOR_DIAGONAL,
   PASSO_ANDANDO,
   PASSO_CORRENDO,
+  RAIO_FIGURANTE,
   RAIO_JOGADOR,
   RAIO_NPC,
   SEMENTE_PADRAO,
+  TICKS_ARRASTO,
+  TICKS_CAINDO,
+  TICKS_INVULNERAVEL,
+  TICKS_NO_CHAO,
+  TICKS_SUSTO_PATINETE,
+  TICKS_TOMBO,
   VEL_ANDAR,
   VEL_CORRER,
   VERSAO_MUNDO,
 } from './constantes.ts'
-import { criarFigurantes, passoFigurantes } from './figurantes.ts'
-import type { Alvo, Cena, Entrada, EstadoMundo, Interacao, Retangulo } from './tipos.ts'
+import { criarFigurantes, norma, passoFigurantes } from './figurantes.ts'
+import type { Alvo, Cena, Entrada, EstadoMundo, FaseTombo, Interacao, JogadorRpg, Retangulo } from './tipos.ts'
 
 // Passo fixo do mundo: `passoMundo(estado, entrada)` avança exatamente um tick e muda `estado`
 // no lugar. Só aritmética básica, como o motor do template: o mesmo log de entradas dá sempre o
@@ -28,7 +36,16 @@ export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
     versao: VERSAO_MUNDO,
     tick: 0,
     cena: CENA_INICIAL,
-    jogador: { ...POSICAO_INICIAL, andando: false, correndo: false, fasePasso: 0 },
+    jogador: {
+      ...POSICAO_INICIAL,
+      andando: false,
+      correndo: false,
+      fasePasso: 0,
+      tombo: 0,
+      tomboX: 0,
+      tomboZ: 0,
+      invulneravel: 0,
+    },
     alvo: null,
     dialogo: null,
     trocasDeCena: 0,
@@ -121,12 +138,78 @@ function interagir(estado: EstadoMundo, cena: Cena) {
   }
 }
 
+export function faseDoTombo(j: JogadorRpg): FaseTombo {
+  if (j.tombo === 0) return 'de-pe'
+  if (j.tombo <= TICKS_CAINDO) return 'caindo'
+  if (j.tombo <= TICKS_CAINDO + TICKS_NO_CHAO) return 'no-chao'
+  return 'levantando'
+}
+
+// Sinal de `a` se ele pesa na direção (até 67,5° do eixo): vira as 8 direções do jogador.
+function sinalDominante(a: number, b: number): number {
+  const x = a < 0 ? -a : a
+  const z = b < 0 ? -b : b
+  return x * 2.4142 >= z ? sinal(a) : 0
+}
+
+// Derrubado: entrada ignorada, arrasto freando no sentido do patinete e, no fim, levanta.
+function passoTombo(estado: EstadoMundo) {
+  const j = estado.jogador
+  j.andando = false
+  j.correndo = false
+  if (j.tombo <= TICKS_ARRASTO) {
+    const v = (EMPURRAO_PATINETE * (TICKS_ARRASTO - j.tombo + 1)) / TICKS_ARRASTO
+    mover(estado, cenaAtual(estado), j.tomboX * v, j.tomboZ * v)
+  }
+  if (j.tombo >= TICKS_TOMBO) {
+    j.tombo = 0
+    j.invulneravel = TICKS_INVULNERAVEL
+  } else {
+    j.tombo += 1
+  }
+}
+
+// Patinete andando que encosta no jogador o derruba; pedestre e patinete parado atravessam.
+function atropelar(estado: EstadoMundo) {
+  const j = estado.jogador
+  if (j.tombo > 0 || j.invulneravel > 0 || estado.dialogo) return
+  const alcance = RAIO_JOGADOR + RAIO_FIGURANTE
+  for (const f of estado.figurantes) {
+    if (!f.veiculo || !f.andando) continue
+    const dx = f.x - j.x
+    const dz = f.z - j.z
+    if (dx >= alcance || -dx >= alcance || dz >= alcance || -dz >= alcance) continue
+    const n = norma(f.dirX, f.dirZ)
+    j.tombo = 1
+    j.tomboX = n > 0 ? f.dirX / n : 0
+    j.tomboZ = n > 0 ? f.dirZ / n : 0
+    // Cai de costas para o tranco: fica virado para quem o atropelou.
+    if (n > 0) {
+      // `0 -` em vez de `-`: −0 viraria diferença no golden master.
+      j.dirX = 0 - sinalDominante(j.tomboX, j.tomboZ)
+      j.dirZ = 0 - sinalDominante(j.tomboZ, j.tomboX)
+    }
+    j.andando = false
+    j.correndo = false
+    f.susto = TICKS_SUSTO_PATINETE
+    f.espera = TICKS_SUSTO_PATINETE
+    f.andando = false
+    return
+  }
+}
+
 export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   estado.tick += 1
   const j = estado.jogador
 
-  // Com diálogo aberto o jogador não anda: A passa a fala, B fecha.
-  if (estado.dialogo) {
+  // No tick em que levanta, passoTombo já devolve o controle só para o próximo.
+  const derrubado = j.tombo > 0
+  if (!derrubado && j.invulneravel > 0) j.invulneravel -= 1
+
+  if (derrubado) {
+    passoTombo(estado)
+  } else if (estado.dialogo) {
+    // Com diálogo aberto o jogador não anda: A passa a fala, B fecha.
     j.andando = false
     j.correndo = false
     if (entrada.voltar) estado.dialogo = null
@@ -150,7 +233,8 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   }
 
   passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng)
+  atropelar(estado)
 
-  const c = estado.dialogo ? null : maisPerto(cenaAtual(estado), j.x, j.z)
+  const c = estado.dialogo || j.tombo > 0 ? null : maisPerto(cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null
 }

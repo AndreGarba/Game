@@ -110,8 +110,9 @@ fundo, o `escritorio` (baias com computador, divisória de vidro e área dos des
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-4'` (rpg-2: botão de correr; rpg-3: banco com agência e
-escritório; rpg-4: Faria Lima, feirão e figurantes) (`src/engine/rpg/constantes.ts`).
+Versão do mundo: `VERSAO_MUNDO = 'rpg-5'` (rpg-2: botão de correr; rpg-3: banco com agência e
+escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador)
+(`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -138,7 +139,14 @@ escritório; rpg-4: Faria Lima, feirão e figurantes) (`src/engine/rpg/constante
   Sorteio só pelo `estado.rng` (o `rng.ts` do motor, semente `SEMENTE_PADRAO` ou a de
   `criarMundo(semente)`): é o único import de fora da pasta que `tests/fronteiras.test.ts` aceita.
   Figurante bate em sólido e NPC, mas **atravessa o jogador e os outros figurantes**: assim nunca
-  tampa porta nem prende ninguém, e o caminho do jogador é o mesmo com ou sem eles (há teste).
+  tampa porta nem prende ninguém, e o caminho do jogador é o mesmo com ou sem pedestres (há teste).
+  **Exceção: patinete andando atropela.** Encostou no jogador (de pé, sem diálogo, fora da
+  invulnerabilidade), `jogador.tombo` começa a contar: cai (`TICKS_CAINDO`), fica no chão
+  (`TICKS_NO_CHAO`) e levanta (`TICKS_LEVANTANDO`), com a entrada ignorada o tempo todo e um
+  arrasto que freia no sentido do patinete (`EMPURRAO_PATINETE`, `TICKS_ARRASTO`). De pé, ganha
+  `TICKS_INVULNERAVEL` (o anel pisca) para não cair em cadeia; o piloto para e balança
+  (`figurante.susto`). Patinete parado não derruba e nunca bloqueia. A pose sai de `tombo` no
+  desenho (`animarTombo` em `personagem.ts`), interpolada pelo `alfa`.
   Preso atrás de um móvel, desiste e sorteia outro alvo. Velocidades, paradas e raio em
   `constantes.ts`. No desenho, figurante é o personagem `leve` (7 caixas, sem sombra no mapa), para
   a rua com 15 deles caber no celular.

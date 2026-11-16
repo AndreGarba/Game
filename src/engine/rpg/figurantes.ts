@@ -19,7 +19,7 @@ import type { Cena, Figurante, GrupoFigurantes, Retangulo } from './tipos.ts'
 // entradas dá as mesmas pessoas nos mesmos lugares.
 
 // |v| aproximado sem raiz (octógono, erro < 8%): basta para a velocidade parecer constante.
-function norma(a: number, b: number): number {
+export function norma(a: number, b: number): number {
   const x = a < 0 ? -a : a
   const z = b < 0 ? -b : b
   return x > z ? x + 0.4142 * z : z + 0.4142 * x
@@ -73,6 +73,7 @@ export function criarFigurantes(cena: Cena, rng: EstadoRng): Figurante[] {
         dirZ: 1,
         andando: false,
         fasePasso: 0,
+        susto: 0,
       }
       sortearAlvo(f, grupo, rng, obstaculos)
       saida.push(f)
@@ -89,6 +90,7 @@ export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: Estado
     f.zAnterior = f.z
     const grupo = cena.figurantes?.[f.grupo]
     if (!grupo) continue
+    if (f.susto > 0) f.susto -= 1
     if (f.espera > 0) {
       f.espera -= 1
       if (f.espera === 0) sortearAlvo(f, grupo, rng, obstaculos)

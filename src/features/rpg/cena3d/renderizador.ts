@@ -1,9 +1,26 @@
 import * as THREE from 'three'
-import { CENAS, type EstadoMundo, type IdCena } from '../../../engine/rpg/index.ts'
+import {
+  CENAS,
+  TICKS_CAINDO,
+  TICKS_LEVANTANDO,
+  TICKS_NO_CHAO,
+  TICKS_SUSTO_PATINETE,
+  type EstadoMundo,
+  type IdCena,
+  type JogadorRpg,
+} from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
 import { Fabrica } from './fabrica.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
-import { anguloDaDirecao, animarPersonagem, criarPatinete, criarPersonagem, type Personagem } from './personagem.ts'
+import {
+  anguloDaDirecao,
+  animarPersonagem,
+  animarTombo,
+  criarPatinete,
+  criarPersonagem,
+  zerarTombo,
+  type Personagem,
+} from './personagem.ts'
 
 // Desenho 3D do mundo: câmera ortográfica isométrica seguindo o jogador, luz do sol com sombra
 // e a cena montada a partir do mapa. Lê o estado do motor e nunca o altera.
@@ -28,6 +45,22 @@ const DESCIDA_NO_DIALOGO = 1.4
 // Altura da prancha do patinete e o braço esticado até o guidão.
 const ELEVACAO_PATINETE = 0.16
 const BRACO_NO_GUIDAO = -1.05
+// Piloto assustado: balança de lado, amortecendo até parar.
+const BALANCO_SUSTO = 0.14
+// Invulnerável depois do tombo: o anel pisca, 8 vezes por segundo.
+const PISCADAS_POR_SEGUNDO = 8
+
+// Pose do tombo entre dois ticks: `alfa` deixa a queda contínua mesmo a 120 Hz.
+function poseDoTombo(j: JogadorRpg, alfa: number) {
+  const t = j.tombo - 1 + alfa
+  if (t < TICKS_CAINDO) {
+    const u = t / TICKS_CAINDO
+    return { fase: 'caindo' as const, queda: u * u }
+  }
+  if (t < TICKS_CAINDO + TICKS_NO_CHAO) return { fase: 'no-chao' as const, queda: 1 }
+  const u = Math.min(1, (t - TICKS_CAINDO - TICKS_NO_CHAO) / TICKS_LEVANTANDO)
+  return { fase: 'levantando' as const, queda: 1 - u * u * (3 - 2 * u) }
+}
 
 export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCena) {
   const renderizador = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
@@ -113,6 +146,13 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     jogador.raiz.position.set(x, 0, z)
     if (trocou) jogador.angulo = anguloDaDirecao(j.dirX, j.dirZ)
     animarPersonagem(jogador, j.fasePasso * RADIANOS_POR_TICK, j.andando, tempo, anguloDaDirecao(j.dirX, j.dirZ), dt, j.correndo)
+    if (j.tombo > 0) {
+      const { fase, queda } = poseDoTombo(j, alfa)
+      animarTombo(jogador, fase, queda, tempo)
+    } else {
+      zerarTombo(jogador)
+    }
+    if (jogador.anel) jogador.anel.visible = j.invulneravel === 0 || Math.floor(tempo * PISCADAS_POR_SEGUNDO * 2) % 2 === 0
 
     for (const { npc, personagem } of montada?.npcs.values() ?? []) {
       // Quem está falando vira para o jogador; depois volta para a pose do mapa.
@@ -142,6 +182,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
         animarPersonagem(p, 0, false, tempo + fig.x, angulo, dt)
         p.bracos[0].rotation.x = BRACO_NO_GUIDAO
         p.bracos[1].rotation.x = BRACO_NO_GUIDAO
+        p.raiz.rotation.z = Math.sin(tempo * 28) * BALANCO_SUSTO * (fig.susto / TICKS_SUSTO_PATINETE)
       } else {
         animarPersonagem(p, fig.fasePasso * RADIANOS_POR_TICK, fig.andando, tempo + fig.z, angulo, dt)
       }

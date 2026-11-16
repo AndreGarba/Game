@@ -86,6 +86,7 @@ export interface Letreiro {
 
 // Figurantes: gente que anda sozinha pela `area`, sem conversa. Batem nos sólidos e nos NPCs,
 // mas atravessam o jogador e uns aos outros, para nunca prender ninguém nem tampar porta.
+// Patinete em movimento é a exceção: atropela o jogador e o derruba (`tombo`), sem bloquear.
 export interface GrupoFigurantes {
   quantidade: number
   area: Retangulo
@@ -130,7 +131,16 @@ export interface JogadorRpg {
   correndo: boolean
   // Fase da animação do passo, em "ticks de andar": soma PASSO_ANDANDO ou PASSO_CORRENDO por tick.
   fasePasso: number
+  // Ticks desde o atropelamento (1 a TICKS_TOMBO); 0 = de pé, com controle. Fase: `faseDoTombo`.
+  tombo: number
+  // Sentido do tranco (do patinete), normalizado aproximado: o arrasto e a queda vão para lá.
+  tomboX: number
+  tomboZ: number
+  // Ticks que faltam em que patinete não derruba (conta depois de levantar).
+  invulneravel: number
 }
+
+export type FaseTombo = 'de-pe' | 'caindo' | 'no-chao' | 'levantando'
 
 export interface DialogoAberto {
   id: string
@@ -161,6 +171,8 @@ export interface Figurante {
   dirZ: number
   andando: boolean
   fasePasso: number
+  // Ticks que faltam do susto de quem atropelou o jogador (parado, balançando no desenho).
+  susto: number
 }
 
 export type TipoAlvo = TipoInteracao
