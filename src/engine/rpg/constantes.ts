@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-4'
+export const VERSAO_MUNDO = 'rpg-5'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -40,3 +40,17 @@ export const ESPERA_PATINETE_MAX = 40
 export const TICKS_MAX_TRAJETO = 600
 // Tentativas de achar lugar livre ao nascer ou ao sortear o alvo.
 export const TENTATIVAS_LUGAR = 12
+
+// Atropelado por patinete: cai (0,25 s), fica no chão (1,25 s) e levanta (0,5 s), sem controle.
+// O tranco arrasta o jogador no sentido do patinete, freando em TICKS_ARRASTO:
+// EMPURRAO_PATINETE · (TICKS_ARRASTO + 1) / 2 ≈ 0,84 m no total.
+export const TICKS_CAINDO = 15
+export const TICKS_NO_CHAO = 75
+export const TICKS_LEVANTANDO = 30
+export const TICKS_TOMBO = TICKS_CAINDO + TICKS_NO_CHAO + TICKS_LEVANTANDO
+export const TICKS_ARRASTO = 20
+export const EMPURRAO_PATINETE = 0.08
+// Depois de levantar, 1,5 s em que outro patinete passa direto: sem tombo em cadeia.
+export const TICKS_INVULNERAVEL = 90
+// O piloto se assusta: para e balança por 0,75 s antes de seguir.
+export const TICKS_SUSTO_PATINETE = 45

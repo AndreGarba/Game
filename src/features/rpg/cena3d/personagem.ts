@@ -12,6 +12,7 @@ export interface Personagem {
   bracos: [THREE.Group, THREE.Group]
   // Ângulo atual em y, suavizado até o alvo.
   angulo: number
+  anel?: THREE.Mesh
 }
 
 const ALTURA_QUADRIL = 0.78
@@ -111,8 +112,9 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   sombra.position.y = 0.03
   sombra.receiveShadow = false
   raiz.add(sombra)
+  let anel: THREE.Mesh | undefined
   if (opcoes.anel) {
-    const anel = new THREE.Mesh(
+    anel = new THREE.Mesh(
       f.guardar(new THREE.RingGeometry(0.4, 0.5, 28)),
       f.guardar(new THREE.MeshBasicMaterial({ color: opcoes.anel, transparent: true, opacity: 0.8, depthWrite: false })),
     )
@@ -121,7 +123,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     raiz.add(anel)
   }
 
-  return { raiz, corpo, pernas: [pernaE, pernaD], bracos: [bracoE, bracoD], angulo: 0 }
+  return { raiz, corpo, pernas: [pernaE, pernaD], bracos: [bracoE, bracoD], angulo: 0, anel }
 }
 
 function personagemLeve(f: Fabrica, a: Aparencia, raiz: THREE.Group, corpo: THREE.Group): Personagem {
@@ -208,4 +210,29 @@ export function animarPersonagem(
   delta = Math.atan2(Math.sin(delta), Math.cos(delta))
   p.angulo += delta * Math.min(1, dt * 14)
   p.raiz.rotation.y = p.angulo
+}
+
+// Meia espessura do corpo deitado: sem ela, o tronco afunda pela metade no chão.
+const ERGUER_DEITADO = 0.2
+
+/**
+ * Atropelado, por cima da pose de `animarPersonagem`. `queda` vai de 0 (de pé) a 1 (deitado de
+ * costas, para trás, pelos pés). Caindo, os braços sobem e uma perna chuta; no chão, braços
+ * abertos e respiração; levantando, os braços empurram o chão.
+ */
+export function animarTombo(p: Personagem, fase: 'caindo' | 'no-chao' | 'levantando', queda: number, tempo: number) {
+  p.corpo.rotation.x = (-Math.PI / 2) * queda
+  p.corpo.position.y = ERGUER_DEITADO * queda + (fase === 'no-chao' ? Math.sin(tempo * 3) * 0.01 : 0)
+  const abrir = fase === 'levantando' ? 0.25 * queda : 0.55 * queda
+  const bracoX = fase === 'levantando' ? 0.7 * queda : -2.6 * queda
+  p.bracos[0].rotation.set(bracoX, 0, -abrir)
+  p.bracos[1].rotation.set(bracoX, 0, abrir)
+  const chute = fase === 'caindo' ? 0.9 * queda : fase === 'no-chao' ? 0.25 : 0.3 * queda
+  p.pernas[0].rotation.set(-chute, 0, -0.12 * queda)
+  p.pernas[1].rotation.set(-0.15 * queda, 0, 0.12 * queda)
+}
+
+// `animarPersonagem` só mexe em x: o abrir de braços e pernas do tombo precisa voltar a zero.
+export function zerarTombo(p: Personagem) {
+  for (const m of [...p.bracos, ...p.pernas]) m.rotation.z = 0
 }

@@ -2,9 +2,24 @@
 // O golden é contrato como o do motor de exemplo: só muda junto com VERSAO_MUNDO nova.
 import { describe, expect, it } from 'vitest'
 import { CENAS, type Cena, type Entrada, type EstadoMundo } from '../src/engine/rpg/index.ts'
-import { PASSO_CORRENDO, RAIO_FIGURANTE, RAIO_JOGADOR, RAIO_NPC, VEL_ANDAR, VEL_CORRER } from '../src/engine/rpg/constantes.ts'
+import {
+  EMPURRAO_PATINETE,
+  PASSO_CORRENDO,
+  RAIO_FIGURANTE,
+  RAIO_JOGADOR,
+  RAIO_NPC,
+  TICKS_ARRASTO,
+  TICKS_CAINDO,
+  TICKS_INVULNERAVEL,
+  TICKS_LEVANTANDO,
+  TICKS_NO_CHAO,
+  TICKS_SUSTO_PATINETE,
+  TICKS_TOMBO,
+  VEL_ANDAR,
+  VEL_CORRER,
+} from '../src/engine/rpg/constantes.ts'
 import { bloqueios, sobrepoe } from '../src/engine/rpg/colisao.ts'
-import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
+import { criarMundo, faseDoTombo, passoMundo } from '../src/engine/rpg/mundo.ts'
 import { direcaoNoMundo } from '../src/features/rpg/direcao.ts'
 import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
@@ -213,9 +228,9 @@ describe('mundo do RPG', () => {
     passeioLongo(a, () => {})
     passeioLongo(b, () => {})
     expect(b).toEqual(a)
+    // Outra semente, outras pessoas (e o jogador pode cair ou não: os patinetes passam em outra hora).
     const c = criarMundo(7)
     passeioLongo(c, () => {})
-    expect(c.jogador).toEqual(a.jogador)
     expect(c.figurantes).not.toEqual(a.figurantes)
   })
 
@@ -255,9 +270,10 @@ describe('mundo do RPG', () => {
     expect(andaram).toBeGreaterThanOrEqual(Math.ceil(esperado * 0.6))
   })
 
-  it('figurantes não bloqueiam o jogador nem viram alvo do A', () => {
+  it('pedestres não bloqueiam o jogador nem viram alvo do A', () => {
     const com = criarMundo()
     const sem = criarMundo()
+    com.figurantes = com.figurantes.filter((f) => !f.veiculo)
     sem.figurantes = []
     passeioLongo(com, (e) => {
       expect(e.alvo?.id ?? '').not.toContain('figurante')
@@ -265,6 +281,112 @@ describe('mundo do RPG', () => {
     passeioLongo(sem, () => {})
     expect(com.jogador).toEqual(sem.jogador)
     expect(com.cena).toBe(sem.cena)
+  })
+
+  // Jogador parado na ciclofaixa e um único figurante vindo pela esquerda, em linha reta.
+  const NA_CICLOFAIXA = { x: 30, z: 17.6 }
+  function cruzamento(veiculo: 'patinete' | null, xFigurante = NA_CICLOFAIXA.x - 3): EstadoMundo {
+    const e = criarMundo()
+    e.jogador.x = NA_CICLOFAIXA.x
+    e.jogador.z = NA_CICLOFAIXA.z
+    const grupos = CENAS.rua.figurantes!
+    const grupo = grupos.findIndex((g) => (g.veiculo ?? null) === veiculo)
+    e.figurantes = [
+      {
+        id: 'teste',
+        visual: grupos[grupo]!.visuais[0]!,
+        veiculo,
+        grupo,
+        x: xFigurante,
+        z: NA_CICLOFAIXA.z,
+        xAnterior: xFigurante,
+        zAnterior: NA_CICLOFAIXA.z,
+        alvoX: NA_CICLOFAIXA.x + 20,
+        alvoZ: NA_CICLOFAIXA.z,
+        espera: 0,
+        ticksNoTrajeto: 0,
+        dirX: 0,
+        dirZ: 1,
+        andando: false,
+        fasePasso: 0,
+        susto: 0,
+      },
+    ]
+    return e
+  }
+
+  function ateCair(e: EstadoMundo, limite = 240): number {
+    for (let t = 0; t < limite; t++) {
+      passoMundo(e, PARADO)
+      if (e.jogador.tombo > 0) return t
+    }
+    return -1
+  }
+
+  it('patinete atropela: cai, fica no chão, levanta e só então volta o controle', () => {
+    const e = cruzamento('patinete')
+    expect(bloqueado(CENAS.rua, NA_CICLOFAIXA.x, NA_CICLOFAIXA.z)).toBe(false)
+    expect(ateCair(e)).toBeGreaterThan(0)
+    expect(e.jogador).toMatchObject({ tombo: 1, andando: false, dirX: -1, dirZ: 0 })
+    expect(e.jogador.tomboX).toBeCloseTo(1)
+    expect(e.alvo).toBeNull()
+    // O piloto para e balança.
+    expect(e.figurantes[0]).toMatchObject({ susto: TICKS_SUSTO_PATINETE, andando: false })
+
+    const x0 = e.jogador.x
+    const fases: string[] = [faseDoTombo(e.jogador)]
+    // Segurando o direcional para o outro lado o tempo todo: derrubado não obedece.
+    while (e.jogador.tombo > 0) {
+      passoMundo(e, { ...PARADO, dx: -1, correr: true, interagir: true })
+      fases.push(faseDoTombo(e.jogador))
+      expect(e.cena).toBe('rua')
+    }
+    const contar = (f: string) => fases.filter((x) => x === f).length
+    expect(contar('caindo')).toBe(TICKS_CAINDO)
+    expect(contar('no-chao')).toBe(TICKS_NO_CHAO)
+    expect(contar('levantando')).toBe(TICKS_LEVANTANDO)
+    expect(fases.length - 1).toBe(TICKS_TOMBO)
+    // Arrastado no sentido do patinete, freando: Σ EMPURRAO·k/TICKS_ARRASTO, k = 1..TICKS_ARRASTO.
+    expect(e.jogador.x - x0).toBeCloseTo((EMPURRAO_PATINETE * (TICKS_ARRASTO + 1)) / 2)
+    expect(e.jogador.z).toBeCloseTo(NA_CICLOFAIXA.z)
+    expect(e.jogador.invulneravel).toBe(TICKS_INVULNERAVEL)
+
+    // De pé: o próximo tick já anda.
+    const x1 = e.jogador.x
+    passoMundo(e, { ...PARADO, dx: -1 })
+    expect(e.jogador.x).toBeCloseTo(x1 - VEL_ANDAR)
+  })
+
+  it('logo depois de levantar, outro patinete passa direto; acabou a janela, derruba de novo', () => {
+    const e = cruzamento('patinete')
+    ateCair(e)
+    while (e.jogador.tombo > 0) passoMundo(e, PARADO)
+    const outro = cruzamento('patinete', e.jogador.x - 1).figurantes[0]!
+    outro.z = e.jogador.z
+    outro.alvoX = e.jogador.x + 40
+    e.figurantes = [outro]
+    for (let t = 0; t < TICKS_INVULNERAVEL - 1; t++) {
+      passoMundo(e, PARADO)
+      expect(e.jogador.tombo, `tick ${t}`).toBe(0)
+    }
+    // O patinete já passou, então põe outro em cima do jogador.
+    e.figurantes = cruzamento('patinete', e.jogador.x - 0.5).figurantes
+    e.figurantes[0]!.z = e.jogador.z
+    passoMundo(e, PARADO)
+    expect(e.jogador.invulneravel).toBe(0)
+    expect(e.jogador.tombo).toBe(1)
+  })
+
+  it('pedestre cruza o jogador sem derrubar', () => {
+    const e = cruzamento(null)
+    expect(ateCair(e, 600)).toBe(-1)
+    expect(e.jogador).toMatchObject({ ...NA_CICLOFAIXA, tombo: 0 })
+  })
+
+  it('patinete parado não derruba', () => {
+    const parado = cruzamento('patinete', NA_CICLOFAIXA.x)
+    parado.figurantes[0]!.espera = 200
+    expect(ateCair(parado, 150)).toBe(-1)
   })
 
   it('golden master: passeio fixo por todas as cenas', () => {

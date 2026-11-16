@@ -3,7 +3,7 @@
 // `src/engine/index.ts` e não precisa carregar o mapa do RPG.
 export * from './constantes.ts'
 export { CENAS, CENA_INICIAL, POSICAO_INICIAL } from './cenas.ts'
-export { criarMundo, cenaAtual, passoMundo, ENTRADA_PARADA } from './mundo.ts'
+export { criarMundo, cenaAtual, faseDoTombo, passoMundo, ENTRADA_PARADA } from './mundo.ts'
 export type {
   Alvo,
   Cena,
@@ -11,6 +11,7 @@ export type {
   Destino,
   DialogoAberto,
   Entrada,
+  FaseTombo,
   Figurante,
   GrupoFigurantes,
   Letreiro,
