@@ -5,7 +5,7 @@
   height: var(--altura-tela, 100svh);
   padding: calc(var(--espaco-4) + var(--safe-topo)) calc(var(--espaco-4) + var(--safe-direita))
     calc(var(--espaco-4) + var(--safe-base)) calc(var(--espaco-4) + var(--safe-esquerda));
-  background: linear-gradient(var(--cor-fundo), var(--cor-superficie));
+  background: linear-gradient(var(--cor-home-fundo-topo), var(--cor-home-fundo-base));
 }
 
 .tela-home__centro {
@@ -23,18 +23,32 @@
   line-height: 0;
 }
 
-/* O teto em cqh guarda espaço para subtítulo, botão e dica embaixo do logo. */
+/* O teto em cqh guarda espaço para o botão e a dica embaixo do logo. */
 .tela-home__logo {
   display: block;
   width: auto;
-  height: min(var(--altura-logo-home), 56cqh);
+  height: min(var(--altura-logo-home), 60cqh);
 }
 
-.tela-home__subtitulo,
+/* Classe dupla: o .botao do global.css carrega depois desta folha e venceria no empate. */
+.botao.tela-home__jogar {
+  border-color: var(--cor-logo-ouro);
+  background: var(--cor-logo-creme);
+  color: var(--cor-logo-petroleo);
+}
+
+.botao.tela-home__jogar:hover:not(:disabled) {
+  background: var(--cor-logo-creme-claro);
+}
+
+.botao.tela-home__jogar:active:not(:disabled) {
+  background: var(--cor-logo-creme-escuro);
+}
+
 .tela-home__dica {
   margin: 0;
   font-size: var(--texto-2);
-  color: var(--cor-texto-suave);
+  color: var(--cor-home-texto-suave);
 }
 
 .tela-home__icones {

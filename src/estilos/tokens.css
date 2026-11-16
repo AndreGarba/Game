@@ -16,6 +16,16 @@
   --cor-faixa-moldura: #000000;
   /* fundoClaro da animação da GAS Games (logoGas/gas-logo.js). */
   --cor-abertura-fundo: #f8f7fa;
+  /* Home: fundo escuro e o botão Jogar com as cores tiradas do logo Distrito UX (creme das
+     letras, contorno dourado, sombra verde-petróleo). */
+  --cor-home-fundo-topo: #2b2f33;
+  --cor-home-fundo-base: #000000;
+  --cor-home-texto-suave: #c9ced6;
+  --cor-logo-creme: #fadcae;
+  --cor-logo-creme-claro: #fdebcf;
+  --cor-logo-creme-escuro: #eec58c;
+  --cor-logo-ouro: #cf8519;
+  --cor-logo-petroleo: #023845;
 
   --espaco-1: 4px;
   --espaco-2: 8px;
