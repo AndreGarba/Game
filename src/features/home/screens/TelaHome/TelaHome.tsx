@@ -49,8 +49,7 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
         <h1 className="tela-home__titulo">
           <img className="tela-home__logo" src={logo} alt={t('titulo')} width={898} height={800} decoding="async" />
         </h1>
-        <p className="tela-home__subtitulo">{t('subtitulo')}</p>
-        <button className="botao botao--primario botao--grande" onClick={aoJogar} disabled={!podeJogar}>
+        <button className="botao botao--grande tela-home__jogar" onClick={aoJogar} disabled={!podeJogar}>
           {podeJogar ? t('home.jogar') : t('home.carregando', { porcento: Math.round(carga.progresso * 100) })}
         </button>
         <p className="tela-home__dica">{t('home.comoJogar')}</p>
