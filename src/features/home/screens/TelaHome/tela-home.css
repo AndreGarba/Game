@@ -20,9 +20,14 @@
 
 .tela-home__titulo {
   margin: 0;
-  font-size: min(var(--texto-6), 12cqh);
-  font-weight: 900;
-  line-height: 1;
+  line-height: 0;
+}
+
+/* O teto em cqh guarda espaço para subtítulo, botão e dica embaixo do logo. */
+.tela-home__logo {
+  display: block;
+  width: auto;
+  height: min(var(--altura-logo-home), 56cqh);
 }
 
 .tela-home__subtitulo,
