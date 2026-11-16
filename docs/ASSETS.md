@@ -139,6 +139,7 @@ para a sombra não ser cortada.
 | `botao-soco` | Botão de soco, solto: punho fechado, sem letra (sem arte, é um círculo vermelho com o punho) | 1 : 1 | 256 × 256 | 88 px |
 | `botao-soco-apertado` | Botão de soco apertado (opcional) | 1 : 1 | 256 × 256 | 88 px |
 | `botao-pausa` | Botão de pausa (canto superior direito) | 1 : 1 | 128 × 128 | 60 px |
+| `cartao-ultrablue` | **Frente** do cartão Ultra Blue, sem fundo em volta: metal azul escovado, logo BTG Pactual, chip, "Ultrablue" e Mastercard (referência: `media/referencias/cartao-ultrablue.png` na store). Vale para o aviso de achado, a tela de objetivo concluído e a face do cartão 3D. Sem arte, é o cartão desenhado em código | 85,6 : 54 (~1,59 : 1) | 1024 × 646, cantos arredondados transparentes | aviso: ~94 × 59 px; tela final: ~216 × 136 px |
 | `caixa-dialogo` | Moldura da caixa de fala (o texto vai por cima, à esquerda) | ~4 : 1 | 1600 × 400 | ~700 × 175 px |
 | `balao-acao` | Balão do aviso "A  Entrar: …" (pílula) | ~6 : 1 | 1200 × 200 | ~400 × 66 px |
 
@@ -157,7 +158,9 @@ Prompt de exemplo:
 - **Personagens, carros e móveis** são modelos de caixas feitos em código
   (`src/features/rpg/cena3d/personagem.ts` e `modelos.ts`). Para trocar por arte, o caminho é um
   modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo. Isso inclui os
-  figurantes, o patinete elétrico, a tenda e as bandeiras do feirão. As cores dos figurantes
+  figurantes, o patinete elétrico, a tenda e as bandeiras do feirão. O cartão Ultra Blue 3D é uma
+  placa fina (`cena3d/cartao.ts`) que só troca a face pela imagem do slot `hud/cartao-ultrablue`;
+  o verso, a tarja e a borda são cores da paleta (`COR_CARTAO`). As cores dos figurantes
   (`figurante_1` a `figurante_8`) e do patinete ficam em `paleta.ts`.
 - **Céu, luz e sombra** são cores e intensidades em `paleta.ts` (`COR_CEU`, `LUZ`).
 - Ícones do app e da loja: `public/icones/` e `android/app/src/main/res/mipmap-*/` (ver `README.md`).

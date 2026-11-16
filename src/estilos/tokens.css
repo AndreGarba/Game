@@ -52,6 +52,9 @@
   --cor-dialogo-fundo: rgba(255, 255, 255, 0.96);
   --cor-dialogo-borda: #1f2a37;
   --cor-transicao: #0f172a;
+  /* Cartões Ultra Blue: contador e aviso no HUD (as cores do cartão em si moram na paleta 3D). */
+  --cor-ultrablue: #24406b;
+  --cor-ultrablue-texto: #ffffff;
 
   --sombra-1: 0 2px 8px rgba(0, 0, 0, 0.15);
   --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.25);

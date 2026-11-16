@@ -256,20 +256,22 @@ describe('mundo do RPG', () => {
     expect(e.figurantes).toHaveLength(esperado)
     expect(esperado).toBeGreaterThan(0)
     const obstaculos = bloqueios(cena)
-    let andaram = 0
     const inicio = e.figurantes.map((f) => [f.x, f.z] as const)
+    // O quanto cada um se afastou do ponto de partida em algum momento (no fim, pode ter voltado).
+    const afastamento = e.figurantes.map(() => 0)
     for (let t = 0; t < 3600; t++) {
       passoMundo(e, PARADO)
+      e.figurantes.forEach((f, i) => {
+        const [x, z] = inicio[i]!
+        afastamento[i] = Math.max(afastamento[i]!, Math.abs(f.x - x) + Math.abs(f.z - z))
+      })
       for (const f of e.figurantes) {
         expect(obstaculos.some((r) => sobrepoe(f.x, f.z, RAIO_FIGURANTE - 1e-9, r)), f.id).toBe(false)
         const area = cena.figurantes![f.grupo]!.area
         expect(f.x >= area.x && f.x <= area.x + area.largura && f.z >= area.z && f.z <= area.z + area.profundidade, f.id).toBe(true)
       }
     }
-    e.figurantes.forEach((f, i) => {
-      const [x, z] = inicio[i]!
-      if (Math.abs(f.x - x) + Math.abs(f.z - z) > 1) andaram++
-    })
+    const andaram = afastamento.filter((d) => d > 1).length
     // Quase todo mundo sai do lugar em um minuto.
     expect(andaram).toBeGreaterThanOrEqual(Math.ceil(esperado * 0.6))
   })
@@ -631,6 +633,11 @@ describe('mundo do RPG', () => {
     andar(e, 0, 0, 30)
     marcar()
     expect(e.npcsDerrubados.vendedor).toBeDefined()
+    // Com o vendedor no chão, o A pega o móvel ao lado: revista atrás do cartão Ultra Blue.
+    expect(e.alvo?.tipo).toBe('revistar')
+    apertarA(e)
+    marcar()
+    expect(e.cartoes.ultimaRevista?.tick).toBe(e.tick)
     expect(marcos).toMatchSnapshot()
   })
 })

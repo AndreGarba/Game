@@ -15,4 +15,6 @@ export const ARTE_HUD = {
   botaoPausa: urlDaArte('hud', 'botao-pausa'),
   caixaDialogo: urlDaArte('hud', 'caixa-dialogo'),
   balaoAcao: urlDaArte('hud', 'balao-acao'),
+  // Frente do cartão Ultra Blue: aviso de achado, tela final e a face do cartão 3D.
+  cartaoUltrablue: urlDaArte('hud', 'cartao-ultrablue'),
 }

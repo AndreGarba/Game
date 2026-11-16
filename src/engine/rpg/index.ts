@@ -3,9 +3,11 @@
 // `src/engine/index.ts` e não precisa carregar o mapa do RPG.
 export * from './constantes.ts'
 export { CENAS, CENA_INICIAL, POSICAO_INICIAL } from './cenas.ts'
+export { ESCONDERIJOS, chaveDoEsconderijo, type Esconderijo } from './cartoes.ts'
 export { criarMundo, cenaAtual, faseDoTombo, passoMundo, ENTRADA_PARADA } from './mundo.ts'
 export type {
   Alvo,
+  Cartoes,
   Cena,
   Decoracao,
   Destino,
@@ -22,6 +24,7 @@ export type {
   Npc,
   Porta,
   Retangulo,
+  Revista,
   Solido,
   Tombo,
   TipoAlvo,

@@ -185,7 +185,26 @@ export interface Figurante extends Tombo {
   susto: number
 }
 
-export type TipoAlvo = TipoInteracao
+// `revistar`: esconderijo sem conversa nem diálogo, ainda não revistado (procura o cartão).
+export type TipoAlvo = TipoInteracao | 'revistar'
+
+export interface Revista {
+  cena: IdCena
+  id: string
+  achou: boolean
+  tick: number
+}
+
+// Cartões Ultra Blue: onde estão (chave `cena:id`), o que já foi revistado e a contagem.
+export interface Cartoes {
+  escondidos: Record<string, true>
+  revistados: Record<string, true>
+  achados: number
+  // A última revista: a UI mostra o aviso e o desenho solta o cartão quando muda.
+  ultimaRevista: Revista | null
+  // Tick em que achou o último cartão: o tempo da partida (pausa não roda tick).
+  concluidoEm: number | null
+}
 
 export interface Alvo {
   id: string
@@ -204,10 +223,12 @@ export interface EstadoMundo {
   dialogo: DialogoAberto | null
   // Quantas vezes o jogador trocou de cena: a UI usa para disparar o esmaecer.
   trocasDeCena: number
-  // Gerador dos figurantes. Só eles sorteiam: o jogador e as portas não dependem dele.
+  // Gerador da partida: esconde os cartões ao criar o mundo e depois sorteia os figurantes. O
+  // jogador e as portas não dependem dele.
   rng: EstadoRng
   figurantes: Figurante[]
   // NPCs da cena atual derrubados por soco, por id; quem levantou sai da lista. Caem no lugar:
   // NPC não tem posição no estado, e o quadrado de colisão continua onde estava.
   npcsDerrubados: Record<string, Tombo>
+  cartoes: Cartoes
 }

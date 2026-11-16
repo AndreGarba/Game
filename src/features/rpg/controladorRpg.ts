@@ -12,18 +12,26 @@ export interface OpcoesControladorRpg {
   direcao(): { dx: number; dz: number }
   // Botão de correr (ou Shift) segurado agora.
   correndo(): boolean
-  // Só quando muda o que o HUD mostra (alvo, diálogo, cena): o React não renderiza a 60 fps.
+  // Só quando muda o que o HUD mostra (alvo, diálogo, cena, cartões): o React não renderiza a 60 fps.
   aoMudarHud(estado: EstadoMundo): void
+  // Semente da partida (esconde os cartões e sorteia os figurantes). Sem ela, uma nova por carga.
+  semente?: number
 }
 
 const MAX_TICKS_POR_QUADRO = 5
 
+// Cada vez que o jogo carrega, os cartões vão para outros lugares. Math.random fica fora do jogo.
+function sementeNova(): number {
+  return crypto.getRandomValues(new Uint32Array(1))[0]!
+}
+
 function assinaturaDoHud(e: EstadoMundo): string {
-  return `${e.cena}|${e.alvo?.id ?? ''}|${e.dialogo ? `${e.dialogo.id}:${e.dialogo.linha}` : ''}`
+  const dialogo = e.dialogo ? `${e.dialogo.id}:${e.dialogo.linha}` : ''
+  return `${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}`
 }
 
 export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
-  const estado = criarMundo()
+  const estado = criarMundo(opcoes.semente ?? sementeNova())
   let fila: AcaoBotao[] = []
   let xAnterior = estado.jogador.x
   let zAnterior = estado.jogador.z

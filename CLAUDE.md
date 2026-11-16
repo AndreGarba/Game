@@ -110,10 +110,9 @@ fundo, o `escritorio` (baias com computador, divisória de vidro e área dos des
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-6'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-7'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco)
-(`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -138,7 +137,7 @@ soco)
   conversa. Cada cena declara grupos (`figurantes`: quantidade, área, aparências, `veiculo`); quem
   está no estado (`estado.figurantes`) é só a cena atual, sorteada de novo a cada troca de cena.
   Sorteio só pelo `estado.rng` (o `rng.ts` do motor, semente `SEMENTE_PADRAO` ou a de
-  `criarMundo(semente)`): é o único import de fora da pasta que `tests/fronteiras.test.ts` aceita.
+  `criarMundo(semente)`; o jogo passa uma semente nova de `crypto` a cada carga): é o único import de fora da pasta que `tests/fronteiras.test.ts` aceita.
   Figurante bate em sólido e NPC, mas **atravessa o jogador e os outros figurantes**: assim nunca
   tampa porta nem prende ninguém, e o caminho do jogador é o mesmo com ou sem pedestres (há teste).
   **Exceção: patinete andando atropela.** Encostou no jogador (de pé, sem diálogo, fora da
@@ -162,6 +161,26 @@ soco)
   conversa no chão e levanta para a pose do mapa. Trocar de cena levanta todo mundo.
   **Com diálogo aberto não se soca** (a tecla é ignorada e a recarga não corre): fechar a conversa
   com um soco no meio da fala deixaria o NPC falando no chão; quem quer bater, fecha com B antes.
+- **Cartões Ultra Blue** (`src/engine/rpg/cartoes.ts`): `TOTAL_CARTOES` (31) escondidos, no
+  máximo um por esconderijo. Esconderijo (`ESCONDERIJOS`, chave `cena:id`, porque há ids
+  repetidos entre cenas) é todo sólido que não é prédio nem o muro do beco e todo NPC, das quatro
+  cenas: 87 hoje. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
+  e o cartão sumiria com quem o levava. `criarMundo` esconde os cartões pelo `estado.rng` antes de
+  sortear os figurantes; a `TelaRpg` passa uma semente nova (`crypto.getRandomValues`, no
+  `controladorRpg`) a cada carga, e o motor segue determinístico para a mesma semente.
+  **O A revista**: objeto sem diálogo e ainda não revistado vira alvo `revistar` ("Procurar o
+  cartão"); NPC e objeto com diálogo são revistados **no mesmo toque** que abre a conversa (o
+  aviso do cartão aparece em cima, a fala embaixo). Revistado não dá outro cartão, e o objeto sem
+  diálogo deixa de ser alvo. Objeto de revistar perde para porta, conversa e diálogo ao alcance
+  (a recepcionista atrás do balcão continua atendendo; o balcão se revista pela ponta).
+  `tests/rpg.cartoes.test.ts` confere que todo esconderijo tem um lugar alcançável de onde o A o
+  pega: esconderijo novo atrás de móvel acusa ali. **Tempo** = `cartoes.concluidoEm`, o tick do
+  último achado, contado desde `criarMundo`: pausa e segundo plano não rodam tick, então não
+  contam; a tela formata HH:MM:SS (`formatarTempo`, `src/features/rpg/tempo.ts`). A UI reage a
+  `cartoes.ultimaRevista` (aviso com o cartão girando, ou "Nada aqui." sem diálogo) e a
+  `concluidoEm` (pausa o mundo e mostra o objetivo concluído). O cartão 3D sai do esconderijo
+  girando (`cena3d/cartao.ts`); frente pelo slot `hud/cartao-ultrablue`, cores em `COR_CARTAO`.
+  Os textos impressos no cartão (`MARCAS_DO_CARTAO`) são marca, não copy: não se traduzem.
 - **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
   aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
@@ -538,6 +557,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | Janela de configurações (ícone da home) | `useVoltarNativoEmCamadas`; o X, o Esc e o toque no véu chamam `history.back()` |
 | Painel do ranking (ícone da home) | `useVoltarNativoEmCamadas`; o próprio ícone fecha com `history.back()` |
 | Pausa do RPG (`TelaRpg`; B, Esc ou o botão II) | **pendente:** como a do exemplo, o voltar do celular sai para a home em vez de fechar só a pausa |
+| Objetivo concluído do RPG (os 31 cartões) | **pendente:** como a pausa, o voltar do celular sai para a home; "Continuar explorando" fecha só a mensagem |
 | Pausa e fim de partida (sobreposições da `TelaJogo`) | **pendente:** o voltar sai do jogo para a home, em vez de fechar só a sobreposição |
 
 Nada disso aparece em lint, typecheck ou CI, nem no desktop. Só no celular, na PWA instalada.

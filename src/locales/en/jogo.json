@@ -101,7 +101,8 @@
       "entrar": "Enter: {{lugar}}",
       "sair": "Go out to the street",
       "conversar": "Talk to {{nome}}",
-      "olhar": "Check the {{nome}}"
+      "olhar": "Check the {{nome}}",
+      "revistar": "Search for the card"
     },
     "dialogo": {
       "proxima": "A ▸ next",
@@ -173,6 +174,15 @@
         "Every car here has passed inspection.",
         "Pick one and ask for the price at the tent."
       ]
+    },
+    "cartoes": {
+      "contador": "{{achados}} of {{total}} Ultra Blue cards",
+      "encontrado": "Ultra Blue card found!",
+      "nada": "Nothing here.",
+      "dica": "The {{total}} Ultra Blue cards are hidden in objects and people, in new places every time the game opens. Get close and press A to search.",
+      "concluidoTitulo": "Objective complete",
+      "concluido": "You found all the Ultra Blue cards in {{tempo}}. Congratulations!",
+      "continuar": "Keep exploring"
     }
   }
 }
