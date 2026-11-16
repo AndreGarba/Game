@@ -11,8 +11,8 @@ export default defineConfig({
       manifest: {
         id: '/',
         // Jogo novo: nome, descrição e ícones (public/icones) aqui e no index.html.
-        name: 'Game Template',
-        short_name: 'Game Template',
+        name: 'Distrito UX',
+        short_name: 'Distrito UX',
         description: 'Jogo de exemplo do template: corra, pule e pegue moedas.',
         lang: 'pt-BR',
         start_url: '/',

@@ -5,6 +5,7 @@ import { JanelaConfiguracoes } from '../../../configuracoes/JanelaConfiguracoes/
 import { useCargaDaArte } from '../../../jogo/useCargaDaArte.ts'
 import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
 import { PainelRanking } from '../../../ranking/PainelRanking.tsx'
+import logo from '../../arte/logo-distrito-ux.webp'
 import './tela-home.css'
 
 export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
@@ -45,7 +46,9 @@ export function TelaHome({ aoJogar }: { aoJogar: () => void }) {
   return (
     <div className="tela-home">
       <div className="tela-home__centro">
-        <h1 className="tela-home__titulo">{t('titulo')}</h1>
+        <h1 className="tela-home__titulo">
+          <img className="tela-home__logo" src={logo} alt={t('titulo')} width={898} height={800} decoding="async" />
+        </h1>
         <p className="tela-home__subtitulo">{t('subtitulo')}</p>
         <button className="botao botao--primario botao--grande" onClick={aoJogar} disabled={!podeJogar}>
           {podeJogar ? t('home.jogar') : t('home.carregando', { porcento: Math.round(carga.progresso * 100) })}

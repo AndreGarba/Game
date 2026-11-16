@@ -42,6 +42,7 @@
 
   --tamanho-animacao-destaque: 160px;
   --tamanho-botao-icone: 40px;
+  --altura-logo-home: 260px;
   /* Controles de toque do RPG (valores de fora da moldura; dentro dela, ver .moldura-tela). */
   --tamanho-direcional: 120px;
   --tamanho-botao-acao: 58px;
@@ -90,6 +91,7 @@
 
   --tamanho-animacao-destaque: calc(var(--px) * 240);
   --tamanho-botao-icone: calc(var(--px) * 60);
+  --altura-logo-home: calc(var(--px) * 400);
   /* Direcional com um quarto da altura e botões no alcance do polegar no tablet; no desktop o
      teclado manda, e o HUD não pode tampar a rua. */
   --tamanho-direcional: calc(var(--px) * 180);
