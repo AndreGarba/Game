@@ -7,7 +7,7 @@
   "home": {
     "jogar": "Jogar",
     "carregando": "Carregando… {{porcento}}%",
-    "comoJogar": "Setas/WASD andam · Shift corre · A (Espaço, E) interage · B (Esc, Q) volta",
+    "comoJogar": "Setas/WASD andam · Shift corre · A (Espaço, E) interage · F/J soca · B (Esc, Q) volta",
     "configuracoes": "Configurações"
   },
   "configuracoes": {
@@ -112,7 +112,8 @@
       "interagir": "Interagir",
       "fechar": "Fechar diálogo",
       "menu": "Menu",
-      "correr": "Correr (segure)"
+      "correr": "Correr (segure)",
+      "socar": "Soco"
     },
     "dialogos": {
       "pedestre": [

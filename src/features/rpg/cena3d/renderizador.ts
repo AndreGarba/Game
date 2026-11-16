@@ -4,10 +4,12 @@ import {
   TICKS_CAINDO,
   TICKS_LEVANTANDO,
   TICKS_NO_CHAO,
+  TICKS_SOCO,
+  TICKS_SOCO_IMPACTO,
   TICKS_SUSTO_PATINETE,
   type EstadoMundo,
   type IdCena,
-  type JogadorRpg,
+  type Tombo,
 } from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
 import { Fabrica } from './fabrica.ts'
@@ -15,10 +17,11 @@ import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts
 import {
   anguloDaDirecao,
   animarPersonagem,
+  animarSoco,
   animarTombo,
   criarPatinete,
   criarPersonagem,
-  zerarTombo,
+  zerarPoses,
   type Personagem,
 } from './personagem.ts'
 
@@ -49,9 +52,11 @@ const BRACO_NO_GUIDAO = -1.05
 const BALANCO_SUSTO = 0.14
 // Invulnerável depois do tombo: o anel pisca, 8 vezes por segundo.
 const PISCADAS_POR_SEGUNDO = 8
+// Patinete deitado no chão quando o piloto leva soco (quase 90°, apoiado no guidão).
+const TOMBO_PATINETE = 1.45
 
 // Pose do tombo entre dois ticks: `alfa` deixa a queda contínua mesmo a 120 Hz.
-function poseDoTombo(j: JogadorRpg, alfa: number) {
+function poseDoTombo(j: Tombo, alfa: number) {
   const t = j.tombo - 1 + alfa
   if (t < TICKS_CAINDO) {
     const u = t / TICKS_CAINDO
@@ -97,6 +102,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   let idMontada: IdCena | null = null
   // Figurantes da cena montada, por id. Nascem com a cena e morrem com a fábrica dela.
   let figurantes = new Map<string, Personagem>()
+  let patinetes = new Map<string, THREE.Group>()
   let largura = 1
   let altura = 1
   let tempo = 0
@@ -109,6 +115,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     montada = montarCena(fabricaCena, CENAS[id], textos)
     cena.add(montada.grupo)
     figurantes = new Map()
+    patinetes = new Map()
     idMontada = id
     ajustarCamera()
   }
@@ -146,19 +153,33 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     jogador.raiz.position.set(x, 0, z)
     if (trocou) jogador.angulo = anguloDaDirecao(j.dirX, j.dirZ)
     animarPersonagem(jogador, j.fasePasso * RADIANOS_POR_TICK, j.andando, tempo, anguloDaDirecao(j.dirX, j.dirZ), dt, j.correndo)
+    zerarPoses(jogador)
     if (j.tombo > 0) {
       const { fase, queda } = poseDoTombo(j, alfa)
       animarTombo(jogador, fase, queda, tempo)
-    } else {
-      zerarTombo(jogador)
+    } else if (j.soco > 0) {
+      const t = j.soco - 1 + alfa
+      const impacto = TICKS_SOCO_IMPACTO - 1
+      animarSoco(jogador, Math.min(1, t / impacto), t <= impacto ? 0 : Math.min(1, (t - impacto) / (TICKS_SOCO - 1 - impacto)))
     }
     if (jogador.anel) jogador.anel.visible = j.invulneravel === 0 || Math.floor(tempo * PISCADAS_POR_SEGUNDO * 2) % 2 === 0
 
     for (const { npc, personagem } of montada?.npcs.values() ?? []) {
       // Quem está falando vira para o jogador; depois volta para a pose do mapa.
       const falando = estado.dialogo?.origem === npc.id
-      const angulo = falando ? Math.atan2(x - npc.x, z - npc.z) : anguloDaDirecao(npc.dirX, npc.dirZ)
+      const caido = estado.npcsDerrubados[npc.id]
+      // Derrubado, cai de costas: virado para quem bateu (contra o sentido do tranco).
+      const angulo = caido
+        ? anguloDaDirecao(-caido.tomboX, -caido.tomboZ)
+        : falando
+          ? Math.atan2(x - npc.x, z - npc.z)
+          : anguloDaDirecao(npc.dirX, npc.dirZ)
       animarPersonagem(personagem, 0, false, tempo + npc.x, angulo, dt)
+      zerarPoses(personagem)
+      if (caido) {
+        const { fase, queda } = poseDoTombo(caido, alfa)
+        animarTombo(personagem, fase, queda, tempo + npc.x)
+      }
     }
 
     for (const fig of estado.figurantes) {
@@ -169,7 +190,11 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
           leve: true,
           elevacao: patinete ? ELEVACAO_PATINETE : 0,
         })
-        if (patinete) p.raiz.add(criarPatinete(fabricaCena, COR_OBJETO.patinete, COR_OBJETO.patineteDetalhe))
+        if (patinete) {
+          const veiculo = criarPatinete(fabricaCena, COR_OBJETO.patinete, COR_OBJETO.patineteDetalhe)
+          p.raiz.add(veiculo)
+          patinetes.set(fig.id, veiculo)
+        }
         p.angulo = anguloDaDirecao(fig.dirX, fig.dirZ)
         montada?.grupo.add(p.raiz)
         figurantes.set(fig.id, p)
@@ -178,11 +203,21 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       const fz = trocou ? fig.z : fig.zAnterior + (fig.z - fig.zAnterior) * alfa
       p.raiz.position.set(fx, 0, fz)
       const angulo = anguloDaDirecao(fig.dirX, fig.dirZ)
-      if (fig.veiculo) {
+      const veiculo = patinetes.get(fig.id)
+      zerarPoses(p)
+      if (fig.tombo > 0) {
+        // O piloto cai da prancha para trás e o patinete tomba de lado.
+        const { fase, queda } = poseDoTombo(fig, alfa)
+        animarPersonagem(p, 0, false, tempo + fig.x, angulo, dt)
+        animarTombo(p, fase, queda, tempo + fig.x, fig.veiculo ? ELEVACAO_PATINETE : 0)
+        p.raiz.rotation.z = 0
+        if (veiculo) veiculo.rotation.z = TOMBO_PATINETE * Math.min(1, (fig.tombo - 1 + alfa) / TICKS_CAINDO)
+      } else if (fig.veiculo) {
         animarPersonagem(p, 0, false, tempo + fig.x, angulo, dt)
         p.bracos[0].rotation.x = BRACO_NO_GUIDAO
         p.bracos[1].rotation.x = BRACO_NO_GUIDAO
         p.raiz.rotation.z = Math.sin(tempo * 28) * BALANCO_SUSTO * (fig.susto / TICKS_SUSTO_PATINETE)
+        if (veiculo) veiculo.rotation.z = 0
       } else {
         animarPersonagem(p, fig.fasePasso * RADIANOS_POR_TICK, fig.andando, tempo + fig.z, angulo, dt)
       }

@@ -3,7 +3,11 @@
 import { describe, expect, it } from 'vitest'
 import { CENAS, type Cena, type Entrada, type EstadoMundo } from '../src/engine/rpg/index.ts'
 import {
+  ALCANCE_SOCO,
   EMPURRAO_PATINETE,
+  TICKS_RECARGA_SOCO,
+  TICKS_SOCO,
+  TICKS_SOCO_IMPACTO,
   PASSO_CORRENDO,
   RAIO_FIGURANTE,
   RAIO_JOGADOR,
@@ -25,7 +29,7 @@ import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
 
 function andar(estado: EstadoMundo, dx: number, dz: number, ticks: number, correr = false) {
   for (let i = 0; i < ticks; i++) passoMundo(estado, { ...PARADO, dx, dz, correr })
@@ -310,6 +314,9 @@ describe('mundo do RPG', () => {
         andando: false,
         fasePasso: 0,
         susto: 0,
+        tombo: 0,
+        tomboX: 0,
+        tomboZ: 0,
       },
     ]
     return e
@@ -389,6 +396,192 @@ describe('mundo do RPG', () => {
     expect(ateCair(parado, 150)).toBe(-1)
   })
 
+  const socar = (e: EstadoMundo) => passoMundo(e, { ...PARADO, socar: true })
+
+  // Jogador na ciclofaixa virado para +x, com um figurante parado `distancia` à frente.
+  function frenteAFrente(veiculo: 'patinete' | null, distancia: number, lado = 0): EstadoMundo {
+    const e = cruzamento(veiculo, NA_CICLOFAIXA.x + distancia)
+    const f = e.figurantes[0]!
+    f.z += lado
+    f.zAnterior = f.z
+    f.espera = 10_000
+    e.jogador.dirX = 1
+    e.jogador.dirZ = 0
+    return e
+  }
+
+  it('soco: puxa, acerta no tick do impacto, recolhe; parado o tempo todo', () => {
+    const e = frenteAFrente(null, 0.8)
+    const f = e.figurantes[0]!
+    const x0 = e.jogador.x
+    socar(e)
+    expect(e.jogador).toMatchObject({ soco: 1, recargaSoco: TICKS_RECARGA_SOCO, andando: false })
+    for (let t = 2; t < TICKS_SOCO_IMPACTO; t++) {
+      passoMundo(e, { ...PARADO, dx: -1, interagir: true })
+      expect(e.jogador.soco).toBe(t)
+      expect(f.tombo, `tick ${t}`).toBe(0)
+    }
+    passoMundo(e, { ...PARADO, dx: -1 })
+    expect(e.jogador.soco).toBe(TICKS_SOCO_IMPACTO)
+    expect(f).toMatchObject({ tombo: 1, andando: false, dirX: -1 })
+    expect(f.tomboX).toBe(1)
+    for (let t = TICKS_SOCO_IMPACTO + 1; t < TICKS_SOCO; t++) passoMundo(e, { ...PARADO, dx: -1 })
+    expect(e.jogador.soco).toBe(TICKS_SOCO - 1)
+    passoMundo(e, { ...PARADO, dx: -1 })
+    expect(e.jogador.soco).toBe(0)
+    expect(e.jogador.x).toBe(x0)
+    passoMundo(e, { ...PARADO, dx: -1 })
+    expect(e.jogador.x).toBeCloseTo(x0 - VEL_ANDAR)
+  })
+
+  it('soco derruba o pedestre: arrasto, chão, levanta e volta a andar; no chão, outro soco não pega', () => {
+    const e = frenteAFrente(null, 0.8)
+    const f = e.figurantes[0]!
+    const x0 = f.x
+    socar(e)
+    for (let t = 1; t < TICKS_SOCO_IMPACTO; t++) passoMundo(e, PARADO)
+    const fases = [faseDoTombo(f)]
+    let socosNoChao = 0
+    while (f.tombo > 0) {
+      if (e.jogador.recargaSoco === 0) {
+        socar(e)
+        socosNoChao++
+      } else passoMundo(e, PARADO)
+      fases.push(faseDoTombo(f))
+      // Os socos seguintes passam por cima: quem está no chão não recomeça a contar.
+      expect(f.tombo === 0 || f.tombo === fases.filter((x) => x !== 'de-pe').length).toBe(true)
+    }
+    expect(socosNoChao).toBeGreaterThan(1)
+    expect(fases.filter((x) => x === 'caindo')).toHaveLength(TICKS_CAINDO)
+    expect(fases.filter((x) => x === 'no-chao')).toHaveLength(TICKS_NO_CHAO)
+    expect(fases.filter((x) => x === 'levantando')).toHaveLength(TICKS_LEVANTANDO)
+    expect(f.x - x0).toBeCloseTo((EMPURRAO_PATINETE * (TICKS_ARRASTO + 1)) / 2)
+    // De pé, para um pouco e sorteia outro caminho.
+    expect(f.espera).toBeGreaterThan(0)
+  })
+
+  it('soco erra: alvo atrás, longe demais ou fora do leque; a recarga corre mesmo assim', () => {
+    for (const [distancia, lado] of [
+      [-0.8, 0],
+      [ALCANCE_SOCO + 0.1, 0],
+      [0.3, 0.7],
+    ] as const) {
+      const e = frenteAFrente(null, distancia, lado)
+      socar(e)
+      for (let t = 0; t < TICKS_SOCO; t++) passoMundo(e, PARADO)
+      expect(e.figurantes[0]!.tombo, `${distancia}, ${lado}`).toBe(0)
+    }
+  })
+
+  it('recarga: soco apertado antes de TICKS_RECARGA_SOCO é ignorado', () => {
+    const e = frenteAFrente(null, 5)
+    socar(e)
+    for (let t = 1; t < TICKS_RECARGA_SOCO; t++) {
+      if (e.jogador.soco === 0) {
+        socar(e)
+        expect(e.jogador.soco, `tick ${t}`).toBe(0)
+      } else passoMundo(e, PARADO)
+    }
+    expect(e.jogador.recargaSoco).toBe(1)
+    socar(e)
+    expect(e.jogador.soco).toBe(1)
+  })
+
+  it('soco no piloto do patinete que vem de frente: cai, o patinete para e não atropela ninguém', () => {
+    const e = frenteAFrente('patinete', 1.6)
+    const f = e.figurantes[0]!
+    f.espera = 0
+    f.alvoX = NA_CICLOFAIXA.x - 20
+    // Soca cedo: o impacto sai com o patinete a ~0,9 m.
+    socar(e)
+    while (e.jogador.soco > 0) passoMundo(e, PARADO)
+    expect(f.tombo).toBeGreaterThan(0)
+    expect(e.jogador.tombo).toBe(0)
+    const x = f.x
+    for (let t = 0; t < 60; t++) passoMundo(e, PARADO)
+    expect(f.andando).toBe(false)
+    expect(e.jogador.tombo).toBe(0)
+    // Arrastado para longe do jogador, não para cima dele.
+    expect(f.x).toBeGreaterThan(x)
+  })
+
+  // Põe o jogador a 0,8 m de um NPC, num lado livre, virado para ele.
+  function diantede(idCena: keyof typeof CENAS, idNpc: string): EstadoMundo {
+    const cena = CENAS[idCena]
+    const npc = cena.npcs.find((n) => n.id === idNpc)!
+    const e = criarMundo()
+    e.cena = cena.id
+    e.figurantes = []
+    for (const [dx, dz] of [
+      [0, 1],
+      [1, 0],
+      [-1, 0],
+      [0, -1],
+    ] as const) {
+      const x = npc.x + dx * 0.8
+      const z = npc.z + dz * 0.8
+      if (bloqueado(cena, x, z)) continue
+      e.jogador.x = x
+      e.jogador.z = z
+      e.jogador.dirX = 0 - dx
+      e.jogador.dirZ = 0 - dz
+      return e
+    }
+    throw new Error(`sem lado livre perto de ${idNpc}`)
+  }
+
+  it.each([
+    ['agencia', 'gerente'],
+    ['concessionaria', 'vendedor'],
+    ['rua', 'vendedor_feirao'],
+  ] as const)('%s: soco derruba o NPC %s, que não conversa no chão e volta ao normal', (idCena, idNpc) => {
+    const e = diantede(idCena, idNpc)
+    passoMundo(e, PARADO)
+    expect(e.alvo?.id).toBe(idNpc)
+    socar(e)
+    while (e.jogador.soco > 0) passoMundo(e, PARADO)
+    expect(e.npcsDerrubados[idNpc]?.tombo).toBe(TICKS_SOCO - TICKS_SOCO_IMPACTO + 1)
+    expect(e.alvo?.id).not.toBe(idNpc)
+    passoMundo(e, { ...PARADO, interagir: true })
+    expect(e.dialogo).toBeNull()
+    // Ticks desde o do impacto (já passaram os do recolher e o do A).
+    let ticks = TICKS_SOCO - TICKS_SOCO_IMPACTO + 1
+    while (e.npcsDerrubados[idNpc]) {
+      // Soca de novo enquanto ele está no chão (o impacto ainda cai antes de levantar).
+      if (e.jogador.recargaSoco === 0 && faseDoTombo(e.npcsDerrubados[idNpc]!) === 'no-chao') socar(e)
+      else passoMundo(e, PARADO)
+      ticks++
+    }
+    // Os socos no chão não renovam o tombo: levanta TICKS_TOMBO depois do primeiro.
+    expect(ticks).toBe(TICKS_TOMBO)
+    while (e.jogador.soco > 0) passoMundo(e, PARADO)
+    passoMundo(e, PARADO)
+    expect(e.alvo?.id).toBe(idNpc)
+    apertarA(e)
+    expect(e.dialogo?.origem).toBe(idNpc)
+  })
+
+  it('com diálogo aberto não dá para socar; ao trocar de cena, ninguém fica caído', () => {
+    const e = diantede('agencia', 'gerente')
+    passoMundo(e, PARADO)
+    apertarA(e)
+    expect(e.dialogo?.origem).toBe('gerente')
+    socar(e)
+    expect(e.jogador.soco).toBe(0)
+    expect(e.jogador.recargaSoco).toBe(0)
+    apertarB(e)
+    socar(e)
+    while (e.jogador.soco > 0) passoMundo(e, PARADO)
+    expect(e.npcsDerrubados.gerente).toBeDefined()
+    // Sai pela porta da agência: a rua começa sem NPC caído.
+    const saida = CENAS.agencia.portas.find((p) => p.destino.cena === 'rua')!
+    e.jogador.x = saida.x + saida.largura / 2
+    e.jogador.z = saida.z + saida.profundidade / 2
+    apertarA(e)
+    expect(e.cena).toBe('rua')
+    expect(e.npcsDerrubados).toEqual({})
+  })
+
   it('golden master: passeio fixo por todas as cenas', () => {
     const e = criarMundo()
     const marcos: unknown[] = []
@@ -429,6 +622,15 @@ describe('mundo do RPG', () => {
     andar(e, 0, -1, 60)
     apertarA(e)
     marcar()
+    // Vai até o vendedor da loja e soca: cai e, meio segundo depois, está no chão.
+    apertarB(e)
+    andar(e, 1, 0, 60)
+    andar(e, 0, -1, 60)
+    expect(e.alvo?.id).toBe('vendedor')
+    socar(e)
+    andar(e, 0, 0, 30)
+    marcar()
+    expect(e.npcsDerrubados.vendedor).toBeDefined()
     expect(marcos).toMatchSnapshot()
   })
 })

@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-5'
+export const VERSAO_MUNDO = 'rpg-6'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -54,3 +54,12 @@ export const EMPURRAO_PATINETE = 0.08
 export const TICKS_INVULNERAVEL = 90
 // O piloto se assusta: para e balança por 0,75 s antes de seguir.
 export const TICKS_SUSTO_PATINETE = 45
+
+// Soco: puxa o braço (TICKS_SOCO_IMPACTO − 1 ticks), acerta no tick TICKS_SOCO_IMPACTO e recolhe
+// até TICKS_SOCO (0,3 s). Parado enquanto soca. Outro soco só TICKS_RECARGA_SOCO depois do primeiro.
+export const TICKS_SOCO_IMPACTO = 9
+export const TICKS_SOCO = 18
+export const TICKS_RECARGA_SOCO = 30
+// Alcance do centro do jogador ao centro do alvo, num leque de 120° à frente (cos 60° = 0,5).
+export const ALCANCE_SOCO = 1
+export const COS_LEQUE_SOCO = 0.5

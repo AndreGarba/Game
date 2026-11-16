@@ -220,9 +220,16 @@ const ERGUER_DEITADO = 0.2
  * costas, para trás, pelos pés). Caindo, os braços sobem e uma perna chuta; no chão, braços
  * abertos e respiração; levantando, os braços empurram o chão.
  */
-export function animarTombo(p: Personagem, fase: 'caindo' | 'no-chao' | 'levantando', queda: number, tempo: number) {
+export function animarTombo(
+  p: Personagem,
+  fase: 'caindo' | 'no-chao' | 'levantando',
+  queda: number,
+  tempo: number,
+  // Altura dos pés de pé (piloto no patinete): deitado, ele fica no chão, não na prancha.
+  elevacao = 0,
+) {
   p.corpo.rotation.x = (-Math.PI / 2) * queda
-  p.corpo.position.y = ERGUER_DEITADO * queda + (fase === 'no-chao' ? Math.sin(tempo * 3) * 0.01 : 0)
+  p.corpo.position.y = (ERGUER_DEITADO - elevacao) * queda + (fase === 'no-chao' ? Math.sin(tempo * 3) * 0.01 : 0)
   const abrir = fase === 'levantando' ? 0.25 * queda : 0.55 * queda
   const bracoX = fase === 'levantando' ? 0.7 * queda : -2.6 * queda
   p.bracos[0].rotation.set(bracoX, 0, -abrir)
@@ -232,7 +239,41 @@ export function animarTombo(p: Personagem, fase: 'caindo' | 'no-chao' | 'levanta
   p.pernas[1].rotation.set(-0.15 * queda, 0, 0.12 * queda)
 }
 
-// `animarPersonagem` só mexe em x: o abrir de braços e pernas do tombo precisa voltar a zero.
-export function zerarTombo(p: Personagem) {
+// `animarPersonagem` só mexe em x: o abrir de braços e pernas do tombo e o giro do tronco do
+// soco precisam voltar a zero.
+export function zerarPoses(p: Personagem) {
   for (const m of [...p.bracos, ...p.pernas]) m.rotation.z = 0
+  p.corpo.rotation.y = 0
+}
+
+// Braço puxado para trás (x > 0) e o soco esticado para a frente, na altura do ombro.
+const BRACO_PUXADO = 0.9
+const BRACO_ESTICADO = -1.65
+const GIRO_PUXADO = 0.4
+const GIRO_GOLPE = -0.35
+// Fração do golpe gasta esticando; o resto recolhe.
+const FRACAO_ESTICAR = 0.25
+
+/**
+ * Soco, por cima de `animarPersonagem`. `preparo` é a fração do puxar o braço (0 a 1) até o
+ * impacto; depois, `golpe` vai de 0 a 1: estica rápido e recolhe. O outro braço fica na guarda.
+ */
+export function animarSoco(p: Personagem, preparo: number, golpe: number) {
+  const [guarda, punho] = p.bracos
+  if (golpe <= 0) {
+    punho.rotation.x = BRACO_PUXADO * preparo
+    p.corpo.rotation.y = GIRO_PUXADO * preparo
+    guarda.rotation.x = -0.7 * preparo
+    return
+  }
+  if (golpe < FRACAO_ESTICAR) {
+    const u = golpe / FRACAO_ESTICAR
+    punho.rotation.x = BRACO_PUXADO + (BRACO_ESTICADO - BRACO_PUXADO) * u
+    p.corpo.rotation.y = GIRO_PUXADO + (GIRO_GOLPE - GIRO_PUXADO) * u
+  } else {
+    const u = 1 - (golpe - FRACAO_ESTICAR) / (1 - FRACAO_ESTICAR)
+    punho.rotation.x = BRACO_ESTICADO * u
+    p.corpo.rotation.y = GIRO_GOLPE * u
+  }
+  guarda.rotation.x = -0.7
 }

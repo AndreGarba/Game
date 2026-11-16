@@ -7,7 +7,7 @@
   "home": {
     "jogar": "Jugar",
     "carregando": "Cargando… {{porcento}}%",
-    "comoJogar": "Flechas/WASD caminan · Shift corre · A (Espacio, E) interactúa · B (Esc, Q) vuelve",
+    "comoJogar": "Flechas/WASD caminan · Shift corre · A (Espacio, E) interactúa · F/J golpea · B (Esc, Q) vuelve",
     "configuracoes": "Ajustes"
   },
   "configuracoes": {
@@ -112,7 +112,8 @@
       "interagir": "Interactuar",
       "fechar": "Cerrar diálogo",
       "menu": "Menú",
-      "correr": "Correr (mantén)"
+      "correr": "Correr (mantén)",
+      "socar": "Puñetazo"
     },
     "dialogos": {
       "pedestre": [

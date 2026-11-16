@@ -10,6 +10,8 @@ export const ARTE_HUD = {
   botaoBApertado: urlDaArte('hud', 'botao-b-apertado'),
   botaoCorrer: urlDaArte('hud', 'botao-correr'),
   botaoCorrerApertado: urlDaArte('hud', 'botao-correr-apertado'),
+  botaoSoco: urlDaArte('hud', 'botao-soco'),
+  botaoSocoApertado: urlDaArte('hud', 'botao-soco-apertado'),
   botaoPausa: urlDaArte('hud', 'botao-pausa'),
   caixaDialogo: urlDaArte('hud', 'caixa-dialogo'),
   balaoAcao: urlDaArte('hud', 'balao-acao'),

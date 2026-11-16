@@ -1,14 +1,14 @@
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import './botao-toque.css'
 
 interface Props {
-  // Letra ou símbolo do botão quando não há arte.
-  rotulo: string
+  // Letra, símbolo ou ícone do botão quando não há arte.
+  rotulo: ReactNode
   descricao: string
   aoApertar: () => void
   // Para botão de segurar (correr): chamado quando o dedo sai, cancela ou desliza para fora.
   aoSoltar?: () => void
-  variante?: 'primario' | 'secundario'
+  variante?: 'primario' | 'secundario' | 'perigo'
   imagem?: string | null
   imagemApertado?: string | null
 }

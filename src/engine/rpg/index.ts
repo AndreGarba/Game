@@ -23,6 +23,7 @@ export type {
   Porta,
   Retangulo,
   Solido,
+  Tombo,
   TipoAlvo,
   TipoInteracao,
 } from './tipos.ts'

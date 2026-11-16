@@ -3,7 +3,8 @@ import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
 import {
   ALCANCE_INTERACAO,
-  EMPURRAO_PATINETE,
+  ALCANCE_SOCO,
+  COS_LEQUE_SOCO,
   FATOR_DIAGONAL,
   PASSO_ANDANDO,
   PASSO_CORRENDO,
@@ -11,24 +12,26 @@ import {
   RAIO_JOGADOR,
   RAIO_NPC,
   SEMENTE_PADRAO,
-  TICKS_ARRASTO,
-  TICKS_CAINDO,
   TICKS_INVULNERAVEL,
-  TICKS_NO_CHAO,
+  TICKS_RECARGA_SOCO,
+  TICKS_SOCO,
+  TICKS_SOCO_IMPACTO,
   TICKS_SUSTO_PATINETE,
-  TICKS_TOMBO,
   VEL_ANDAR,
   VEL_CORRER,
   VERSAO_MUNDO,
 } from './constantes.ts'
 import { criarFigurantes, norma, passoFigurantes } from './figurantes.ts'
-import type { Alvo, Cena, Entrada, EstadoMundo, FaseTombo, Interacao, JogadorRpg, Retangulo } from './tipos.ts'
+import { arrastoDoTick, avancarTombo, derrubar } from './tombo.ts'
+import type { Alvo, Cena, Entrada, EstadoMundo, Figurante, Interacao, Retangulo, Tombo } from './tipos.ts'
+
+export { faseDoTombo } from './tombo.ts'
 
 // Passo fixo do mundo: `passoMundo(estado, entrada)` avança exatamente um tick e muda `estado`
 // no lugar. Só aritmética básica, como o motor do template: o mesmo log de entradas dá sempre o
 // mesmo mundo, em qualquer aparelho.
 
-export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false }
+export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
 
 export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
   const rng = criarRng(semente)
@@ -45,12 +48,15 @@ export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
       tomboX: 0,
       tomboZ: 0,
       invulneravel: 0,
+      soco: 0,
+      recargaSoco: 0,
     },
     alvo: null,
     dialogo: null,
     trocasDeCena: 0,
     rng,
     figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng),
+    npcsDerrubados: {},
   }
 }
 
@@ -82,7 +88,7 @@ interface Candidato {
   d2: number
 }
 
-function candidatos(cena: Cena, x: number, z: number): Candidato[] {
+function candidatos(estado: EstadoMundo, cena: Cena, x: number, z: number): Candidato[] {
   const saida: Candidato[] = []
   for (const p of cena.portas) {
     saida.push({
@@ -92,6 +98,8 @@ function candidatos(cena: Cena, x: number, z: number): Candidato[] {
     })
   }
   for (const n of cena.npcs) {
+    // No chão (ou levantando) não conversa.
+    if (estado.npcsDerrubados[n.id]) continue
     const caixa = { x: n.x - RAIO_NPC, z: n.z - RAIO_NPC, largura: 2 * RAIO_NPC, profundidade: 2 * RAIO_NPC }
     saida.push({
       alvo: { id: n.id, tipo: 'conversa' },
@@ -107,9 +115,9 @@ function candidatos(cena: Cena, x: number, z: number): Candidato[] {
 }
 
 // O mais perto dentro do alcance; empate fica com o que veio antes na lista (porta, NPC, objeto).
-function maisPerto(cena: Cena, x: number, z: number): Candidato | null {
+function maisPerto(estado: EstadoMundo, cena: Cena, x: number, z: number): Candidato | null {
   let melhor: Candidato | null = null
-  for (const c of candidatos(cena, x, z)) {
+  for (const c of candidatos(estado, cena, x, z)) {
     if (c.d2 > ALCANCE_INTERACAO * ALCANCE_INTERACAO) continue
     if (!melhor || c.d2 < melhor.d2) melhor = c
   }
@@ -117,7 +125,7 @@ function maisPerto(cena: Cena, x: number, z: number): Candidato | null {
 }
 
 function interagir(estado: EstadoMundo, cena: Cena) {
-  const c = maisPerto(cena, estado.jogador.x, estado.jogador.z)
+  const c = maisPerto(estado, cena, estado.jogador.x, estado.jogador.z)
   if (!c) return
   const { interacao } = c
   if (interacao.tipo === 'porta' && interacao.destino) {
@@ -131,18 +139,12 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.jogador.correndo = false
     estado.trocasDeCena += 1
     estado.figurantes = criarFigurantes(CENAS[d.cena], estado.rng)
+    estado.npcsDerrubados = {}
     return
   }
   if (interacao.dialogo && interacao.linhas) {
     estado.dialogo = { id: interacao.dialogo, linha: 0, linhas: interacao.linhas, origem: c.alvo.id }
   }
-}
-
-export function faseDoTombo(j: JogadorRpg): FaseTombo {
-  if (j.tombo === 0) return 'de-pe'
-  if (j.tombo <= TICKS_CAINDO) return 'caindo'
-  if (j.tombo <= TICKS_CAINDO + TICKS_NO_CHAO) return 'no-chao'
-  return 'levantando'
 }
 
 // Sinal de `a` se ele pesa na direção (até 67,5° do eixo): vira as 8 direções do jogador.
@@ -152,21 +154,14 @@ function sinalDominante(a: number, b: number): number {
   return x * 2.4142 >= z ? sinal(a) : 0
 }
 
-// Derrubado: entrada ignorada, arrasto freando no sentido do patinete e, no fim, levanta.
+// Derrubado: entrada ignorada, arrasto freando no sentido do tranco e, no fim, levanta.
 function passoTombo(estado: EstadoMundo) {
   const j = estado.jogador
   j.andando = false
   j.correndo = false
-  if (j.tombo <= TICKS_ARRASTO) {
-    const v = (EMPURRAO_PATINETE * (TICKS_ARRASTO - j.tombo + 1)) / TICKS_ARRASTO
-    mover(estado, cenaAtual(estado), j.tomboX * v, j.tomboZ * v)
-  }
-  if (j.tombo >= TICKS_TOMBO) {
-    j.tombo = 0
-    j.invulneravel = TICKS_INVULNERAVEL
-  } else {
-    j.tombo += 1
-  }
+  const v = arrastoDoTick(j)
+  if (v > 0) mover(estado, cenaAtual(estado), j.tomboX * v, j.tomboZ * v)
+  if (avancarTombo(j)) j.invulneravel = TICKS_INVULNERAVEL
 }
 
 // Patinete andando que encosta no jogador o derruba; pedestre e patinete parado atravessam.
@@ -180,9 +175,7 @@ function atropelar(estado: EstadoMundo) {
     const dz = f.z - j.z
     if (dx >= alcance || -dx >= alcance || dz >= alcance || -dz >= alcance) continue
     const n = norma(f.dirX, f.dirZ)
-    j.tombo = 1
-    j.tomboX = n > 0 ? f.dirX / n : 0
-    j.tomboZ = n > 0 ? f.dirZ / n : 0
+    derrubar(j, n > 0 ? f.dirX / n : 0, n > 0 ? f.dirZ / n : 0)
     // Cai de costas para o tranco: fica virado para quem o atropelou.
     if (n > 0) {
       // `0 -` em vez de `-`: −0 viraria diferença no golden master.
@@ -191,6 +184,7 @@ function atropelar(estado: EstadoMundo) {
     }
     j.andando = false
     j.correndo = false
+    j.soco = 0
     f.susto = TICKS_SUSTO_PATINETE
     f.espera = TICKS_SUSTO_PATINETE
     f.andando = false
@@ -198,18 +192,86 @@ function atropelar(estado: EstadoMundo) {
   }
 }
 
+interface AlvoSoco {
+  tombo: Tombo
+  d2: number
+  figurante?: Figurante
+  npc?: string
+}
+
+// O mais perto, de pé, num leque à frente do jogador: figurante ou NPC. Empate: figurante antes.
+function alvoDoSoco(estado: EstadoMundo, ux: number, uz: number): AlvoSoco | null {
+  const j = estado.jogador
+  let melhor: AlvoSoco | null = null
+  const considerar = (x: number, z: number, alvo: Omit<AlvoSoco, 'd2'>) => {
+    const dx = x - j.x
+    const dz = z - j.z
+    const d2 = dx * dx + dz * dz
+    if (d2 > ALCANCE_SOCO * ALCANCE_SOCO) return
+    const frente = dx * ux + dz * uz
+    if (frente <= 0 || frente * frente < COS_LEQUE_SOCO * COS_LEQUE_SOCO * d2) return
+    if (!melhor || d2 < melhor.d2) melhor = { ...alvo, d2 }
+  }
+  for (const f of estado.figurantes) {
+    if (f.tombo === 0) considerar(f.x, f.z, { tombo: f, figurante: f })
+  }
+  for (const n of cenaAtual(estado).npcs) {
+    if (!estado.npcsDerrubados[n.id]) considerar(n.x, n.z, { tombo: { tombo: 0, tomboX: 0, tomboZ: 0 }, npc: n.id })
+  }
+  return melhor
+}
+
+function golpear(estado: EstadoMundo) {
+  const j = estado.jogador
+  const diagonal = j.dirX !== 0 && j.dirZ !== 0
+  const ux = diagonal ? j.dirX * FATOR_DIAGONAL : j.dirX
+  const uz = diagonal ? j.dirZ * FATOR_DIAGONAL : j.dirZ
+  const alvo = alvoDoSoco(estado, ux, uz)
+  if (!alvo) return
+  derrubar(alvo.tombo, ux, uz)
+  if (alvo.npc) estado.npcsDerrubados[alvo.npc] = alvo.tombo
+  const f = alvo.figurante
+  if (f) {
+    // Cai de costas, virado para o jogador; o patinete para junto com o piloto.
+    f.dirX = 0 - ux
+    f.dirZ = 0 - uz
+    f.andando = false
+    f.espera = 0
+    f.susto = 0
+  }
+}
+
+// Socando: parado, sem A. No último tick o controle já volta para o próximo. O golpe sai em
+// `passoMundo`, depois do passo dos figurantes: quem cai começa em tombo 1, como no atropelamento.
+function passoSoco(estado: EstadoMundo) {
+  const j = estado.jogador
+  j.andando = false
+  j.correndo = false
+  j.soco += 1
+  if (j.soco >= TICKS_SOCO) j.soco = 0
+}
+
+function passoNpcsDerrubados(estado: EstadoMundo) {
+  for (const id of Object.keys(estado.npcsDerrubados)) {
+    if (avancarTombo(estado.npcsDerrubados[id]!)) delete estado.npcsDerrubados[id]
+  }
+}
+
 export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   estado.tick += 1
   const j = estado.jogador
 
+  passoNpcsDerrubados(estado)
+
   // No tick em que levanta, passoTombo já devolve o controle só para o próximo.
   const derrubado = j.tombo > 0
   if (!derrubado && j.invulneravel > 0) j.invulneravel -= 1
+  if (j.recargaSoco > 0) j.recargaSoco -= 1
 
   if (derrubado) {
     passoTombo(estado)
   } else if (estado.dialogo) {
-    // Com diálogo aberto o jogador não anda: A passa a fala, B fecha.
+    // Com diálogo aberto o jogador não anda nem soca: A passa a fala, B fecha.
     j.andando = false
     j.correndo = false
     if (entrada.voltar) estado.dialogo = null
@@ -217,6 +279,13 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
       estado.dialogo.linha += 1
       if (estado.dialogo.linha >= estado.dialogo.linhas) estado.dialogo = null
     }
+  } else if (j.soco > 0) {
+    passoSoco(estado)
+  } else if (entrada.socar && j.recargaSoco === 0) {
+    j.soco = 1
+    j.recargaSoco = TICKS_RECARGA_SOCO
+    j.andando = false
+    j.correndo = false
   } else {
     const dx = sinal(entrada.dx)
     const dz = sinal(entrada.dz)
@@ -233,8 +302,9 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   }
 
   passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng)
+  if (j.soco === TICKS_SOCO_IMPACTO) golpear(estado)
   atropelar(estado)
 
-  const c = estado.dialogo || j.tombo > 0 ? null : maisPerto(cenaAtual(estado), j.x, j.z)
+  const c = estado.dialogo || j.tombo > 0 || j.soco > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null
 }
