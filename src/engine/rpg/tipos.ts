@@ -87,6 +87,7 @@ export interface Letreiro {
 // Figurantes: gente que anda sozinha pela `area`, sem conversa. Batem nos sólidos e nos NPCs,
 // mas atravessam o jogador e uns aos outros, para nunca prender ninguém nem tampar porta.
 // Patinete em movimento é a exceção: atropela o jogador e o derruba (`tombo`), sem bloquear.
+// O soco do jogador derruba qualquer um deles (e os NPCs), com a mesma linha do tempo.
 export interface GrupoFigurantes {
   quantidade: number
   area: Retangulo
@@ -120,9 +121,19 @@ export interface Entrada {
   correr: boolean
   interagir: boolean
   voltar: boolean
+  // Botão de soco: vale só no tick em que chega, como o A.
+  socar: boolean
 }
 
-export interface JogadorRpg {
+// Derrubado (por patinete ou soco): ticks desde a queda (1 a TICKS_TOMBO, 0 = de pé) e o sentido
+// do tranco, normalizado aproximado. A mesma linha do tempo vale para jogador, figurante e NPC.
+export interface Tombo {
+  tombo: number
+  tomboX: number
+  tomboZ: number
+}
+
+export interface JogadorRpg extends Tombo {
   x: number
   z: number
   dirX: number
@@ -131,13 +142,12 @@ export interface JogadorRpg {
   correndo: boolean
   // Fase da animação do passo, em "ticks de andar": soma PASSO_ANDANDO ou PASSO_CORRENDO por tick.
   fasePasso: number
-  // Ticks desde o atropelamento (1 a TICKS_TOMBO); 0 = de pé, com controle. Fase: `faseDoTombo`.
-  tombo: number
-  // Sentido do tranco (do patinete), normalizado aproximado: o arrasto e a queda vão para lá.
-  tomboX: number
-  tomboZ: number
   // Ticks que faltam em que patinete não derruba (conta depois de levantar).
   invulneravel: number
+  // Ticks desde que apertou o soco (1 a TICKS_SOCO); 0 = não está socando.
+  soco: number
+  // Ticks até poder socar de novo.
+  recargaSoco: number
 }
 
 export type FaseTombo = 'de-pe' | 'caindo' | 'no-chao' | 'levantando'
@@ -150,7 +160,7 @@ export interface DialogoAberto {
   origem: string
 }
 
-export interface Figurante {
+export interface Figurante extends Tombo {
   id: string
   visual: string
   veiculo: 'patinete' | null
@@ -197,4 +207,7 @@ export interface EstadoMundo {
   // Gerador dos figurantes. Só eles sorteiam: o jogador e as portas não dependem dele.
   rng: EstadoRng
   figurantes: Figurante[]
+  // NPCs da cena atual derrubados por soco, por id; quem levantou sai da lista. Caem no lugar:
+  // NPC não tem posição no estado, e o quadrado de colisão continua onde estava.
+  npcsDerrubados: Record<string, Tombo>
 }

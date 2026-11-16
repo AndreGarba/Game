@@ -4,7 +4,7 @@ import type { QuadroRpg } from './cena3d/renderizador.ts'
 // Liga o mundo (passo fixo de 60 ticks/s) ao requestAnimationFrame, como o controlador do jogo de
 // exemplo: tempo real acumulado vira ticks, e o desenho interpola entre o tick anterior e o atual.
 
-export type AcaoBotao = 'interagir' | 'voltar'
+export type AcaoBotao = 'interagir' | 'voltar' | 'socar'
 
 export interface OpcoesControladorRpg {
   desenhar(quadro: QuadroRpg, instante: number): void
@@ -41,7 +41,14 @@ export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
         const { dx, dz } = opcoes.direcao()
         // Um botão por tick: dois toques no mesmo quadro viram ticks seguidos.
         const botao = fila.shift()
-        const entrada: Entrada = { dx, dz, correr: opcoes.correndo(), interagir: botao === 'interagir', voltar: botao === 'voltar' }
+        const entrada: Entrada = {
+          dx,
+          dz,
+          correr: opcoes.correndo(),
+          interagir: botao === 'interagir',
+          voltar: botao === 'voltar',
+          socar: botao === 'socar',
+        }
         xAnterior = estado.jogador.x
         zAnterior = estado.jogador.z
         passoMundo(estado, entrada)

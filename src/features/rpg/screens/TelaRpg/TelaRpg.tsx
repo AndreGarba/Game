@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import { BotaoToque } from '../../../../components/BotaoToque/BotaoToque.tsx'
 import { DirecionalToque } from '../../../../components/DirecionalToque/DirecionalToque.tsx'
+import { IconeSoco } from '../../../../components/IconeSoco/IconeSoco.tsx'
 import type { Alvo, DialogoAberto, EstadoMundo, IdCena } from '../../../../engine/rpg/index.ts'
 import { densidadeDoJogo } from '../../../jogo/densidade.ts'
 import { abafarMusica } from '../../../musica/tocadorMusica.ts'
@@ -71,7 +72,11 @@ export function TelaRpg() {
     else pausar()
   }, [continuar, pausar])
 
-  const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB)
+  const socar = useCallback(() => {
+    controladorRef.current?.enviar('socar')
+  }, [])
+
+  const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar)
 
   useEffect(() => {
     abafarMusica(fase !== 'jogando')
@@ -202,6 +207,14 @@ export function TelaRpg() {
               variante="secundario"
               imagem={ARTE_HUD.botaoB}
               imagemApertado={ARTE_HUD.botaoBApertado}
+            />
+            <BotaoToque
+              rotulo={<IconeSoco />}
+              descricao={t('rpg.controles.socar')}
+              aoApertar={socar}
+              variante="perigo"
+              imagem={ARTE_HUD.botaoSoco}
+              imagemApertado={ARTE_HUD.botaoSocoApertado}
             />
             <BotaoToque
               rotulo="A"

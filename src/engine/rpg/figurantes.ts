@@ -12,6 +12,7 @@ import {
   VEL_FIGURANTE,
   VEL_PATINETE,
 } from './constantes.ts'
+import { arrastoDoTick, avancarTombo } from './tombo.ts'
 import type { Cena, Figurante, GrupoFigurantes, Retangulo } from './tipos.ts'
 
 // Gente andando à toa: cada figurante sorteia um ponto livre da área do grupo, vai até lá
@@ -74,6 +75,9 @@ export function criarFigurantes(cena: Cena, rng: EstadoRng): Figurante[] {
         andando: false,
         fasePasso: 0,
         susto: 0,
+        tombo: 0,
+        tomboX: 0,
+        tomboZ: 0,
       }
       sortearAlvo(f, grupo, rng, obstaculos)
       saida.push(f)
@@ -90,6 +94,18 @@ export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: Estado
     f.zAnterior = f.z
     const grupo = cena.figurantes?.[f.grupo]
     if (!grupo) continue
+    // Derrubado (soco): arrastado no sentido do golpe, no chão, levanta e para um pouco.
+    if (f.tombo > 0) {
+      f.andando = false
+      const v = arrastoDoTick(f)
+      if (v > 0) {
+        const novo = moverCaixa(cena, obstaculos, RAIO_FIGURANTE, f.x, f.z, f.tomboX * v, f.tomboZ * v)
+        f.x = novo.x
+        f.z = novo.z
+      }
+      if (avancarTombo(f)) esperar(f, rng)
+      continue
+    }
     if (f.susto > 0) f.susto -= 1
     if (f.espera > 0) {
       f.espera -= 1

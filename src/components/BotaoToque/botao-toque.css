@@ -24,6 +24,10 @@
   background: var(--cor-controle-secundario);
 }
 
+.botao-toque--perigo {
+  background: var(--cor-perigo);
+}
+
 .botao-toque--arte {
   border: 0;
   background: var(--imagem) center / contain no-repeat;

@@ -110,8 +110,9 @@ fundo, o `escritorio` (baias com computador, divisória de vidro e área dos des
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-5'` (rpg-2: botão de correr; rpg-3: banco com agência e
-escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador)
+Versão do mundo: `VERSAO_MUNDO = 'rpg-6'` (rpg-2: botão de correr; rpg-3: banco com agência e
+escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
+soco)
 (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
@@ -124,11 +125,11 @@ escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o 
   ignora. Mapa em `src/engine/rpg/cenas.ts`: `solidos` (retângulos que bloqueiam), `portas`
   (zonas com `destino`), `npcs` (bloqueiam num quadrado de `RAIO_NPC`) e `decoracoes` (chão).
 - **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, `correr`
-  enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar` só no tick em que o botão
-  desceu. Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência do passo (`PASSO_ANDANDO`,
-  `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em `constantes.ts`; o desenho só lê
-  `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar para −x e −z, e
-  quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
+  enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar`/`socar` só no tick em que o
+  botão desceu (soco: botão do punho ou F/J). Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência
+  do passo (`PASSO_ANDANDO`, `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em
+  `constantes.ts`; o desenho só lê `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar
+  para −x e −z, e quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
 - **O jogador** veste tudo preto (camiseta de manga curta, calça, tênis, cabelo) e tem tatuagens
   nos braços: `APARENCIAS.jogador` em `paleta.ts`, com `tatuagem` (cor da tinta) ligando o braço
   de manga curta em `personagem.ts`. Preto chapado some no asfalto e no meio dos figurantes, por
@@ -147,9 +148,20 @@ escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o 
   `TICKS_INVULNERAVEL` (o anel pisca) para não cair em cadeia; o piloto para e balança
   (`figurante.susto`). Patinete parado não derruba e nunca bloqueia. A pose sai de `tombo` no
   desenho (`animarTombo` em `personagem.ts`), interpolada pelo `alfa`.
+  A linha do tempo do tombo (`src/engine/rpg/tombo.ts`) é uma só para jogador, figurante e NPC.
   Preso atrás de um móvel, desiste e sorteia outro alvo. Velocidades, paradas e raio em
   `constantes.ts`. No desenho, figurante é o personagem `leve` (7 caixas, sem sombra no mapa), para
   a rua com 15 deles caber no celular.
+- **Soco** (`passoSoco`/`golpear` em `mundo.ts`): o jogador para, puxa o braço e acerta no tick
+  `TICKS_SOCO_IMPACTO`, recolhendo até `TICKS_SOCO` (0,3 s); outro soco só depois de
+  `TICKS_RECARGA_SOCO`, acertando ou não. Pega o mais perto, de pé, a até `ALCANCE_SOCO` do centro
+  do jogador num leque de 120° à frente: pedestre, piloto de patinete (cai da prancha e o patinete
+  tomba e para) ou NPC. Quem cai segue a linha do tempo do tombo e ignora socos até levantar.
+  Figurante é arrastado no sentido do soco; NPC cai no lugar (não tem posição no estado: a lista
+  `estado.npcsDerrubados` guarda só o tombo, e o quadrado de colisão fica onde estava), não
+  conversa no chão e levanta para a pose do mapa. Trocar de cena levanta todo mundo.
+  **Com diálogo aberto não se soca** (a tecla é ignorada e a recarga não corre): fechar a conversa
+  com um soco no meio da fala deixaria o NPC falando no chão; quem quer bater, fecha com B antes.
 - **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
   aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
