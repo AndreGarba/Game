@@ -37,6 +37,13 @@
   pointer-events: none;
 }
 
+/* Lugar e contador de cartões, lado a lado no canto de cima. */
+.tela-rpg__topo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
 .tela-rpg__lugar {
   display: inline-block;
   margin: 0;
@@ -226,4 +233,78 @@
   margin: 0;
   font-size: var(--texto-1);
   color: var(--cor-texto-suave);
+}
+
+.tela-rpg__cartoes {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  margin: 0;
+  padding: var(--espaco-1) var(--espaco-3) var(--espaco-1) var(--espaco-2);
+  border-radius: var(--raio-total);
+  background: var(--cor-ultrablue);
+  color: var(--cor-ultrablue-texto);
+  font-size: var(--texto-2);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+/* `key` muda a cada cartão: o contador pula de novo. */
+.tela-rpg__cartoes--somou {
+  animation: tela-rpg-pula 0.45s ease-out both;
+}
+
+@keyframes tela-rpg-pula {
+  40% {
+    transform: scale(1.18);
+  }
+}
+
+/* Aviso de cartão achado: colado no topo, no meio, baixo o bastante para não tampar o cartão 3D
+   que sobe do esconderijo (ele sai perto do meio da tela, onde a câmera põe o jogador). */
+.tela-rpg__aviso {
+  position: absolute;
+  top: calc(var(--espaco-3) + var(--safe-topo));
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-2) var(--espaco-6) var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-4);
+  background: var(--cor-dialogo-fundo);
+  box-shadow: var(--sombra-2);
+  transform: translateX(-50%);
+  animation: tela-rpg-surge 0.2s ease-out both;
+}
+
+.tela-rpg__aviso--nada {
+  padding: var(--espaco-2) var(--espaco-4);
+}
+
+.tela-rpg__aviso-cartao {
+  width: 13cqh;
+}
+
+.tela-rpg__aviso-texto {
+  margin: 0;
+  font-size: var(--texto-3);
+  font-weight: 900;
+  color: var(--cor-ultrablue);
+  white-space: nowrap;
+}
+
+.tela-rpg__aviso--nada .tela-rpg__aviso-texto {
+  color: var(--cor-texto-suave);
+}
+
+.tela-rpg__concluido-cartao {
+  width: 30cqh;
+  margin: var(--espaco-2) 0;
+}
+
+.tela-rpg__concluido {
+  margin: 0 0 var(--espaco-2);
+  font-size: var(--texto-3);
+  font-weight: 700;
+  line-height: 1.35;
 }

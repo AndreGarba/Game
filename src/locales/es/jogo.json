@@ -101,7 +101,8 @@
       "entrar": "Entrar: {{lugar}}",
       "sair": "Salir a la calle",
       "conversar": "Hablar con {{nome}}",
-      "olhar": "Ver el {{nome}}"
+      "olhar": "Ver el {{nome}}",
+      "revistar": "Buscar la tarjeta"
     },
     "dialogo": {
       "proxima": "A ▸ seguir",
@@ -173,6 +174,15 @@
         "Todos los autos pasaron por inspección.",
         "Elige uno y pregunta el precio en la carpa."
       ]
+    },
+    "cartoes": {
+      "contador": "{{achados}} de {{total}} tarjetas Ultra Blue",
+      "encontrado": "¡Tarjeta Ultra Blue encontrada!",
+      "nada": "Aquí no hay nada.",
+      "dica": "Las {{total}} tarjetas Ultra Blue están escondidas en objetos y personas, en lugares nuevos cada vez que se abre el juego. Acércate y pulsa A para buscar.",
+      "concluidoTitulo": "Objetivo cumplido",
+      "concluido": "Encontraste todas las tarjetas Ultra Blue en {{tempo}}. ¡Felicidades!",
+      "continuar": "Seguir explorando"
     }
   }
 }

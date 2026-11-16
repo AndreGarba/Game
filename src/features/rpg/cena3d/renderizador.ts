@@ -12,6 +12,7 @@ import {
   type Tombo,
 } from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
+import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
 import {
@@ -54,6 +55,20 @@ const BALANCO_SUSTO = 0.14
 const PISCADAS_POR_SEGUNDO = 8
 // Patinete deitado no chão quando o piloto leva soco (quase 90°, apoiado no guidão).
 const TOMBO_PATINETE = 1.45
+// Cartão achado: sai de dentro do esconderijo girando, sobe e some em TICKS_CARTAO (~1,7 s).
+const TICKS_CARTAO = 100
+const SUBIDA_CARTAO = 1.1
+const GIRO_CARTAO_POR_TICK = 0.16
+// Topo de uma pessoa, de onde o cartão sai quando o esconderijo é NPC.
+const ALTURA_PESSOA = 1.8
+
+// Altura do topo e centro do esconderijo onde o cartão foi achado.
+function origemDoCartao(cena: IdCena, id: string): { x: number; y: number; z: number } | null {
+  const npc = CENAS[cena].npcs.find((n) => n.id === id)
+  if (npc) return { x: npc.x, y: ALTURA_PESSOA, z: npc.z }
+  const s = CENAS[cena].solidos.find((s) => s.id === id)
+  return s ? { x: s.x + s.largura / 2, y: s.altura, z: s.z + s.profundidade / 2 } : null
+}
 
 // Pose do tombo entre dois ticks: `alfa` deixa a queda contínua mesmo a 120 Hz.
 function poseDoTombo(j: Tombo, alfa: number) {
@@ -96,6 +111,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   const fabricaJogador = new Fabrica()
   const jogador = criarPersonagem(fabricaJogador, APARENCIAS.jogador!, { anel: COR_ANEL_JOGADOR })
   cena.add(jogador.raiz)
+  const cartao = criarCartao3d(fabricaJogador)
+  cena.add(cartao)
 
   let fabricaCena = new Fabrica()
   let montada: CenaMontada | null = null
@@ -223,6 +240,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       }
     }
 
+    desenharCartao(estado, alfa)
+
     // Com diálogo aberto, a câmera desce (+x, +z) e o jogador sobe na tela, acima da caixa de fala.
     const folga = estado.dialogo ? DESCIDA_NO_DIALOGO : 0
     const destino = new THREE.Vector3(x + folga, 0, z + folga)
@@ -234,6 +253,21 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     sol.target.position.copy(alvoCamera)
 
     renderizador.render(cena, camera)
+  }
+
+  function desenharCartao(estado: EstadoMundo, alfa: number) {
+    const r = estado.cartoes.ultimaRevista
+    const t = r ? estado.tick - r.tick + alfa : TICKS_CARTAO
+    const origem = r && r.achou && r.cena === estado.cena && t < TICKS_CARTAO ? origemDoCartao(r.cena, r.id) : null
+    cartao.visible = origem !== null
+    if (!origem) return
+    const u = t / TICKS_CARTAO
+    const sobe = 1 - (1 - Math.min(1, u * 2.5)) ** 3
+    // Cresce nos primeiros ticks e encolhe nos últimos, em vez de piscar.
+    const escala = Math.min(1, t / 10, (TICKS_CARTAO - t) / 15)
+    cartao.position.set(origem.x, origem.y + 0.35 + SUBIDA_CARTAO * sobe, origem.z)
+    cartao.rotation.y = t * GIRO_CARTAO_POR_TICK
+    cartao.scale.setScalar(Math.max(0.001, escala))
   }
 
   function destruir() {

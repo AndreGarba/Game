@@ -135,3 +135,24 @@ export const APARENCIAS: Record<string, Aparencia> = {
 
 // Anel no chão embaixo do jogador: de roupa preta, ele some no asfalto e no meio dos figurantes.
 export const COR_ANEL_JOGADOR = '#f76b15'
+
+// Cartão Ultra Blue (BTG Pactual): metal azul escovado, chip prata e a bandeira Mastercard em dois
+// cinzas. Vale para o modelo 3D, a textura procedural da frente e o desenho do HUD.
+export const COR_CARTAO = {
+  fundo: '#24406b',
+  fundoClaro: '#3a5e93',
+  fundoEscuro: '#152a4a',
+  escovado: 'rgba(255,255,255,0.07)',
+  escovadoEscuro: 'rgba(0,0,0,0.10)',
+  texto: '#e9eef6',
+  chip: '#d3d6dc',
+  chipSombra: '#8f959e',
+  bandeiraEsquerda: '#c9ccd2',
+  bandeiraDireita: '#e6e8ec',
+  borda: '#9fb1cc',
+  verso: '#1a3157',
+  tarja: '#0c1626',
+}
+
+// O que vem escrito no cartão. É marca impressa na arte, não copy: não se traduz.
+export const MARCAS_DO_CARTAO = { produto: 'Ultrablue', banco: 'btg', bancoResto: 'pactual', bandeira: 'mastercard' }

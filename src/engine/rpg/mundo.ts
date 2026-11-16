@@ -1,4 +1,5 @@
 import { criarRng } from '../rng.ts'
+import { chaveDoEsconderijo, ehEsconderijo, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
 import {
@@ -35,6 +36,8 @@ export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir:
 
 export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
   const rng = criarRng(semente)
+  // Os cartões saem do rng antes dos figurantes: a semente decide os dois, sempre na mesma ordem.
+  const cartoes = esconderCartoes(rng)
   return {
     versao: VERSAO_MUNDO,
     tick: 0,
@@ -57,6 +60,7 @@ export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
     rng,
     figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng),
     npcsDerrubados: {},
+    cartoes,
   }
 }
 
@@ -108,20 +112,29 @@ function candidatos(estado: EstadoMundo, cena: Cena, x: number, z: number): Cand
     })
   }
   for (const s of cena.solidos) {
-    if (!s.interacao) continue
-    saida.push({ alvo: { id: s.id, tipo: s.interacao.tipo }, interacao: s.interacao, d2: distancia2(x, z, s) })
+    if (s.interacao) {
+      saida.push({ alvo: { id: s.id, tipo: s.interacao.tipo }, interacao: s.interacao, d2: distancia2(x, z, s) })
+    } else if (ehEsconderijo(cena.id, s.id) && !estado.cartoes.revistados[chaveDoEsconderijo(cena.id, s.id)]) {
+      // Revistado, o objeto sem diálogo deixa de ser alvo: não tem mais nada ali.
+      saida.push({ alvo: { id: s.id, tipo: 'revistar' }, interacao: { tipo: 'olhar' }, d2: distancia2(x, z, s) })
+    }
   }
   return saida
 }
 
 // O mais perto dentro do alcance; empate fica com o que veio antes na lista (porta, NPC, objeto).
+// Objeto só para revistar perde para porta, conversa e diálogo ao alcance: a recepcionista atrás
+// do balcão continua atendendo. Para revistar o balcão, é chegar pela ponta.
 function maisPerto(estado: EstadoMundo, cena: Cena, x: number, z: number): Candidato | null {
   let melhor: Candidato | null = null
+  let revista: Candidato | null = null
   for (const c of candidatos(estado, cena, x, z)) {
     if (c.d2 > ALCANCE_INTERACAO * ALCANCE_INTERACAO) continue
-    if (!melhor || c.d2 < melhor.d2) melhor = c
+    if (c.alvo.tipo === 'revistar') {
+      if (!revista || c.d2 < revista.d2) revista = c
+    } else if (!melhor || c.d2 < melhor.d2) melhor = c
   }
-  return melhor
+  return melhor ?? revista
 }
 
 function interagir(estado: EstadoMundo, cena: Cena) {
@@ -142,6 +155,8 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.npcsDerrubados = {}
     return
   }
+  // O A revista e conversa no mesmo toque: o cartão aparece e o diálogo abre embaixo dele.
+  revistar(estado.cartoes, estado.cena, c.alvo.id, estado.tick)
   if (interacao.dialogo && interacao.linhas) {
     estado.dialogo = { id: interacao.dialogo, linha: 0, linhas: interacao.linhas, origem: c.alvo.id }
   }
