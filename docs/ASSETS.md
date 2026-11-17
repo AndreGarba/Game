@@ -11,7 +11,8 @@ src/features/rpg/arte/
 ├─ fachadas/   frente dos prédios da rua
 ├─ placas/     letreiros em cima das portas
 ├─ portas/     portas da rua
-└─ hud/        botões, direcional, caixa de diálogo
+├─ hud/        botões, direcional, caixa de diálogo
+└─ retratos/   foto de cada personagem no card da seleção
 ```
 
 Regras que valem para tudo:
@@ -150,6 +151,24 @@ Prompt de exemplo:
 > Botão redondo de videogame para celular, verde, com a letra A branca no centro, estilo cartoon
 > com contorno escuro e leve brilho em cima, fundo transparente, sem sombra fora do círculo,
 > 256 × 256.
+
+---
+
+## 6. Retratos da seleção de personagens (`retratos/`)
+
+Opcional. Um arquivo por personagem do elenco (`ELENCO` em `src/engine/rpg/elenco.ts`), com o
+**id** do personagem como nome. Sem arquivo, o card mostra um retrato desenhado em 3D na hora, com
+o mesmo boneco do jogo. Fundo opaco (o card não tem cor atrás). Rosto e ombros, de frente ou de
+três quartos, centralizados com folga em cima: o card corta as bordas se a proporção não bater.
+
+| Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (referência 1280 × 720) |
+| --- | --- | --- | --- | --- |
+| `rici` | Rici: cabelo preto, tudo preto, tatuagens nos braços | 4 : 5 | 512 × 640 | ~162 × 202 px |
+| `garba` | Garba: careca, barba castanha cheia, óculos de armação clara, camiseta vinho com "VANS" amarelo | 4 : 5 | 512 × 640 | ~162 × 202 px |
+
+O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
+(careca, barba, óculos, estampa da camiseta, solado, relógio) ficam em `APARENCIAS.<id>` no
+`paleta.ts`.
 
 ---
 

@@ -16,6 +16,8 @@ export interface OpcoesControladorRpg {
   aoMudarHud(estado: EstadoMundo): void
   // Semente da partida (esconde os cartões e sorteia os figurantes). Sem ela, uma nova por carga.
   semente?: number
+  // Personagem do elenco escolhido na seleção.
+  personagem?: string
 }
 
 const MAX_TICKS_POR_QUADRO = 5
@@ -31,7 +33,7 @@ function assinaturaDoHud(e: EstadoMundo): string {
 }
 
 export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
-  const estado = criarMundo(opcoes.semente ?? sementeNova())
+  const estado = criarMundo(opcoes.semente ?? sementeNova(), opcoes.personagem)
   let fila: AcaoBotao[] = []
   let xAnterior = estado.jogador.x
   let zAnterior = estado.jogador.z

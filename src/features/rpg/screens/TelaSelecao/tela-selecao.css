@@ -1,0 +1,96 @@
+/* Seleção de personagens: o boneco 3D à esquerda, no palco, e à direita o nome, os cards e os
+   botões. Medida pelo próprio contêiner, dentro da moldura 16:9. */
+.tela-selecao {
+  container-type: size;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: var(--altura-tela, 100svh);
+  overflow: hidden;
+  background: radial-gradient(circle at 28% 62%, var(--cor-home-fundo-topo), var(--cor-home-fundo-base) 75%);
+  color: var(--cor-selecao-texto);
+}
+
+.tela-selecao__vitrine {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tela-selecao__painel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--espaco-3);
+  padding: calc(var(--espaco-6) + var(--safe-topo)) calc(var(--espaco-8) + var(--safe-direita))
+    calc(var(--espaco-6) + var(--safe-base)) var(--espaco-4);
+}
+
+.tela-selecao__titulo {
+  margin: 0;
+  font-size: var(--texto-4);
+  font-weight: 800;
+  color: var(--cor-home-texto-suave);
+}
+
+.tela-selecao__nome {
+  margin: 0 0 var(--espaco-2);
+  font-size: var(--texto-6);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--cor-logo-creme);
+}
+
+.tela-selecao__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  margin-bottom: var(--espaco-3);
+}
+
+.tela-selecao__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  width: var(--largura-card-personagem);
+  padding: var(--espaco-1) var(--espaco-1) var(--espaco-2);
+  border: 3px solid var(--cor-selecao-card-borda);
+  border-radius: var(--raio-4);
+  background: var(--cor-selecao-card);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease-out, border-color 0.15s;
+}
+
+.tela-selecao__card--escolhido {
+  border-color: var(--cor-destaque);
+  transform: translateY(calc(var(--espaco-1) * -1));
+}
+
+.tela-selecao__card:focus-visible {
+  outline: 3px solid var(--cor-logo-creme);
+  outline-offset: 2px;
+}
+
+.tela-selecao__retrato {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--raio-2);
+  background: var(--cor-selecao-card) var(--imagem, none) center / cover no-repeat;
+}
+
+.tela-selecao__card-nome {
+  font-size: var(--texto-3);
+  font-weight: 900;
+  text-align: center;
+}
+
+.tela-selecao__dica {
+  margin: var(--espaco-2) 0 0;
+  font-size: var(--texto-1);
+  color: var(--cor-home-texto-suave);
+}

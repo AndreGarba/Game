@@ -3,7 +3,7 @@
 // desenho procedural. Não há lista para editar: soltar o arquivo com o nome certo basta
 // (docs/ASSETS.md tem a tabela de nomes, tamanhos e transparência).
 
-export type PastaArte = 'texturas' | 'fachadas' | 'placas' | 'portas' | 'hud'
+export type PastaArte = 'texturas' | 'fachadas' | 'placas' | 'portas' | 'hud' | 'retratos'
 
 // O Vite troca isto, no build, pela lista dos arquivos que existem na pasta. Pasta vazia = {}.
 const ARQUIVOS = import.meta.glob('../arte/*/*.{png,webp,jpg,jpeg}', {

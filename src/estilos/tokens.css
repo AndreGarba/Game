@@ -26,6 +26,10 @@
   --cor-logo-creme-escuro: #eec58c;
   --cor-logo-ouro: #cf8519;
   --cor-logo-petroleo: #023845;
+  /* Seleção de personagens: o fundo escuro da home, cards translúcidos e o escolhido em laranja. */
+  --cor-selecao-card: rgba(255, 255, 255, 0.08);
+  --cor-selecao-card-borda: rgba(255, 255, 255, 0.18);
+  --cor-selecao-texto: #f4f6fb;
 
   --espaco-1: 4px;
   --espaco-2: 8px;
@@ -39,6 +43,7 @@
   --raio-total: 999px;
 
   --largura-cartao: 22rem;
+  --largura-card-personagem: 113px;
   --largura-janela: 24rem;
   --largura-botao-grande: 12rem;
 
@@ -110,4 +115,5 @@
   --largura-cartao: calc(var(--px) * 520);
   --largura-janela: calc(var(--px) * 560);
   --largura-botao-grande: calc(var(--px) * 280);
+  --largura-card-personagem: calc(var(--px) * 170);
 }

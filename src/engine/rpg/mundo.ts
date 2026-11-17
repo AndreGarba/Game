@@ -22,9 +22,10 @@ import {
   VEL_CORRER,
   VERSAO_MUNDO,
 } from './constantes.ts'
+import { espalharElenco, personagemDoElenco, PERSONAGEM_PADRAO } from './elenco.ts'
 import { criarFigurantes, norma, passoFigurantes } from './figurantes.ts'
 import { arrastoDoTick, avancarTombo, derrubar } from './tombo.ts'
-import type { Alvo, Cena, Entrada, EstadoMundo, Figurante, Interacao, Retangulo, Tombo } from './tipos.ts'
+import type { Alvo, Cena, Entrada, EstadoMundo, Figurante, IdCena, Interacao, Retangulo, Tombo } from './tipos.ts'
 
 export { faseDoTombo } from './tombo.ts'
 
@@ -34,15 +35,25 @@ export { faseDoTombo } from './tombo.ts'
 
 export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
 
-export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
+// O elenco que não foi escolhido e está nesta cena, para entrar entre os figurantes.
+function elencoNaCena(elencoNoMapa: Record<string, IdCena>, cena: IdCena) {
+  return Object.keys(elencoNoMapa)
+    .filter((id) => elencoNoMapa[id] === cena)
+    .map((id) => ({ id, visual: personagemDoElenco(id).visual }))
+}
+
+export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PADRAO): EstadoMundo {
+  const escolhido = personagemDoElenco(personagem)
   const rng = criarRng(semente)
-  // Os cartões saem do rng antes dos figurantes: a semente decide os dois, sempre na mesma ordem.
+  // Ordem fixa no rng: cartões, a cena de cada personagem não escolhido, figurantes.
   const cartoes = esconderCartoes(rng)
+  const elencoNoMapa = espalharElenco(escolhido.id, rng)
   return {
     versao: VERSAO_MUNDO,
     tick: 0,
     cena: CENA_INICIAL,
     jogador: {
+      visual: escolhido.visual,
       ...POSICAO_INICIAL,
       andando: false,
       correndo: false,
@@ -58,9 +69,11 @@ export function criarMundo(semente = SEMENTE_PADRAO): EstadoMundo {
     dialogo: null,
     trocasDeCena: 0,
     rng,
-    figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng),
+    figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng, elencoNaCena(elencoNoMapa, CENA_INICIAL)),
     npcsDerrubados: {},
     cartoes,
+    personagem: escolhido.id,
+    elencoNoMapa,
   }
 }
 
@@ -151,7 +164,7 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.jogador.andando = false
     estado.jogador.correndo = false
     estado.trocasDeCena += 1
-    estado.figurantes = criarFigurantes(CENAS[d.cena], estado.rng)
+    estado.figurantes = criarFigurantes(CENAS[d.cena], estado.rng, elencoNaCena(estado.elencoNoMapa, d.cena))
     estado.npcsDerrubados = {}
     return
   }

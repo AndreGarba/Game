@@ -50,41 +50,61 @@ function esperar(f: Figurante, rng: EstadoRng) {
   f.andando = false
 }
 
-export function criarFigurantes(cena: Cena, rng: EstadoRng): Figurante[] {
+function novoFigurante(id: string, visual: string, elenco: string | null, grupo: GrupoFigurantes, g: number, p: { x: number; z: number }): Figurante {
+  return {
+    id,
+    visual,
+    elenco,
+    veiculo: grupo.veiculo ?? null,
+    grupo: g,
+    x: p.x,
+    z: p.z,
+    xAnterior: p.x,
+    zAnterior: p.z,
+    alvoX: p.x,
+    alvoZ: p.z,
+    espera: 0,
+    ticksNoTrajeto: 0,
+    dirX: 0,
+    dirZ: 1,
+    andando: false,
+    fasePasso: 0,
+    susto: 0,
+    tombo: 0,
+    tomboX: 0,
+    tomboZ: 0,
+  }
+}
+
+/**
+ * Figurantes da cena. `elenco` traz os personagens jogáveis não escolhidos que estão nesta cena
+ * (id → visual): entram depois da gente comum, a pé, no primeiro grupo que anda a pé.
+ */
+export function criarFigurantes(cena: Cena, rng: EstadoRng, elenco: { id: string; visual: string }[] = []): Figurante[] {
   const obstaculos = bloqueios(cena)
   const saida: Figurante[] = []
   ;(cena.figurantes ?? []).forEach((grupo, g) => {
     for (let i = 0; i < grupo.quantidade; i++) {
       const p = pontoLivre(rng, grupo.area, obstaculos)
       if (!p) continue
-      const f: Figurante = {
-        id: `${cena.id}_figurante_${saida.length}`,
-        visual: escolher(rng, grupo.visuais),
-        veiculo: grupo.veiculo ?? null,
-        grupo: g,
-        x: p.x,
-        z: p.z,
-        xAnterior: p.x,
-        zAnterior: p.z,
-        alvoX: p.x,
-        alvoZ: p.z,
-        espera: 0,
-        ticksNoTrajeto: 0,
-        dirX: 0,
-        dirZ: 1,
-        andando: false,
-        fasePasso: 0,
-        susto: 0,
-        tombo: 0,
-        tomboX: 0,
-        tomboZ: 0,
-      }
+      const f = novoFigurante(`${cena.id}_figurante_${saida.length}`, escolher(rng, grupo.visuais), null, grupo, g, p)
       sortearAlvo(f, grupo, rng, obstaculos)
       saida.push(f)
     }
   })
+  const g = (cena.figurantes ?? []).findIndex((grupo) => !grupo.veiculo)
+  const grupo = cena.figurantes?.[g]
+  if (!grupo) return saida
+  for (const pessoa of elenco) {
+    const p = pontoLivre(rng, grupo.area, obstaculos)
+    if (!p) continue
+    const f = novoFigurante(`elenco_${pessoa.id}`, pessoa.visual, pessoa.id, grupo, g, p)
+    sortearAlvo(f, grupo, rng, obstaculos)
+    saida.push(f)
+  }
   return saida
 }
+
 
 export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: EstadoRng): void {
   if (figurantes.length === 0) return

@@ -134,6 +134,8 @@ export interface Tombo {
 }
 
 export interface JogadorRpg extends Tombo {
+  // Aparência do personagem escolhido (`visual` do elenco). Só desenho: o motor não lê.
+  visual: string
   x: number
   z: number
   dirX: number
@@ -163,6 +165,8 @@ export interface DialogoAberto {
 export interface Figurante extends Tombo {
   id: string
   visual: string
+  // Personagem do elenco que não foi escolhido (id), andando pelo mapa; null para gente comum.
+  elenco: string | null
   veiculo: 'patinete' | null
   // Índice do grupo na cena: é a área por onde ele anda.
   grupo: number
@@ -231,4 +235,7 @@ export interface EstadoMundo {
   // NPC não tem posição no estado, e o quadrado de colisão continua onde estava.
   npcsDerrubados: Record<string, Tombo>
   cartoes: Cartoes
+  // Personagem jogável escolhido (id do elenco) e a cena de cada um dos que não foram.
+  personagem: string
+  elencoNoMapa: Record<string, IdCena>
 }

@@ -59,6 +59,50 @@ function bracoTatuado(f: Fabrica, a: Aparencia, tinta: string, lado: -1 | 1): TH
   return pivo
 }
 
+// Estampa no peito: texto em canvas, fundo transparente, numa placa colada na frente do tronco.
+function estampa(f: Fabrica, texto: string, cor: string, largura: number): THREE.Mesh {
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 80
+  const ctx = canvas.getContext('2d')!
+  ctx.fillStyle = cor
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.font = '900 64px system-ui, sans-serif'
+  ctx.fillText(texto, 128, 44, 244)
+  const textura = new THREE.CanvasTexture(canvas)
+  textura.colorSpace = THREE.SRGBColorSpace
+  const placa = f.plano(largura, (largura * 80) / 256, f.materialComTextura(textura, { transparente: true }))
+  placa.castShadow = false
+  return placa
+}
+
+// Rosto do elenco (o `y` das caixas é a base): barba cheia (cobre o queixo e a mandíbula, com bigode) e óculos de armação.
+function detalhesDoRosto(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  if (a.barba) {
+    const barba = f.material(a.barba)
+    corpo.add(
+      f.caixa(0.43, 0.17, 0.3, barba, { y: y + 0.02, z: 0.05 }),
+      f.caixa(0.22, 0.045, 0.03, barba, { y: y + 0.165, z: 0.195 }),
+    )
+  }
+  if (a.oculos) {
+    const aro = f.material(a.oculos)
+    const zf = 0.205
+    corpo.add(f.caixa(0.34, 0.022, 0.02, aro, { y: y + 0.295, z: zf }))
+    for (const lado of [-1, 1]) {
+      const cx = lado * 0.09
+      corpo.add(
+        f.caixa(0.13, 0.018, 0.02, aro, { x: cx, y: y + 0.18, z: zf }),
+        f.caixa(0.018, 0.115, 0.02, aro, { x: cx - 0.06, y: y + 0.18, z: zf }),
+        f.caixa(0.018, 0.115, 0.02, aro, { x: cx + 0.06, y: y + 0.18, z: zf }),
+        f.caixa(0.014, 0.022, 0.2, aro, { x: lado * 0.206, y: y + 0.295, z: 0.1 }),
+      )
+    }
+  }
+}
+
 export interface OpcoesPersonagem {
   // Figurante: menos peças e sem sombra no mapa (só a redonda), para caber muitos no celular.
   leve?: boolean
@@ -81,11 +125,15 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   const pernaD = membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
   pernaE.position.set(-0.13, ALTURA_QUADRIL, 0)
   pernaD.position.set(0.13, ALTURA_QUADRIL, 0)
+  if (a.solado) {
+    for (const perna of [pernaE, pernaD]) perna.add(f.caixa(0.22, 0.04, 0.3, f.material(a.solado), { y: -0.66 - 0.072 - 0.02, z: 0.03 }))
+  }
 
   const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
   const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
   bracoE.position.set(-0.34, ALTURA_OMBRO, 0)
   bracoD.position.set(0.34, ALTURA_OMBRO, 0)
+  if (a.relogio) bracoE.add(f.caixa(0.18, 0.06, 0.19, f.material(a.relogio), { y: -0.44 }))
 
   const tronco = f.caixa(0.52, 0.62, 0.3, f.material(a.camisa), { y: ALTURA_QUADRIL - 0.04 })
   const cabeca = f.caixa(0.4, 0.4, 0.38, f.material(a.pele), { y: ALTURA_OMBRO + 0.06 })
@@ -99,11 +147,16 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     bracoD,
     tronco,
     cabeca,
-    cabelo,
-    nuca,
     f.caixa(0.06, 0.07, 0.02, olho, { x: -0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
     f.caixa(0.06, 0.07, 0.02, olho, { x: 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
   )
+  if (!a.careca) corpo.add(cabelo, nuca)
+  detalhesDoRosto(f, a, corpo)
+  if (a.estampa) {
+    const placa = estampa(f, a.estampa.texto, a.estampa.cor, 0.36)
+    placa.position.set(0, ALTURA_QUADRIL + 0.42, 0.151)
+    corpo.add(placa)
+  }
   if (a.detalhe) corpo.add(f.caixa(0.08, 0.36, 0.02, f.material(a.detalhe), { y: ALTURA_QUADRIL + 0.18, z: 0.16 }))
 
   // Sombra redonda embaixo: com a luz do alto, a do mapa de sombras some sob o próprio corpo.

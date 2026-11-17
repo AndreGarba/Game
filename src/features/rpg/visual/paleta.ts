@@ -104,11 +104,23 @@ export interface Aparencia {
   detalhe: string | null
   // Camiseta de manga curta com tatuagens nos braços: a cor da tinta. Sem ela, manga comprida.
   tatuagem?: string
+  // Detalhes do elenco jogável (todos opcionais). Careca: sem as caixas de cabelo e nuca.
+  careca?: boolean
+  barba?: string
+  // Cor da armação.
+  oculos?: string
+  // Estampa no peito da camiseta: texto da marca (arte, não copy) e a cor.
+  estampa?: { texto: string; cor: string }
+  // Sola do tênis.
+  solado?: string
+  // Relógio no pulso esquerdo.
+  relogio?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
-  // Tudo preto, mas não #000: com luz chapada, preto puro vira recorte sem volume.
-  jogador: {
+  // Elenco jogável (engine/rpg/elenco.ts). Rici: tudo preto, mas não #000: com luz chapada, preto
+  // puro vira recorte sem volume.
+  rici: {
     pele: '#e2a97e',
     cabelo: '#0c0c0e',
     camisa: '#1b1b1f',
@@ -116,6 +128,23 @@ export const APARENCIAS: Record<string, Aparencia> = {
     sapato: '#0a0a0c',
     detalhe: null,
     tatuagem: '#1f2b3d',
+  },
+  // Garba (foto em media/referencias): careca, barba castanha cheia, óculos de armação clara,
+  // camiseta vinho com "VANS" amarelo, jeans claro, tênis cinza de sola branca, relógio preto.
+  garba: {
+    pele: '#eab894',
+    cabelo: '#eab894',
+    camisa: '#7a1e2e',
+    calca: '#9db4cb',
+    sapato: '#767b84',
+    detalhe: null,
+    tatuagem: '#2f3b33',
+    careca: true,
+    barba: '#7b4a2b',
+    oculos: '#ddd6c6',
+    estampa: { texto: 'VANS', cor: '#f2b81d' },
+    solado: '#f2f2f2',
+    relogio: '#141414',
   },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
   figurante_2: { pele: '#6b4430', cabelo: '#111111', camisa: '#f2f2f2', calca: '#4a4f57', sapato: '#1e1e1e', detalhe: null },
@@ -156,3 +185,13 @@ export const COR_CARTAO = {
 
 // O que vem escrito no cartão. É marca impressa na arte, não copy: não se traduz.
 export const MARCAS_DO_CARTAO = { produto: 'Ultrablue', banco: 'btg', bancoResto: 'pactual', bandeira: 'mastercard' }
+
+// Vitrine da seleção de personagens: o palco redondo e a luz do boneco que gira.
+export const COR_VITRINE = {
+  palco: '#2a3550',
+  palcoBorda: '#f76b15',
+  fundoRetrato: '#1d2638',
+  luzChave: '#fff4e2',
+  luzCeu: '#dfe9ff',
+  luzChao: '#3a2f2a',
+}
