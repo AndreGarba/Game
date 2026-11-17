@@ -15,6 +15,7 @@ export interface PersonagemJogavel {
 export const ELENCO: readonly PersonagemJogavel[] = [
   { id: 'rici', visual: 'rici' },
   { id: 'garba', visual: 'garba' },
+  { id: 'rogerio', visual: 'rogerio' },
 ]
 
 export const PERSONAGEM_PADRAO = ELENCO[0]!.id

@@ -110,9 +110,9 @@ fundo, o `escritorio` (baias com computador, divisória de vidro e área dos des
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-7'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-9'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -134,9 +134,13 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens) (`src/engine/
   palco (`cena3d/vitrine.ts`); o id vai para `criarMundo(semente, personagem)` e fica em
   `estado.personagem`. Hoje: **Rici** (tudo preto, tatuagens nos braços) e **Garba** (careca,
   barba, óculos, camiseta vinho da Vans, jeans claro, relógio; foto em
-  `media/referencias/personagem-garba.jpg` na store). Personagem novo é só dado: linha no `ELENCO`,
-  `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, óculos, estampa, solado e relógio são campos
-  opcionais da `Aparencia`), nome em `rpg.elenco.<id>` nos três idiomas e, se quiser, um retrato
+  `media/referencias/personagem-garba.jpg` na store) e **Rogério** (cabelo curto grisalho, barba
+  por fazer, óculos transparentes, camiseta preta com estampa de chamas laranja e azul-petróleo,
+  jeans escuro, relógio, tatuagem pequena no braço direito; foto em
+  `media/referencias/personagem-rogerio.png`). Estampa com personagem licenciado vira padrão de
+  cores (`estampaChamas`), nunca cópia da arte. Personagem novo é só dado: linha no `ELENCO`,
+  `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
+  chamas, solado, relógio e tatuagem pequena são campos opcionais da `Aparencia`), nome em `rpg.elenco.<id>` nos três idiomas e, se quiser, um retrato
   em `arte/retratos/<id>` (sem ele, o card mostra um retrato desenhado em 3D). O
   `tests/rpg.elenco.test.ts` confere paleta e nomes de todo o elenco.
 - **Quem não foi escolhido anda pelo mapa** como figurante (`Figurante.elenco` com o id), com a

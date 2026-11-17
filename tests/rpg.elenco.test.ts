@@ -30,7 +30,7 @@ function entrarEm(e: EstadoMundo, destino: IdCena) {
   expect(e.cena).toBe(destino)
 }
 
-const doElenco = (e: EstadoMundo) => e.figurantes.filter((f) => f.elenco !== null)
+const doElenco = (e: EstadoMundo, id = 'rici') => e.figurantes.filter((f) => f.elenco === id)
 
 describe('elenco jogável', () => {
   it('todo personagem tem aparência na paleta e nome nos três idiomas; ids únicos', () => {
@@ -53,8 +53,8 @@ describe('elenco jogável', () => {
     const e = criarMundo(42, 'garba')
     expect(e.personagem).toBe('garba')
     expect(e.jogador.visual).toBe('garba')
-    expect(Object.keys(e.elencoNoMapa)).toEqual(['rici'])
-    expect(CENAS_DO_ELENCO).toContain(e.elencoNoMapa.rici)
+    expect(Object.keys(e.elencoNoMapa).sort()).toEqual(ELENCO.map((p) => p.id).filter((id) => id !== 'garba').sort())
+    for (const cena of Object.values(e.elencoNoMapa)) expect(CENAS_DO_ELENCO).toContain(cena)
   })
 
   it('a cena de quem não foi escolhido sai da semente: a mesma repete, e em 200 sementes passa por todas', () => {
@@ -87,7 +87,7 @@ describe('elenco jogável', () => {
       entrarEm(e, 'rua')
       expect(doElenco(e)).toHaveLength(0)
     }
-    expect(e.elencoNoMapa).toEqual({ rici: 'agencia' })
+    expect(e.elencoNoMapa.rici).toBe('agencia')
   })
 
   it('anda como os outros: sai do lugar, nunca vira alvo do A e leva soco', () => {

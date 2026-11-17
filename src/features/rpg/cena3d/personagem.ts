@@ -43,7 +43,10 @@ function bracoTatuado(f: Fabrica, a: Aparencia, tinta: string, lado: -1 | 1): TH
     f.caixa(l * 1.05, 0.14, l * 1.4, pele, { y: -comprimento - 0.084, z: 0.03 }),
   )
   const anel = (y: number, altura: number) => f.caixa(l + 0.012, altura, l * 1.1 + 0.012, t, { y: -y })
-  if (lado < 0) {
+  if (a.tatuagemPequena) {
+    // Uma marca só, na face de fora do braço direito, logo abaixo da manga.
+    if (lado > 0) pivo.add(f.caixa(0.012, 0.07, l * 0.45, t, { x: l / 2 + 0.006, y: -0.27 }))
+  } else if (lado < 0) {
     // Esquerdo: duas faixas no antebraço e uma no bíceps.
     pivo.add(anel(0.24, 0.035), anel(0.36, 0.06), anel(0.45, 0.035))
   } else {
@@ -77,10 +80,59 @@ function estampa(f: Fabrica, texto: string, cor: string, largura: number): THREE
   return placa
 }
 
+// Estampa sem texto: faixa de setas em cima, moldura e três chamas de blocos (a do meio maior).
+function estampaChamas(f: Fabrica, chama: string, moldura: string, lado: number): THREE.Mesh {
+  const canvas = document.createElement('canvas')
+  canvas.width = 128
+  canvas.height = 128
+  const ctx = canvas.getContext('2d')!
+  ctx.fillStyle = moldura
+  for (let i = 0; i < 6; i++) {
+    const x = 14 + i * 17
+    ctx.beginPath()
+    ctx.moveTo(x, 4)
+    ctx.lineTo(x + 12, 13)
+    ctx.lineTo(x, 22)
+    ctx.lineTo(x + 5, 13)
+    ctx.closePath()
+    ctx.fill()
+  }
+  ctx.lineWidth = 8
+  ctx.strokeStyle = moldura
+  ctx.strokeRect(14, 28, 100, 94)
+  ctx.fillStyle = chama
+  const labareda = (cx: number, base: number, largura: number, altura: number) => {
+    ctx.beginPath()
+    ctx.moveTo(cx - largura / 2, base)
+    ctx.lineTo(cx - largura / 2, base - altura * 0.55)
+    ctx.lineTo(cx - largura / 4, base - altura * 0.75)
+    ctx.lineTo(cx, base - altura)
+    ctx.lineTo(cx + largura / 4, base - altura * 0.7)
+    ctx.lineTo(cx + largura / 2, base - altura * 0.5)
+    ctx.lineTo(cx + largura / 2, base)
+    ctx.closePath()
+    ctx.fill()
+  }
+  labareda(38, 110, 30, 50)
+  labareda(90, 110, 30, 58)
+  labareda(64, 116, 40, 80)
+  const textura = new THREE.CanvasTexture(canvas)
+  textura.colorSpace = THREE.SRGBColorSpace
+  const placa = f.plano(lado, lado, f.materialComTextura(textura, { transparente: true }))
+  placa.castShadow = false
+  return placa
+}
+
 // Rosto do elenco (o `y` das caixas é a base): barba cheia (cobre o queixo e a mandíbula, com bigode) e óculos de armação.
 function detalhesDoRosto(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
   const y = ALTURA_OMBRO
-  if (a.barba) {
+  if (a.barba && a.barbaRala) {
+    const barba = f.material(a.barba)
+    corpo.add(
+      f.caixa(0.41, 0.1, 0.29, barba, { y: y + 0.06, z: 0.05 }),
+      f.caixa(0.18, 0.03, 0.014, barba, { y: y + 0.17, z: 0.196 }),
+    )
+  } else if (a.barba) {
     const barba = f.material(a.barba)
     corpo.add(
       f.caixa(0.43, 0.17, 0.3, barba, { y: y + 0.02, z: 0.05 }),
@@ -155,6 +207,11 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   if (a.estampa) {
     const placa = estampa(f, a.estampa.texto, a.estampa.cor, 0.36)
     placa.position.set(0, ALTURA_QUADRIL + 0.42, 0.151)
+    corpo.add(placa)
+  }
+  if (a.estampaChamas) {
+    const placa = estampaChamas(f, a.estampaChamas.chama, a.estampaChamas.moldura, 0.38)
+    placa.position.set(0, ALTURA_QUADRIL + 0.33, 0.151)
     corpo.add(placa)
   }
   if (a.detalhe) corpo.add(f.caixa(0.08, 0.36, 0.02, f.material(a.detalhe), { y: ALTURA_QUADRIL + 0.18, z: 0.16 }))

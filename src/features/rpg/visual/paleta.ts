@@ -104,13 +104,19 @@ export interface Aparencia {
   detalhe: string | null
   // Camiseta de manga curta com tatuagens nos braços: a cor da tinta. Sem ela, manga comprida.
   tatuagem?: string
+  // Só uma tatuagem pequena no braço direito, em vez dos dois braços desenhados.
+  tatuagemPequena?: boolean
   // Detalhes do elenco jogável (todos opcionais). Careca: sem as caixas de cabelo e nuca.
   careca?: boolean
   barba?: string
+  // Barba por fazer: rente ao rosto, mais curta, sem o volume da barba cheia.
+  barbaRala?: boolean
   // Cor da armação.
   oculos?: string
   // Estampa no peito da camiseta: texto da marca (arte, não copy) e a cor.
   estampa?: { texto: string; cor: string }
+  // Estampa gráfica no peito, sem texto: faixa de setas, moldura e chamas em blocos.
+  estampaChamas?: { chama: string; moldura: string }
   // Sola do tênis.
   solado?: string
   // Relógio no pulso esquerdo.
@@ -144,6 +150,24 @@ export const APARENCIAS: Record<string, Aparencia> = {
     oculos: '#ddd6c6',
     estampa: { texto: 'VANS', cor: '#f2b81d' },
     solado: '#f2f2f2',
+    relogio: '#141414',
+  },
+  // Rogério (foto em media/referencias): cabelo curto grisalho, barba por fazer, óculos de armação
+  // transparente, camiseta preta com estampa laranja e azul-petróleo no peito (padrão de chamas,
+  // não a arte da foto), jeans escuro, relógio preto e uma tatuagem pequena no braço direito.
+  rogerio: {
+    pele: '#e7b48f',
+    cabelo: '#76695e',
+    camisa: '#17171a',
+    calca: '#26385a',
+    sapato: '#2b2b2e',
+    detalhe: null,
+    tatuagem: '#3a4248',
+    tatuagemPequena: true,
+    barba: '#b08f78',
+    barbaRala: true,
+    oculos: '#e4e9ec',
+    estampaChamas: { chama: '#f08a2c', moldura: '#2fa3b8' },
     relogio: '#141414',
   },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
