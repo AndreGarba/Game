@@ -59,7 +59,7 @@ src/
 │  ├─ abertura/     logo animado da GAS Games (som + canvas)
 │  ├─ orientacao/   pedido de girar o celular (Lottie)
 │  ├─ home/         tela inicial (Jogar, configurações, ranking)
-│  ├─ rpg/          RPG isométrico: TelaRpg, controlador, controles, cena 3D, paleta e slots de arte
+│  ├─ rpg/          RPG isométrico: TelaSelecao, TelaRpg, controlador, controles, cena 3D, paleta e slots de arte
 │  ├─ jogo/         jogo de exemplo (fora do fluxo): controlador, controles, desenho, carga de arte, TelaJogo
 │  ├─ ranking/      formulário de nome no fim e painel do top 10
 │  ├─ configuracoes/ janela com o switch da música
@@ -112,7 +112,7 @@ capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL públi
 regra de Cloudflare Access para marcas BTG/Pan.
 Versão do mundo: `VERSAO_MUNDO = 'rpg-7'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -129,10 +129,28 @@ soco; rpg-7: cartões Ultra Blue) (`src/engine/rpg/constantes.ts`).
   do passo (`PASSO_ANDANDO`, `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em
   `constantes.ts`; o desenho só lê `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar
   para −x e −z, e quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
-- **O jogador** veste tudo preto (camiseta de manga curta, calça, tênis, cabelo) e tem tatuagens
-  nos braços: `APARENCIAS.jogador` em `paleta.ts`, com `tatuagem` (cor da tinta) ligando o braço
-  de manga curta em `personagem.ts`. Preto chapado some no asfalto e no meio dos figurantes, por
-  isso o jogador tem um anel laranja no chão (`COR_ANEL_JOGADOR`).
+- **Elenco jogável** (`ELENCO` em `src/engine/rpg/elenco.ts`): depois do Jogar, a `TelaSelecao`
+  (`src/features/rpg/screens/TelaSelecao/`) mostra um card por personagem e o escolhido em 3D num
+  palco (`cena3d/vitrine.ts`); o id vai para `criarMundo(semente, personagem)` e fica em
+  `estado.personagem`. Hoje: **Rici** (tudo preto, tatuagens nos braços) e **Garba** (careca,
+  barba, óculos, camiseta vinho da Vans, jeans claro, relógio; foto em
+  `media/referencias/personagem-garba.jpg` na store). Personagem novo é só dado: linha no `ELENCO`,
+  `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, óculos, estampa, solado e relógio são campos
+  opcionais da `Aparencia`), nome em `rpg.elenco.<id>` nos três idiomas e, se quiser, um retrato
+  em `arte/retratos/<id>` (sem ele, o card mostra um retrato desenhado em 3D). O
+  `tests/rpg.elenco.test.ts` confere paleta e nomes de todo o elenco.
+- **Quem não foi escolhido anda pelo mapa** como figurante (`Figurante.elenco` com o id), com a
+  aparência fixa dele. A cena de cada um é **sorteada pelo `estado.rng` no começo da partida**
+  (`espalharElenco`, entre as `CENAS_DO_ELENCO`: as que têm grupo de pedestres) e fica a mesma até
+  o fim, em `estado.elencoNoMapa`; a posição é sorteada de novo a cada entrada na cena, como a dos
+  outros figurantes. Sorteio e não cena fixa: cada partida esconde a pessoa num lugar diferente, e
+  a semente continua repetindo tudo. Anda a pé no primeiro grupo de pedestres da cena, não
+  conversa, apanha do soco como qualquer pedestre e não esconde cartão: os cartões são sorteados
+  antes, então trocar de personagem não muda onde eles estão (há teste). No desenho, figurante do
+  elenco usa o modelo completo, não o `leve`, para ser reconhecível.
+- **O jogador** tem um anel laranja no chão (`COR_ANEL_JOGADOR`): o preto chapado do Rici some no
+  asfalto e no meio dos figurantes. `tatuagem` (cor da tinta) liga o braço de manga curta em
+  `personagem.ts`.
 - **Figurantes** (`src/engine/rpg/figurantes.ts`): gente e patinetes elétricos andando à toa, sem
   conversa. Cada cena declara grupos (`figurantes`: quantidade, área, aparências, `veiculo`); quem
   está no estado (`estado.figurantes`) é só a cena atual, sorteada de novo a cada troca de cena.
@@ -553,7 +571,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 
 | Camada | Como |
 | --- | --- |
-| Jogo aberto pela home (`App.tsx`) | `useVoltarNativoEmCamadas`; o botão Menu da pausa e do fim chama `history.back()` |
+| Seleção de personagens e jogo, abertos pela home (`App.tsx`) | Uma camada só (`useVoltarNativoEmCamadas` com `selecao` ou `jogo`): confirmar troca a tela sem empurrar entrada. O Voltar e o B/Esc da seleção e o botão Menu da pausa e do fim chamam `history.back()` e voltam para a home |
 | Janela de configurações (ícone da home) | `useVoltarNativoEmCamadas`; o X, o Esc e o toque no véu chamam `history.back()` |
 | Painel do ranking (ícone da home) | `useVoltarNativoEmCamadas`; o próprio ícone fecha com `history.back()` |
 | Pausa do RPG (`TelaRpg`; B, Esc ou o botão II) | **pendente:** como a do exemplo, o voltar do celular sai para a home em vez de fechar só a pausa |

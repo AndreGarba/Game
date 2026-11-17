@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BotaoToque } from '../../../../components/BotaoToque/BotaoToque.tsx'
 import { DirecionalToque } from '../../../../components/DirecionalToque/DirecionalToque.tsx'
 import { IconeSoco } from '../../../../components/IconeSoco/IconeSoco.tsx'
-import { TOTAL_CARTOES, type Alvo, type DialogoAberto, type EstadoMundo, type IdCena } from '../../../../engine/rpg/index.ts'
+import { personagemDoElenco, TOTAL_CARTOES, type Alvo, type DialogoAberto, type EstadoMundo, type IdCena } from '../../../../engine/rpg/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
 import { densidadeDoJogo } from '../../../jogo/densidade.ts'
 import { abafarMusica } from '../../../musica/tocadorMusica.ts'
@@ -53,7 +53,7 @@ function hudDe(e: EstadoMundo): Hud {
 const comImagem = (url: string | null) => (url ? ({ '--imagem': `url(${url})` } as CSSProperties) : undefined)
 
 /** Mundo do RPG isométrico. Sair (Menu da pausa, voltar do celular) é `history.back()`: quem abriu cuida. */
-export function TelaRpg() {
+export function TelaRpg({ personagem }: { personagem: string }) {
   const { t } = useTranslation()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const controladorRef = useRef<ControladorRpg | null>(null)
@@ -110,7 +110,7 @@ export function TelaRpg() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const renderizador = criarRenderizador(canvas, textosDaCena)
+    const renderizador = criarRenderizador(canvas, textosDaCena, personagemDoElenco(personagem).visual)
     const ajustarTamanho = () => renderizador.redimensionar(canvas.clientWidth, canvas.clientHeight, densidadeDoJogo())
     ajustarTamanho()
     const observador = new ResizeObserver(ajustarTamanho)
@@ -123,6 +123,7 @@ export function TelaRpg() {
       desenhar: renderizador.desenhar,
       direcao: () => direcaoNoMundo(controles.direcao()),
       correndo: () => controles.correndo(),
+      personagem,
       aoMudarHud: (estado) => {
         const novo = hudDe(estado)
         const revista = estado.cartoes.ultimaRevista
@@ -166,7 +167,7 @@ export function TelaRpg() {
       controlador.desligar()
       renderizador.destruir()
     }
-  }, [controles, mudarFase, textosDaCena])
+  }, [controles, mudarFase, textosDaCena, personagem])
 
   function textoDoAlvo(alvo: Alvo): string {
     if (alvo.tipo === 'porta') {

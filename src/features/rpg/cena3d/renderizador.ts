@@ -82,7 +82,8 @@ function poseDoTombo(j: Tombo, alfa: number) {
   return { fase: 'levantando' as const, queda: 1 - u * u * (3 - 2 * u) }
 }
 
-export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCena) {
+// `visualJogador`: aparência do personagem escolhido (o `visual` do elenco).
+export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCena, visualJogador: string) {
   const renderizador = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
   renderizador.outputColorSpace = THREE.SRGBColorSpace
   renderizador.shadowMap.enabled = SOMBRAS
@@ -109,7 +110,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
 
   // O jogador vive a sessão inteira; a cena e os NPCs são refeitos a cada troca.
   const fabricaJogador = new Fabrica()
-  const jogador = criarPersonagem(fabricaJogador, APARENCIAS.jogador!, { anel: COR_ANEL_JOGADOR })
+  const jogador = criarPersonagem(fabricaJogador, APARENCIAS[visualJogador] ?? APARENCIAS.rici!, { anel: COR_ANEL_JOGADOR })
   cena.add(jogador.raiz)
   const cartao = criarCartao3d(fabricaJogador)
   cena.add(cartao)
@@ -203,8 +204,9 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       let p = figurantes.get(fig.id)
       if (!p) {
         const patinete = fig.veiculo === 'patinete'
+        // Quem é do elenco ganha o boneco inteiro (barba, óculos, tatuagem): são poucos por cena.
         p = criarPersonagem(fabricaCena, APARENCIAS[fig.visual] ?? APARENCIAS.pedestre!, {
-          leve: true,
+          leve: fig.elenco === null,
           elevacao: patinete ? ELEVACAO_PATINETE : 0,
         })
         if (patinete) {

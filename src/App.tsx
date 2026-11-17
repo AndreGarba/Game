@@ -7,13 +7,14 @@ import { useVoltarNativoEmCamadas } from './features/navegacao/useVoltarNativoEm
 import { retratoNoToque } from './features/orientacao/AnimacaoGirarCelular.tsx'
 import { TelaGirarCelular } from './features/orientacao/screens/TelaGirarCelular/TelaGirarCelular.tsx'
 
-type Tela = 'abertura' | 'girarCelular' | 'home' | 'jogo'
+type Tela = 'abertura' | 'girarCelular' | 'home' | 'selecao' | 'jogo'
 
 // A abertura tem o som do logo e o pedido de girar vem logo depois dela: a música entra na home.
 const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
   abertura: null,
   girarCelular: null,
   home: 'menu',
+  selecao: 'menu',
   jogo: 'jogo',
 }
 
@@ -25,6 +26,8 @@ const TRILHA_DA_TELA: Record<Tela, NomeTrilha | null> = {
 // ranking e a Edge Function ainda usam o motor dele.
 const importarJogo = () => import('./features/rpg/screens/TelaRpg/TelaRpg.tsx')
 const TelaRpg = lazy(() => importarJogo().then((m) => ({ default: m.TelaRpg })))
+const importarSelecao = () => import('./features/rpg/screens/TelaSelecao/TelaSelecao.tsx')
+const TelaSelecao = lazy(() => importarSelecao().then((m) => ({ default: m.TelaSelecao })))
 
 export function App() {
   return (
@@ -36,10 +39,12 @@ export function App() {
 
 function TelaAtual() {
   const [tela, setTela] = useState<Tela>('abertura')
+  const [personagem, setPersonagem] = useState<string | null>(null)
 
   useEffect(() => {
     void carregarArteDoJogo()
     void importarJogo()
+    void importarSelecao()
   }, [])
 
   useEffect(() => {
@@ -55,18 +60,31 @@ function TelaAtual() {
     window.scrollTo(0, 0)
   }, [tela])
 
-  // O jogo abre por cima da home: o voltar do celular (e o botão Menu) volta para ela.
-  useVoltarNativoEmCamadas(tela === 'jogo', () => setTela('home'))
+  // A seleção e o jogo são uma camada só por cima da home: confirmar o personagem troca a tela sem
+  // empurrar outra entrada, e o voltar do celular (ou o Voltar, ou o botão Menu) volta para a home.
+  useVoltarNativoEmCamadas(tela === 'selecao' || tela === 'jogo', () => setTela('home'))
 
   if (tela === 'abertura') {
     // Já deitado (ou sem toque), o pedido de girar não tem o que pedir.
     return <TelaAbertura aoTerminar={() => setTela(retratoNoToque() ? 'girarCelular' : 'home')} />
   }
   if (tela === 'girarCelular') return <TelaGirarCelular aoTerminar={() => setTela('home')} />
-  if (tela === 'home') return <TelaHome aoJogar={() => setTela('jogo')} />
+  if (tela === 'home') return <TelaHome aoJogar={() => setTela('selecao')} />
+  if (tela === 'selecao' || personagem === null) {
+    return (
+      <Suspense fallback={null}>
+        <TelaSelecao
+          aoEscolher={(id) => {
+            setPersonagem(id)
+            setTela('jogo')
+          }}
+        />
+      </Suspense>
+    )
+  }
   return (
     <Suspense fallback={null}>
-      <TelaRpg />
+      <TelaRpg personagem={personagem} />
     </Suspense>
   )
 }

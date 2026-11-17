@@ -182,6 +182,16 @@
       "concluidoTitulo": "Objective complete",
       "concluido": "You found all the Ultra Blue cards in {{tempo}}. Congratulations!",
       "continuar": "Keep exploring"
+    },
+    "elenco": {
+      "rici": "Rici",
+      "garba": "Garba"
     }
+  },
+  "selecao": {
+    "titulo": "Choose your character",
+    "confirmar": "Play as {{nome}}",
+    "voltar": "Back",
+    "dica": "Arrows or tap to choose, A or Enter to play. Whoever you skip walks around the map."
   }
 }

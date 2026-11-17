@@ -253,7 +253,8 @@ describe('mundo do RPG', () => {
     apertarA(e)
     expect(e.cena).toBe(cena.id)
     const esperado = (cena.figurantes ?? []).reduce((n, g) => n + g.quantidade, 0)
-    expect(e.figurantes).toHaveLength(esperado)
+    // O personagem do elenco que caiu nesta cena vem a mais, a pé no primeiro grupo.
+    expect(e.figurantes.filter((f) => !f.elenco)).toHaveLength(esperado)
     expect(esperado).toBeGreaterThan(0)
     const obstaculos = bloqueios(cena)
     const inicio = e.figurantes.map((f) => [f.x, f.z] as const)
@@ -301,6 +302,7 @@ describe('mundo do RPG', () => {
       {
         id: 'teste',
         visual: grupos[grupo]!.visuais[0]!,
+        elenco: null,
         veiculo,
         grupo,
         x: xFigurante,

@@ -182,6 +182,16 @@
       "concluidoTitulo": "Objetivo concluído",
       "concluido": "Você encontrou todos os cartões Ultra Blue em {{tempo}}. Parabéns!",
       "continuar": "Continuar explorando"
+    },
+    "elenco": {
+      "rici": "Rici",
+      "garba": "Garba"
     }
+  },
+  "selecao": {
+    "titulo": "Escolha seu personagem",
+    "confirmar": "Jogar com {{nome}}",
+    "voltar": "Voltar",
+    "dica": "Setas ou toque para escolher, A ou Enter para jogar. Quem você não escolher anda pelo mapa."
   }
 }
