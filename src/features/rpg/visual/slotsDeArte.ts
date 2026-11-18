@@ -35,6 +35,10 @@ export const METROS_POR_REPETICAO: Record<string, number> = {
   'piso-designers': 3,
   'tapete-gerente': 3,
   'piso-concessionaria': 3,
+  'piso-agencia-pan': 2,
+  'tapete-pan': 3,
+  'carpete-pan': 2,
+  'piso-reuniao': 2,
   tapete: 3,
   plataforma: 5,
 }

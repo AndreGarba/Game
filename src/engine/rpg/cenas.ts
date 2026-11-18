@@ -1,8 +1,8 @@
 import type { Cena, IdCena } from './tipos.ts'
 
-// Mapa do protótipo: um trecho da Avenida Faria Lima com o banco (BTG Pactual), a loja de veículos
-// e, no fim da rua, o feirão de seminovos da Mobiauto a céu aberto. O banco tem agência e
-// escritório interno, ligados por uma porta. Figurantes andam por calçadas, ciclofaixa e salas.
+// Mapa do protótipo: um trecho da Avenida Faria Lima com dois bancos lado a lado (Banco PAN e BTG
+// Pactual), a loja de veículos e, no fim da rua, o feirão de seminovos da Mobiauto a céu aberto.
+// Cada banco tem agência e escritório interno, ligados por uma porta. Figurantes andam por calçadas, ciclofaixa e salas.
 // Medidas em metros. A rua corre ao longo de x; as fachadas ficam em z = 8, viradas para a câmera.
 // Aparência (`visual`, `variante`) é só nome: o desenho escolhe modelo, cor e textura por ele.
 
@@ -10,23 +10,24 @@ import type { Cena, IdCena } from './tipos.ts'
 const VISUAIS_RUA = ['figurante_1', 'figurante_2', 'figurante_3', 'figurante_4', 'figurante_5', 'figurante_6']
 const VISUAIS_CLIENTES = ['figurante_1', 'figurante_3', 'figurante_5', 'figurante_6']
 const VISUAIS_ESCRITORIO = ['figurante_7', 'figurante_8', 'figurante_5', 'figurante_2']
+const VISUAIS_ESCRITORIO_PAN = ['figurante_7', 'figurante_8', 'figurante_1', 'figurante_4']
 
 const RUA: Cena = {
   id: 'rua',
-  largura: 66,
+  largura: 77,
   profundidade: 26,
   interior: false,
   piso: 'grama',
   decoracoes: [
-    { visual: 'calcada', x: 0, z: 8, largura: 66, profundidade: 3, nivel: 1 },
-    { visual: 'asfalto', x: 0, z: 11, largura: 66, profundidade: 6, nivel: 1 },
-    { visual: 'calcada', x: 0, z: 17, largura: 66, profundidade: 3, nivel: 1 },
-    { visual: 'ciclofaixa', x: 0, z: 17.1, largura: 66, profundidade: 1, nivel: 2 },
-    { visual: 'piso-feirao', x: 45.5, z: 0, largura: 20.5, profundidade: 8, nivel: 1 },
-    ...[1, 6, 11, 28, 33, 38, 44, 49, 54, 59, 63].map((x) => ({ visual: 'faixa', x, z: 13.9, largura: 3, profundidade: 0.2, nivel: 2 })),
+    { visual: 'calcada', x: 0, z: 8, largura: 77, profundidade: 3, nivel: 1 },
+    { visual: 'asfalto', x: 0, z: 11, largura: 77, profundidade: 6, nivel: 1 },
+    { visual: 'calcada', x: 0, z: 17, largura: 77, profundidade: 3, nivel: 1 },
+    { visual: 'ciclofaixa', x: 0, z: 17.1, largura: 77, profundidade: 1, nivel: 2 },
+    { visual: 'piso-feirao', x: 56.5, z: 0, largura: 20.5, profundidade: 8, nivel: 1 },
+    ...[1, 6, 11, 16, 21, 26, 39, 44, 49, 55, 60, 65, 70, 74].map((x) => ({ visual: 'faixa', x, z: 13.9, largura: 3, profundidade: 0.2, nivel: 2 })),
     ...[11.4, 12.4, 13.4, 14.4, 15.4, 16.2].map((z) => ({
       visual: 'faixa',
-      x: 20.5,
+      x: 31.5,
       z,
       largura: 4,
       profundidade: 0.45,
@@ -35,12 +36,13 @@ const RUA: Cena = {
   ],
   solidos: [
     { id: 'predio_residencial', visual: 'predio', variante: 'residencial', x: 0, z: 0, largura: 5.5, profundidade: 8, altura: 9 },
-    { id: 'predio_banco', visual: 'predio', variante: 'banco', x: 6, z: 0, largura: 10, profundidade: 8, altura: 10 },
-    { id: 'muro_beco', visual: 'muro', x: 16, z: 4.6, largura: 2, profundidade: 0.3, altura: 2.2 },
-    { id: 'lixeira', visual: 'lixeira', x: 16.3, z: 6.6, largura: 1.2, profundidade: 1, altura: 1.1 },
-    { id: 'predio_concessionaria', visual: 'predio', variante: 'concessionaria', x: 18, z: 0, largura: 14, profundidade: 8, altura: 6.5 },
-    { id: 'predio_comercial', visual: 'predio', variante: 'comercial', x: 32.5, z: 0, largura: 11.5, profundidade: 8, altura: 12 },
-    ...[3, 17, 31, 41, 49, 61].map((x, i) => ({
+    { id: 'predio_pan', visual: 'predio', variante: 'pan', x: 6, z: 0, largura: 10.5, profundidade: 8, altura: 11 },
+    { id: 'predio_banco', visual: 'predio', variante: 'banco', x: 17, z: 0, largura: 10, profundidade: 8, altura: 10 },
+    { id: 'muro_beco', visual: 'muro', x: 27, z: 4.6, largura: 2, profundidade: 0.3, altura: 2.2 },
+    { id: 'lixeira', visual: 'lixeira', x: 27.3, z: 6.6, largura: 1.2, profundidade: 1, altura: 1.1 },
+    { id: 'predio_concessionaria', visual: 'predio', variante: 'concessionaria', x: 29, z: 0, largura: 14, profundidade: 8, altura: 6.5 },
+    { id: 'predio_comercial', visual: 'predio', variante: 'comercial', x: 43.5, z: 0, largura: 11.5, profundidade: 8, altura: 12 },
+    ...[3, 16.75, 28, 42, 52, 60, 72].map((x, i) => ({
       id: `poste_${i}`,
       visual: 'poste',
       x: x - 0.12,
@@ -49,7 +51,7 @@ const RUA: Cena = {
       profundidade: 0.24,
       altura: 4.5,
     })),
-    ...[4, 12, 28, 36, 46, 56, 63].map((x, i) => ({
+    ...[4, 14, 23, 39, 47, 57, 67, 74].map((x, i) => ({
       id: `arvore_${i}`,
       visual: 'arvore',
       x: x - 0.25,
@@ -58,23 +60,23 @@ const RUA: Cena = {
       profundidade: 0.5,
       altura: 4.6,
     })),
-    { id: 'banco_praca', visual: 'banco', x: 19, z: 18.6, largura: 2, profundidade: 0.6, altura: 0.8 },
-    { id: 'carro_parado_1', visual: 'carro', variante: 'verde', x: 5, z: 11.5, largura: 4.2, profundidade: 1.8, altura: 1.5 },
-    { id: 'carro_parado_2', visual: 'carro', variante: 'branco', x: 33, z: 15, largura: 4.2, profundidade: 1.8, altura: 1.5, giro: 2 },
+    { id: 'banco_praca', visual: 'banco', x: 30, z: 18.6, largura: 2, profundidade: 0.6, altura: 0.8 },
+    { id: 'carro_parado_1', visual: 'carro', variante: 'verde', x: 16, z: 11.5, largura: 4.2, profundidade: 1.8, altura: 1.5 },
+    { id: 'carro_parado_2', visual: 'carro', variante: 'branco', x: 44, z: 15, largura: 4.2, profundidade: 1.8, altura: 1.5, giro: 2 },
     // Feirão Mobiauto: carros de frente para a rua, tenda de vendas, bandeiras e o portal.
     ...(['vermelho', 'branco', 'azul', 'verde', 'amarelo'] as const).map((cor, i) => ({
       id: `feirao_carro_${i}`,
       visual: 'carro',
       variante: cor,
-      x: 46.6 + i * 2.6,
+      x: 57.6 + i * 2.6,
       z: 0.8,
       largura: 1.8,
       profundidade: 4.2,
       altura: 1.5,
       giro: 3,
     })),
-    { id: 'feirao_tenda', visual: 'tenda', variante: 'mobiauto', x: 60.4, z: 0.8, largura: 4, profundidade: 3.2, altura: 2.8 },
-    ...[52.25, 58.45].map((x, i) => ({
+    { id: 'feirao_tenda', visual: 'tenda', variante: 'mobiauto', x: 71.4, z: 0.8, largura: 4, profundidade: 3.2, altura: 2.8 },
+    ...[63.25, 69.45].map((x, i) => ({
       id: `feirao_portal_${i}`,
       visual: 'poste-portal',
       x,
@@ -83,7 +85,7 @@ const RUA: Cena = {
       profundidade: 0.3,
       altura: 4.4,
     })),
-    ...[46.2, 48.6, 62.4, 64.8].map((x, i) => ({
+    ...[57.2, 59.6, 73.4, 75.8].map((x, i) => ({
       id: `feirao_bandeira_${i}`,
       visual: 'bandeira',
       variante: i % 2 === 0 ? 'azul' : 'branca',
@@ -96,20 +98,29 @@ const RUA: Cena = {
   ],
   letreiros: [
     { variante: 'rua', x: 3, z: 10.66, largura: 1.9, altura: 0.42, y: 3.2 },
-    { variante: 'mobiauto', x: 55.5, z: 7.5, largura: 6, altura: 1.3, y: 3.1 },
+    { variante: 'mobiauto', x: 66.5, z: 7.5, largura: 6, altura: 1.3, y: 3.1 },
   ],
   figurantes: [
-    { quantidade: 4, area: { x: 0, z: 8.6, largura: 66, profundidade: 2.3 }, visuais: VISUAIS_RUA },
-    { quantidade: 3, area: { x: 0, z: 18.2, largura: 66, profundidade: 1.8 }, visuais: VISUAIS_RUA },
-    { quantidade: 1, area: { x: 20.6, z: 11.3, largura: 3.8, profundidade: 5.6 }, visuais: VISUAIS_RUA },
-    { quantidade: 4, area: { x: 45.8, z: 0.4, largura: 19.8, profundidade: 7.4 }, visuais: VISUAIS_RUA },
-    { quantidade: 3, area: { x: 0, z: 17.2, largura: 66, profundidade: 0.8 }, visuais: VISUAIS_RUA, veiculo: 'patinete' },
+    { quantidade: 4, area: { x: 0, z: 8.6, largura: 77, profundidade: 2.3 }, visuais: VISUAIS_RUA },
+    { quantidade: 3, area: { x: 0, z: 18.2, largura: 77, profundidade: 1.8 }, visuais: VISUAIS_RUA },
+    { quantidade: 1, area: { x: 31.6, z: 11.3, largura: 3.8, profundidade: 5.6 }, visuais: VISUAIS_RUA },
+    { quantidade: 4, area: { x: 56.8, z: 0.4, largura: 19.8, profundidade: 7.4 }, visuais: VISUAIS_RUA },
+    { quantidade: 3, area: { x: 0, z: 17.2, largura: 77, profundidade: 0.8 }, visuais: VISUAIS_RUA, veiculo: 'patinete' },
   ],
   portas: [
     {
+      id: 'porta_pan',
+      visual: 'porta-pan',
+      x: 10.65,
+      z: 8,
+      largura: 1.2,
+      profundidade: 0.6,
+      destino: { cena: 'agencia_pan', x: 7, z: 8.9, dirX: 0, dirZ: -1 },
+    },
+    {
       id: 'porta_banco',
       visual: 'porta-banco',
-      x: 10.4,
+      x: 21.4,
       z: 8,
       largura: 1.2,
       profundidade: 0.6,
@@ -118,7 +129,7 @@ const RUA: Cena = {
     {
       id: 'porta_concessionaria',
       visual: 'porta-concessionaria',
-      x: 24.2,
+      x: 35.2,
       z: 8,
       largura: 1.6,
       profundidade: 0.6,
@@ -126,8 +137,8 @@ const RUA: Cena = {
     },
   ],
   npcs: [
-    { id: 'pedestre', visual: 'pedestre', x: 19.5, z: 9.6, dirX: 0, dirZ: 1, dialogo: 'pedestre', linhas: 3 },
-    { id: 'vendedor_feirao', visual: 'vendedor', x: 62.4, z: 4.6, dirX: 0, dirZ: 1, dialogo: 'vendedor_feirao', linhas: 3 },
+    { id: 'pedestre', visual: 'pedestre', x: 30.5, z: 9.6, dirX: 0, dirZ: 1, dialogo: 'pedestre', linhas: 3 },
+    { id: 'vendedor_feirao', visual: 'vendedor', x: 73.4, z: 4.6, dirX: 0, dirZ: 1, dialogo: 'vendedor_feirao', linhas: 3 },
   ],
 }
 
@@ -174,7 +185,7 @@ const AGENCIA: Cena = {
       z: 9.4,
       largura: 1.2,
       profundidade: 0.6,
-      destino: { cena: 'rua', x: 11, z: 9, dirX: 0, dirZ: 1 },
+      destino: { cena: 'rua', x: 22, z: 9, dirX: 0, dirZ: 1 },
     },
     {
       id: 'porta_escritorio_interno',
@@ -269,6 +280,152 @@ const ESCRITORIO: Cena = {
   ],
 }
 
+// Agência do Banco PAN: recepção à esquerda, caixas eletrônicos na parede, a mesa de atendimento
+// no meio e, no fundo à direita, a porta para o escritório.
+const AGENCIA_PAN: Cena = {
+  id: 'agencia_pan',
+  largura: 14,
+  profundidade: 10,
+  interior: true,
+  piso: 'piso-agencia-pan',
+  placaParede: { variante: 'pan', x: 3.4 },
+  decoracoes: [
+    { visual: 'tapete-pan', x: 5.6, z: 5.4, largura: 2.8, profundidade: 3.4, nivel: 1 },
+    { visual: 'tapete-pan', x: 5.8, z: 1, largura: 3, profundidade: 3.4, nivel: 1 },
+  ],
+  solidos: [
+    { id: 'balcao_recepcao_pan', visual: 'balcao', variante: 'pan', x: 0.8, z: 3.2, largura: 3.6, profundidade: 0.5, altura: 1.1 },
+    {
+      id: 'totem_pan',
+      visual: 'totem',
+      variante: 'pan',
+      x: 4.9,
+      z: 4.1,
+      largura: 0.5,
+      profundidade: 0.4,
+      altura: 1.5,
+      interacao: { tipo: 'olhar', dialogo: 'totem_pan', linhas: 1 },
+    },
+    {
+      id: 'caixa_eletronico_1',
+      visual: 'caixa-eletronico',
+      x: 0,
+      z: 5.2,
+      largura: 0.7,
+      profundidade: 0.8,
+      altura: 1.7,
+      giro: 1,
+      interacao: { tipo: 'olhar', dialogo: 'caixa_eletronico', linhas: 2 },
+    },
+    { id: 'caixa_eletronico_2', visual: 'caixa-eletronico', x: 0, z: 6.4, largura: 0.7, profundidade: 0.8, altura: 1.7, giro: 1 },
+    { id: 'mesa_atendimento_pan', visual: 'mesa', variante: 'atendimento', x: 6.2, z: 2.2, largura: 2, profundidade: 1, altura: 0.75 },
+    { id: 'cadeira_atendimento_1', visual: 'cadeira', variante: 'pan', x: 6.4, z: 3.6, largura: 0.6, profundidade: 0.6, altura: 0.9, giro: 2 },
+    { id: 'cadeira_atendimento_2', visual: 'cadeira', variante: 'pan', x: 7.4, z: 3.6, largura: 0.6, profundidade: 0.6, altura: 0.9, giro: 2 },
+    { id: 'sofa_espera_pan', visual: 'sofa', variante: 'pan', x: 10.8, z: 7.6, largura: 2.4, profundidade: 0.9, altura: 0.8 },
+    { id: 'mesinha_pan', visual: 'mesinha', x: 11.3, z: 6.4, largura: 1.4, profundidade: 0.6, altura: 0.45 },
+    { id: 'planta_pan_1', visual: 'planta', x: 0.3, z: 0.3, largura: 0.7, profundidade: 0.7, altura: 1.3 },
+    { id: 'planta_pan_2', visual: 'planta', x: 13, z: 0.3, largura: 0.7, profundidade: 0.7, altura: 1.3 },
+    { id: 'planta_pan_3', visual: 'planta', x: 13, z: 8.9, largura: 0.7, profundidade: 0.7, altura: 1.3 },
+  ],
+  portas: [
+    {
+      id: 'saida_agencia_pan',
+      visual: 'saida',
+      x: 6.4,
+      z: 9.4,
+      largura: 1.2,
+      profundidade: 0.6,
+      destino: { cena: 'rua', x: 11.25, z: 9, dirX: 0, dirZ: 1 },
+    },
+    {
+      id: 'porta_escritorio_pan',
+      visual: 'porta-interna',
+      x: 9.6,
+      z: 0,
+      largura: 1.4,
+      profundidade: 0.6,
+      destino: { cena: 'escritorio_pan', x: 11, z: 12.9, dirX: 0, dirZ: -1 },
+    },
+  ],
+  npcs: [
+    { id: 'recepcionista_pan', visual: 'recepcionista_pan', x: 2.6, z: 2.7, dirX: 0, dirZ: 1, dialogo: 'recepcionista_pan', linhas: 3 },
+    { id: 'atendente_pan', visual: 'atendente_pan', x: 7.2, z: 1.6, dirX: 0, dirZ: 1, dialogo: 'atendente_pan', linhas: 3 },
+  ],
+  figurantes: [{ quantidade: 3, area: { x: 0.8, z: 4.4, largura: 12.8, profundidade: 5.2 }, visuais: VISUAIS_CLIENTES }],
+}
+
+// Escritório do Banco PAN, no espírito da foto de referência: open office com fileiras longas de
+// mesas brancas (dois monitores por lugar, cadeiras de malha), carpete escuro, janelões com vista
+// de prédios no fundo, parede azul na lateral e a sala de reunião de vidro adesivado à esquerda.
+// As cadeiras fazem parte da bancada: o retângulo da bancada já inclui o lugar delas.
+const ESCRITORIO_PAN: Cena = {
+  id: 'escritorio_pan',
+  largura: 22,
+  profundidade: 14,
+  interior: true,
+  piso: 'carpete-pan',
+  decoracoes: [{ visual: 'piso-reuniao', x: 0, z: 0, largura: 4.4, profundidade: 4.2, nivel: 1 }],
+  solidos: [
+    // Sala de reunião: vidro na frente (com o vão da porta) e no lado direito.
+    { id: 'vidro_reuniao_1', visual: 'vidro-adesivado', x: 0, z: 4.2, largura: 2.6, profundidade: 0.15, altura: 2.6 },
+    { id: 'vidro_reuniao_2', visual: 'vidro-adesivado', x: 3.8, z: 4.2, largura: 0.75, profundidade: 0.15, altura: 2.6 },
+    { id: 'vidro_reuniao_3', visual: 'vidro-adesivado', x: 4.4, z: 0, largura: 0.15, profundidade: 4.2, altura: 2.6 },
+    { id: 'mesa_reuniao', visual: 'mesa', variante: 'reuniao', x: 0.8, z: 1.2, largura: 2.6, profundidade: 1.2, altura: 0.75 },
+    {
+      id: 'tv_reuniao',
+      visual: 'tv',
+      x: 1.2,
+      z: 0,
+      largura: 1.8,
+      profundidade: 0.15,
+      altura: 1.9,
+      interacao: { tipo: 'olhar', dialogo: 'tv_reuniao', linhas: 2 },
+    },
+    ...[1.4, 5.2, 9].flatMap((z, fileira) =>
+      [6, 13].map((x, lado) => ({
+        id: `bancada_pan_${fileira * 2 + lado}`,
+        visual: 'bancada',
+        x,
+        z,
+        largura: 5.4,
+        profundidade: 2.2,
+        altura: 0.75,
+      })),
+    ),
+    {
+      id: 'cafe_pan',
+      visual: 'cafe',
+      x: 21.2,
+      z: 4.4,
+      largura: 0.8,
+      profundidade: 2.2,
+      altura: 1,
+      giro: 3,
+      interacao: { tipo: 'olhar', dialogo: 'cafe_pan', linhas: 1 },
+    },
+    { id: 'armario_pan', visual: 'armario', x: 0, z: 8.4, largura: 0.6, profundidade: 1.6, altura: 1.4, giro: 1 },
+    { id: 'planta_escritorio_pan_1', visual: 'planta', x: 21.1, z: 0.3, largura: 0.7, profundidade: 0.7, altura: 1.3 },
+    { id: 'planta_escritorio_pan_2', visual: 'planta', x: 21.1, z: 12.9, largura: 0.7, profundidade: 0.7, altura: 1.3 },
+    { id: 'planta_escritorio_pan_3', visual: 'planta', x: 0.2, z: 12.9, largura: 0.7, profundidade: 0.7, altura: 1.3 },
+  ],
+  portas: [
+    {
+      id: 'saida_escritorio_pan',
+      visual: 'saida',
+      x: 10.4,
+      z: 13.4,
+      largura: 1.2,
+      profundidade: 0.6,
+      destino: { cena: 'agencia_pan', x: 10.3, z: 1.1, dirX: 0, dirZ: 1 },
+    },
+  ],
+  npcs: [
+    { id: 'coordenadora_pan', visual: 'coordenadora_pan', x: 1.6, z: 3.05, dirX: 1, dirZ: 0, dialogo: 'coordenadora_pan', linhas: 3 },
+    { id: 'dev_pan', visual: 'dev_pan', x: 19.1, z: 2.5, dirX: -1, dirZ: 0, dialogo: 'dev_pan', linhas: 3 },
+  ],
+  figurantes: [{ quantidade: 4, area: { x: 5, z: 0.2, largura: 15.8, profundidade: 13.6 }, visuais: VISUAIS_ESCRITORIO_PAN }],
+}
+
 const CONCESSIONARIA: Cena = {
   id: 'concessionaria',
   largura: 18,
@@ -314,7 +471,7 @@ const CONCESSIONARIA: Cena = {
       z: 11.4,
       largura: 1.6,
       profundidade: 0.6,
-      destino: { cena: 'rua', x: 25, z: 9, dirX: 0, dirZ: 1 },
+      destino: { cena: 'rua', x: 36, z: 9, dirX: 0, dirZ: 1 },
     },
   ],
   npcs: [{ id: 'vendedor', visual: 'vendedor', x: 12.6, z: 8, dirX: 0, dirZ: 1, dialogo: 'vendedor', linhas: 3 }],
@@ -325,8 +482,10 @@ export const CENAS: Record<IdCena, Cena> = {
   rua: RUA,
   agencia: AGENCIA,
   escritorio: ESCRITORIO,
+  agencia_pan: AGENCIA_PAN,
+  escritorio_pan: ESCRITORIO_PAN,
   concessionaria: CONCESSIONARIA,
 }
 
 export const CENA_INICIAL: IdCena = 'rua'
-export const POSICAO_INICIAL = { x: 11, z: 10.2, dirX: 0, dirZ: 1 }
+export const POSICAO_INICIAL = { x: 22, z: 10.2, dirX: 0, dirZ: 1 }

@@ -28,6 +28,11 @@ export const COR_PISO: Record<string, string> = {
   tapete: '#7b5ea7',
   plataforma: '#b9c0cc',
   saida: '#3f8f4f',
+  // Banco PAN: piso claro na agência; no escritório, carpete cinza-escuro e madeira na sala de reunião.
+  'piso-agencia-pan': '#eef3f6',
+  'tapete-pan': '#00a3e0',
+  'carpete-pan': '#565b63',
+  'piso-reuniao': '#b88a5a',
 }
 
 // Prédios da rua (`variante` do visual `predio`): parede, janela, detalhe e cor da placa.
@@ -35,6 +40,8 @@ export const COR_PREDIO: Record<string, { parede: string; janela: string; detalh
   residencial: { parede: '#e7b58a', janela: '#6e95b5', detalhe: '#a8643c', placa: '#a8643c', textoPlaca: '#ffffff' },
   // BTG Pactual: azul-marinho com vidro. Cores provisórias até o logo oficial entrar pelo slot.
   banco: { parede: '#e8ecf2', janela: '#2c4f7c', detalhe: '#0b2341', placa: '#0b2341', textoPlaca: '#ffffff' },
+  // Banco PAN: branco com vidro azul e o ciano da marca. Provisório até o logo oficial entrar pelo slot.
+  pan: { parede: '#dceff8', janela: '#1673b3', detalhe: '#00a3e0', placa: '#00a3e0', textoPlaca: '#ffffff' },
   mobiauto: { parede: '#ffffff', janela: '#7ec3e6', detalhe: '#1450c8', placa: '#1450c8', textoPlaca: '#ffffff' },
   rua: { parede: '#ffffff', janela: '#ffffff', detalhe: '#1b4f9c', placa: '#1b4f9c', textoPlaca: '#ffffff' },
   concessionaria: { parede: '#f2f2f2', janela: '#7ec3e6', detalhe: '#d6402f', placa: '#d6402f', textoPlaca: '#ffffff' },
@@ -78,7 +85,6 @@ export const COR_OBJETO = {
   lixeira: '#3f7f4f',
   muro: '#b3a89a',
   parede: '#efe7da',
-  paredeLoja: '#f5f6f8',
   rodape: '#8a7d6b',
   porta: '#6b4a32',
   portaVidro: '#9fd0ea',
@@ -91,6 +97,23 @@ export const COR_OBJETO = {
   pufe2: '#3fa7a0',
   mesaDigital: '#2b2f36',
   postIts: '#ffd84d',
+  // Banco PAN.
+  ciano: '#00a3e0',
+  azulPan: '#0a3d73',
+  mesaBranca: '#f4f5f7',
+  malha: '#e4e6ea',
+  vidroAdesivado: '#eef2f5',
+  ceuJanela: '#bcd9ee',
+  predioJanela: '#7f93a8',
+  predioJanelaEscuro: '#5d7086',
+}
+
+// Paredes do interior (fundo em z = 0 e lado em x = 0) por cena; a que não está aqui usa `parede`.
+export const COR_PAREDE_INTERIOR: Record<string, { fundo: string; lado: string }> = {
+  concessionaria: { fundo: '#f5f6f8', lado: '#f5f6f8' },
+  agencia_pan: { fundo: '#f7f9fb', lado: '#00a3e0' },
+  // A parede azul da foto de referência fica na lateral que a câmera vê.
+  escritorio_pan: { fundo: '#f4f5f7', lado: '#1f7fd1' },
 }
 
 // Personagens (`visual` dos NPCs e o jogador). Trocar roupa ou pele é trocar aqui.
@@ -206,6 +229,11 @@ export const APARENCIAS: Record<string, Aparencia> = {
   analista: { pele: '#f0c8a8', cabelo: '#6b3e22', camisa: '#7fa7d6', calca: '#3a3f4b', sapato: '#222222', detalhe: null },
   designer: { pele: '#a96f4f', cabelo: '#c2386b', camisa: '#f2c94c', calca: '#4a3f8c', sapato: '#f2f2f2', detalhe: null },
   recepcionista: { pele: '#f0c3a0', cabelo: '#a0522d', camisa: '#ffffff', calca: '#2a2f3a', sapato: '#111111', detalhe: '#2f6fd6' },
+  // Banco PAN: uniforme ciano na agência; no escritório, roupa casual como na foto.
+  recepcionista_pan: { pele: '#e8b996', cabelo: '#2b1d14', camisa: '#00a3e0', calca: '#1f2a3a', sapato: '#111111', detalhe: '#ffffff' },
+  atendente_pan: { pele: '#b97f5a', cabelo: '#1a1410', camisa: '#ffffff', calca: '#0a3d73', sapato: '#111111', detalhe: '#00a3e0' },
+  coordenadora_pan: { pele: '#f2c9a8', cabelo: '#d8b46a', camisa: '#0a3d73', calca: '#2a2f3a', sapato: '#1e1e1e', detalhe: null },
+  dev_pan: { pele: '#c48a64', cabelo: '#141414', camisa: '#1c1c20', calca: '#3a4d6b', sapato: '#f2f2f2', detalhe: null, barba: '#141414', barbaRala: true },
   vendedor: { pele: '#c68a62', cabelo: '#2a2a2a', camisa: '#d6402f', calca: '#222831', sapato: '#111111', detalhe: '#f2b81d' },
 }
 

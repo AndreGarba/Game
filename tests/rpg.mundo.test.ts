@@ -23,6 +23,7 @@ import {
   VEL_CORRER,
 } from '../src/engine/rpg/constantes.ts'
 import { bloqueios, sobrepoe } from '../src/engine/rpg/colisao.ts'
+import { POSICAO_INICIAL } from '../src/engine/rpg/cenas.ts'
 import { criarMundo, faseDoTombo, passoMundo } from '../src/engine/rpg/mundo.ts'
 import { direcaoNoMundo } from '../src/features/rpg/direcao.ts'
 import en from '../src/locales/en/jogo.json'
@@ -68,7 +69,7 @@ describe('mundo do RPG', () => {
     const diagonal = criarMundo()
     andar(reto, 1, 0, 60)
     andar(diagonal, 1, 1, 60)
-    const d2 = (e: EstadoMundo) => (e.jogador.x - 11) ** 2 + (e.jogador.z - 10.2) ** 2
+    const d2 = (e: EstadoMundo) => (e.jogador.x - POSICAO_INICIAL.x) ** 2 + (e.jogador.z - POSICAO_INICIAL.z) ** 2
     expect(d2(diagonal)).toBeCloseTo(d2(reto), 5)
   })
 
@@ -128,7 +129,7 @@ describe('mundo do RPG', () => {
     expect(e.alvo).toMatchObject({ tipo: 'porta', destino: 'rua' })
     apertarA(e)
     expect(e.cena).toBe('rua')
-    expect(e.jogador).toMatchObject({ x: 11, z: 9 })
+    expect(e.jogador).toMatchObject({ x: 22, z: 9 })
   })
 
   it('a porta do fundo da agência leva ao escritório, e volta', () => {
@@ -159,6 +160,87 @@ describe('mundo do RPG', () => {
     expect(e.alvo).toMatchObject({ id: 'designer', tipo: 'conversa' })
     apertarA(e)
     expect(e.dialogo).toMatchObject({ id: 'designer', linhas: 3 })
+  })
+
+  it('o Banco PAN fica do lado esquerdo do BTG Pactual, colado na mesma calçada', () => {
+    const predio = (id: string) => CENAS.rua.solidos.find((s) => s.id === id)!
+    const pan = predio('predio_pan')
+    const btg = predio('predio_banco')
+    expect(pan.x + pan.largura).toBeLessThanOrEqual(btg.x)
+    // Sem vão por onde o jogador entre entre os dois prédios.
+    expect(btg.x - (pan.x + pan.largura)).toBeLessThan(2 * RAIO_JOGADOR)
+    expect(pan.z + pan.profundidade).toBe(btg.z + btg.profundidade)
+  })
+
+  it('entra no Banco PAN: recepcionista, atendente e a porta do fundo para o escritório, e volta', () => {
+    const e = criarMundo()
+    andar(e, 0, -1, 22)
+    andar(e, -1, 0, 186)
+    expect(e.alvo).toMatchObject({ id: 'porta_pan', tipo: 'porta', destino: 'agencia_pan' })
+    apertarA(e)
+    expect(e.cena).toBe('agencia_pan')
+
+    // Recepção à esquerda, atrás do balcão.
+    andar(e, 0, -1, 60)
+    andar(e, -1, 0, 72)
+    andar(e, 0, -1, 30)
+    expect(e.alvo).toMatchObject({ id: 'recepcionista_pan', tipo: 'conversa' })
+    apertarA(e)
+    expect(e.dialogo).toMatchObject({ id: 'recepcionista_pan', linhas: 3 })
+    apertarB(e)
+
+    // Pelo vão entre o totem e as cadeiras até o atendente, atrás da mesa.
+    andar(e, 0, 1, 15)
+    andar(e, 1, 0, 51)
+    andar(e, 0, -1, 60)
+    expect(e.alvo).toMatchObject({ id: 'atendente_pan', tipo: 'conversa' })
+    apertarA(e)
+    expect(e.dialogo).toMatchObject({ id: 'atendente_pan', linhas: 3 })
+    apertarB(e)
+
+    // Por trás do atendente até a porta do fundo, à direita.
+    andar(e, 0, -1, 12)
+    andar(e, 1, 0, 76)
+    andar(e, 0, -1, 10)
+    expect(e.alvo).toMatchObject({ id: 'porta_escritorio_pan', destino: 'escritorio_pan' })
+    apertarA(e)
+    expect(e.cena).toBe('escritorio_pan')
+    andar(e, 0, 1, 30)
+    expect(e.alvo).toMatchObject({ id: 'saida_escritorio_pan', destino: 'agencia_pan' })
+    apertarA(e)
+    expect(e.cena).toBe('agencia_pan')
+    expect(e.jogador).toMatchObject({ x: 10.3, z: 1.1 })
+  })
+
+  it('no escritório do PAN: o dev na ponta das bancadas; a coordenadora só atende dentro da sala de reunião', () => {
+    const e = criarMundo()
+    e.cena = 'escritorio_pan'
+    e.figurantes = []
+    const entrada = CENAS.agencia_pan.portas.find((p) => p.destino.cena === 'escritorio_pan')!.destino
+    e.jogador.x = entrada.x
+    e.jogador.z = entrada.z
+    // Pelo corredor de baixo e pela parede da direita, até a ponta da primeira fileira.
+    andar(e, 0, -1, 15)
+    andar(e, 1, 0, 140)
+    andar(e, 0, -1, 160)
+    expect(e.alvo).toMatchObject({ id: 'dev_pan', tipo: 'conversa' })
+    apertarA(e)
+    expect(e.dialogo).toMatchObject({ id: 'dev_pan', linhas: 3 })
+    apertarB(e)
+
+    // Do lado de fora do vidro adesivado, colado nele, ninguém atende.
+    e.jogador.x = 2.6
+    e.jogador.z = 4.65
+    passoMundo(e, PARADO)
+    expect(e.alvo?.id).not.toBe('coordenadora_pan')
+    // Pelo vão da porta da sala, até a coordenadora.
+    andar(e, 1, 0, 30)
+    andar(e, -1, 0, 20)
+    andar(e, 0, -1, 30)
+    andar(e, -1, 0, 20)
+    expect(e.alvo).toMatchObject({ id: 'coordenadora_pan', tipo: 'conversa' })
+    apertarA(e)
+    expect(e.dialogo).toMatchObject({ id: 'coordenadora_pan', linhas: 3 })
   })
 
   it('d-pad: cima na tela anda para o fundo da rua, e as diagonais da tela viram eixos do mundo', () => {
@@ -536,6 +618,7 @@ describe('mundo do RPG', () => {
 
   it.each([
     ['agencia', 'gerente'],
+    ['agencia_pan', 'atendente_pan'],
     ['concessionaria', 'vendedor'],
     ['rua', 'vendedor_feirao'],
   ] as const)('%s: soco derruba o NPC %s, que não conversa no chão e volta ao normal', (idCena, idNpc) => {
@@ -640,6 +723,36 @@ describe('mundo do RPG', () => {
     apertarA(e)
     marcar()
     expect(e.cartoes.ultimaRevista?.tick).toBe(e.tick)
+    // Sai da loja, corre pela calçada até o Banco PAN e conversa com o atendente.
+    andar(e, 0, 1, 30)
+    andar(e, -1, 0, 60)
+    andar(e, 0, 1, 30)
+    apertarA(e)
+    andar(e, 0, -1, 2)
+    andar(e, -1, 0, 236, true)
+    andar(e, 0, -1, 40)
+    apertarA(e)
+    marcar()
+    andar(e, 0, -1, 80)
+    andar(e, -1, 0, 21)
+    andar(e, 0, -1, 60)
+    apertarA(e)
+    apertarA(e)
+    marcar()
+    expect(e.dialogo?.origem).toBe('atendente_pan')
+    apertarB(e)
+    // Porta do fundo → escritório do PAN → o dev na ponta das bancadas.
+    andar(e, 0, -1, 12)
+    andar(e, 1, 0, 76)
+    andar(e, 0, -1, 10)
+    apertarA(e)
+    marcar()
+    andar(e, 0, -1, 15)
+    andar(e, 1, 0, 140)
+    andar(e, 0, -1, 160)
+    apertarA(e)
+    marcar()
+    expect(e.dialogo?.origem).toBe('dev_pan')
     expect(marcos).toMatchSnapshot()
   })
 })
