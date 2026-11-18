@@ -30,15 +30,26 @@ function entrarEm(e: EstadoMundo, destino: IdCena) {
   expect(e.cena).toBe(destino)
 }
 
+const TITULO_MAX = 30
+const DESCRICAO_MAX = 210
+
 const doElenco = (e: EstadoMundo, id = 'rici') => e.figurantes.filter((f) => f.elenco === id)
 
 describe('elenco jogável', () => {
-  it('todo personagem tem aparência na paleta e nome nos três idiomas; ids únicos', () => {
+  it('todo personagem tem aparência na paleta e nome, título e texto nos três idiomas; ids únicos', () => {
     expect(new Set(ELENCO.map((p) => p.id)).size).toBe(ELENCO.length)
     expect(ELENCO.length).toBeGreaterThanOrEqual(2)
     for (const p of ELENCO) {
       expect(APARENCIAS[p.visual], p.id).toBeDefined()
-      for (const locale of [pt, en, es]) expect((locale.rpg.elenco as Record<string, string>)[p.id], p.id).toBeTruthy()
+      for (const locale of [pt, en, es]) {
+        const textos = (locale.rpg.elenco as Record<string, { nome: string; titulo: string; descricao: string }>)[p.id]
+        expect(textos?.nome, p.id).toBeTruthy()
+        // Medidos na seleção em 16:9: acima disso, título e texto não cabem no bloco do escolhido.
+        expect(textos?.titulo.length, `${p.id}: título`).toBeLessThanOrEqual(TITULO_MAX)
+        expect(textos?.titulo.length, `${p.id}: título`).toBeGreaterThan(0)
+        expect(textos?.descricao.length, `${p.id}: texto`).toBeLessThanOrEqual(DESCRICAO_MAX)
+        expect(textos?.descricao.length, `${p.id}: texto`).toBeGreaterThan(0)
+      }
     }
   })
 

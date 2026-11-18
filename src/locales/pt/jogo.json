@@ -184,10 +184,26 @@
       "continuar": "Continuar explorando"
     },
     "elenco": {
-      "rici": "Rici",
-      "garba": "Garba",
-      "rogerio": "Rogério",
-      "fernanda": "Fernanda"
+      "rici": {
+        "nome": "Rici",
+        "titulo": "Líder do time de UX",
+        "descricao": "Lidera Fernanda, Fábio, Garba, André Roxa, Andrea e Roman, e com eles todo o time de UX. Junta BTG, Pan e Mobiauto numa mesma forma de fazer design. Abre caminho para o time entregar."
+      },
+      "garba": {
+        "nome": "Garba",
+        "titulo": "Motor do go!PAN",
+        "descricao": "R$ 1,94 bi em produção, acima da meta, e 2,1 mi de clientes ativos em crédito. Cerca de 80 entregas no go!PAN, do lojista aos pagamentos. Puxou o C2C e o conversacional."
+      },
+      "rogerio": {
+        "nome": "Rogério",
+        "titulo": "Embaixador de IA",
+        "descricao": "Assumiu as jornadas mais complexas do ano, como a Portabilidade agnóstica. Leva IA para o processo de UX com um agente de kickoff. Entregou também a Anuência para Averbação."
+      },
+      "fernanda": {
+        "nome": "Fernanda",
+        "titulo": "Dona do Consignado",
+        "descricao": "R$ 10,81 bi em produção no escopo de UX Consignado, 82,5% da vertical. Levou as jornadas para o White Label sem parar o app atual. Lidera Igor, Denise, Renan e Rogério."
+      }
     }
   },
   "selecao": {
