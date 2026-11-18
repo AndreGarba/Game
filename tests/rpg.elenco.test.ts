@@ -44,7 +44,7 @@ describe('elenco jogável', () => {
       for (const locale of [pt, en, es]) {
         const textos = (locale.rpg.elenco as Record<string, { nome: string; titulo: string; descricao: string }>)[p.id]
         expect(textos?.nome, p.id).toBeTruthy()
-        // Medidos na seleção em 16:9: acima disso, o título quebra no card e o texto empurra os botões.
+        // Medidos na seleção em 16:9: acima disso, título e texto não cabem no bloco do escolhido.
         expect(textos?.titulo.length, `${p.id}: título`).toBeLessThanOrEqual(TITULO_MAX)
         expect(textos?.titulo.length, `${p.id}: título`).toBeGreaterThan(0)
         expect(textos?.descricao.length, `${p.id}: texto`).toBeLessThanOrEqual(DESCRICAO_MAX)

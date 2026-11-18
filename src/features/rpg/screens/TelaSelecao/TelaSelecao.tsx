@@ -132,7 +132,6 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
                   aria-hidden="true"
                 />
                 <span className="tela-selecao__card-nome">{textos[p.id]?.nome}</span>
-                <span className="tela-selecao__card-titulo">{textos[p.id]?.titulo}</span>
               </button>
             )
           })}

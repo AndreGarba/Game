@@ -143,20 +143,6 @@
   text-align: center;
 }
 
-.tela-selecao__card-titulo {
-  display: -webkit-box;
-  min-height: calc(2lh);
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  font-size: var(--texto-1);
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
-  color: var(--cor-home-texto-suave);
-}
-
 .tela-selecao__dica {
   margin: var(--espaco-2) 0 0;
   font-size: var(--texto-1);
