@@ -121,6 +121,14 @@ export interface Aparencia {
   solado?: string
   // Relógio no pulso esquerdo.
   relogio?: string
+  // Cabelo médio, até o ombro (mechas: cor das mechas; null para sem mechas). Troca a nuca curta.
+  cabeloOmbro?: { mechas: string | null }
+  // Regata: sem manga (braço todo de pele) e com os ombros de fora.
+  regata?: boolean
+  // Babado de renda no decote, na frente e na barra da blusa: a cor da renda.
+  babado?: string
+  // Brincos pequenos.
+  brincos?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -151,6 +159,21 @@ export const APARENCIAS: Record<string, Aparencia> = {
     estampa: { texto: 'VANS', cor: '#f2b81d' },
     solado: '#f2f2f2',
     relogio: '#141414',
+  },
+  // Fernanda (foto em media/referencias): cabelo na altura dos ombros, castanho-claro com mechas
+  // loiras; regata branca canelada com babado de renda no decote e na barra; calça azul-marinho;
+  // brincos pequenos.
+  fernanda: {
+    pele: '#f0c3a2',
+    cabelo: '#9a7650',
+    camisa: '#f3efe8',
+    calca: '#1f2a4d',
+    sapato: '#c9a98a',
+    detalhe: null,
+    cabeloOmbro: { mechas: '#d8bd83' },
+    regata: true,
+    babado: '#ffffff',
+    brincos: '#d9a63a',
   },
   // Rogério (foto em media/referencias): cabelo curto grisalho, barba por fazer, óculos de armação
   // transparente, camiseta preta com estampa laranja e azul-petróleo no peito (padrão de chamas,
