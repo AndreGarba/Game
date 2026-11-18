@@ -12,6 +12,12 @@ import './tela-selecao.css'
 const RETRATO_LARGURA = 320
 const RETRATO_ALTURA = 400
 
+interface TextosDoPersonagem {
+  nome: string
+  titulo: string
+  descricao: string
+}
+
 const TECLAS_ANTERIOR = new Set(['ArrowLeft', 'ArrowUp', 'KeyA', 'KeyW'])
 const TECLAS_PROXIMO = new Set(['ArrowRight', 'ArrowDown', 'KeyD', 'KeyS'])
 const TECLAS_CONFIRMAR = new Set(['Space', 'Enter', 'NumpadEnter', 'KeyE'])
@@ -23,7 +29,7 @@ const TECLAS_VOLTAR = new Set(['Escape', 'KeyQ', 'Backspace'])
  */
 export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) => void }) {
   const { t } = useTranslation()
-  const nomes = t('rpg.elenco', { returnObjects: true }) as unknown as Record<string, string>
+  const textos = t('rpg.elenco', { returnObjects: true }) as unknown as Record<string, TextosDoPersonagem>
   const [indice, setIndice] = useState(0)
   const [retratos, setRetratos] = useState<Record<string, string>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -98,9 +104,11 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
       <canvas ref={canvasRef} className="tela-selecao__vitrine" aria-hidden="true" />
       <div className="tela-selecao__painel">
         <h1 className="tela-selecao__titulo">{t('selecao.titulo')}</h1>
-        <p className="tela-selecao__nome" aria-live="polite">
-          {nomes[escolhido.id]}
-        </p>
+        <div className="tela-selecao__apresentacao" aria-live="polite">
+          <p className="tela-selecao__nome">{textos[escolhido.id]?.nome}</p>
+          <p className="tela-selecao__titulo-personagem">{textos[escolhido.id]?.titulo}</p>
+          <p className="tela-selecao__descricao">{textos[escolhido.id]?.descricao}</p>
+        </div>
         <div className="tela-selecao__cards" role="radiogroup" aria-label={t('selecao.titulo')}>
           {ELENCO.map((p, i) => {
             const imagem = urlDaArte('retratos', p.id) ?? retratos[p.id]
@@ -117,17 +125,20 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
                   style={imagem ? ({ '--imagem': `url(${imagem})` } as CSSProperties) : undefined}
                   aria-hidden="true"
                 />
-                <span className="tela-selecao__card-nome">{nomes[p.id]}</span>
+                <span className="tela-selecao__card-nome">{textos[p.id]?.nome}</span>
+                <span className="tela-selecao__card-titulo">{textos[p.id]?.titulo}</span>
               </button>
             )
           })}
         </div>
-        <button className="botao botao--primario botao--grande tela-selecao__confirmar" onClick={() => confirmar(indice)}>
-          {t('selecao.confirmar', { nome: nomes[escolhido.id] })}
-        </button>
-        <button className="botao tela-selecao__voltar" onClick={() => history.back()}>
-          {t('selecao.voltar')}
-        </button>
+        <div className="tela-selecao__botoes">
+          <button className="botao botao--primario botao--grande tela-selecao__confirmar" onClick={() => confirmar(indice)}>
+            {t('selecao.confirmar', { nome: textos[escolhido.id]?.nome })}
+          </button>
+          <button className="botao tela-selecao__voltar" onClick={() => history.back()}>
+            {t('selecao.voltar')}
+          </button>
+        </div>
         <p className="tela-selecao__dica">{t('selecao.dica')}</p>
       </div>
     </div>

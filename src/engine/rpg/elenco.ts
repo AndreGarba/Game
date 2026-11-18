@@ -3,7 +3,7 @@ import { CENAS } from './cenas.ts'
 import type { IdCena } from './tipos.ts'
 
 // Personagens jogáveis. Personagem novo entra só com dados: uma linha aqui, a aparência em
-// `APARENCIAS` (paleta.ts, mesma chave do `visual`), o nome em `rpg.elenco.<id>` nos três idiomas
+// `APARENCIAS` (paleta.ts, mesma chave do `visual`), nome, título e descrição em `rpg.elenco.<id>` nos três idiomas
 // e, se quiser, o retrato em `arte/retratos/<id>`. Quem não é escolhido anda pelo mapa como
 // figurante de aparência fixa, numa cena sorteada a cada partida.
 

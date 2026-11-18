@@ -159,14 +159,14 @@ Prompt de exemplo:
 Opcional. Um arquivo por personagem do elenco (`ELENCO` em `src/engine/rpg/elenco.ts`), com o
 **id** do personagem como nome. Sem arquivo, o card mostra um retrato desenhado em 3D na hora, com
 o mesmo boneco do jogo. Fundo opaco (o card não tem cor atrás). Rosto e ombros, de frente ou de
-três quartos, centralizados com folga em cima: o card corta as bordas se a proporção não bater.
+três quartos, centralizados com folga em cima: o card mostra o centro num quadrado (corta um pouco em cima e embaixo), então deixe rosto e ombros no meio.
 
 | Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (referência 1280 × 720) |
 | --- | --- | --- | --- | --- |
-| `rici` | Rici: cabelo preto, tudo preto, tatuagens nos braços | 4 : 5 | 512 × 640 | ~162 × 202 px |
-| `garba` | Garba: careca, barba castanha cheia, óculos de armação clara, camiseta vinho com "VANS" amarelo | 4 : 5 | 512 × 640 | ~162 × 202 px |
-| `rogerio` | Rogério: cabelo curto grisalho, barba por fazer, óculos transparentes, camiseta preta com estampa laranja e azul-petróleo (sem personagem licenciado) | 4 : 5 | 512 × 640 | ~162 × 202 px |
-| `fernanda` | Fernanda: cabelo até o ombro, castanho-claro com mechas loiras, regata branca com babado de renda, brincos pequenos | 4 : 5 | 512 × 640 | ~162 × 202 px |
+| `rici` | Rici: cabelo preto, tudo preto, tatuagens nos braços | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
+| `garba` | Garba: careca, barba castanha cheia, óculos de armação clara, camiseta vinho com "VANS" amarelo | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
+| `rogerio` | Rogério: cabelo curto grisalho, barba por fazer, óculos transparentes, camiseta preta com estampa laranja e azul-petróleo (sem personagem licenciado) | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
+| `fernanda` | Fernanda: cabelo até o ombro, castanho-claro com mechas loiras, regata branca com babado de renda, brincos pequenos | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
 
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
 (careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro, regata, babado, brincos) ficam em `APARENCIAS.<id>` no

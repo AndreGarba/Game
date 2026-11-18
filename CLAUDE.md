@@ -143,9 +143,14 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   cores (`estampaChamas`), nunca cópia da arte. Personagem novo é só dado: linha no `ELENCO`,
   `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
   chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, regata, babado e
-  brincos são campos opcionais da `Aparencia`), nome em `rpg.elenco.<id>` nos três idiomas e, se quiser, um retrato
-  em `arte/retratos/<id>` (sem ele, o card mostra um retrato desenhado em 3D). O
-  `tests/rpg.elenco.test.ts` confere paleta e nomes de todo o elenco.
+  brincos são campos opcionais da `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
+  nos três idiomas e, se quiser, um retrato em `arte/retratos/<id>` (sem ele, o card mostra um
+  retrato desenhado em 3D). O título vai no card e embaixo do nome; a descrição (pontos fortes e
+  entregas da pessoa), só embaixo do nome do escolhido. Os textos ficam no i18n e não no
+  `ELENCO` porque o motor não tem idioma. Limite: título até 30 caracteres e descrição até 210,
+  medidos para quatro cards em 16:9; `tests/rpg.elenco.test.ts` confere isso, a paleta e os nomes
+  de todo o elenco. Os textos do time inteiro estão prontos em
+  `docs/textos-selecao-personagens.md` na store (dado interno: vale o Cloudflare Access).
 - **Quem não foi escolhido anda pelo mapa** como figurante (`Figurante.elenco` com o id), com a
   aparência fixa dele. A cena de cada um é **sorteada pelo `estado.rng` no começo da partida**
   (`espalharElenco`, entre as `CENAS_DO_ELENCO`: as que têm grupo de pedestres) e fica a mesma até
