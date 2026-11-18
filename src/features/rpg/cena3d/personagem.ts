@@ -155,6 +155,51 @@ function detalhesDoRosto(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
   }
 }
 
+// Cabelo médio: a mesma calota em cima, uma franja de lado, mechas caindo dos lados até o ombro
+// e a parte de trás comprida. As mechas claras saem um pouco para fora, como as tatuagens.
+function cabeloAteOOmbro(f: Fabrica, a: Aparencia, mechas: string | null, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  const fio = f.material(a.cabelo)
+  corpo.add(
+    f.caixa(0.44, 0.14, 0.42, fio, { y: y + 0.4 }),
+    f.caixa(0.3, 0.07, 0.05, fio, { x: 0.06, y: y + 0.38, z: 0.19 }),
+    f.caixa(0.46, 0.52, 0.12, fio, { y: y - 0.02, z: -0.17 }),
+  )
+  for (const lado of [-1, 1]) corpo.add(f.caixa(0.06, 0.46, 0.3, fio, { x: lado * 0.225, y: y - 0.02, z: -0.03 }))
+  if (mechas) {
+    const claro = f.material(mechas)
+    for (const lado of [-1, 1]) {
+      corpo.add(
+        f.caixa(0.012, 0.34, 0.05, claro, { x: lado * 0.261, y: y + 0.02, z: 0.06 }),
+        f.caixa(0.012, 0.28, 0.04, claro, { x: lado * 0.261, y: y - 0.01, z: -0.08 }),
+      )
+    }
+    corpo.add(
+      f.caixa(0.05, 0.012, 0.3, claro, { x: -0.08, y: y + 0.54, z: -0.02 }),
+      f.caixa(0.05, 0.012, 0.3, claro, { x: 0.1, y: y + 0.54, z: -0.02 }),
+      f.caixa(0.08, 0.012, 0.42, claro, { y: y + 0.52, z: -0.17 }),
+    )
+  }
+}
+
+// Regata: ombros de fora e decote em V de pele; o babado contorna o decote, desce pela frente e
+// sai da barra, um pouco mais largo que o tronco.
+function blusaRegata(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
+  const pele = f.material(a.pele)
+  const topo = ALTURA_QUADRIL - 0.04 + 0.62
+  for (const lado of [-1, 1]) corpo.add(f.caixa(0.1, 0.12, 0.31, pele, { x: lado * 0.215, y: topo - 0.115 }))
+  corpo.add(f.caixa(0.16, 0.12, 0.012, pele, { y: topo - 0.12, z: 0.151 }))
+  if (!a.babado) return
+  const renda = f.material(a.babado)
+  corpo.add(
+    f.caixa(0.035, 0.15, 0.02, renda, { x: -0.095, y: topo - 0.14, z: 0.158 }),
+    f.caixa(0.035, 0.15, 0.02, renda, { x: 0.095, y: topo - 0.14, z: 0.158 }),
+    f.caixa(0.22, 0.03, 0.02, renda, { y: topo - 0.15, z: 0.158 }),
+    f.caixa(0.04, 0.32, 0.02, renda, { x: 0.06, y: topo - 0.47, z: 0.158 }),
+    f.caixa(0.56, 0.06, 0.34, renda, { y: ALTURA_QUADRIL - 0.06 }),
+  )
+}
+
 export interface OpcoesPersonagem {
   // Figurante: menos peças e sem sombra no mapa (só a redonda), para caber muitos no celular.
   leve?: boolean
@@ -181,8 +226,9 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     for (const perna of [pernaE, pernaD]) perna.add(f.caixa(0.22, 0.04, 0.3, f.material(a.solado), { y: -0.66 - 0.072 - 0.02, z: 0.03 }))
   }
 
-  const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
-  const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, a.camisa, a.pele, 0.15, 0.5, 0.14)
+  const manga = a.regata ? a.pele : a.camisa
+  const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, manga, a.pele, 0.15, 0.5, 0.14)
+  const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, manga, a.pele, 0.15, 0.5, 0.14)
   bracoE.position.set(-0.34, ALTURA_OMBRO, 0)
   bracoD.position.set(0.34, ALTURA_OMBRO, 0)
   if (a.relogio) bracoE.add(f.caixa(0.18, 0.06, 0.19, f.material(a.relogio), { y: -0.44 }))
@@ -202,7 +248,13 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     f.caixa(0.06, 0.07, 0.02, olho, { x: -0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
     f.caixa(0.06, 0.07, 0.02, olho, { x: 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
   )
-  if (!a.careca) corpo.add(cabelo, nuca)
+  if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
+  else if (!a.careca) corpo.add(cabelo, nuca)
+  if (a.regata) blusaRegata(f, a, corpo)
+  if (a.brincos) {
+    const ouro = f.material(a.brincos)
+    for (const lado of [-1, 1]) corpo.add(f.caixa(0.035, 0.04, 0.03, ouro, { x: lado * 0.2, y: ALTURA_OMBRO + 0.12, z: 0.135 }))
+  }
   detalhesDoRosto(f, a, corpo)
   if (a.estampa) {
     const placa = estampa(f, a.estampa.texto, a.estampa.cor, 0.36)
