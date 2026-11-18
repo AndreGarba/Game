@@ -1,4 +1,5 @@
 .botao-toque {
+  position: relative;
   display: grid;
   place-items: center;
   width: var(--tamanho-botao-acao);
@@ -14,6 +15,23 @@
   pointer-events: auto;
   cursor: pointer;
   transition: transform 0.06s ease-out;
+}
+
+/* Tecla do computador: pílula escura saindo da borda de cima do botão. */
+.botao-toque__tecla {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  padding: var(--espaco-selo-tecla);
+  border-radius: var(--raio-2);
+  background: var(--cor-selo-tecla);
+  color: var(--cor-selo-tecla-texto);
+  font-size: var(--texto-selo-tecla);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .botao-toque--primario {

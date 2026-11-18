@@ -83,8 +83,37 @@
 
 .tela-rpg__direcional {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   left: calc(var(--espaco-4) + var(--safe-esquerda));
   bottom: calc(var(--espaco-3) + var(--safe-base));
+}
+
+/* Selo da tecla do computador (só com teclado, `useTemTeclado`): o mesmo dos botões de toque. */
+.tela-rpg__selo-tecla {
+  position: absolute;
+  padding: var(--espaco-selo-tecla);
+  border-radius: var(--raio-2);
+  background: var(--cor-selo-tecla);
+  color: var(--cor-selo-tecla-texto);
+  font-size: var(--texto-selo-tecla);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tela-rpg__selo-tecla--direcional {
+  top: 0;
+  transform: translateY(-70%);
+  z-index: 1;
+}
+
+.tela-rpg__selo-tecla--pausa {
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 15%);
 }
 
 .tela-rpg__botoes {

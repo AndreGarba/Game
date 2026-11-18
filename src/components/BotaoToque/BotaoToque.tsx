@@ -11,13 +11,16 @@ interface Props {
   variante?: 'primario' | 'secundario' | 'perigo'
   imagem?: string | null
   imagemApertado?: string | null
+  // Tecla do computador que faz o mesmo (selo pequeno no canto) e o `aria-keyshortcuts`.
+  tecla?: string | null
+  atalhos?: string
 }
 
 /**
  * Botão redondo de controle. Dispara no pressionar (pointerdown), não no soltar: o click do
  * navegador espera o dedo subir e, no celular, isso atrasa a ação.
  */
-export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 'primario', imagem, imagemApertado }: Props) {
+export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 'primario', imagem, imagemApertado, tecla, atalhos }: Props) {
   const [apertado, setApertado] = useState(false)
   const soltar = () => {
     if (!apertado) return
@@ -32,6 +35,7 @@ export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 
       className={`botao-toque botao-toque--${variante}${arte ? ' botao-toque--arte' : ''}${apertado ? ' botao-toque--apertado' : ''}`}
       style={estilo}
       aria-label={descricao}
+      aria-keyshortcuts={atalhos}
       // Teclado e leitor de tela chegam pelo click; o toque já disparou no pointerdown.
       onClick={(e) => {
         if (e.detail === 0) aoApertar()
@@ -46,6 +50,11 @@ export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 
       onPointerLeave={soltar}
     >
       {!arte && <span aria-hidden="true">{rotulo}</span>}
+      {tecla && (
+        <span className="botao-toque__tecla" aria-hidden="true">
+          {tecla}
+        </span>
+      )}
     </button>
   )
 }

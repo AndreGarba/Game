@@ -1,26 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { digitando } from '../jogo/useControlesJogo.ts'
 import type { DirecaoTela } from './direcao.ts'
+import { TECLAS, TECLAS_DIRECAO } from './teclas.ts'
 
 // Teclado do RPG: setas ou WASD andam (segurar), Shift segurado corre; A = Espaço, E ou Enter;
-// B = Esc, Q ou Backspace; soco = F ou J. O d-pad e o botão de correr da tela escrevem em `direcaoToque` e
+// B = Esc, Q ou Backspace; soco = F ou J (listas em `teclas.ts`). O d-pad e o botão de correr da tela escrevem em `direcaoToque` e
 // `correrToque`, e quem lê soma teclado e toque.
 
-const TECLAS_DIRECAO: Record<string, [eixo: keyof DirecaoTela, valor: number]> = {
-  ArrowUp: ['cima', 1],
-  KeyW: ['cima', 1],
-  ArrowDown: ['cima', -1],
-  KeyS: ['cima', -1],
-  ArrowLeft: ['direita', -1],
-  KeyA: ['direita', -1],
-  ArrowRight: ['direita', 1],
-  KeyD: ['direita', 1],
-}
-
-const TECLAS_A = new Set(['Space', 'KeyE', 'Enter', 'NumpadEnter'])
-const TECLAS_B = new Set(['Escape', 'KeyQ', 'Backspace'])
-const TECLAS_CORRER = new Set(['ShiftLeft', 'ShiftRight'])
-const TECLAS_SOCO = new Set(['KeyF', 'KeyJ'])
+const TECLAS_A = new Set<string>(TECLAS.a)
+const TECLAS_B = new Set<string>(TECLAS.b)
+const TECLAS_CORRER = new Set<string>(TECLAS.correr)
+const TECLAS_SOCO = new Set<string>(TECLAS.soco)
 
 export interface ControlesRpg {
   // Direção atual (teclado + toque), lida a cada tick.
