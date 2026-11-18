@@ -13,7 +13,9 @@ import { criarRenderizador } from '../../cena3d/renderizador.ts'
 import { criarControladorRpg, type ControladorRpg } from '../../controladorRpg.ts'
 import { direcaoNoMundo } from '../../direcao.ts'
 import { formatarTempo } from '../../tempo.ts'
+import { atalhosDoComando, seloDoComando, seloDoDirecional } from '../../teclas.ts'
 import { useControlesRpg } from '../../useControlesRpg.ts'
+import { useTemTeclado } from '../../useTemTeclado.ts'
 import { ARTE_HUD } from '../../visual/arteDoHud.ts'
 import './tela-rpg.css'
 
@@ -101,6 +103,9 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   }, [])
 
   const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar)
+  const temTeclado = useTemTeclado()
+  const espaco = t('rpg.teclas.espaco')
+  const selo = (texto: string) => (temTeclado ? texto : null)
 
   useEffect(() => {
     abafarMusica(fase !== 'jogando')
@@ -214,8 +219,14 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             style={comImagem(ARTE_HUD.botaoPausa)}
             onClick={fase === 'pausado' ? continuar : pausar}
             aria-label={fase === 'pausado' ? t('continuar') : t('hud.pausar')}
+            aria-keyshortcuts={atalhosDoComando('b')}
           >
             {!ARTE_HUD.botaoPausa && <span aria-hidden="true">{fase === 'pausado' ? '▶' : 'II'}</span>}
+            {temTeclado && (
+              <span className="tela-rpg__selo-tecla tela-rpg__selo-tecla--pausa" aria-hidden="true">
+                {seloDoComando('b', espaco, 1)}
+              </span>
+            )}
           </button>
 
           {hud.alvo && !dialogo && (
@@ -248,6 +259,11 @@ export function TelaRpg({ personagem }: { personagem: string }) {
           )}
 
           <div className="tela-rpg__direcional">
+            {temTeclado && (
+              <span className="tela-rpg__selo-tecla tela-rpg__selo-tecla--direcional" aria-hidden="true">
+                {seloDoDirecional()}
+              </span>
+            )}
             <DirecionalToque
               rotulo={t('rpg.controles.direcional')}
               aoMudar={(d) => (controles.direcaoToque.current = d)}
@@ -264,6 +280,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               variante="secundario"
               imagem={ARTE_HUD.botaoCorrer}
               imagemApertado={ARTE_HUD.botaoCorrerApertado}
+              tecla={selo(seloDoComando('correr', espaco))}
+              atalhos={atalhosDoComando('correr')}
             />
             <BotaoToque
               rotulo="B"
@@ -272,6 +290,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               variante="secundario"
               imagem={ARTE_HUD.botaoB}
               imagemApertado={ARTE_HUD.botaoBApertado}
+              tecla={selo(seloDoComando('b', espaco))}
+              atalhos={atalhosDoComando('b')}
             />
             <BotaoToque
               rotulo={<IconeSoco />}
@@ -280,6 +300,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               variante="perigo"
               imagem={ARTE_HUD.botaoSoco}
               imagemApertado={ARTE_HUD.botaoSocoApertado}
+              tecla={selo(seloDoComando('soco', espaco))}
+              atalhos={atalhosDoComando('soco')}
             />
             <BotaoToque
               rotulo="A"
@@ -287,6 +309,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               aoApertar={apertarA}
               imagem={ARTE_HUD.botaoA}
               imagemApertado={ARTE_HUD.botaoAApertado}
+              tecla={selo(seloDoComando('a', espaco))}
+              atalhos={atalhosDoComando('a')}
             />
           </div>
         </div>

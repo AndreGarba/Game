@@ -30,6 +30,9 @@
   --cor-selecao-card: rgba(255, 255, 255, 0.08);
   --cor-selecao-card-borda: rgba(255, 255, 255, 0.18);
   --cor-selecao-texto: #f4f6fb;
+  /* Selo da tecla do computador nos botões do HUD. */
+  --cor-selo-tecla: rgba(16, 20, 28, 0.86);
+  --cor-selo-tecla-texto: #ffffff;
 
   --espaco-1: 4px;
   --espaco-2: 8px;
@@ -49,6 +52,8 @@
 
   --fonte: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --texto-1: 12px;
+  --texto-selo-tecla: 10px;
+  --espaco-selo-tecla: 2px 6px;
   --texto-2: 14px;
   --texto-3: 16px;
   --texto-4: 20px;
@@ -98,6 +103,9 @@
   --raio-4: calc(var(--px) * 24);
 
   --texto-1: calc(var(--px) * 18);
+  /* Selo da tecla nos botões do HUD: legível a um palmo da tela, sem disputar com a letra do botão. */
+  --texto-selo-tecla: calc(var(--px) * 15);
+  --espaco-selo-tecla: calc(var(--px) * 3) calc(var(--px) * 9);
   --texto-2: calc(var(--px) * 21);
   --texto-3: calc(var(--px) * 24);
   --texto-4: calc(var(--px) * 30);
