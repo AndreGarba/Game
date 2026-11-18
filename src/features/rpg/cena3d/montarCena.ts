@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import type { Cena, Npc, Porta } from '../../../engine/rpg/index.ts'
-import { APARENCIAS, COR_OBJETO as C, COR_PISO, COR_PREDIO } from '../visual/paleta.ts'
+import { APARENCIAS, COR_OBJETO as C, COR_PAREDE_INTERIOR, COR_PISO, COR_PREDIO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
 import { modeloDoSolido } from './modelos.ts'
 import { criarPersonagem, anguloDaDirecao, type Personagem } from './personagem.ts'
@@ -10,7 +10,7 @@ import { placaProcedural, texturaDePiso, texturaDoSlot } from './texturas.ts'
 // placas, letreiros e NPCs. Os figurantes mudam de lugar a cada tick e ficam no renderizador. Tudo sai dos dados da cena; nada aqui decide regra.
 
 export interface TextosDaCena {
-  // Texto provisório das placas, por variante (banco, concessionaria, mobiauto, rua).
+  // Texto provisório das placas, por variante (pan, banco, concessionaria, mobiauto, rua).
   placas: Record<string, string>
 }
 
@@ -26,6 +26,7 @@ const ESPESSURA_PAREDE = 0.2
 
 // Onde vai a placa de cada fachada, a partir do centro da porta.
 const PLACAS: Record<string, { largura: number; altura: number; y: number }> = {
+  pan: { largura: 4.4, altura: 1.1, y: 3 },
   banco: { largura: 4.4, altura: 1.1, y: 3 },
   concessionaria: { largura: 6.4, altura: 1.6, y: 4.2 },
 }
@@ -49,18 +50,19 @@ function placaComTexto(f: Fabrica, variante: string, texto: string, largura: num
 }
 
 function paredesDoInterior(f: Fabrica, cena: Cena, placas: TextosDaCena['placas']): THREE.Object3D[] {
-  const corParede = cena.id === 'concessionaria' ? C.paredeLoja : C.parede
+  const cores = COR_PAREDE_INTERIOR[cena.id]
   const arte = texturaDoSlot('texturas', `parede-${cena.id}`)
-  const parede = arte ? f.materialComTextura(arte) : f.material(corParede)
+  const parede = arte ? f.materialComTextura(arte) : f.material(cores?.fundo ?? C.parede)
+  const lateral = arte ? parede : f.material(cores?.lado ?? C.parede)
   const rodape = f.material(C.rodape)
   const { largura: L, profundidade: P } = cena
   const e = ESPESSURA_PAREDE
   const saida: THREE.Object3D[] = [
     f.caixa(L + e, ALTURA_PAREDE, e, parede, { x: L / 2 - e / 2, z: -e / 2 }),
-    f.caixa(e, ALTURA_PAREDE, P, parede, { x: -e / 2, z: P / 2 }),
+    f.caixa(e, ALTURA_PAREDE, P, lateral, { x: -e / 2, z: P / 2 }),
     f.caixa(L, 0.12, 0.03, rodape, { x: L / 2, z: 0.015 }),
     f.caixa(0.03, 0.12, P, rodape, { x: 0.015, z: P / 2 }),
-    f.caixa(e, ALTURA_PAREDE_CORTADA, P + e, parede, { x: L + e / 2, z: P / 2 }),
+    f.caixa(e, ALTURA_PAREDE_CORTADA, P + e, lateral, { x: L + e / 2, z: P / 2 }),
   ]
   // Parede da frente com o vão da saída.
   const portas = cena.portas.filter((p) => p.z + p.profundidade >= P - 0.01)
@@ -84,6 +86,11 @@ function paredesDoInterior(f: Fabrica, cena: Cena, placas: TextosDaCena['placas'
     saida.push(placa)
     ocupado.push([x - 1.9, x + 1.9])
   }
+  if (cena.id === 'escritorio_pan') {
+    // Janelões com vista de prédios, de ponta a ponta do open office (a sala de reunião tem a TV).
+    for (let x = 5; x < L - 1.5; x += 3.4) saida.push(janelaoComVista(f, x + 1.6, 3))
+    return saida
+  }
   for (let x = 2; x < L - 1; x += 4) {
     if (ocupado.some(([a, b]) => x + 2.2 > a && x - 0.2 < b)) continue
     const janela = cena.id === 'concessionaria'
@@ -96,6 +103,28 @@ function paredesDoInterior(f: Fabrica, cena: Cena, placas: TextosDaCena['placas'
     )
   }
   return saida
+}
+
+// Janela alta de vidro com a silhueta dos prédios do outro lado, no estilo da Faria Lima.
+function janelaoComVista(f: Fabrica, cx: number, largura: number): THREE.Group {
+  const g = new THREE.Group()
+  const altura = 2.2
+  const y = 0.45
+  g.add(f.caixa(largura, altura, 0.03, f.material(C.ceuJanela), { x: cx, y, z: 0.02 }))
+  const predios: [number, number][] = [
+    [-0.38, 0.75],
+    [-0.12, 0.95],
+    [0.12, 0.6],
+    [0.35, 0.85],
+  ]
+  predios.forEach(([dx, h], i) => {
+    const cor = f.material(i % 2 === 0 ? C.predioJanela : C.predioJanelaEscuro)
+    g.add(f.caixa(largura * 0.2, altura * h, 0.02, cor, { x: cx + dx * largura, y, z: 0.045 }))
+  })
+  g.add(f.caixa(0.06, altura, 0.05, f.material(C.metalEscuro), { x: cx - largura / 2, y, z: 0.05 }))
+  g.add(f.caixa(0.06, altura, 0.05, f.material(C.metalEscuro), { x: cx + largura / 2, y, z: 0.05 }))
+  g.add(f.caixa(largura, 0.06, 0.05, f.material(C.metalEscuro), { x: cx, y: y + altura, z: 0.05 }))
+  return g
 }
 
 function portaInterna(f: Fabrica, porta: Porta): THREE.Object3D[] {
@@ -115,7 +144,7 @@ function portaDaRua(f: Fabrica, porta: Porta, placas: TextosDaCena['placas']): T
   const arte = texturaDoSlot('portas', porta.visual)
   const folha = arte
     ? f.materialComTextura(arte, { transparente: true })
-    : f.material(variante === 'concessionaria' ? C.portaVidro : C.porta)
+    : f.material(variante === 'concessionaria' || variante === 'pan' ? C.portaVidro : C.porta)
   const saida: THREE.Object3D[] = [
     f.caixa(porta.largura + 0.3, 2.5, 0.12, f.material(COR_PREDIO[variante]?.detalhe ?? C.porta), { x: cx, z: porta.z + 0.04 }),
     f.caixa(porta.largura, 2.3, 0.04, folha, { x: cx, z: porta.z + 0.12 }),

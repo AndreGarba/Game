@@ -44,6 +44,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 
 | Arquivo | Prédio | Proporção (L × A) | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
+| `pan` | Banco PAN, à esquerda do BTG (azul e ciano, porta de vidro) | 0,95 : 1 (10,5 × 11 m) | 1024 × 1072 | não |
 | `banco` | Banco BTG Pactual (porta azul) | 1 : 1 (10 × 10 m) | 1024 × 1024 | não |
 | `concessionaria` | Loja de veículos (vitrine) | 2,15 : 1 (14 × 6,5 m) | 1792 × 832 | não |
 | `residencial` | Prédio residencial à esquerda | 0,61 : 1 (5,5 × 9 m) | 704 × 1152 | não |
@@ -68,6 +69,7 @@ mostra "BTG Pactual" em texto branco sobre marinho). O logo oficial do BTG Pactu
 | Arquivo | Onde | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- | --- |
 | `banco` | Acima da porta do banco **e** na parede do fundo da agência (logo BTG Pactual) | 4 : 1 (4,4 × 1,1 m na rua, 3,2 × 0,8 m na agência) | 1024 × 256 | sim (recorte da placa) |
+| `pan` | Acima da porta do Banco PAN **e** na parede do fundo da agência PAN (logo PAN) | 4 : 1 (4,4 × 1,1 m na rua, 3,2 × 0,8 m na agência) | 1024 × 256 | sim (recorte da placa) |
 | `concessionaria` | Acima da porta da loja | 4 : 1 (6,4 × 1,6 m) | 1024 × 256 | sim |
 | `mobiauto` | Portal do feirão de seminovos, no fim da rua (logo Mobiauto, azul) | 4,6 : 1 (6 × 1,3 m) | 1200 × 260 | sim |
 | `rua` | Placa de rua "Av. Faria Lima" no primeiro poste | 4,5 : 1 (1,9 × 0,42 m) | 900 × 200 | sim |
@@ -82,7 +84,8 @@ A folha da porta, de frente. O batente colorido em volta já existe no jogo.
 | Arquivo | Proporção | Tamanho sugerido | Transparência |
 | --- | --- | --- | --- |
 | `porta-banco` | 0,52 : 1 (1,2 × 2,3 m) | 520 × 1000 | sim, se tiver vidro |
-| `porta-interna` (porta do fundo da agência para o escritório) | 0,62 : 1 (1,4 × 2,25 m) | 620 × 1000 | não |
+| `porta-pan` | 0,52 : 1 (1,2 × 2,3 m) | 520 × 1000 | sim, se tiver vidro |
+| `porta-interna` (porta do fundo das agências para o escritório) | 0,62 : 1 (1,4 × 2,25 m) | 620 × 1000 | não |
 | `porta-concessionaria` | 0,7 : 1 (1,6 × 2,3 m) | 700 × 1000 | sim, se tiver vidro |
 
 ## 4. Texturas de chão e parede (`texturas/`)
@@ -106,6 +109,10 @@ a escala do desenho (tamanho do ladrilho, da pedra, das folhas de grama).
 | `piso-concessionaria` | Chão da loja | 3 × 3 m | 512 × 512 | não |
 | `tapete` | Tapetes dos interiores | 3 × 3 m | 512 × 512 | não |
 | `plataforma` | Base dos carros em exposição | 5 × 5 m | 512 × 512 | não |
+| `piso-agencia-pan` | Chão da agência do Banco PAN | 2 × 2 m | 512 × 512 | não |
+| `tapete-pan` | Tapetes ciano da agência PAN | 3 × 3 m | 512 × 512 | não |
+| `carpete-pan` | Carpete cinza-escuro do escritório PAN | 2 × 2 m | 512 × 512 | não |
+| `piso-reuniao` | Piso de madeira da sala de reunião do escritório PAN | 2 × 2 m | 512 × 512 | não |
 
 **Paredes dos interiores:** uma imagem por sala, **esticada** em cada parede (não repete). A parede
 do fundo é a mais visível.
@@ -115,6 +122,11 @@ do fundo é a mais visível.
 | `parede-agencia` | Agência (parede de 14 × 3 m) | 4,7 : 1 | 2240 × 480 | não |
 | `parede-escritorio` | Escritório (parede de 20 × 3 m) | 6,7 : 1 | 2400 × 360 | não |
 | `parede-concessionaria` | Loja (parede de 18 × 3 m) | 6 : 1 | 2400 × 400 | não |
+| `parede-agencia_pan` | Agência PAN (parede de 14 × 3 m) | 4,7 : 1 | 2240 × 480 | não |
+| `parede-escritorio_pan` | Escritório PAN (parede de 22 × 3 m; os janelões são peças à parte) | 7,3 : 1 | 2400 × 330 | não |
+
+Sem imagem, cada sala tem as cores de `COR_PAREDE_INTERIOR` (`paleta.ts`): no PAN, a parede lateral
+é azul e a do fundo, branca.
 
 Prompt de exemplo:
 > Textura seamless (sem emenda) de calçada de pedra portuguesa, vista exatamente de cima, sem

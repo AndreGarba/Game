@@ -73,13 +73,16 @@
       "rua": "Faria Lima Avenue",
       "agencia": "BTG Pactual Branch",
       "escritorio": "BTG Pactual Office",
-      "concessionaria": "Car Dealership"
+      "concessionaria": "Car Dealership",
+      "agencia_pan": "Banco PAN Branch",
+      "escritorio_pan": "Banco PAN Office"
     },
     "placas": {
       "banco": "BTG Pactual",
       "concessionaria": "CARS",
       "rua": "Faria Lima Ave.",
-      "mobiauto": "Mobiauto"
+      "mobiauto": "Mobiauto",
+      "pan": "Banco PAN"
     },
     "nomes": {
       "pedestre": "Mrs. Cida",
@@ -94,7 +97,15 @@
       "designer": "Bia",
       "totem": "ticket kiosk",
       "moodboard": "moodboard",
-      "vendedor_feirao": "Lu"
+      "vendedor_feirao": "Lu",
+      "recepcionista_pan": "Camila",
+      "atendente_pan": "Diego",
+      "coordenadora_pan": "Paula",
+      "dev_pan": "Leo",
+      "totem_pan": "ticket kiosk",
+      "caixa_eletronico_1": "ATM",
+      "tv_reuniao": "meeting room TV",
+      "cafe_pan": "coffee"
     },
     "acao": {
       "entrar": "Enter: {{lugar}}",
@@ -172,6 +183,40 @@
         "Welcome to the Mobiauto used-car fair!",
         "Every car here has passed inspection.",
         "Pick one and ask for the price at the tent."
+      ],
+      "recepcionista_pan": [
+        "Hi! Welcome to Banco PAN.",
+        "To open an account or get a card, Diego is at the middle desk.",
+        "The team office is through the back door, on the right."
+      ],
+      "atendente_pan": [
+        "Hi! I am Diego, from customer service.",
+        "Digital accounts, credit cards and car loans: all right here.",
+        "Any questions? Just ask. No lines, I promise!"
+      ],
+      "totem_pan": [
+        "Ticket P-017. Please wait to be called."
+      ],
+      "caixa_eletronico": [
+        "Banco PAN ATM: withdrawals, deposits and statements.",
+        "On the screen: “Use Pix in the app, it is faster”."
+      ],
+      "coordenadora_pan": [
+        "Welcome to the office! I am Paula, I lead the product team.",
+        "We just wrapped up planning. The TV still shows the roadmap.",
+        "Desks are free seating: sit wherever there is room."
+      ],
+      "dev_pan": [
+        "Hey! I am in the middle of a deploy, but go ahead.",
+        "Two monitors: one for code, one for meetings.",
+        "If you want coffee, the pantry is right by the wall."
+      ],
+      "tv_reuniao": [
+        "The quarter’s roadmap, full of digital sticky notes.",
+        "Someone wrote: “customer first”."
+      ],
+      "cafe_pan": [
+        "Freshly brewed coffee. The smell fills the office."
       ]
     },
     "cartoes": {

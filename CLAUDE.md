@@ -102,17 +102,22 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
 ### O RPG isométrico (o que o Jogar abre hoje)
 
-Protótipo de RPG: o jogador anda pela Avenida Faria Lima (66 m), entra no banco BTG Pactual e numa
-loja de veículos, e no fim da rua há o feirão de seminovos Mobiauto, a céu aberto (sem porta: é
-parte da cena `rua`).
-O banco tem duas cenas: a `agencia` (recepção, totem de senha, mesa do gerente) e, pela porta do
-fundo, o `escritorio` (baias com computador, divisória de vidro e área dos designers com moodboard).
+Protótipo de RPG: o jogador anda pela Avenida Faria Lima (77 m), entra em dois bancos lado a lado
+(o Banco PAN, à esquerda, e o BTG Pactual) e numa loja de veículos, e no fim da rua há o feirão de
+seminovos Mobiauto, a céu aberto (sem porta: é parte da cena `rua`).
+Cada banco tem duas cenas. BTG: a `agencia` (recepção, totem de senha, mesa do gerente) e, pela
+porta do fundo, o `escritorio` (baias com computador, divisória de vidro e área dos designers com
+moodboard). PAN (azul e ciano): a `agencia_pan` (recepção, totem, caixas eletrônicos, mesa de
+atendimento) e, pela porta do fundo à direita, o `escritorio_pan`, open office tirado da foto
+`media/referencias/escritorio-pan.png` na store: bancadas brancas compridas com dois monitores por
+lugar e cadeiras de malha (desenhadas dentro do retângulo da `bancada`), carpete escuro, janelões
+com vista de prédios, parede azul na lateral e sala de reunião de vidro adesivado com TV.
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-10'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-11'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -200,8 +205,8 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   com um soco no meio da fala deixaria o NPC falando no chão; quem quer bater, fecha com B antes.
 - **Cartões Ultra Blue** (`src/engine/rpg/cartoes.ts`): `TOTAL_CARTOES` (31) escondidos, no
   máximo um por esconderijo. Esconderijo (`ESCONDERIJOS`, chave `cena:id`, porque há ids
-  repetidos entre cenas) é todo sólido que não é prédio nem o muro do beco e todo NPC, das quatro
-  cenas: 87 hoje. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
+  repetidos entre cenas) é todo sólido que não é prédio, nem o muro do beco, nem o vidro da sala de
+  reunião do PAN, e todo NPC, das seis cenas: 118 hoje. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
   e o cartão sumiria com quem o levava. `criarMundo` esconde os cartões pelo `estado.rng` antes de
   sortear os figurantes; a `TelaRpg` passa uma semente nova (`crypto.getRandomValues`, no
   `controladorRpg`) a cada carga, e o motor segue determinístico para a mesma semente.
@@ -226,7 +231,7 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
 - **Falas** em `rpg.dialogos.<id>` como lista, e o mapa diz quantas são (`linhas`):
   `tests/rpg.mundo.test.ts` confere os dois nos três idiomas. `tests/i18n.test.ts` trata lista
   como chaves `0`, `1`…, então fala a menos num idioma acusa.
-- **Golden master** do mundo em `tests/rpg.mundo.test.ts` (passeio fixo pelas três cenas): muda
+- **Golden master** do mundo em `tests/rpg.mundo.test.ts` (passeio fixo por todas as cenas): muda
   só junto com `VERSAO_MUNDO` nova.
 - **Desenho 3D** (`src/features/rpg/cena3d/`): câmera ortográfica isométrica de verdade (direção
   1, 1, 1), seguindo o jogador; interiores com as paredes da frente baixas para a câmera ver a

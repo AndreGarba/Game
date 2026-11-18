@@ -3,8 +3,8 @@ import { CENAS } from './cenas.ts'
 import { TOTAL_CARTOES } from './constantes.ts'
 import type { Cartoes, IdCena } from './tipos.ts'
 
-// Cartões Ultra Blue escondidos pelo mapa. Esconderijo é todo sólido que não é prédio e todo NPC,
-// de todas as cenas. Figurante não esconde cartão: os de uma cena são sorteados de novo a cada
+// Cartões Ultra Blue escondidos pelo mapa. Esconderijo é todo sólido que não é prédio nem parede e
+// todo NPC, de todas as cenas. Figurante não esconde cartão: os de uma cena são sorteados de novo a cada
 // troca de cena, e o cartão sumiria junto com quem o carregava.
 
 export interface Esconderijo {
@@ -18,9 +18,10 @@ export function chaveDoEsconderijo(cena: IdCena, id: string): string {
   return `${cena}:${id}`
 }
 
-// Prédio é parede de rua, não objeto: revistar a fachada inteira não faz sentido. O muro do beco
-// fica atrás da lixeira, fora do alcance do A (`tests/rpg.cartoes.test.ts` confere o alcance).
-const NAO_ESCONDE = new Set(['predio', 'muro'])
+// Prédio é parede de rua, não objeto: revistar a fachada inteira não faz sentido; o vidro da sala
+// de reunião do PAN também é parede. O muro do beco fica atrás da lixeira, fora do alcance do A
+// (`tests/rpg.cartoes.test.ts` confere o alcance).
+const NAO_ESCONDE = new Set(['predio', 'muro', 'vidro-adesivado'])
 
 function listarEsconderijos(): Esconderijo[] {
   const saida: Esconderijo[] = []

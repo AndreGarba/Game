@@ -73,13 +73,16 @@
       "rua": "Avenida Faria Lima",
       "agencia": "Agência BTG Pactual",
       "escritorio": "Escritório BTG Pactual",
-      "concessionaria": "Loja de Veículos"
+      "concessionaria": "Loja de Veículos",
+      "agencia_pan": "Agência Banco PAN",
+      "escritorio_pan": "Escritório Banco PAN"
     },
     "placas": {
       "banco": "BTG Pactual",
       "concessionaria": "VEÍCULOS",
       "rua": "Av. Faria Lima",
-      "mobiauto": "Mobiauto"
+      "mobiauto": "Mobiauto",
+      "pan": "Banco PAN"
     },
     "nomes": {
       "pedestre": "Dona Cida",
@@ -94,7 +97,15 @@
       "designer": "Bia",
       "totem": "totem de senhas",
       "moodboard": "moodboard",
-      "vendedor_feirao": "Lu"
+      "vendedor_feirao": "Lu",
+      "recepcionista_pan": "Camila",
+      "atendente_pan": "Diego",
+      "coordenadora_pan": "Paula",
+      "dev_pan": "Léo",
+      "totem_pan": "totem de senhas",
+      "caixa_eletronico_1": "caixa eletrônico",
+      "tv_reuniao": "TV da sala de reunião",
+      "cafe_pan": "café"
     },
     "acao": {
       "entrar": "Entrar: {{lugar}}",
@@ -172,6 +183,40 @@
         "Bem-vindo ao feirão de seminovos da Mobiauto!",
         "Todos os carros aqui passaram por vistoria.",
         "Escolha um e pergunte pelo preço na tenda."
+      ],
+      "recepcionista_pan": [
+        "Olá! Boas-vindas ao Banco PAN.",
+        "Para abrir conta ou pedir cartão, o Diego atende na mesa do meio.",
+        "O escritório do time fica pela porta do fundo, à direita."
+      ],
+      "atendente_pan": [
+        "Oi! Sou o Diego, do atendimento.",
+        "Aqui você resolve conta digital, cartão de crédito e financiamento de veículo.",
+        "Ficou com dúvida? É só chamar. Sem fila, prometo!"
+      ],
+      "totem_pan": [
+        "Senha P-017. Aguarde ser chamado."
+      ],
+      "caixa_eletronico": [
+        "Caixa eletrônico do Banco PAN: saque, depósito e extrato.",
+        "Na tela: “Faça o Pix pelo app, é mais rápido”."
+      ],
+      "coordenadora_pan": [
+        "Boas-vindas ao escritório! Sou a Paula, coordeno o time de produto.",
+        "Acabamos a reunião de planejamento. A TV ainda mostra o roadmap.",
+        "As bancadas são livres: sente onde tiver lugar."
+      ],
+      "dev_pan": [
+        "E aí! Estou no meio de um deploy, mas pode falar.",
+        "Dois monitores: um para o código, outro para a reunião.",
+        "Se for pegar café, a copa fica ali na parede."
+      ],
+      "tv_reuniao": [
+        "O roadmap do trimestre, cheio de post-its digitais.",
+        "Alguém deixou escrito: “foco no cliente”."
+      ],
+      "cafe_pan": [
+        "Café passado na hora. O cheiro toma o escritório."
       ]
     },
     "cartoes": {
