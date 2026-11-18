@@ -101,14 +101,20 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
 
   return (
     <div className="tela-selecao">
-      <canvas ref={canvasRef} className="tela-selecao__vitrine" aria-hidden="true" />
+      <div className="tela-selecao__palco">
+        <canvas ref={canvasRef} className="tela-selecao__vitrine" aria-hidden="true" />
+        <div className="tela-selecao__botoes">
+          <button className="botao botao--primario botao--grande tela-selecao__confirmar" onClick={() => confirmar(indice)}>
+            {t('selecao.confirmar', { nome: textos[escolhido.id]?.nome })}
+          </button>
+          <button className="botao tela-selecao__voltar" onClick={() => history.back()}>
+            {t('selecao.voltar')}
+          </button>
+        </div>
+      </div>
       <div className="tela-selecao__painel">
         <h1 className="tela-selecao__titulo">{t('selecao.titulo')}</h1>
-        <div className="tela-selecao__apresentacao" aria-live="polite">
-          <p className="tela-selecao__nome">{textos[escolhido.id]?.nome}</p>
-          <p className="tela-selecao__titulo-personagem">{textos[escolhido.id]?.titulo}</p>
-          <p className="tela-selecao__descricao">{textos[escolhido.id]?.descricao}</p>
-        </div>
+        <p className="tela-selecao__nome">{textos[escolhido.id]?.nome}</p>
         <div className="tela-selecao__cards" role="radiogroup" aria-label={t('selecao.titulo')}>
           {ELENCO.map((p, i) => {
             const imagem = urlDaArte('retratos', p.id) ?? retratos[p.id]
@@ -131,13 +137,9 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
             )
           })}
         </div>
-        <div className="tela-selecao__botoes">
-          <button className="botao botao--primario botao--grande tela-selecao__confirmar" onClick={() => confirmar(indice)}>
-            {t('selecao.confirmar', { nome: textos[escolhido.id]?.nome })}
-          </button>
-          <button className="botao tela-selecao__voltar" onClick={() => history.back()}>
-            {t('selecao.voltar')}
-          </button>
+        <div className="tela-selecao__perfil" aria-live="polite">
+          <p className="tela-selecao__titulo-personagem">{textos[escolhido.id]?.titulo}</p>
+          <p className="tela-selecao__descricao">{textos[escolhido.id]?.descricao}</p>
         </div>
         <p className="tela-selecao__dica">{t('selecao.dica')}</p>
       </div>

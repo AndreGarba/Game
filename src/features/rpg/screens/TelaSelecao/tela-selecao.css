@@ -13,6 +13,14 @@
   color: var(--cor-selecao-texto);
 }
 
+.tela-selecao__palco {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  padding-bottom: calc(var(--espaco-6) + var(--safe-base));
+  padding-left: var(--safe-esquerda);
+}
+
 .tela-selecao__vitrine {
   display: block;
   width: 100%;
@@ -38,19 +46,24 @@
   color: var(--cor-home-texto-suave);
 }
 
-.tela-selecao__apresentacao {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-1);
-  width: 100%;
-}
-
 .tela-selecao__nome {
   margin: 0;
   font-size: var(--texto-5);
   font-weight: 900;
   line-height: 1;
   color: var(--cor-logo-creme);
+}
+
+/* Bloco próprio com o título e o texto do escolhido, embaixo dos cards. */
+.tela-selecao__perfil {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  width: 100%;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: 3px solid var(--cor-selecao-card-borda);
+  border-radius: var(--raio-4);
+  background: var(--cor-selecao-card);
 }
 
 .tela-selecao__titulo-personagem {
@@ -84,6 +97,7 @@
 .tela-selecao__botoes {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--espaco-3);
 }
 
