@@ -13,6 +13,14 @@
   color: var(--cor-selecao-texto);
 }
 
+/* Troca no meio da partida: cobre o jogo (que fica pausado embaixo), acima do HUD e do II. */
+.tela-selecao--troca {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  z-index: 2;
+}
+
 .tela-selecao__palco {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;

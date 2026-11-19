@@ -1,4 +1,4 @@
-import { criarMundo, DT, passoMundo, type Entrada, type EstadoMundo } from '../../engine/rpg/index.ts'
+import { criarMundo, DT, passoMundo, trocarPersonagem, type Entrada, type EstadoMundo } from '../../engine/rpg/index.ts'
 import type { QuadroRpg } from './cena3d/renderizador.ts'
 
 // Liga o mundo (passo fixo de 60 ticks/s) ao requestAnimationFrame, como o controlador do jogo de
@@ -29,7 +29,7 @@ function sementeNova(): number {
 
 function assinaturaDoHud(e: EstadoMundo): string {
   const dialogo = e.dialogo ? `${e.dialogo.id}:${e.dialogo.linha}` : ''
-  return `${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.quadro ?? ''}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}`
+  return `${e.personagem}|${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.quadro ?? ''}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}`
 }
 
 export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
@@ -82,6 +82,10 @@ export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
     },
     continuar() {
       rodando = true
+    },
+    // Fora do passo (o jogo está pausado com a escolha aberta): o desenho e o HUD pegam no próximo quadro.
+    trocarPersonagem(id: string) {
+      return trocarPersonagem(estado, id)
     },
     enviar(acao: AcaoBotao) {
       if (rodando) fila.push(acao)

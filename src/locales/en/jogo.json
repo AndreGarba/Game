@@ -126,7 +126,8 @@
       "fechar": "Close dialogue",
       "menu": "Menu",
       "correr": "Run (hold)",
-      "socar": "Punch"
+      "socar": "Punch",
+      "trocarPersonagem": "Switch character"
     },
     "dialogos": {
       "pedestre": [
@@ -279,6 +280,10 @@
     "titulo": "Choose your character",
     "confirmar": "Play as {{nome}}",
     "voltar": "Back",
-    "dica": "Arrows or tap to choose, A or Enter to play. Whoever you skip walks around the map."
+    "dica": "Arrows or tap to choose, A or Enter to play. Whoever you skip walks around the map.",
+    "tituloTroca": "Switch character",
+    "trocarPara": "Switch to {{nome}}",
+    "continuarCom": "Keep playing as {{nome}}",
+    "dicaTroca": "You stay in the same spot, with your cards and time. Whoever leaves walks the map where the new one was."
   }
 }

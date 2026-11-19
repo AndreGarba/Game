@@ -115,9 +115,9 @@ com vista de prédios, parede azul na lateral e sala de reunião de vidro adesiv
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-12'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-13'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -137,7 +137,7 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
 - **Teclas do computador** moram em `src/features/rpg/teclas.ts` (`TECLAS`, `TECLAS_DIRECAO`):
   o `useControlesRpg` lê o teclado por elas e o HUD mostra, em cada botão de toque, um selo com as
   duas primeiras teclas do comando ("Espaço / E", "Esc / Q", "F / J", "Shift", "↑←↓→ / WASD" no
-  direcional, "Esc" na pausa), além do `aria-keyshortcuts` com todas. Tecla nova entra só lá; o
+  direcional, "Esc" na pausa, "C" no trocar personagem), além do `aria-keyshortcuts` com todas. Tecla nova entra só lá; o
   nome do Espaço é traduzido (`rpg.teclas.espaco`). Os selos só aparecem com teclado
   (`useTemTeclado`): começam ligados com hover e ponteiro fino (mouse, trackpad), qualquer tecla
   liga e um toque na tela desliga. No celular nunca aparecem.
@@ -172,6 +172,15 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   conversa, apanha do soco como qualquer pedestre e não esconde cartão: os cartões são sorteados
   antes, então trocar de personagem não muda onde eles estão (há teste). No desenho, figurante do
   elenco usa o modelo completo, não o `leve`, para ser reconhecível.
+- **Trocar de personagem no meio da partida**: botão no topo do HUD, à esquerda do II (tecla C),
+  abre a `TelaSelecao` como sobreposição (`troca`), com o mundo pausado. Confirmar chama
+  `trocarPersonagem(estado, id)` (`mundo.ts`), fora do passo: muda só `estado.personagem` e
+  `jogador.visual`; cena, posição, direção, cartões, tick, balões e o resto ficam (há teste). **O
+  antigo e o novo trocam de lugar no mapa, sem sorteio**: o antigo passa a andar na cena onde o
+  novo andava (`elencoNoMapa`), e se o novo estava nesta cena o antigo assume o figurante dele ali
+  mesmo, na mesma posição (o figurante muda de id, `elenco_<antigo>`). Sem rng para a troca não
+  mexer no resto da partida; ida e volta devolve o mapa de antes. O renderizador refaz o boneco do
+  jogador quando `jogador.visual` muda e tira da cena o figurante cujo id sumiu.
 - **O jogador** tem um anel laranja no chão (`COR_ANEL_JOGADOR`): o preto chapado do Rici some no
   asfalto e no meio dos figurantes. `tatuagem` (cor da tinta) liga o braço de manga curta em
   `personagem.ts`.
@@ -623,6 +632,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | Seleção de personagens e jogo, abertos pela home (`App.tsx`) | Uma camada só (`useVoltarNativoEmCamadas` com `selecao` ou `jogo`): confirmar troca a tela sem empurrar entrada. O Voltar e o B/Esc da seleção e o botão Menu da pausa e do fim chamam `history.back()` e voltam para a home |
 | Janela de configurações (ícone da home) | `useVoltarNativoEmCamadas`; o X, o Esc e o toque no véu chamam `history.back()` |
 | Painel do ranking (ícone da home) | `useVoltarNativoEmCamadas`; o próprio ícone fecha com `history.back()` |
+| Trocar de personagem (botão do topo do HUD ou C, `TelaRpg`) | `useVoltarNativoEmCamadas` enquanto a seleção está aberta por cima do jogo; o Voltar e o B/Esc da seleção chamam `history.back()` e voltam ao jogo sem trocar. Confirmar fecha a camada e continua o jogo |
 | Pausa do RPG (`TelaRpg`; B, Esc ou o botão II) | **pendente:** como a do exemplo, o voltar do celular sai para a home em vez de fechar só a pausa |
 | Modal Entregas 2026 (quadro de avisos, `TelaRpg`) | `useVoltarNativoEmCamadas`; o X, o B e o Esc chamam `history.back()`. O fechar envia `voltar` ao motor (solta os balões) e a modal só some quando o tick roda; até lá, outro B é ignorado para não tirar a camada do jogo |
 | Objetivo concluído do RPG (os 31 cartões) | **pendente:** como a pausa, o voltar do celular sai para a home; "Continuar explorando" fecha só a mensagem |
