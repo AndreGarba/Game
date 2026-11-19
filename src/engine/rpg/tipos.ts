@@ -18,7 +18,8 @@ export interface Retangulo {
 //   porta:    troca de cena e põe o jogador em `destino`.
 //   conversa: abre o diálogo `dialogo` (NPC).
 //   olhar:    abre o diálogo `dialogo` (objeto: carro, bebedouro...).
-export type TipoInteracao = 'porta' | 'conversa' | 'olhar'
+//   quadro:   abre o quadro de avisos "Entregas 2026" (a tela mostra o conteúdo pelo id do sólido).
+export type TipoInteracao = 'porta' | 'conversa' | 'olhar' | 'quadro'
 
 export interface Destino {
   cena: IdCena
@@ -210,6 +211,31 @@ export interface Cartoes {
   concluidoEm: number | null
 }
 
+// Balão de festa, solto ao fechar um quadro de entregas. Fica na cena onde caiu (não some ao
+// sair e voltar). `y` é a altura do balão: exceção ao chão plano, só dos balões, porque flutuar
+// e cair é a regra deles (o jogador só empurra o que está na altura do corpo).
+export interface Balao {
+  id: number
+  cena: IdCena
+  // Índice da cor (paleta no desenho).
+  cor: number
+  x: number
+  z: number
+  y: number
+  // Velocidade em metros por tick.
+  vx: number
+  vz: number
+  vy: number
+}
+
+// Onde e quando a última festa (confete) estourou: o desenho solta o confete a partir daqui.
+export interface Festa {
+  cena: IdCena
+  x: number
+  z: number
+  tick: number
+}
+
 export interface Alvo {
   id: string
   tipo: TipoAlvo
@@ -238,4 +264,10 @@ export interface EstadoMundo {
   // Personagem jogável escolhido (id do elenco) e a cena de cada um dos que não foram.
   personagem: string
   elencoNoMapa: Record<string, IdCena>
+  // Quadro de entregas aberto (id do sólido): o jogador fica parado e a tela mostra a modal.
+  quadro: string | null
+  baloes: Balao[]
+  // Próximo id de balão (só cresce: o desenho acompanha cada balão pelo id).
+  proximoBalao: number
+  festa: Festa | null
 }

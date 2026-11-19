@@ -1,0 +1,103 @@
+/* Tela toda dentro da moldura: absoluta sobre a .tela-rpg, nunca fixed. */
+.modal-entregas {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: calc(var(--espaco-4) + var(--safe-topo)) calc(var(--espaco-6) + var(--safe-direita))
+    calc(var(--espaco-4) + var(--safe-base)) calc(var(--espaco-6) + var(--safe-esquerda));
+  background: var(--cor-entregas-moldura);
+  color: var(--cor-texto);
+  animation: modal-entregas-entra 0.2s ease-out;
+}
+
+.modal-entregas__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+}
+
+.modal-entregas__titulo {
+  margin: 0;
+  padding: var(--espaco-1) var(--espaco-4);
+  border-radius: var(--raio-2);
+  background: var(--cor-destaque);
+  color: var(--cor-destaque-texto);
+  font-size: var(--texto-5);
+  font-weight: 900;
+  box-shadow: var(--sombra-1);
+}
+
+.modal-entregas__local {
+  margin: var(--espaco-1) 0 0;
+  color: var(--cor-entregas-papel);
+  font-size: var(--texto-3);
+  font-weight: 700;
+}
+
+.modal-entregas__fechar {
+  flex: none;
+}
+
+.modal-entregas__quadro {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--espaco-4);
+  border-radius: var(--raio-2);
+  background: var(--cor-entregas-fundo);
+  box-shadow: inset var(--sombra-1);
+}
+
+.modal-entregas__itens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--largura-entregas-item), 1fr));
+  gap: var(--espaco-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.modal-entregas__item {
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-2);
+  background: var(--cor-entregas-papel);
+  box-shadow: var(--sombra-1);
+}
+
+.modal-entregas__item-titulo {
+  margin: 0 0 var(--espaco-1);
+  font-size: var(--texto-3);
+}
+
+.modal-entregas__item-texto {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-2);
+}
+
+.modal-entregas__provisorio {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  margin: 0;
+  color: var(--cor-entregas-moldura);
+  font-size: var(--texto-4);
+  font-weight: 700;
+  text-align: center;
+}
+
+@keyframes modal-entregas-entra {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-entregas {
+    animation: none;
+  }
+}

@@ -8,10 +8,12 @@ import { localeAtual } from '../../../../i18n/index.ts'
 import { densidadeDoJogo } from '../../../jogo/densidade.ts'
 import { abafarMusica } from '../../../musica/tocadorMusica.ts'
 import { tocarEfeito } from '../../../som/efeitosSonoros.ts'
+import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
 import { CartaoGirando, IconeCartao } from '../../cartao/CartaoUltrablue.tsx'
 import { criarRenderizador } from '../../cena3d/renderizador.ts'
 import { criarControladorRpg, type ControladorRpg } from '../../controladorRpg.ts'
 import { direcaoNoMundo } from '../../direcao.ts'
+import { ModalEntregas } from '../../entregas/ModalEntregas.tsx'
 import { formatarTempo } from '../../tempo.ts'
 import { atalhosDoComando, seloDoComando, seloDoDirecional } from '../../teclas.ts'
 import { useControlesRpg } from '../../useControlesRpg.ts'
@@ -26,6 +28,8 @@ interface Hud {
   cena: IdCena
   alvo: Alvo | null
   dialogo: DialogoAberto | null
+  // Quadro "Entregas 2026" aberto (id do sólido): a modal cobre a tela até o B fechar no motor.
+  quadro: string | null
   trocasDeCena: number
   achados: number
   concluidoEm: number | null
@@ -46,6 +50,7 @@ function hudDe(e: EstadoMundo): Hud {
     cena: e.cena,
     alvo: e.alvo,
     dialogo: e.dialogo ? { ...e.dialogo } : null,
+    quadro: e.quadro,
     trocasDeCena: e.trocasDeCena,
     achados: e.cartoes.achados,
     concluidoEm: e.cartoes.concluidoEm,
@@ -63,6 +68,10 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   const [fase, setFase] = useState<Fase>('jogando')
   const [hud, setHud] = useState<Hud | null>(null)
   const [aviso, setAviso] = useState<Aviso | null>(null)
+  // Pediu para fechar o quadro e o motor ainda não rodou o tick: um segundo B ou voltar não pode
+  // tirar outra camada do histórico (a do jogo).
+  const [fechandoQuadro, setFechandoQuadro] = useState(false)
+  const fechandoQuadroRef = useRef(false)
 
   const nomes = t('rpg.nomes', { returnObjects: true }) as unknown as Record<string, string>
   const cenas = t('rpg.cenas', { returnObjects: true }) as unknown as Record<IdCena, string>
@@ -91,9 +100,25 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     controladorRef.current?.enviar('interagir')
   }, [])
 
-  // B fecha o diálogo; sem diálogo, abre o menu (pausa). Na pausa, B volta para o jogo.
+  // Quem fecha o quadro é o motor (o `voltar` solta os balões); a modal só some quando ele roda.
+  const fecharQuadroNoMundo = useCallback(() => {
+    fechandoQuadroRef.current = true
+    setFechandoQuadro(true)
+    if (faseRef.current === 'pausado') continuar()
+    controladorRef.current?.enviar('voltar')
+  }, [continuar])
+
+  const quadroAberto = hud?.quadro ?? null
+  useVoltarNativoEmCamadas(quadroAberto !== null && !fechandoQuadro, fecharQuadroNoMundo)
+
+  // B fecha o quadro (pelo voltar nativo) ou o diálogo; sem nada aberto, abre o menu (pausa). Na
+  // pausa, B volta para o jogo.
   const apertarB = useCallback(() => {
     if (faseRef.current === 'pausado') return continuar()
+    if (controladorRef.current?.estado.quadro) {
+      if (!fechandoQuadroRef.current) history.back()
+      return
+    }
     if (controladorRef.current?.estado.dialogo) controladorRef.current.enviar('voltar')
     else pausar()
   }, [continuar, pausar])
@@ -131,6 +156,10 @@ export function TelaRpg({ personagem }: { personagem: string }) {
       personagem,
       aoMudarHud: (estado) => {
         const novo = hudDe(estado)
+        if (!novo.quadro && fechandoQuadroRef.current) {
+          fechandoQuadroRef.current = false
+          setFechandoQuadro(false)
+        }
         const revista = estado.cartoes.ultimaRevista
         if (revista && revista.tick !== ultimaRevista) {
           ultimaRevista = revista.tick
@@ -150,6 +179,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
         // Efeitos saem do que o mundo fez (abriu diálogo, trocou de cena), não do botão.
         if (anterior && novo.trocasDeCena !== anterior.trocasDeCena) tocarEfeito('pulo')
         else if (anterior && novo.dialogo && (!anterior.dialogo || anterior.dialogo.linha !== novo.dialogo.linha)) tocarEfeito('moeda')
+        else if (anterior?.quadro && !novo.quadro) tocarEfeito('fim')
         anterior = novo
         setHud(novo)
       },
@@ -179,6 +209,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
       return alvo.destino === 'rua' ? t('rpg.acao.sair') : t('rpg.acao.entrar', { lugar: cenas[alvo.destino ?? 'rua'] })
     }
     if (alvo.tipo === 'revistar') return t('rpg.acao.revistar')
+    if (alvo.tipo === 'quadro') return t('rpg.acao.quadro')
     const nome = nomes[alvo.id] ?? alvo.id
     return alvo.tipo === 'conversa' ? t('rpg.acao.conversar', { nome }) : t('rpg.acao.olhar', { nome })
   }
@@ -192,7 +223,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
       <canvas ref={canvasRef} className="tela-rpg__canvas" />
       {hud && <div key={hud.trocasDeCena} className="tela-rpg__transicao" aria-hidden="true" />}
 
-      {hud && (
+      {hud && !quadroAberto && (
         <div className="tela-rpg__hud">
           <div className="tela-rpg__topo">
             <p className="tela-rpg__lugar">{cenas[hud.cena]}</p>
@@ -315,6 +346,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
           </div>
         </div>
       )}
+
+      {quadroAberto && <ModalEntregas quadro={quadroAberto} />}
 
       {fase === 'pausado' && (
         <div className="tela-rpg__veu">

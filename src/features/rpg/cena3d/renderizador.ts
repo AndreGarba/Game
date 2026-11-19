@@ -14,6 +14,7 @@ import {
 import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
 import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
+import { criarFesta3d } from './festa.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
 import {
   anguloDaDirecao,
@@ -121,6 +122,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   cena.add(jogador.raiz)
   const cartao = criarCartao3d(fabricaJogador)
   cena.add(cartao)
+  const festa = criarFesta3d(fabricaJogador, cena)
 
   let fabricaCena = new Fabrica()
   let montada: CenaMontada | null = null
@@ -250,6 +252,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     }
 
     desenharCartao(estado, alfa)
+    festa.desenhar(estado, dt, tempo, trocou)
 
     // Com diálogo aberto, a câmera desce (+x, +z) e o jogador sobe na tela, acima da caixa de fala.
     const folga = estado.dialogo ? DESCIDA_NO_DIALOGO : 0

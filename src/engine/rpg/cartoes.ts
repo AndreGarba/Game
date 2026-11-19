@@ -19,9 +19,11 @@ export function chaveDoEsconderijo(cena: IdCena, id: string): string {
 }
 
 // Prédio é parede de rua, não objeto: revistar a fachada inteira não faz sentido; o vidro da sala
-// de reunião do PAN também é parede. O muro do beco fica atrás da lixeira, fora do alcance do A
-// (`tests/rpg.cartoes.test.ts` confere o alcance).
-const NAO_ESCONDE = new Set(['predio', 'muro', 'vidro-adesivado'])
+// de reunião do PAN e a parede do fundo do feirão também são parede. O muro do beco fica atrás da
+// lixeira, fora do alcance do A (`tests/rpg.cartoes.test.ts` confere o alcance). Quadro de
+// entregas não esconde cartão: o A nele abre a modal, e um cartão aparecendo junto disputaria a
+// tela com ela. Fora da lista, os quadros não mudam onde a mesma semente esconde os 31 cartões.
+const NAO_ESCONDE = new Set(['predio', 'muro', 'vidro-adesivado', 'parede-feirao', 'quadro-entregas'])
 
 function listarEsconderijos(): Esconderijo[] {
   const saida: Esconderijo[] = []

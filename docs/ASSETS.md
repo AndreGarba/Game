@@ -73,6 +73,7 @@ mostra "BTG Pactual" em texto branco sobre marinho). O logo oficial do BTG Pactu
 | `concessionaria` | Acima da porta da loja | 4 : 1 (6,4 × 1,6 m) | 1024 × 256 | sim |
 | `mobiauto` | Portal do feirão de seminovos, no fim da rua (logo Mobiauto, azul) | 4,6 : 1 (6 × 1,3 m) | 1200 × 260 | sim |
 | `rua` | Placa de rua "Av. Faria Lima" no primeiro poste | 4,5 : 1 (1,9 × 0,42 m) | 900 × 200 | sim |
+| `entregas` | Letreiro "Entregas 2026" acima dos quatro quadros de aviso (escritórios BTG e PAN, loja, feirão) | 4 : 1 (2 a 2,4 × 0,5 m) | 1024 × 256 | sim |
 
 O portal do feirão e a placa de rua são *letreiros* (`letreiros` em `cenas.ts`): painel solto em
 cima de postes, com o mesmo slot de `placas/` e o mesmo texto provisório quando não há imagem.

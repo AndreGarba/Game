@@ -1,4 +1,5 @@
 import { criarRng } from '../rng.ts'
+import { passoBaloes, soltarBaloes } from './baloes.ts'
 import { chaveDoEsconderijo, ehEsconderijo, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
@@ -74,6 +75,10 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     cartoes,
     personagem: escolhido.id,
     elencoNoMapa,
+    quadro: null,
+    baloes: [],
+    proximoBalao: 1,
+    festa: null,
   }
 }
 
@@ -168,6 +173,12 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.npcsDerrubados = {}
     return
   }
+  if (interacao.tipo === 'quadro') {
+    estado.quadro = c.alvo.id
+    estado.jogador.andando = false
+    estado.jogador.correndo = false
+    return
+  }
   // O A revista e conversa no mesmo toque: o cartão aparece e o diálogo abre embaixo dele.
   revistar(estado.cartoes, estado.cena, c.alvo.id, estado.tick)
   if (interacao.dialogo && interacao.linhas) {
@@ -195,7 +206,7 @@ function passoTombo(estado: EstadoMundo) {
 // Patinete andando que encosta no jogador o derruba; pedestre e patinete parado atravessam.
 function atropelar(estado: EstadoMundo) {
   const j = estado.jogador
-  if (j.tombo > 0 || j.invulneravel > 0 || estado.dialogo) return
+  if (j.tombo > 0 || j.invulneravel > 0 || estado.dialogo || estado.quadro) return
   const alcance = RAIO_JOGADOR + RAIO_FIGURANTE
   for (const f of estado.figurantes) {
     if (!f.veiculo || !f.andando) continue
@@ -298,6 +309,15 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
 
   if (derrubado) {
     passoTombo(estado)
+  } else if (estado.quadro) {
+    // Quadro de entregas aberto: parado, sem A nem soco; B (ou o X da tela) fecha e solta a festa.
+    j.andando = false
+    j.correndo = false
+    if (entrada.voltar) {
+      estado.quadro = null
+      soltarBaloes(estado)
+      estado.festa = { cena: estado.cena, x: j.x, z: j.z, tick: estado.tick }
+    }
   } else if (estado.dialogo) {
     // Com diálogo aberto o jogador não anda nem soca: A passa a fala, B fecha.
     j.andando = false
@@ -332,7 +352,8 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng)
   if (j.soco === TICKS_SOCO_IMPACTO) golpear(estado)
   atropelar(estado)
+  passoBaloes(estado)
 
-  const c = estado.dialogo || j.tombo > 0 || j.soco > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
+  const c = estado.dialogo || estado.quadro || j.tombo > 0 || j.soco > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null
 }
