@@ -126,7 +126,8 @@
       "fechar": "Cerrar diálogo",
       "menu": "Menú",
       "correr": "Correr (mantén)",
-      "socar": "Puñetazo"
+      "socar": "Puñetazo",
+      "trocarPersonagem": "Cambiar de personaje"
     },
     "dialogos": {
       "pedestre": [
@@ -279,6 +280,10 @@
     "titulo": "Elige tu personaje",
     "confirmar": "Jugar con {{nome}}",
     "voltar": "Volver",
-    "dica": "Flechas o toque para elegir, A o Enter para jugar. Quien no elijas camina por el mapa."
+    "dica": "Flechas o toque para elegir, A o Enter para jugar. Quien no elijas camina por el mapa.",
+    "tituloTroca": "Cambiar de personaje",
+    "trocarPara": "Cambiar a {{nome}}",
+    "continuarCom": "Seguir con {{nome}}",
+    "dicaTroca": "Sigues en el mismo lugar, con las tarjetas y el tiempo. Quien sale camina por el mapa donde estaba quien entra."
   }
 }

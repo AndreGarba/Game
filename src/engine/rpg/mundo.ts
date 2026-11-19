@@ -23,7 +23,7 @@ import {
   VEL_CORRER,
   VERSAO_MUNDO,
 } from './constantes.ts'
-import { espalharElenco, personagemDoElenco, PERSONAGEM_PADRAO } from './elenco.ts'
+import { ELENCO, espalharElenco, personagemDoElenco, PERSONAGEM_PADRAO } from './elenco.ts'
 import { criarFigurantes, norma, passoFigurantes } from './figurantes.ts'
 import { arrastoDoTick, avancarTombo, derrubar } from './tombo.ts'
 import type { Alvo, Cena, Entrada, EstadoMundo, Figurante, IdCena, Interacao, Retangulo, Tombo } from './tipos.ts'
@@ -80,6 +80,31 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     proximoBalao: 1,
     festa: null,
   }
+}
+
+/**
+ * Troca o personagem jogado sem sair do lugar: cena, posição, direção, cartões, tempo e o resto do
+ * estado ficam como estão; muda só quem o jogador é. Os dois trocam de lugar no mapa: o antigo
+ * passa a andar na cena onde o novo andava (e, se o novo estava nesta cena, assume o boneco dele ali
+ * mesmo, na mesma posição). Sem sorteio: a mesma troca no mesmo estado dá sempre o mesmo mapa.
+ * Devolve false (e não mexe em nada) para id desconhecido ou para quem já está sendo jogado.
+ */
+export function trocarPersonagem(estado: EstadoMundo, id: string): boolean {
+  const novo = ELENCO.find((p) => p.id === id)
+  if (!novo || novo.id === estado.personagem) return false
+  const antigo = personagemDoElenco(estado.personagem)
+  const cenaDoNovo = estado.elencoNoMapa[novo.id]
+  delete estado.elencoNoMapa[novo.id]
+  if (cenaDoNovo) estado.elencoNoMapa[antigo.id] = cenaDoNovo
+  const figurante = estado.figurantes.find((f) => f.elenco === novo.id)
+  if (figurante) {
+    figurante.id = `elenco_${antigo.id}`
+    figurante.visual = antigo.visual
+    figurante.elenco = antigo.id
+  }
+  estado.personagem = novo.id
+  estado.jogador.visual = novo.visual
+  return true
 }
 
 export function cenaAtual(estado: EstadoMundo): Cena {

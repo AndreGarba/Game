@@ -6,7 +6,7 @@ export { CENAS, CENA_INICIAL, POSICAO_INICIAL } from './cenas.ts'
 export { CORES_BALAO } from './baloes.ts'
 export { ESCONDERIJOS, chaveDoEsconderijo, type Esconderijo } from './cartoes.ts'
 export { CENAS_DO_ELENCO, ELENCO, PERSONAGEM_PADRAO, personagemDoElenco, type PersonagemJogavel } from './elenco.ts'
-export { criarMundo, cenaAtual, faseDoTombo, passoMundo, ENTRADA_PARADA } from './mundo.ts'
+export { criarMundo, cenaAtual, faseDoTombo, passoMundo, trocarPersonagem, ENTRADA_PARADA } from './mundo.ts'
 export type {
   Alvo,
   Balao,

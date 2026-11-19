@@ -23,14 +23,21 @@ const TECLAS_PROXIMO = new Set(['ArrowRight', 'ArrowDown', 'KeyD', 'KeyS'])
 const TECLAS_CONFIRMAR = new Set(['Space', 'Enter', 'NumpadEnter', 'KeyE'])
 const TECLAS_VOLTAR = new Set(['Escape', 'KeyQ', 'Backspace'])
 
+interface PropsTelaSelecao {
+  aoEscolher: (personagem: string) => void
+  // Troca no meio da partida (botão do HUD): abre por cima do jogo, já no personagem `atual`.
+  troca?: { atual: string }
+}
+
 /**
- * Seleção de personagens, entre a home e o RPG. Setas (ou toque no card) escolhem, A/Enter ou o
- * botão confirmam; B/Esc e o Voltar são `history.back()`: a camada é de quem abriu.
+ * Seleção de personagens, entre a home e o RPG, e a troca de personagem no meio da partida. Setas
+ * (ou toque no card) escolhem, A/Enter ou o botão confirmam; B/Esc e o Voltar são
+ * `history.back()`: a camada é de quem abriu.
  */
-export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) => void }) {
+export function TelaSelecao({ aoEscolher, troca }: PropsTelaSelecao) {
   const { t } = useTranslation()
   const textos = t('rpg.elenco', { returnObjects: true }) as unknown as Record<string, TextosDoPersonagem>
-  const [indice, setIndice] = useState(0)
+  const [indice, setIndice] = useState(() => (troca ? Math.max(0, ELENCO.findIndex((p) => p.id === troca.atual)) : 0))
   const [retratos, setRetratos] = useState<Record<string, string>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const vitrineRef = useRef<ReturnType<typeof criarVitrine> | null>(null)
@@ -100,12 +107,14 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
   }
 
   return (
-    <div className="tela-selecao">
+    <div className={`tela-selecao${troca ? ' tela-selecao--troca' : ''}`} role={troca ? 'dialog' : undefined} aria-modal={troca ? true : undefined}>
       <div className="tela-selecao__palco">
         <canvas ref={canvasRef} className="tela-selecao__vitrine" aria-hidden="true" />
         <div className="tela-selecao__botoes">
           <button className="botao botao--primario botao--grande tela-selecao__confirmar" onClick={() => confirmar(indice)}>
-            {t('selecao.confirmar', { nome: textos[escolhido.id]?.nome })}
+            {t(troca ? (escolhido.id === troca.atual ? 'selecao.continuarCom' : 'selecao.trocarPara') : 'selecao.confirmar', {
+              nome: textos[escolhido.id]?.nome,
+            })}
           </button>
           <button className="botao tela-selecao__voltar" onClick={() => history.back()}>
             {t('selecao.voltar')}
@@ -113,7 +122,7 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
         </div>
       </div>
       <div className="tela-selecao__painel">
-        <h1 className="tela-selecao__titulo">{t('selecao.titulo')}</h1>
+        <h1 className="tela-selecao__titulo">{t(troca ? 'selecao.tituloTroca' : 'selecao.titulo')}</h1>
         <p className="tela-selecao__nome">{textos[escolhido.id]?.nome}</p>
         <div className="tela-selecao__cards" role="radiogroup" aria-label={t('selecao.titulo')}>
           {ELENCO.map((p, i) => {
@@ -140,7 +149,7 @@ export function TelaSelecao({ aoEscolher }: { aoEscolher: (personagem: string) =
           <p className="tela-selecao__titulo-personagem">{textos[escolhido.id]?.titulo}</p>
           <p className="tela-selecao__descricao">{textos[escolhido.id]?.descricao}</p>
         </div>
-        <p className="tela-selecao__dica">{t('selecao.dica')}</p>
+        <p className="tela-selecao__dica">{t(troca ? 'selecao.dicaTroca' : 'selecao.dica')}</p>
       </div>
     </div>
   )

@@ -4,13 +4,14 @@ import type { DirecaoTela } from './direcao.ts'
 import { TECLAS, TECLAS_DIRECAO } from './teclas.ts'
 
 // Teclado do RPG: setas ou WASD andam (segurar), Shift segurado corre; A = Espaço, E ou Enter;
-// B = Esc, Q ou Backspace; soco = F ou J (listas em `teclas.ts`). O d-pad e o botão de correr da tela escrevem em `direcaoToque` e
+// B = Esc, Q ou Backspace; soco = F ou J; trocar de personagem = C (listas em `teclas.ts`). O d-pad e o botão de correr da tela escrevem em `direcaoToque` e
 // `correrToque`, e quem lê soma teclado e toque.
 
 const TECLAS_A = new Set<string>(TECLAS.a)
 const TECLAS_B = new Set<string>(TECLAS.b)
 const TECLAS_CORRER = new Set<string>(TECLAS.correr)
 const TECLAS_SOCO = new Set<string>(TECLAS.soco)
+const TECLAS_TROCAR = new Set<string>(TECLAS.trocar)
 
 export interface ControlesRpg {
   // Direção atual (teclado + toque), lida a cada tick.
@@ -21,7 +22,7 @@ export interface ControlesRpg {
   correrToque: { current: boolean }
 }
 
-export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void, aoSoco: () => void): ControlesRpg {
+export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void, aoSoco: () => void, aoTrocar: () => void): ControlesRpg {
   const seguradas = useRef(new Set<string>())
   const direcaoToque = useRef<DirecaoTela>({ direita: 0, cima: 0 })
   const correrToque = useRef(false)
@@ -29,6 +30,8 @@ export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void
   aoARef.current = aoA
   const aoSocoRef = useRef(aoSoco)
   aoSocoRef.current = aoSoco
+  const aoTrocarRef = useRef(aoTrocar)
+  aoTrocarRef.current = aoTrocar
   const aoBRef = useRef(aoB)
   aoBRef.current = aoB
   const ativoRef = useRef(ativo)
@@ -48,6 +51,9 @@ export function useControlesRpg(ativo: boolean, aoA: () => void, aoB: () => void
       } else if (TECLAS_SOCO.has(evento.code)) {
         evento.preventDefault()
         if (!evento.repeat && ativoRef.current) aoSocoRef.current()
+      } else if (TECLAS_TROCAR.has(evento.code)) {
+        evento.preventDefault()
+        if (!evento.repeat && ativoRef.current) aoTrocarRef.current()
       } else if (TECLAS_B.has(evento.code)) {
         evento.preventDefault()
         if (!evento.repeat) aoBRef.current()

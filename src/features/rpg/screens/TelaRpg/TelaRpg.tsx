@@ -14,6 +14,7 @@ import { criarRenderizador } from '../../cena3d/renderizador.ts'
 import { criarControladorRpg, type ControladorRpg } from '../../controladorRpg.ts'
 import { direcaoNoMundo } from '../../direcao.ts'
 import { ModalEntregas } from '../../entregas/ModalEntregas.tsx'
+import { TelaSelecao } from '../TelaSelecao/TelaSelecao.tsx'
 import { formatarTempo } from '../../tempo.ts'
 import { atalhosDoComando, seloDoComando, seloDoDirecional } from '../../teclas.ts'
 import { useControlesRpg } from '../../useControlesRpg.ts'
@@ -21,10 +22,12 @@ import { useTemTeclado } from '../../useTemTeclado.ts'
 import { ARTE_HUD } from '../../visual/arteDoHud.ts'
 import './tela-rpg.css'
 
-// `concluido`: achou os 31 cartões; o mundo para por trás da mensagem até continuar.
-type Fase = 'jogando' | 'pausado' | 'concluido'
+// `concluido`: achou os 31 cartões; o mundo para por trás da mensagem até continuar. `trocando`:
+// a escolha de personagem está aberta por cima, com o mundo parado.
+type Fase = 'jogando' | 'pausado' | 'concluido' | 'trocando'
 
 interface Hud {
+  personagem: string
   cena: IdCena
   alvo: Alvo | null
   dialogo: DialogoAberto | null
@@ -47,6 +50,7 @@ const MS_AVISO_NADA = 1200
 
 function hudDe(e: EstadoMundo): Hud {
   return {
+    personagem: e.personagem,
     cena: e.cena,
     alvo: e.alvo,
     dialogo: e.dialogo ? { ...e.dialogo } : null,
@@ -55,6 +59,19 @@ function hudDe(e: EstadoMundo): Hud {
     achados: e.cartoes.achados,
     concluidoEm: e.cartoes.concluidoEm,
   }
+}
+
+// Duas pessoas com setas de ida e volta: trocar quem joga.
+function IconeTrocar() {
+  return (
+    <svg className="tela-rpg__icone-trocar" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="8" cy="7" r="3" />
+      <path d="M2.5 17c0-3 2.5-5 5.5-5s5.5 2 5.5 5z" />
+      <circle cx="17" cy="9" r="2.4" />
+      <path d="M13.8 18c.3-2.5 1.6-4 3.7-4 2.2 0 3.8 1.7 4 4z" />
+      <path d="M15 2.5h5l-1.6-1.6M20 2.5l-1.6 1.6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
 }
 
 const comImagem = (url: string | null) => (url ? ({ '--imagem': `url(${url})` } as CSSProperties) : undefined)
@@ -114,6 +131,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   // B fecha o quadro (pelo voltar nativo) ou o diálogo; sem nada aberto, abre o menu (pausa). Na
   // pausa, B volta para o jogo.
   const apertarB = useCallback(() => {
+    // Na troca, o Esc é da seleção (que volta pelo histórico).
+    if (faseRef.current === 'trocando') return
     if (faseRef.current === 'pausado') return continuar()
     if (controladorRef.current?.estado.quadro) {
       if (!fechandoQuadroRef.current) history.back()
@@ -127,7 +146,30 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     controladorRef.current?.enviar('socar')
   }, [])
 
-  const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar)
+  // Trocar de personagem: abre a seleção por cima, com o mundo parado. Fechar (Voltar, Esc, voltar
+  // do celular) passa pelo `history.back()` da camada e volta para o jogo como estava.
+  const abrirTroca = useCallback(() => {
+    if (faseRef.current !== 'jogando' || controladorRef.current?.estado.quadro) return
+    controladorRef.current?.pausar()
+    mudarFase('trocando')
+  }, [mudarFase])
+
+  const fecharTroca = useCallback(() => {
+    if (faseRef.current === 'trocando') continuar()
+  }, [continuar])
+
+  useVoltarNativoEmCamadas(fase === 'trocando', fecharTroca)
+
+  const escolherNaTroca = useCallback(
+    (id: string) => {
+      const controlador = controladorRef.current
+      if (controlador?.trocarPersonagem(id)) setHud(hudDe(controlador.estado))
+      continuar()
+    },
+    [continuar],
+  )
+
+  const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar, abrirTroca)
   const temTeclado = useTemTeclado()
   const espaco = t('rpg.teclas.espaco')
   const selo = (texto: string) => (temTeclado ? texto : null)
@@ -246,6 +288,20 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             </div>
           )}
           <button
+            className="tela-rpg__trocar"
+            onClick={abrirTroca}
+            aria-label={t('rpg.controles.trocarPersonagem')}
+            title={t('rpg.controles.trocarPersonagem')}
+            aria-keyshortcuts={atalhosDoComando('trocar')}
+          >
+            <IconeTrocar />
+            {temTeclado && (
+              <span className="tela-rpg__selo-tecla tela-rpg__selo-tecla--pausa" aria-hidden="true">
+                {seloDoComando('trocar', espaco, 1)}
+              </span>
+            )}
+          </button>
+          <button
             className={`tela-rpg__pausa${ARTE_HUD.botaoPausa ? ' tela-rpg__pausa--arte' : ''}`}
             style={comImagem(ARTE_HUD.botaoPausa)}
             onClick={fase === 'pausado' ? continuar : pausar}
@@ -348,6 +404,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
       )}
 
       {quadroAberto && <ModalEntregas quadro={quadroAberto} />}
+
+      {fase === 'trocando' && hud && <TelaSelecao troca={{ atual: hud.personagem }} aoEscolher={escolherNaTroca} />}
 
       {fase === 'pausado' && (
         <div className="tela-rpg__veu">

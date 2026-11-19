@@ -72,6 +72,34 @@
   z-index: 1;
 }
 
+/* Trocar de personagem: à esquerda do II, do mesmo tamanho. */
+.tela-rpg__trocar {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  top: calc(var(--espaco-3) + var(--safe-topo));
+  right: calc(var(--espaco-4) + var(--safe-direita) + var(--tamanho-botao-icone) + var(--espaco-3));
+  width: var(--tamanho-botao-icone);
+  height: var(--tamanho-botao-icone);
+  border: 0;
+  border-radius: var(--raio-total);
+  background: var(--cor-superficie-translucida);
+  color: var(--cor-texto);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.tela-rpg__trocar:focus-visible {
+  outline: 3px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+.tela-rpg__icone-trocar {
+  width: 62%;
+  height: 62%;
+  fill: currentColor;
+}
+
 .tela-rpg__pausa--arte {
   background: var(--imagem) center / contain no-repeat;
 }

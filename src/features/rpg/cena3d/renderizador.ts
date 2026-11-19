@@ -116,10 +116,28 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   sol.shadow.normalBias = 0.03
   cena.add(sol, sol.target)
 
-  // O jogador vive a sessão inteira; a cena e os NPCs são refeitos a cada troca.
+  // O jogador vive a sessão inteira; a cena e os NPCs são refeitos a cada troca. O boneco dele tem
+  // fábrica própria: trocar de personagem refaz só ele.
   const fabricaJogador = new Fabrica()
-  const jogador = criarPersonagem(fabricaJogador, APARENCIAS[visualJogador] ?? APARENCIAS.rici!, { anel: COR_ANEL_JOGADOR })
+  let fabricaBoneco = new Fabrica()
+  let visualAtual = visualJogador
+  let jogador = criarJogador(visualJogador)
   cena.add(jogador.raiz)
+
+  function criarJogador(visual: string): Personagem {
+    return criarPersonagem(fabricaBoneco, APARENCIAS[visual] ?? APARENCIAS.rici!, { anel: COR_ANEL_JOGADOR })
+  }
+
+  function trocarBoneco(visual: string) {
+    const angulo = jogador.angulo
+    cena.remove(jogador.raiz)
+    fabricaBoneco.descartar()
+    fabricaBoneco = new Fabrica()
+    jogador = criarJogador(visual)
+    jogador.angulo = angulo
+    cena.add(jogador.raiz)
+    visualAtual = visual
+  }
   const cartao = criarCartao3d(fabricaJogador)
   cena.add(cartao)
   const festa = criarFesta3d(fabricaJogador, cena)
@@ -174,6 +192,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     if (trocou) trocarCena(estado.cena)
 
     const j = estado.jogador
+    if (j.visual !== visualAtual) trocarBoneco(j.visual)
     // Logo depois da troca, a posição anterior é da outra cena: sem interpolar.
     const x = trocou ? j.x : quadro.xAnterior + (j.x - quadro.xAnterior) * alfa
     const z = trocou ? j.z : quadro.zAnterior + (j.z - quadro.zAnterior) * alfa
@@ -251,6 +270,17 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       }
     }
 
+    // Troca de personagem: o figurante muda de id (vira quem saiu); o boneco antigo sai da cena.
+    if (figurantes.size > estado.figurantes.length) {
+      const presentes = new Set(estado.figurantes.map((f) => f.id))
+      for (const [id, p] of figurantes) {
+        if (presentes.has(id)) continue
+        montada?.grupo.remove(p.raiz)
+        figurantes.delete(id)
+        patinetes.delete(id)
+      }
+    }
+
     desenharCartao(estado, alfa)
     festa.desenhar(estado, dt, tempo, trocou)
 
@@ -285,6 +315,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   function destruir() {
     fabricaCena.descartar()
     fabricaJogador.descartar()
+    fabricaBoneco.descartar()
     renderizador.dispose()
   }
 
