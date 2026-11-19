@@ -21,6 +21,7 @@ export const TECLAS = {
   correr: ['ShiftLeft', 'ShiftRight'],
   soco: ['KeyF', 'KeyJ'],
   trocar: ['KeyC'],
+  chute: ['KeyR'],
 } as const satisfies Record<string, readonly string[]>
 
 export type ComandoComTecla = keyof typeof TECLAS

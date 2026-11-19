@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import type { Cena, Npc, Porta, Solido } from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_OBJETO as C, COR_PAREDE_INTERIOR, COR_PISO, COR_PREDIO } from '../visual/paleta.ts'
+import { marcacoesDoCampo } from './campo.ts'
 import type { Fabrica } from './fabrica.ts'
 import { modeloDoSolido } from './modelos.ts'
 import { criarPersonagem, anguloDaDirecao, type Personagem } from './personagem.ts'
@@ -194,6 +195,7 @@ export function montarCena(f: Fabrica, cena: Cena, textos: TextosDaCena): CenaMo
   }
   for (const d of [...cena.decoracoes].sort((a, b) => a.nivel - b.nivel)) {
     grupo.add(faixaDeChao(f, d.visual, d.x, d.z, d.largura, d.profundidade, 0.01 * d.nivel))
+    if (d.visual === 'campo') grupo.add(marcacoesDoCampo(f, d))
   }
   for (const s of cena.solidos) {
     const modelo = modeloDoSolido(f, s)

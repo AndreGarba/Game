@@ -33,7 +33,13 @@ export const COR_PISO: Record<string, string> = {
   'tapete-pan': '#00a3e0',
   'carpete-pan': '#565b63',
   'piso-reuniao': '#b88a5a',
+  campo: '#5fa64a',
 }
+
+// Campo de futebol: listras mais claras no gramado e as linhas; gol com trave branca e rede.
+export const COR_CAMPO = { listra: '#6cb556', linha: '#f4f4f0' }
+export const COR_GOL = { trave: '#f7f7f7', rede: '#ffffff', opacidadeRede: 0.35 }
+export const COR_BOLA = { couro: '#fafafa', gomo: '#1f2a37' }
 
 // Prédios da rua (`variante` do visual `predio`): parede, janela, detalhe e cor da placa.
 export const COR_PREDIO: Record<string, { parede: string; janela: string; detalhe: string; placa: string; textoPlaca: string }> = {

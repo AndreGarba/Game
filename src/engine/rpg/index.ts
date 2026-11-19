@@ -2,7 +2,7 @@
 // por dentro. Barrel separado do motor de exemplo: a Edge Function do ranking importa
 // `src/engine/index.ts` e não precisa carregar o mapa do RPG.
 export * from './constantes.ts'
-export { CENAS, CENA_INICIAL, POSICAO_INICIAL } from './cenas.ts'
+export { BOCA_GOL, CAMPO, CENAS, CENA_INICIAL, FUNDO_GOL, POSICAO_INICIAL } from './cenas.ts'
 export { CORES_BALAO } from './baloes.ts'
 export { ESCONDERIJOS, chaveDoEsconderijo, type Esconderijo } from './cartoes.ts'
 export { CENAS_DO_ELENCO, ELENCO, PERSONAGEM_PADRAO, personagemDoElenco, type PersonagemJogavel } from './elenco.ts'
@@ -10,6 +10,7 @@ export { criarMundo, cenaAtual, faseDoTombo, passoMundo, trocarPersonagem, ENTRA
 export type {
   Alvo,
   Balao,
+  Bola,
   Cartoes,
   Cena,
   Decoracao,
@@ -25,6 +26,7 @@ export type {
   IdCena,
   Interacao,
   JogadorRpg,
+  LadoDoGol,
   Npc,
   Porta,
   Retangulo,

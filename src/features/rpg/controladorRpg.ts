@@ -4,7 +4,7 @@ import type { QuadroRpg } from './cena3d/renderizador.ts'
 // Liga o mundo (passo fixo de 60 ticks/s) ao requestAnimationFrame, como o controlador do jogo de
 // exemplo: tempo real acumulado vira ticks, e o desenho interpola entre o tick anterior e o atual.
 
-export type AcaoBotao = 'interagir' | 'voltar' | 'socar'
+export type AcaoBotao = 'interagir' | 'voltar' | 'socar' | 'chutar'
 
 export interface OpcoesControladorRpg {
   desenhar(quadro: QuadroRpg, instante: number): void
@@ -12,7 +12,7 @@ export interface OpcoesControladorRpg {
   direcao(): { dx: number; dz: number }
   // Botão de correr (ou Shift) segurado agora.
   correndo(): boolean
-  // Só quando muda o que o HUD mostra (alvo, diálogo, quadro, cena, cartões): o React não renderiza a 60 fps.
+  // Só quando muda o que o HUD mostra (alvo, diálogo, quadro, bola por perto, gol, cena, cartões): o React não renderiza a 60 fps.
   aoMudarHud(estado: EstadoMundo): void
   // Semente da partida (esconde os cartões e sorteia os figurantes). Sem ela, uma nova por carga.
   semente?: number
@@ -29,7 +29,7 @@ function sementeNova(): number {
 
 function assinaturaDoHud(e: EstadoMundo): string {
   const dialogo = e.dialogo ? `${e.dialogo.id}:${e.dialogo.linha}` : ''
-  return `${e.personagem}|${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.quadro ?? ''}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}`
+  return `${e.personagem}|${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.quadro ?? ''}|${e.bola.aoAlcance ? 1 : 0}|${e.bola.gols}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}`
 }
 
 export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
@@ -58,6 +58,7 @@ export function criarControladorRpg(opcoes: OpcoesControladorRpg) {
           interagir: botao === 'interagir',
           voltar: botao === 'voltar',
           socar: botao === 'socar',
+          chutar: botao === 'chutar',
         }
         xAnterior = estado.jogador.x
         zAnterior = estado.jogador.z

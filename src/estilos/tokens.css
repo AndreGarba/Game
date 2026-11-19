@@ -79,6 +79,9 @@
   --cor-entregas-moldura: #3b2a1e;
   --cor-entregas-papel: #fffdf6;
   --largura-entregas-item: 260px;
+  /* "Gooool" no meio da tela quando a bola entra. */
+  --texto-gol: 72px;
+  --contorno-gol: 2px;
 
   --cor-ultrablue: #24406b;
   --cor-ultrablue-texto: #ffffff;
@@ -131,4 +134,6 @@
   --largura-botao-grande: calc(var(--px) * 280);
   --largura-card-personagem: calc(var(--px) * 170);
   --largura-entregas-item: calc(var(--px) * 360);
+  --texto-gol: calc(var(--px) * 110);
+  --contorno-gol: calc(var(--px) * 3);
 }

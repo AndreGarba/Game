@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import type { Solido } from '../../../engine/rpg/index.ts'
-import { COR_CARRO, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
+import { FUNDO_GOL as FUNDO_DO_GOL, type Solido } from '../../../engine/rpg/index.ts'
+import { COR_CARRO, COR_GOL, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
 import { fachadaProcedural, lateralProcedural, texturaDoSlot } from './texturas.ts'
 
@@ -396,7 +396,32 @@ const paredeFeirao: Construtor = (f, l, a, p) => {
   return g
 }
 
+// Gol de futebol, montado a partir da rede do fundo (o sólido `gol`, fino e comprido em z). A boca
+// fica para +x no gol esquerdo e para -x no direito: traves e travessão na linha, redes até o
+// fundo. As redes laterais do mapa (`rede-gol`) só colidem; o desenho delas está aqui.
+const ESPESSURA_TRAVE = 0.1
+const gol: Construtor = (f, l, a, p, variante) => {
+  const sinal = variante === 'direito' ? -1 : 1
+  const fundo = FUNDO_DO_GOL + l
+  const trave = f.material(COR_GOL.trave)
+  const rede = f.material(COR_GOL.rede, { transparente: COR_GOL.opacidadeRede })
+  const xLinha = sinal * (fundo - l / 2)
+  const g = new THREE.Group()
+  for (const z of [-p / 2 - ESPESSURA_TRAVE / 2, p / 2 + ESPESSURA_TRAVE / 2]) {
+    g.add(f.caixa(ESPESSURA_TRAVE, a, ESPESSURA_TRAVE, trave, { x: xLinha, z }))
+    // Rede lateral, do fundo até a trave.
+    g.add(f.caixa(fundo, a * 0.98, 0.02, rede, { x: sinal * (fundo / 2 - l / 2), z }))
+  }
+  g.add(f.caixa(ESPESSURA_TRAVE, ESPESSURA_TRAVE, p + 2 * ESPESSURA_TRAVE, trave, { x: xLinha, y: a - ESPESSURA_TRAVE }))
+  g.add(f.caixa(0.02, a * 0.98, p, rede))
+  g.add(f.caixa(fundo, 0.02, p, rede, { x: sinal * (fundo / 2 - l / 2), y: a - 0.03 }))
+  for (const c of g.children) c.castShadow = (c as THREE.Mesh).material !== rede
+  return g
+}
+
 const CONSTRUTORES: Record<string, Construtor> = {
+  gol,
+  'rede-gol': () => new THREE.Group(),
   'quadro-entregas': quadroEntregas,
   'parede-feirao': paredeFeirao,
   'caixa-eletronico': caixaEletronico,

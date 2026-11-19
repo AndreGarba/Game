@@ -153,6 +153,39 @@
   gap: var(--espaco-3);
 }
 
+/* Chute: só perto da bola, acima do soco e do A, sem empurrar os outros botões. */
+.tela-rpg__chute {
+  position: absolute;
+  right: calc(var(--espaco-4) + var(--safe-direita) + var(--tamanho-botao-acao) / 2);
+  bottom: calc(var(--espaco-3) + var(--safe-base) + var(--tamanho-botao-acao) + var(--espaco-8));
+  animation: tela-rpg-surge-dialogo 0.15s ease-out both;
+}
+
+/* Gol: o grito enorme no meio da tela, crescendo e tremendo um pouco. */
+.tela-rpg__gol {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  margin: 0;
+  color: var(--cor-ouro);
+  font-size: var(--texto-gol);
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-text-stroke: var(--contorno-gol) var(--cor-texto);
+  text-shadow: var(--sombra-2);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: tela-rpg-gol 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+@keyframes tela-rpg-gol {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3) rotate(-6deg);
+  }
+}
+
 /* A fica mais alto e mais perto do polegar, como nos controles de console. */
 .tela-rpg__botoes > :last-child {
   margin-bottom: var(--espaco-6);
@@ -174,7 +207,7 @@
   font-size: var(--texto-3);
   font-weight: 800;
   transform: translateX(-50%);
-  animation: tela-rpg-surge 0.15s ease-out both;
+  animation: tela-rpg-surge-dialogo 0.15s ease-out both;
 }
 
 .tela-rpg__acao--arte {
@@ -364,4 +397,10 @@
   font-size: var(--texto-3);
   font-weight: 700;
   line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tela-rpg__gol {
+    animation: none;
+  }
 }
