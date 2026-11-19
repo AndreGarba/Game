@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type { Cena, Npc, Porta } from '../../../engine/rpg/index.ts'
+import type { Cena, Npc, Porta, Solido } from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_OBJETO as C, COR_PAREDE_INTERIOR, COR_PISO, COR_PREDIO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
 import { modeloDoSolido } from './modelos.ts'
@@ -10,7 +10,7 @@ import { placaProcedural, texturaDePiso, texturaDoSlot } from './texturas.ts'
 // placas, letreiros e NPCs. Os figurantes mudam de lugar a cada tick e ficam no renderizador. Tudo sai dos dados da cena; nada aqui decide regra.
 
 export interface TextosDaCena {
-  // Texto provisório das placas, por variante (pan, banco, concessionaria, mobiauto, rua).
+  // Texto provisório das placas, por variante (pan, banco, concessionaria, mobiauto, rua, entregas).
   placas: Record<string, string>
 }
 
@@ -78,6 +78,9 @@ function paredesDoInterior(f: Fabrica, cena: Cena, placas: TextosDaCena['placas'
   for (const p of cena.portas.filter((p) => p.z <= 0.01)) {
     ocupado.push([p.x - 0.3, p.x + p.largura + 0.3])
     saida.push(...portaInterna(f, p))
+  }
+  for (const s of cena.solidos) {
+    if (s.visual === 'quadro-entregas' && s.z <= 0.01) ocupado.push([s.x - 0.3, s.x + s.largura + 0.3])
   }
   if (cena.placaParede && placas[cena.placaParede.variante]) {
     const { variante, x } = cena.placaParede
@@ -160,6 +163,18 @@ function portaDaRua(f: Fabrica, porta: Porta, placas: TextosDaCena['placas']): T
   return saida
 }
 
+const ALTURA_LETREIRO = 0.5
+const FOLGA_LETREIRO = 0.12
+
+// Letreiro "Entregas 2026" colado na parede, acima do quadro. Filho do modelo: gira junto com ele.
+function letreiroDasEntregas(f: Fabrica, modelo: THREE.Object3D, s: Solido, texto: string | undefined) {
+  if (!texto) return
+  const [l, p] = (s.giro ?? 0) % 2 === 1 ? [s.profundidade, s.largura] : [s.largura, s.profundidade]
+  const placa = placaComTexto(f, 'entregas', texto, Math.min(l, 2.4), ALTURA_LETREIRO)
+  placa.position.set(0, s.altura + FOLGA_LETREIRO + ALTURA_LETREIRO / 2, -p / 2 + 0.03)
+  modelo.add(placa)
+}
+
 function saidaDoInterior(f: Fabrica, porta: Porta): THREE.Object3D {
   return faixaDeChao(f, 'saida', porta.x, porta.z, porta.largura, porta.profundidade, 0.03)
 }
@@ -180,7 +195,11 @@ export function montarCena(f: Fabrica, cena: Cena, textos: TextosDaCena): CenaMo
   for (const d of [...cena.decoracoes].sort((a, b) => a.nivel - b.nivel)) {
     grupo.add(faixaDeChao(f, d.visual, d.x, d.z, d.largura, d.profundidade, 0.01 * d.nivel))
   }
-  for (const s of cena.solidos) grupo.add(modeloDoSolido(f, s))
+  for (const s of cena.solidos) {
+    const modelo = modeloDoSolido(f, s)
+    if (s.visual === 'quadro-entregas') letreiroDasEntregas(f, modelo, s, textos.placas.entregas)
+    grupo.add(modelo)
+  }
   for (const p of cena.portas) {
     if (cena.interior && p.z <= 0.01) continue
     if (cena.interior) grupo.add(saidaDoInterior(f, p))

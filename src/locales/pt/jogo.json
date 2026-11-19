@@ -82,7 +82,8 @@
       "concessionaria": "VEÍCULOS",
       "rua": "Av. Faria Lima",
       "mobiauto": "Mobiauto",
-      "pan": "Banco PAN"
+      "pan": "Banco PAN",
+      "entregas": "Entregas 2026"
     },
     "nomes": {
       "pedestre": "Dona Cida",
@@ -112,7 +113,8 @@
       "sair": "Sair para a rua",
       "conversar": "Falar com {{nome}}",
       "olhar": "Ver {{nome}}",
-      "revistar": "Procurar o cartão"
+      "revistar": "Procurar o cartão",
+      "quadro": "Ver as Entregas 2026"
     },
     "dialogo": {
       "proxima": "A ▸ continuar",
@@ -252,6 +254,25 @@
     },
     "teclas": {
       "espaco": "Espaço"
+    },
+    "entregas": {
+      "titulo": "Entregas 2026",
+      "fechar": "Fechar",
+      "provisorio": "Conteúdo em breve: as entregas deste quadro ainda vão ser publicadas aqui.",
+      "quadros": {
+        "quadro_entregas_btg": {
+          "local": "Escritório BTG Pactual"
+        },
+        "quadro_entregas_pan": {
+          "local": "Escritório Banco PAN"
+        },
+        "quadro_entregas_loja": {
+          "local": "Loja de veículos"
+        },
+        "quadro_entregas_feirao": {
+          "local": "Feirão Mobiauto"
+        }
+      }
     }
   },
   "selecao": {

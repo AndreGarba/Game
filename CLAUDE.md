@@ -115,9 +115,9 @@ com vista de prédios, parede azul na lateral e sala de reunião de vidro adesiv
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-11'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-12'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -206,7 +206,8 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
 - **Cartões Ultra Blue** (`src/engine/rpg/cartoes.ts`): `TOTAL_CARTOES` (31) escondidos, no
   máximo um por esconderijo. Esconderijo (`ESCONDERIJOS`, chave `cena:id`, porque há ids
   repetidos entre cenas) é todo sólido que não é prédio, nem o muro do beco, nem o vidro da sala de
-  reunião do PAN, e todo NPC, das seis cenas: 118 hoje. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
+  reunião do PAN, nem quadro de entregas ou a parede do feirão, e todo NPC, das seis cenas: 118
+  hoje. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
   e o cartão sumiria com quem o levava. `criarMundo` esconde os cartões pelo `estado.rng` antes de
   sortear os figurantes; a `TelaRpg` passa uma semente nova (`crypto.getRandomValues`, no
   `controladorRpg`) a cada carga, e o motor segue determinístico para a mesma semente.
@@ -223,6 +224,30 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   `concluidoEm` (pausa o mundo e mostra o objetivo concluído). O cartão 3D sai do esconderijo
   girando (`cena3d/cartao.ts`); frente pelo slot `hud/cartao-ultrablue`, cores em `COR_CARTAO`.
   Os textos impressos no cartão (`MARCAS_DO_CARTAO`) são marca, não copy: não se traduzem.
+- **Quadros "Entregas 2026"** (sólidos `quadro-entregas` com `interacao: { tipo: 'quadro' }`):
+  um no escritório do BTG, um no do PAN (parede azul, girado), um na loja de veículos e um no
+  feirão, preso na **parede do fundo do feirão** (`parede_feirao`, z 0 a 0,3, na borda do mapa;
+  os carros ficam em z 1,8 e deixam um corredor até o quadro). O letreiro acima do quadro é a
+  placa `entregas` (copy `rpg.placas.entregas`), filho do modelo, então gira junto. O A abre
+  `estado.quadro` (id do sólido): o jogador para, não revista, não soca e não é atropelado, e só
+  o `voltar` fecha. **Quadro não é esconderijo**: abrir a modal e achar cartão no mesmo toque
+  disputariam a tela, e fora dos esconderijos o sorteio dos 31 cartões não mudou.
+  A modal (`src/features/rpg/entregas/ModalEntregas.tsx`) cobre a `.tela-rpg` inteira e esconde o
+  HUD; o conteúdo de cada quadro mora em `rpg.entregas.quadros.<id>` (`local` e, quando chegar,
+  `itens: [{ titulo, texto }]`). Sem `itens`, mostra o aviso provisório. **Lista vazia no JSON não
+  serve**: vira `never[]` no tipo das chaves e o typecheck estoura (TS2589).
+- **Balões** (`src/engine/rpg/baloes.ts`): fechar o quadro solta `BALOES_POR_FESTA` em volta do
+  jogador, em lugar livre, e grava `estado.festa` (cena, posição, tick). **Moram no motor**, e não
+  na UI, porque dependem do jogador a cada tick (o empurrão) e precisam repetir igual com a mesma
+  semente: lugar, cor e altura saem do `estado.rng`, e a física é só `+ − × ÷`. Ficam no estado de
+  todas as cenas (`estado.baloes`, com `cena`), no máximo `MAX_BALOES` (o mais antigo sai): na
+  volta a uma cena, estão onde ficaram. Caem com gravidade fraca (`GRAVIDADE_BALAO`, com teto de
+  queda) até o chão e param. O jogador andando empurra o balão que encosta abaixo de
+  `ALTURA_EMPURRAO`: ganha velocidade no sentido do passo e um impulso para cima, flutua e desce de
+  novo. O `y` do balão é a única altura do motor; no ar, ele ainda bate nos sólidos (uma caixa só,
+  sem altura). Figurante não empurra e ninguém pisa no balão. O **confete é só desenho**
+  (`cena3d/festa.ts`, sorteado por hash do tick da festa, sem `Math.random`): não muda nada no
+  mundo, então não precisa repetir no motor.
 - **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
   aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
@@ -599,6 +624,7 @@ com um bottom sheet aberto. Desde a primeira tela:
 | Janela de configurações (ícone da home) | `useVoltarNativoEmCamadas`; o X, o Esc e o toque no véu chamam `history.back()` |
 | Painel do ranking (ícone da home) | `useVoltarNativoEmCamadas`; o próprio ícone fecha com `history.back()` |
 | Pausa do RPG (`TelaRpg`; B, Esc ou o botão II) | **pendente:** como a do exemplo, o voltar do celular sai para a home em vez de fechar só a pausa |
+| Modal Entregas 2026 (quadro de avisos, `TelaRpg`) | `useVoltarNativoEmCamadas`; o X, o B e o Esc chamam `history.back()`. O fechar envia `voltar` ao motor (solta os balões) e a modal só some quando o tick roda; até lá, outro B é ignorado para não tirar a camada do jogo |
 | Objetivo concluído do RPG (os 31 cartões) | **pendente:** como a pausa, o voltar do celular sai para a home; "Continuar explorando" fecha só a mensagem |
 | Pausa e fim de partida (sobreposições da `TelaJogo`) | **pendente:** o voltar sai do jogo para a home, em vez de fechar só a sobreposição |
 

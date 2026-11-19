@@ -42,6 +42,8 @@ export const COR_PREDIO: Record<string, { parede: string; janela: string; detalh
   banco: { parede: '#e8ecf2', janela: '#2c4f7c', detalhe: '#0b2341', placa: '#0b2341', textoPlaca: '#ffffff' },
   // Banco PAN: branco com vidro azul e o ciano da marca. Provisório até o logo oficial entrar pelo slot.
   pan: { parede: '#dceff8', janela: '#1673b3', detalhe: '#00a3e0', placa: '#00a3e0', textoPlaca: '#ffffff' },
+  // Letreiro "Entregas 2026" acima dos quadros de aviso.
+  entregas: { parede: '#ffffff', janela: '#ffffff', detalhe: '#f76b15', placa: '#f76b15', textoPlaca: '#ffffff' },
   mobiauto: { parede: '#ffffff', janela: '#7ec3e6', detalhe: '#1450c8', placa: '#1450c8', textoPlaca: '#ffffff' },
   rua: { parede: '#ffffff', janela: '#ffffff', detalhe: '#1b4f9c', placa: '#1b4f9c', textoPlaca: '#ffffff' },
   concessionaria: { parede: '#f2f2f2', janela: '#7ec3e6', detalhe: '#d6402f', placa: '#d6402f', textoPlaca: '#ffffff' },
@@ -107,6 +109,23 @@ export const COR_OBJETO = {
   predioJanela: '#7f93a8',
   predioJanelaEscuro: '#5d7086',
 }
+
+// Quadro de avisos "Entregas 2026": moldura, cortiça e os papéis presos nela.
+export const COR_QUADRO = {
+  moldura: '#3b2a1e',
+  fundo: '#d9b98a',
+  papeis: ['#ffffff', '#ffd84d', '#7fd1f0', '#f7a8c4', '#b7e4a1'],
+  alfinete: '#e5484d',
+}
+
+// Parede do fundo do feirão Mobiauto: painel branco com as faixas azuis da marca.
+export const COR_PAREDE_FEIRAO = { painel: '#f4f6fb', faixa: '#1450c8', base: '#8e949c' }
+
+// Balões de festa (o motor sorteia o índice: CORES_BALAO precisa bater com o tamanho da lista) e
+// o confete que cai ao fechar a modal das entregas.
+export const COR_BALOES = ['#e5484d', '#f2b81d', '#2f6fd6', '#3f9a63', '#9b6bd6', '#f76b15']
+export const COR_FIO_BALAO = '#f4f4f4'
+export const COR_CONFETE = ['#e5484d', '#f2b81d', '#2f6fd6', '#3f9a63', '#9b6bd6', '#f76b15', '#00a3e0', '#ffffff']
 
 // Paredes do interior (fundo em z = 0 e lado em x = 0) por cena; a que não está aqui usa `parede`.
 export const COR_PAREDE_INTERIOR: Record<string, { fundo: string; lado: string }> = {

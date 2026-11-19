@@ -82,7 +82,8 @@
       "concessionaria": "CARS",
       "rua": "Faria Lima Ave.",
       "mobiauto": "Mobiauto",
-      "pan": "Banco PAN"
+      "pan": "Banco PAN",
+      "entregas": "Deliveries 2026"
     },
     "nomes": {
       "pedestre": "Mrs. Cida",
@@ -112,7 +113,8 @@
       "sair": "Go out to the street",
       "conversar": "Talk to {{nome}}",
       "olhar": "Check the {{nome}}",
-      "revistar": "Search for the card"
+      "revistar": "Search for the card",
+      "quadro": "See Deliveries 2026"
     },
     "dialogo": {
       "proxima": "A ▸ next",
@@ -252,6 +254,25 @@
     },
     "teclas": {
       "espaco": "Space"
+    },
+    "entregas": {
+      "titulo": "Deliveries 2026",
+      "fechar": "Close",
+      "provisorio": "Content coming soon: this board's deliveries will be posted here.",
+      "quadros": {
+        "quadro_entregas_btg": {
+          "local": "BTG Pactual office"
+        },
+        "quadro_entregas_pan": {
+          "local": "Banco PAN office"
+        },
+        "quadro_entregas_loja": {
+          "local": "Car dealership"
+        },
+        "quadro_entregas_feirao": {
+          "local": "Mobiauto car fair"
+        }
+      }
     }
   },
   "selecao": {

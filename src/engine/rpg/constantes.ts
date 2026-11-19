@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-11'
+export const VERSAO_MUNDO = 'rpg-12'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -66,3 +66,25 @@ export const COS_LEQUE_SOCO = 0.5
 
 // Cartões Ultra Blue escondidos pelo mapa, um por esconderijo, sorteados a cada partida.
 export const TOTAL_CARTOES = 31
+
+// Balões que caem ao fechar um quadro de entregas. Poucos por desempenho no celular: cada um é
+// uma malha no desenho. Passou de MAX_BALOES, o mais antigo some.
+export const BALOES_POR_FESTA = 8
+export const MAX_BALOES = 24
+export const RAIO_BALAO = 0.22
+// Nascem acima do jogador, espalhados num quadrado de 2 × ESPALHAR_BALOES de lado.
+export const ESPALHAR_BALOES = 1.6
+export const ALTURA_SOLTURA_MIN = 2.4
+export const ALTURA_SOLTURA_MAX = 3.4
+// Queda: gravidade fraca e velocidade máxima baixa (o balão desce devagar, como balão de ar).
+export const GRAVIDADE_BALAO = 0.0006
+export const QUEDA_MAX_BALAO = 0.015
+// Empurrão: o jogador andando encosta num balão até ALTURA_EMPURRAO e ele sai voando na direção
+// do passo e sobe (pico ≈ IMPULSO² / (2 · GRAVIDADE) ≈ 1,2 m), freando no ar e mais no chão.
+export const ALTURA_EMPURRAO = 1.6
+export const VEL_EMPURRAO_BALAO = 0.07
+export const IMPULSO_BALAO = 0.038
+export const ATRITO_AR_BALAO = 0.97
+export const ATRITO_CHAO_BALAO = 0.8
+// Abaixo disso (m/tick), a velocidade vira zero: o balão parado não fica deslizando para sempre.
+export const VEL_MIN_BALAO = 0.0005

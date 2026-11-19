@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import type { Solido } from '../../../engine/rpg/index.ts'
-import { COR_CARRO, COR_OBJETO as C, COR_PREDIO, COR_TELHADO } from '../visual/paleta.ts'
+import { COR_CARRO, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
 import { fachadaProcedural, lateralProcedural, texturaDoSlot } from './texturas.ts'
 
@@ -359,7 +359,46 @@ const bandeira: Construtor = (f, l, a, _p, variante) => {
   )
 }
 
+// Quadro de avisos na parede: moldura escura, cortiça e papéis coloridos presos com alfinete. O
+// letreiro "Entregas 2026" vai acima, colado na parede (montarCena, que tem o texto traduzido).
+const ALTURA_BASE_QUADRO = 0.95
+const quadroEntregas: Construtor = (f, l, a, p) => {
+  const altura = a - ALTURA_BASE_QUADRO
+  const z = -p / 2
+  const g = grupo(
+    f.caixa(l, altura, p * 0.6, f.material(COR_QUADRO.moldura), { y: ALTURA_BASE_QUADRO, z: z + p * 0.3 }),
+    f.caixa(l - 0.16, altura - 0.16, 0.02, f.material(COR_QUADRO.fundo), { y: ALTURA_BASE_QUADRO + 0.08, z: z + p * 0.6 + 0.01 }),
+  )
+  const colunas = Math.max(2, Math.floor((l - 0.3) / 0.42))
+  for (let c = 0; c < colunas; c++) {
+    for (let r = 0; r < 2; r++) {
+      const i = c * 2 + r
+      const x = -l / 2 + 0.28 + c * ((l - 0.56) / Math.max(1, colunas - 1))
+      const y = ALTURA_BASE_QUADRO + 0.2 + r * (altura * 0.45)
+      const papel = f.material(COR_QUADRO.papeis[i % COR_QUADRO.papeis.length]!)
+      g.add(
+        f.caixa(0.3, 0.36 - (i % 3) * 0.04, 0.01, papel, { x, y, z: z + p * 0.6 + 0.03 }),
+        f.caixa(0.04, 0.04, 0.03, f.material(COR_QUADRO.alfinete), { x, y: y + 0.28 - (i % 3) * 0.04, z: z + p * 0.6 + 0.05 }),
+      )
+    }
+  }
+  return g
+}
+
+// Parede do fundo do feirão: painel claro com faixa azul em cima e rodapé, em pilares.
+const paredeFeirao: Construtor = (f, l, a, p) => {
+  const g = grupo(
+    f.caixa(l, a, p, f.material(COR_PAREDE_FEIRAO.painel)),
+    f.caixa(l + 0.02, 0.45, p + 0.02, f.material(COR_PAREDE_FEIRAO.faixa), { y: a - 0.7 }),
+    f.caixa(l + 0.02, 0.25, p + 0.02, f.material(COR_PAREDE_FEIRAO.base)),
+  )
+  for (let x = -l / 2 + 0.15; x <= l / 2; x += 4) g.add(f.caixa(0.3, a + 0.1, p + 0.08, f.material(COR_PAREDE_FEIRAO.base), { x }))
+  return g
+}
+
 const CONSTRUTORES: Record<string, Construtor> = {
+  'quadro-entregas': quadroEntregas,
+  'parede-feirao': paredeFeirao,
   'caixa-eletronico': caixaEletronico,
   'vidro-adesivado': vidroAdesivado,
   tv,

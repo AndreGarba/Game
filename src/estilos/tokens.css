@@ -74,6 +74,12 @@
   --cor-dialogo-borda: #1f2a37;
   --cor-transicao: #0f172a;
   /* Cartões Ultra Blue: contador e aviso no HUD (as cores do cartão em si moram na paleta 3D). */
+  /* Modal "Entregas 2026": cortiça do quadro de avisos atrás dos cartões de conteúdo. */
+  --cor-entregas-fundo: #d9b98a;
+  --cor-entregas-moldura: #3b2a1e;
+  --cor-entregas-papel: #fffdf6;
+  --largura-entregas-item: 260px;
+
   --cor-ultrablue: #24406b;
   --cor-ultrablue-texto: #ffffff;
 
@@ -124,4 +130,5 @@
   --largura-janela: calc(var(--px) * 560);
   --largura-botao-grande: calc(var(--px) * 280);
   --largura-card-personagem: calc(var(--px) * 170);
+  --largura-entregas-item: calc(var(--px) * 360);
 }
