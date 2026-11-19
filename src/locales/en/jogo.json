@@ -127,7 +127,8 @@
       "menu": "Menu",
       "correr": "Run (hold)",
       "socar": "Punch",
-      "trocarPersonagem": "Switch character"
+      "trocarPersonagem": "Switch character",
+      "chutar": "Kick"
     },
     "dialogos": {
       "pedestre": [
@@ -274,6 +275,9 @@
           "local": "Mobiauto car fair"
         }
       }
+    },
+    "futebol": {
+      "gol": "Gooooooaaaaalllll"
     }
   },
   "selecao": {

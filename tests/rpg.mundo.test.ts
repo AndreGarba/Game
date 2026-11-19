@@ -30,7 +30,7 @@ import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
 
 function andar(estado: EstadoMundo, dx: number, dz: number, ticks: number, correr = false) {
   for (let i = 0; i < ticks; i++) passoMundo(estado, { ...PARADO, dx, dz, correr })
@@ -667,6 +667,30 @@ describe('mundo do RPG', () => {
     apertarA(e)
     expect(e.cena).toBe('rua')
     expect(e.npcsDerrubados).toEqual({})
+  })
+
+  it('golden master: da calçada ao gol, conduzindo e chutando', () => {
+    const e = criarMundo()
+    const marcos: unknown[] = []
+    const marcar = () => marcos.push(structuredClone(e))
+    // Atravessa a avenida, desce até a altura da bola e a conduz para a direita.
+    andar(e, 0, 1, 50)
+    andar(e, 1, 0, 114, true)
+    // Na ciclofaixa, um patinete pode derrubar: anda até chegar, com limite.
+    for (let i = 0; i < 900 && e.jogador.z < e.bola.z; i++) andar(e, 0, 1, 1, true)
+    marcar()
+    andar(e, 1, 0, 60)
+    marcar()
+    // Para perto dela e chuta para o gol direito.
+    for (let i = 0; i < 200 && !e.bola.aoAlcance; i++) andar(e, 1, 0, 1)
+    passoMundo(e, { ...PARADO, chutar: true })
+    marcar()
+    for (let i = 0; i < 240 && e.bola.gols === 0; i++) passoMundo(e, PARADO)
+    expect(e.bola.ultimoGol?.lado).toBe('direito')
+    marcar()
+    andar(e, 0, 0, 160)
+    marcar()
+    expect(marcos).toMatchSnapshot()
   })
 
   it('golden master: passeio fixo por todas as cenas', () => {

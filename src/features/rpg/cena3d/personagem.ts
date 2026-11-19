@@ -439,3 +439,29 @@ export function animarSoco(p: Personagem, preparo: number, golpe: number) {
   }
   guarda.rotation.x = -0.7
 }
+
+// Chute: a perna direita vai para trás (rotação x positiva leva o pé para -z), dispara para a
+// frente no impacto e volta; o corpo inclina para trás e os braços abrem para equilibrar.
+const PERNA_ATRAS = 0.8
+const PERNA_CHUTE = -1.35
+const INCLINA_CHUTE = -0.12
+
+/** `t` de 0 a 1 no chute inteiro; `impacto` é a fração de `t` em que o pé encontra a bola. */
+export function animarChute(p: Personagem, t: number, impacto: number) {
+  const perna = p.pernas[1]
+  let angulo: number
+  if (t < impacto) angulo = PERNA_ATRAS * (t / impacto)
+  else {
+    const u = (t - impacto) / (1 - impacto)
+    // Estica rápido no primeiro terço e recolhe devagar.
+    angulo = u < 0.3 ? PERNA_ATRAS + (PERNA_CHUTE - PERNA_ATRAS) * (u / 0.3) : PERNA_CHUTE * (1 - (u - 0.3) / 0.7)
+  }
+  perna.rotation.x = angulo
+  p.pernas[0].rotation.x = 0
+  const abre = Math.sin(Math.PI * t)
+  p.bracos[0].rotation.z = -0.6 * abre
+  p.bracos[1].rotation.z = 0.6 * abre
+  p.bracos[0].rotation.x = 0.4 * abre
+  p.bracos[1].rotation.x = -0.3 * abre
+  p.corpo.rotation.x = INCLINA_CHUTE * abre
+}

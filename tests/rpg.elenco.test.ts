@@ -10,7 +10,7 @@ import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
 
 // Primeira semente em que `id` cai na cena pedida.
 function sementeCom(id: string, cena: IdCena, personagem: string): number {

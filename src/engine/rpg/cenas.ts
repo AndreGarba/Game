@@ -6,6 +6,31 @@ import type { Cena, IdCena } from './tipos.ts'
 // Medidas em metros. A rua corre ao longo de x; as fachadas ficam em z = 8, viradas para a câmera.
 // Aparência (`visual`, `variante`) é só nome: o desenho escolhe modelo, cor e textura por ele.
 
+// Campo de futebol no gramado do outro lado da avenida (z > 20): gols nas pontas em x, com a boca
+// virada para o meio. Só as redes e as traves bloqueiam; o campo em si é chão.
+export const CAMPO = { x: 22, z: 24, largura: 32, profundidade: 18 }
+export const BOCA_GOL = 5.2
+export const FUNDO_GOL = 1.4
+const ALTURA_GOL = 2
+const ESPESSURA_REDE = 0.1
+const CENTRO_Z_CAMPO = CAMPO.z + CAMPO.profundidade / 2
+
+// As três redes de um gol (fundo e laterais; a frente da lateral é a trave). O modelo inteiro sai
+// do fundo (`visual: 'gol'`); as laterais só colidem.
+function gol(lado: 'esquerdo' | 'direito') {
+  const linha = lado === 'esquerdo' ? CAMPO.x : CAMPO.x + CAMPO.largura
+  const fundo = lado === 'esquerdo' ? linha - FUNDO_GOL - ESPESSURA_REDE : linha + FUNDO_GOL
+  // A lateral vai do fundo até a linha (a trave fica do lado de fora, sem invadir o campo).
+  const ladoX = lado === 'esquerdo' ? fundo : linha
+  const z0 = CENTRO_Z_CAMPO - BOCA_GOL / 2
+  const lateral = { visual: 'rede-gol', x: ladoX, largura: FUNDO_GOL + ESPESSURA_REDE, profundidade: ESPESSURA_REDE, altura: ALTURA_GOL }
+  return [
+    { id: `gol_${lado}`, visual: 'gol', variante: lado, x: fundo, z: z0, largura: ESPESSURA_REDE, profundidade: BOCA_GOL, altura: ALTURA_GOL },
+    { id: `gol_${lado}_rede_0`, ...lateral, z: z0 - ESPESSURA_REDE },
+    { id: `gol_${lado}_rede_1`, ...lateral, z: z0 + BOCA_GOL },
+  ]
+}
+
 // Aparências dos figurantes (paleta em features/rpg/visual).
 const VISUAIS_RUA = ['figurante_1', 'figurante_2', 'figurante_3', 'figurante_4', 'figurante_5', 'figurante_6']
 const VISUAIS_CLIENTES = ['figurante_1', 'figurante_3', 'figurante_5', 'figurante_6']
@@ -15,7 +40,7 @@ const VISUAIS_ESCRITORIO_PAN = ['figurante_7', 'figurante_8', 'figurante_1', 'fi
 const RUA: Cena = {
   id: 'rua',
   largura: 77,
-  profundidade: 26,
+  profundidade: 45,
   interior: false,
   piso: 'grama',
   decoracoes: [
@@ -24,6 +49,7 @@ const RUA: Cena = {
     { visual: 'calcada', x: 0, z: 17, largura: 77, profundidade: 3, nivel: 1 },
     { visual: 'ciclofaixa', x: 0, z: 17.1, largura: 77, profundidade: 1, nivel: 2 },
     { visual: 'piso-feirao', x: 56.5, z: 0, largura: 20.5, profundidade: 8, nivel: 1 },
+    { visual: 'campo', ...CAMPO, nivel: 1 },
     ...[1, 6, 11, 16, 21, 26, 39, 44, 49, 55, 60, 65, 70, 74].map((x) => ({ visual: 'faixa', x, z: 13.9, largura: 3, profundidade: 0.2, nivel: 2 })),
     ...[11.4, 12.4, 13.4, 14.4, 15.4, 16.2].map((z) => ({
       visual: 'faixa',
@@ -60,6 +86,8 @@ const RUA: Cena = {
       profundidade: 0.5,
       altura: 4.6,
     })),
+    ...gol('esquerdo'),
+    ...gol('direito'),
     { id: 'banco_praca', visual: 'banco', x: 30, z: 18.6, largura: 2, profundidade: 0.6, altura: 0.8 },
     { id: 'carro_parado_1', visual: 'carro', variante: 'verde', x: 16, z: 11.5, largura: 4.2, profundidade: 1.8, altura: 1.5 },
     { id: 'carro_parado_2', visual: 'carro', variante: 'branco', x: 44, z: 15, largura: 4.2, profundidade: 1.8, altura: 1.5, giro: 2 },

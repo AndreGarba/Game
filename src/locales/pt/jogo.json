@@ -127,7 +127,8 @@
       "menu": "Menu",
       "correr": "Correr (segure)",
       "socar": "Soco",
-      "trocarPersonagem": "Trocar de personagem"
+      "trocarPersonagem": "Trocar de personagem",
+      "chutar": "Chutar"
     },
     "dialogos": {
       "pedestre": [
@@ -274,6 +275,9 @@
           "local": "Feirão Mobiauto"
         }
       }
+    },
+    "futebol": {
+      "gol": "Gooooooollllllllll"
     }
   },
   "selecao": {

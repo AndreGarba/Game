@@ -1,5 +1,6 @@
 import { criarRng } from '../rng.ts'
 import { passoBaloes, soltarBaloes } from './baloes.ts'
+import { bolaAoAlcance, chutarBola, criarBola, mirarNaBola, passoBola } from './bola.ts'
 import { chaveDoEsconderijo, ehEsconderijo, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
@@ -18,6 +19,8 @@ import {
   TICKS_RECARGA_SOCO,
   TICKS_SOCO,
   TICKS_SOCO_IMPACTO,
+  TICKS_CHUTE,
+  TICKS_CHUTE_IMPACTO,
   TICKS_SUSTO_PATINETE,
   VEL_ANDAR,
   VEL_CORRER,
@@ -34,7 +37,7 @@ export { faseDoTombo } from './tombo.ts'
 // no lugar. Só aritmética básica, como o motor do template: o mesmo log de entradas dá sempre o
 // mesmo mundo, em qualquer aparelho.
 
-export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
+export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
 
 // O elenco que não foi escolhido e está nesta cena, para entrar entre os figurantes.
 function elencoNaCena(elencoNoMapa: Record<string, IdCena>, cena: IdCena) {
@@ -65,6 +68,7 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
       invulneravel: 0,
       soco: 0,
       recargaSoco: 0,
+      chute: 0,
     },
     alvo: null,
     dialogo: null,
@@ -79,6 +83,7 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     baloes: [],
     proximoBalao: 1,
     festa: null,
+    bola: criarBola(),
   }
 }
 
@@ -315,6 +320,15 @@ function passoSoco(estado: EstadoMundo) {
   if (j.soco >= TICKS_SOCO) j.soco = 0
 }
 
+// Chutando: parado, como no soco. A bola sai no impacto (em `passoMundo`, depois dos figurantes).
+function passoChute(estado: EstadoMundo) {
+  const j = estado.jogador
+  j.andando = false
+  j.correndo = false
+  j.chute += 1
+  if (j.chute >= TICKS_CHUTE) j.chute = 0
+}
+
 function passoNpcsDerrubados(estado: EstadoMundo) {
   for (const id of Object.keys(estado.npcsDerrubados)) {
     if (avancarTombo(estado.npcsDerrubados[id]!)) delete estado.npcsDerrubados[id]
@@ -354,6 +368,14 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
     }
   } else if (j.soco > 0) {
     passoSoco(estado)
+  } else if (j.chute > 0) {
+    passoChute(estado)
+  } else if (entrada.chutar && bolaAoAlcance(estado)) {
+    // Longe da bola, o R não faz nada (e o botão nem aparece).
+    mirarNaBola(estado)
+    j.chute = 1
+    j.andando = false
+    j.correndo = false
   } else if (entrada.socar && j.recargaSoco === 0) {
     j.soco = 1
     j.recargaSoco = TICKS_RECARGA_SOCO
@@ -376,9 +398,11 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
 
   passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng)
   if (j.soco === TICKS_SOCO_IMPACTO) golpear(estado)
+  if (j.chute === TICKS_CHUTE_IMPACTO) chutarBola(estado)
   atropelar(estado)
   passoBaloes(estado)
+  passoBola(estado)
 
-  const c = estado.dialogo || estado.quadro || j.tombo > 0 || j.soco > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
+  const c = estado.dialogo || estado.quadro || j.tombo > 0 || j.soco > 0 || j.chute > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null
 }

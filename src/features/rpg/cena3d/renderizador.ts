@@ -6,12 +6,15 @@ import {
   TICKS_NO_CHAO,
   TICKS_SOCO,
   TICKS_SOCO_IMPACTO,
+  TICKS_CHUTE,
+  TICKS_CHUTE_IMPACTO,
   TICKS_SUSTO_PATINETE,
   type EstadoMundo,
   type IdCena,
   type Tombo,
 } from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
+import { criarBola3d } from './bola3d.ts'
 import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
 import { criarFesta3d } from './festa.ts'
@@ -19,6 +22,7 @@ import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts
 import {
   anguloDaDirecao,
   animarPersonagem,
+  animarChute,
   animarSoco,
   animarTombo,
   criarPatinete,
@@ -141,6 +145,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   const cartao = criarCartao3d(fabricaJogador)
   cena.add(cartao)
   const festa = criarFesta3d(fabricaJogador, cena)
+  const bola = criarBola3d(fabricaJogador, cena)
 
   let fabricaCena = new Fabrica()
   let montada: CenaMontada | null = null
@@ -207,6 +212,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       const t = j.soco - 1 + alfa
       const impacto = TICKS_SOCO_IMPACTO - 1
       animarSoco(jogador, Math.min(1, t / impacto), t <= impacto ? 0 : Math.min(1, (t - impacto) / (TICKS_SOCO - 1 - impacto)))
+    } else if (j.chute > 0) {
+      animarChute(jogador, Math.min(1, (j.chute - 1 + alfa) / (TICKS_CHUTE - 1)), (TICKS_CHUTE_IMPACTO - 1) / (TICKS_CHUTE - 1))
     }
     if (jogador.anel) jogador.anel.visible = j.invulneravel === 0 || Math.floor(tempo * PISCADAS_POR_SEGUNDO * 2) % 2 === 0
 
@@ -283,6 +290,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
 
     desenharCartao(estado, alfa)
     festa.desenhar(estado, dt, tempo, trocou)
+    bola.desenhar(estado, dt, trocou)
 
     // Com diálogo aberto, a câmera desce (+x, +z) e o jogador sobe na tela, acima da caixa de fala.
     const folga = estado.dialogo ? DESCIDA_NO_DIALOGO : 0

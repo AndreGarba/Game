@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { useTranslation } from 'react-i18next'
 import { BotaoToque } from '../../../../components/BotaoToque/BotaoToque.tsx'
 import { DirecionalToque } from '../../../../components/DirecionalToque/DirecionalToque.tsx'
+import { IconeBola } from '../../../../components/IconeBola/IconeBola.tsx'
 import { IconeSoco } from '../../../../components/IconeSoco/IconeSoco.tsx'
 import { personagemDoElenco, TOTAL_CARTOES, type Alvo, type DialogoAberto, type EstadoMundo, type IdCena } from '../../../../engine/rpg/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
@@ -36,6 +37,8 @@ interface Hud {
   trocasDeCena: number
   achados: number
   concluidoEm: number | null
+  // Bola ao alcance do chute: só então aparece o botão R.
+  bolaPerto: boolean
 }
 
 // Aviso da última revista: `chave` é o tick dela, para o React refazer a animação a cada achado.
@@ -47,6 +50,8 @@ interface Aviso {
 // Quanto tempo o aviso de cartão (ou de "nada aqui") fica na tela.
 const MS_AVISO_ACHOU = 2600
 const MS_AVISO_NADA = 1200
+// Quanto tempo o "Gooool" fica na tela (a bola volta ao centro um pouco depois).
+const MS_GOL = 2400
 
 function hudDe(e: EstadoMundo): Hud {
   return {
@@ -58,6 +63,7 @@ function hudDe(e: EstadoMundo): Hud {
     trocasDeCena: e.trocasDeCena,
     achados: e.cartoes.achados,
     concluidoEm: e.cartoes.concluidoEm,
+    bolaPerto: e.bola.aoAlcance,
   }
 }
 
@@ -85,6 +91,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   const [fase, setFase] = useState<Fase>('jogando')
   const [hud, setHud] = useState<Hud | null>(null)
   const [aviso, setAviso] = useState<Aviso | null>(null)
+  // Tick do último gol, para o React refazer a animação a cada gol.
+  const [gol, setGol] = useState<number | null>(null)
   // Pediu para fechar o quadro e o motor ainda não rodou o tick: um segundo B ou voltar não pode
   // tirar outra camada do histórico (a do jogo).
   const [fechandoQuadro, setFechandoQuadro] = useState(false)
@@ -146,6 +154,10 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     controladorRef.current?.enviar('socar')
   }, [])
 
+  const chutar = useCallback(() => {
+    controladorRef.current?.enviar('chutar')
+  }, [])
+
   // Trocar de personagem: abre a seleção por cima, com o mundo parado. Fechar (Voltar, Esc, voltar
   // do celular) passa pelo `history.back()` da camada e volta para o jogo como estava.
   const abrirTroca = useCallback(() => {
@@ -169,7 +181,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     [continuar],
   )
 
-  const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar, abrirTroca)
+  const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar, abrirTroca, chutar)
   const temTeclado = useTemTeclado()
   const espaco = t('rpg.teclas.espaco')
   const selo = (texto: string) => (temTeclado ? texto : null)
@@ -191,6 +203,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     let anterior: Hud | null = null
     let ultimaRevista = -1
     let tempoAviso: ReturnType<typeof setTimeout> | undefined
+    let tempoGol: ReturnType<typeof setTimeout> | undefined
+    let ultimoGol = -1
     const controlador = criarControladorRpg({
       desenhar: renderizador.desenhar,
       direcao: () => direcaoNoMundo(controles.direcao()),
@@ -212,6 +226,14 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             clearTimeout(tempoAviso)
             tempoAviso = setTimeout(() => setAviso(null), revista.achou ? MS_AVISO_ACHOU : MS_AVISO_NADA)
           }
+        }
+        const golFeito = estado.bola.ultimoGol
+        if (golFeito && golFeito.tick !== ultimoGol) {
+          ultimoGol = golFeito.tick
+          tocarEfeito('fim')
+          setGol(golFeito.tick)
+          clearTimeout(tempoGol)
+          tempoGol = setTimeout(() => setGol(null), MS_GOL)
         }
         if (novo.concluidoEm !== null && anterior?.concluidoEm === null) {
           tocarEfeito('fim')
@@ -239,6 +261,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
 
     return () => {
       clearTimeout(tempoAviso)
+      clearTimeout(tempoGol)
       observador.disconnect()
       document.removeEventListener('visibilitychange', aoMudarVisibilidade)
       controlador.desligar()
@@ -286,6 +309,11 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               {aviso.achou && <CartaoGirando classe="tela-rpg__aviso-cartao" />}
               <p className="tela-rpg__aviso-texto">{aviso.achou ? t('rpg.cartoes.encontrado') : t('rpg.cartoes.nada')}</p>
             </div>
+          )}
+          {gol !== null && (
+            <p key={gol} className="tela-rpg__gol" role="status">
+              {t('rpg.futebol.gol')}
+            </p>
           )}
           <button
             className="tela-rpg__trocar"
@@ -358,6 +386,18 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               imagemSeta={ARTE_HUD.direcionalSeta}
             />
           </div>
+          {hud.bolaPerto && !dialogo && (
+            <div className="tela-rpg__chute">
+              <BotaoToque
+                rotulo={<IconeBola />}
+                descricao={t('rpg.controles.chutar')}
+                aoApertar={chutar}
+                variante="secundario"
+                tecla={selo(seloDoComando('chute', espaco))}
+                atalhos={atalhosDoComando('chute')}
+              />
+            </div>
+          )}
           <div className="tela-rpg__botoes">
             <BotaoToque
               rotulo="»"

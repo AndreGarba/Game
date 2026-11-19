@@ -115,9 +115,9 @@ com vista de prédios, parede azul na lateral e sala de reunião de vidro adesiv
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-13'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-14'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -129,15 +129,15 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   ignora. Mapa em `src/engine/rpg/cenas.ts`: `solidos` (retângulos que bloqueiam), `portas`
   (zonas com `destino`), `npcs` (bloqueiam num quadrado de `RAIO_NPC`) e `decoracoes` (chão).
 - **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, `correr`
-  enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar`/`socar` só no tick em que o
-  botão desceu (soco: botão do punho ou F/J). Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência
+  enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar`/`socar`/`chutar` só no tick
+  em que o botão desceu (soco: botão do punho ou F/J; chute: botão da bola ou R). Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência
   do passo (`PASSO_ANDANDO`, `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em
   `constantes.ts`; o desenho só lê `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar
   para −x e −z, e quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
 - **Teclas do computador** moram em `src/features/rpg/teclas.ts` (`TECLAS`, `TECLAS_DIRECAO`):
   o `useControlesRpg` lê o teclado por elas e o HUD mostra, em cada botão de toque, um selo com as
   duas primeiras teclas do comando ("Espaço / E", "Esc / Q", "F / J", "Shift", "↑←↓→ / WASD" no
-  direcional, "Esc" na pausa, "C" no trocar personagem), além do `aria-keyshortcuts` com todas. Tecla nova entra só lá; o
+  direcional, "Esc" na pausa, "C" no trocar personagem, "R" no chute), além do `aria-keyshortcuts` com todas. Tecla nova entra só lá; o
   nome do Espaço é traduzido (`rpg.teclas.espaco`). Os selos só aparecem com teclado
   (`useTemTeclado`): começam ligados com hover e ponteiro fino (mouse, trackpad), qualquer tecla
   liga e um toque na tela desliga. No celular nunca aparecem.
@@ -257,6 +257,30 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   sem altura). Figurante não empurra e ninguém pisa no balão. O **confete é só desenho**
   (`cena3d/festa.ts`, sorteado por hash do tick da festa, sem `Math.random`): não muda nada no
   mundo, então não precisa repetir no motor.
+- **Campo de futebol** no gramado em frente à avenida (`CAMPO` em `cenas.ts`: x 22 a 54, z 24 a
+  42; a rua passou a ter 45 m de fundo para caber). O campo é decoração de chão (`visual: 'campo'`,
+  marcações em `cena3d/campo.ts`) e não bloqueia nada; só colidem os dois gols, cada um com três
+  sólidos fora das linhas: o fundo (`gol_<lado>`, `visual: 'gol'`, que desenha traves, travessão e
+  rede) e as duas redes laterais (`rede-gol`, sem desenho próprio). Boca de `BOCA_GOL` e fundo de
+  `FUNDO_GOL`. **Gol não é esconderijo** (`NAO_ESCONDE`): continuam 118 esconderijos e os 31
+  cartões no mesmo sorteio.
+- **Bola** (`src/engine/rpg/bola.ts`, `estado.bola`): **mora no motor**, como os balões, porque o
+  chute e a condução dependem do jogador a cada tick e o gol precisa repetir igual. Não sorteia
+  nada (não gasta o `estado.rng`) e é só `+ − × ÷`: a distância ao jogador é a do maior eixo, sem
+  raiz. Rola num plano com atrito proporcional (`ATRITO_BOLA`) mais um freio constante
+  (`FREIO_BOLA`): o freio para logo a bola lenta (conduzida, ela rola ~1 m andando e ~3 m
+  correndo) sem encurtar muito o chute (~19 m). Quica nos sólidos e nas bordas do mapa
+  (`QUIQUE_BOLA`), e quase nada dentro do gol (`QUIQUE_REDE`), senão batia na rede e saía. **Andar
+  contra a bola conduz**: ela sai no sentido do passo a `FATOR_CONDUCAO` da velocidade (só
+  acelera, nunca freia um chute). **O R chuta**: com a bola a até `ALCANCE_CHUTE` (o HUD só mostra
+  o botão da bola com `bola.aoAlcance`; longe, o R é ignorado), o jogador para, vira para a bola se
+  ela estiver atrás ou de lado (`mirarNaBola`) e acerta no tick `TICKS_CHUTE_IMPACTO`, até
+  `TICKS_CHUTE` (`jogador.chute`, animação `animarChute` em `personagem.ts`). No impacto vale o
+  `ALCANCE_IMPACTO_CHUTE`, maior, porque a bola conduzida ainda anda durante a puxada da perna. A
+  bola inteira além da linha, entre as traves, é **gol**: soma `bola.gols`, grava `ultimoGol` e
+  `estado.festa` (o mesmo confete dos balões) e volta ao centro depois de `TICKS_VOLTA_GOL`; saiu
+  pelas linhas, volta depois de `TICKS_VOLTA_FORA`. A `TelaRpg` reage a `ultimoGol` com a
+  mensagem `rpg.futebol.gol` ("Gooooooollllllllll"). Figurante não toca na bola.
 - **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
   aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor
@@ -265,8 +289,9 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
 - **Falas** em `rpg.dialogos.<id>` como lista, e o mapa diz quantas são (`linhas`):
   `tests/rpg.mundo.test.ts` confere os dois nos três idiomas. `tests/i18n.test.ts` trata lista
   como chaves `0`, `1`…, então fala a menos num idioma acusa.
-- **Golden master** do mundo em `tests/rpg.mundo.test.ts` (passeio fixo por todas as cenas): muda
-  só junto com `VERSAO_MUNDO` nova.
+- **Golden master** do mundo em `tests/rpg.mundo.test.ts` (um passeio fixo por todas as cenas e
+  outro da calçada ao gol, conduzindo e chutando): muda só junto com `VERSAO_MUNDO` nova. As
+  regras da bola ficam em `tests/rpg.futebol.test.ts`.
 - **Desenho 3D** (`src/features/rpg/cena3d/`): câmera ortográfica isométrica de verdade (direção
   1, 1, 1), seguindo o jogador; interiores com as paredes da frente baixas para a câmera ver a
   sala. Cada `visual` do mapa tem um construtor em `modelos.ts`; visual sem construtor vira caixa

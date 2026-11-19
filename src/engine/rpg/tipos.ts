@@ -124,6 +124,8 @@ export interface Entrada {
   voltar: boolean
   // Botão de soco: vale só no tick em que chega, como o A.
   socar: boolean
+  // Chute na bola (R ou o botão do HUD): também só no tick em que chega. Campo novo entra no fim.
+  chutar: boolean
 }
 
 // Derrubado (por patinete ou soco): ticks desde a queda (1 a TICKS_TOMBO, 0 = de pé) e o sentido
@@ -151,6 +153,8 @@ export interface JogadorRpg extends Tombo {
   soco: number
   // Ticks até poder socar de novo.
   recargaSoco: number
+  // Ticks desde que apertou o chute (1 a TICKS_CHUTE); 0 = não está chutando.
+  chute: number
 }
 
 export type FaseTombo = 'de-pe' | 'caindo' | 'no-chao' | 'levantando'
@@ -243,6 +247,22 @@ export interface Alvo {
   destino?: IdCena
 }
 
+export type LadoDoGol = 'esquerdo' | 'direito'
+
+// Bola do campo de futebol (sempre na rua). `espera` conta os ticks até voltar ao centro depois
+// de um gol ou de sair do campo; enquanto conta, não marca outro gol.
+export interface Bola {
+  x: number
+  z: number
+  vx: number
+  vz: number
+  espera: number
+  // Ao alcance do chute agora: o HUD mostra o botão R só assim.
+  aoAlcance: boolean
+  gols: number
+  ultimoGol: { tick: number; lado: LadoDoGol } | null
+}
+
 // Dado puro: structuredClone copia o mundo inteiro.
 export interface EstadoMundo {
   versao: string
@@ -270,4 +290,5 @@ export interface EstadoMundo {
   // Próximo id de balão (só cresce: o desenho acompanha cada balão pelo id).
   proximoBalao: number
   festa: Festa | null
+  bola: Bola
 }

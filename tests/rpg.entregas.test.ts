@@ -15,7 +15,7 @@ import {
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 import { COR_BALOES } from '../src/features/rpg/visual/paleta.ts'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
 const apertarA = (e: EstadoMundo) => passoMundo(e, { ...PARADO, interagir: true })
 const apertarB = (e: EstadoMundo) => passoMundo(e, { ...PARADO, voltar: true })
 const esperar = (e: EstadoMundo, ticks: number) => {

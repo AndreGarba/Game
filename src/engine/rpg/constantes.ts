@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-13'
+export const VERSAO_MUNDO = 'rpg-14'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -88,3 +88,29 @@ export const ATRITO_AR_BALAO = 0.97
 export const ATRITO_CHAO_BALAO = 0.8
 // Abaixo disso (m/tick), a velocidade vira zero: o balão parado não fica deslizando para sempre.
 export const VEL_MIN_BALAO = 0.0005
+
+// Futebol. A bola rola com atrito (ATRITO_BOLA por tick, mais o freio constante FREIO_BOLA, que
+// para logo a bola lenta sem encurtar muito o chute), quica (perde QUIQUE_BOLA da velocidade) em traves, redes,
+// sólidos e bordas do mapa, e volta ao centro TICKS_VOLTA_GOL depois do gol ou TICKS_VOLTA_FORA
+// depois de sair do campo.
+export const RAIO_BOLA = 0.2
+export const ATRITO_BOLA = 0.992
+export const FREIO_BOLA = 0.0022
+export const VEL_MIN_BOLA = 0.002
+export const QUIQUE_BOLA = 0.6
+// Dentro do gol a rede segura a bola: quase não volta.
+export const QUIQUE_REDE = 0.1
+// Chute: 24 m/s, rola uns 19 m em campo livre. Parado enquanto chuta, como no soco; a bola sai
+// no tick TICKS_CHUTE_IMPACTO se ainda estiver por perto (o R só vale com o centro dela a
+// ALCANCE_CHUTE do jogador, medido no maior eixo).
+export const VEL_CHUTE = 0.4
+export const ALCANCE_CHUTE = 1
+// No impacto a bola pode ter rolado um pouco (vinha sendo conduzida): o alcance ali é maior.
+export const ALCANCE_IMPACTO_CHUTE = 1.5
+export const TICKS_CHUTE_IMPACTO = 6
+export const TICKS_CHUTE = 22
+// Conduzir: andando contra a bola, ela sai um pouco mais rápida que o passo e o jogador a alcança;
+// parado, ela rola ~1 m (andando) a ~3 m (correndo).
+export const FATOR_CONDUCAO = 1.2
+export const TICKS_VOLTA_GOL = 150
+export const TICKS_VOLTA_FORA = 60
