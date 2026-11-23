@@ -89,6 +89,112 @@
   text-align: center;
 }
 
+/* Com slides, o topo encolhe numa linha só: cada pixel de altura vira imagem maior. */
+.modal-entregas--slides {
+  gap: var(--espaco-2);
+  padding-top: calc(var(--espaco-2) + var(--safe-topo));
+  padding-bottom: calc(var(--espaco-2) + var(--safe-base));
+}
+
+.modal-entregas--slides .modal-entregas__cabecalho {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espaco-3);
+}
+
+.modal-entregas--slides .modal-entregas__titulo {
+  font-size: var(--texto-4);
+}
+
+.modal-entregas--slides .modal-entregas__local {
+  margin: 0;
+}
+
+/* Slides: imagem 16:9 inteira (contain) no maior retângulo que sobra embaixo do topo. */
+.modal-entregas__quadro--slides {
+  padding: 0;
+  overflow: hidden;
+  background: var(--cor-entregas-slide-fundo);
+}
+
+.modal-entregas__slides {
+  position: relative;
+  height: 100%;
+}
+
+.modal-entregas__trilha {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.modal-entregas__trilha::-webkit-scrollbar {
+  display: none;
+}
+
+.modal-entregas__slide {
+  flex: 0 0 100%;
+  height: 100%;
+  margin: 0;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.modal-entregas__imagem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.modal-entregas__seta {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--texto-5);
+  line-height: 1;
+}
+
+.modal-entregas__seta--anterior {
+  left: var(--espaco-2);
+}
+
+.modal-entregas__seta--proximo {
+  right: var(--espaco-2);
+}
+
+.modal-entregas__seta:disabled {
+  visibility: hidden;
+}
+
+.modal-entregas__pontos {
+  position: absolute;
+  bottom: var(--espaco-2);
+  left: 50%;
+  display: flex;
+  gap: var(--espaco-2);
+  transform: translateX(-50%);
+}
+
+.modal-entregas__ponto {
+  width: var(--tamanho-entregas-ponto);
+  height: var(--tamanho-entregas-ponto);
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-total);
+  background: var(--cor-entregas-ponto);
+  cursor: pointer;
+}
+
+.modal-entregas__ponto--atual {
+  background: var(--cor-destaque);
+}
+
 @keyframes modal-entregas-entra {
   from {
     opacity: 0;

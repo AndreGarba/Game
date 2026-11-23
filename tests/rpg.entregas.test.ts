@@ -13,7 +13,11 @@ import {
   RAIO_JOGADOR,
 } from '../src/engine/rpg/constantes.ts'
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
+import { quadrosComSlides, slidesDoQuadro } from '../src/features/rpg/entregas/slidesDasEntregas.ts'
 import { COR_BALOES } from '../src/features/rpg/visual/paleta.ts'
+import en from '../src/locales/en/jogo.json'
+import es from '../src/locales/es/jogo.json'
+import pt from '../src/locales/pt/jogo.json'
 
 const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
 const apertarA = (e: EstadoMundo) => passoMundo(e, { ...PARADO, interagir: true })
@@ -224,5 +228,34 @@ describe('quadros Entregas 2026', () => {
       return e
     }
     expect(rodar()).toEqual(rodar())
+  })
+})
+
+describe('slides da modal Entregas 2026', () => {
+  const idiomas = { pt, en, es }
+  const textosDosSlides = (jogo: typeof pt, quadro: string) =>
+    ((jogo.rpg.entregas.quadros as Record<string, { slides?: Record<string, string> }>)[quadro]?.slides ?? {})
+
+  it('a loja de veículos tem os dois frames do Figma, na ordem do nome do arquivo', () => {
+    expect(slidesDoQuadro('quadro_entregas_loja').map((s) => s.nome)).toEqual(['01-andrea-borba-gopan', '02-roman-financiamento-c2c'])
+    expect(slidesDoQuadro('quadro_entregas_btg')).toEqual([])
+  })
+
+  it('pasta de slides só de quadro que existe, e todo slide tem texto alternativo nos três idiomas', () => {
+    const ids = new Set(QUADROS.map((q) => q.solido.id))
+    for (const quadro of quadrosComSlides()) {
+      expect(ids.has(quadro), quadro).toBe(true)
+      const nomes = slidesDoQuadro(quadro).map((s) => s.nome).sort()
+      for (const [idioma, jogo] of Object.entries(idiomas)) {
+        const textos = textosDosSlides(jogo, quadro)
+        expect(Object.keys(textos).sort(), `${idioma}:${quadro}`).toEqual(nomes)
+        for (const texto of Object.values(textos)) expect(texto.length, `${idioma}:${quadro}`).toBeGreaterThan(20)
+      }
+    }
+    for (const jogo of Object.values(idiomas)) {
+      for (const [quadro, conteudo] of Object.entries(jogo.rpg.entregas.quadros as Record<string, { slides?: object }>)) {
+        if (conteudo.slides) expect(quadrosComSlides(), quadro).toContain(quadro)
+      }
+    }
   })
 })

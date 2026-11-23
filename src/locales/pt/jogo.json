@@ -269,12 +269,21 @@
           "local": "Escritório Banco PAN"
         },
         "quadro_entregas_loja": {
-          "local": "Loja de veículos"
+          "local": "Loja de veículos",
+          "slides": {
+            "01-andrea-borba-gopan": "Andrea Borba, go!PAN: simulação com seguro transparente, ficha premiada, go!PAN comercial (saída do NPV), autonomia dos lojistas e desligamento do PanOnline. Ao lado, a tela de nova proposta do GoPAN Veículos num notebook.",
+            "02-roman-financiamento-c2c": "Roman, Financiamento C2C: jornada e testes de um produto novo, Carta de Crédito e AutoPAN com troco, seguros no Formalizador, Pix e saldo no pós-vendas, Home de Veículos e Move Brasil. Ao lado, três telas do app com a oferta de financiamento."
+          }
         },
         "quadro_entregas_feirao": {
           "local": "Feirão Mobiauto"
         }
-      }
+      },
+      "carrossel": "carrossel",
+      "slide": "slide",
+      "posicao": "Slide {{atual}} de {{total}}",
+      "anterior": "Slide anterior",
+      "proximo": "Próximo slide"
     },
     "futebol": {
       "gol": "Gooooooollllllllll"

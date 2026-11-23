@@ -12,7 +12,8 @@ src/features/rpg/arte/
 ├─ placas/     letreiros em cima das portas
 ├─ portas/     portas da rua
 ├─ hud/        botões, direcional, caixa de diálogo
-└─ retratos/   foto de cada personagem no card da seleção
+├─ retratos/   foto de cada personagem no card da seleção
+└─ entregas/   slides da modal "Entregas 2026", uma subpasta por quadro
 ```
 
 Regras que valem para tudo:
@@ -184,6 +185,26 @@ três quartos, centralizados com folga em cima: o card mostra o centro num quadr
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
 (careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro, regata, babado, brincos) ficam em `APARENCIAS.<id>` no
 `paleta.ts`.
+
+---
+
+## 7. Slides da modal Entregas 2026 (`entregas/<id do quadro>/`)
+
+Cada quadro de avisos abre a modal "Entregas 2026". Quadro com imagens na sua subpasta mostra os
+slides, um por vez, em vez do aviso provisório. A ordem é a do nome do arquivo, então use os
+prefixos `01-`, `02-` etc. Não há lista para editar: basta soltar o arquivo. **Todo slide precisa de texto
+alternativo** em `rpg.entregas.quadros.<id>.slides.<nome sem extensão>`, nos três idiomas
+(`tests/rpg.entregas.test.ts` confere os dois lados). O texto dentro da imagem não se traduz.
+
+| Subpasta (id do quadro) | Onde | Proporção | Tamanho | Formato |
+| --- | --- | --- | --- | --- |
+| `quadro_entregas_loja` | Loja de veículos: `01-andrea-borba-gopan`, `02-roman-financiamento-c2c` (frames do Figma) | 16 : 9 | 2560 × 1440 | WebP, sem transparência |
+| `quadro_entregas_btg`, `quadro_entregas_pan`, `quadro_entregas_feirao` | Escritórios BTG e PAN, feirão | 16 : 9 | 2560 × 1440 | WebP |
+
+2560 × 1440 é o dobro da tela de referência: nítido na moldura até 1440p sem passar de 4096 px.
+Exporte em PNG e converta para WebP (qualidade ~88). Os dois frames da loja ficaram com 400 e
+520 KB, e tudo entra no precache da PWA, cujo teto é de 3 MB por arquivo. A imagem é `<img>` na
+modal e não passa pelo canvas, então não precisa entrar na carga de arte do Jogar.
 
 ---
 
