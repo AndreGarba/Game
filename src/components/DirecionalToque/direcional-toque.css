@@ -58,3 +58,38 @@
 .direcional-toque--seta-arte .direcional-toque__seta--ligada {
   filter: brightness(1.3) drop-shadow(0 0 4px var(--cor-destaque));
 }
+
+/* Com teclado: a tecla escrita no lugar da seta, sem girar e sem recorte de triângulo. A ordem
+   importa: vem depois das regras de cada lado para trocar o transform delas. */
+.direcional-toque__seta--tecla,
+.direcional-toque--seta-arte .direcional-toque__seta--tecla {
+  display: grid;
+  place-items: center;
+  clip-path: none;
+  border-radius: var(--raio-2);
+  background: transparent;
+  color: var(--cor-texto);
+  font-size: var(--texto-tecla-direcional);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.direcional-toque__seta--tecla.direcional-toque__seta--cima {
+  transform: translateY(calc(var(--tamanho-direcional) * -0.3));
+}
+
+.direcional-toque__seta--tecla.direcional-toque__seta--baixo {
+  transform: translateY(calc(var(--tamanho-direcional) * 0.3));
+}
+
+.direcional-toque__seta--tecla.direcional-toque__seta--direita {
+  transform: translateX(calc(var(--tamanho-direcional) * 0.3));
+}
+
+.direcional-toque__seta--tecla.direcional-toque__seta--esquerda {
+  transform: translateX(calc(var(--tamanho-direcional) * -0.3));
+}
+
+.direcional-toque__seta--tecla.direcional-toque__seta--ligada {
+  color: var(--cor-destaque);
+}

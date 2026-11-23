@@ -135,12 +135,16 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   `constantes.ts`; o desenho só lê `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar
   para −x e −z, e quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
 - **Teclas do computador** moram em `src/features/rpg/teclas.ts` (`TECLAS`, `TECLAS_DIRECAO`):
-  o `useControlesRpg` lê o teclado por elas e o HUD mostra, em cada botão de toque, um selo com as
-  duas primeiras teclas do comando ("Espaço / E", "Esc / Q", "F / J", "Shift", "↑←↓→ / WASD" no
-  direcional, "Esc" na pausa, "C" no trocar personagem, "R" no chute), além do `aria-keyshortcuts` com todas. Tecla nova entra só lá; o
-  nome do Espaço é traduzido (`rpg.teclas.espaco`). Os selos só aparecem com teclado
-  (`useTemTeclado`): começam ligados com hover e ponteiro fino (mouse, trackpad), qualquer tecla
-  liga e um toque na tela desliga. No celular nunca aparecem.
+  o `useControlesRpg` lê o teclado por elas e o HUD escreve as teclas **dentro** dos botões de
+  toque, no lugar da letra, do símbolo e do ícone: "Espaço" e "E" no A, "Esc" e "Q" no B, "F" e
+  "J" no soco, "Shift" no », "R" no chute, "Esc" na pausa, "C" na troca de personagem, "W ↑",
+  "A ←", "S ↓" e "D →" no lugar das setas do direcional, e "Espaço" no aviso de ação. Duas teclas
+  vão uma por linha, menores (`--texto-tecla-botao-duas`). Com teclas, a arte do slot do botão
+  também sai, porque ela traz a letra do toque desenhada. O `aria-keyshortcuts` lista todas as
+  teclas. Tecla nova entra só em `teclas.ts`; o nome do Espaço é traduzido (`rpg.teclas.espaco`).
+  **Só com teclado** (`useTemTeclado`): começa ligado com hover e ponteiro fino (mouse, trackpad),
+  qualquer tecla liga e um toque na tela desliga. **Sem teclado (celular), os botões continuam
+  com a letra, o símbolo ou o ícone de sempre**: botão sem nada não diz o que faz.
 - **Elenco jogável** (`ELENCO` em `src/engine/rpg/elenco.ts`): depois do Jogar, a `TelaSelecao`
   (`src/features/rpg/screens/TelaSelecao/`) mostra um card por personagem e o escolhido em 3D num
   palco (`cena3d/vitrine.ts`); o id vai para `criarMundo(semente, personagem)` e fica em

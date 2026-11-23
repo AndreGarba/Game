@@ -12,6 +12,8 @@ interface Props {
   // Arte opcional: base do direcional e uma seta apontando para cima (as outras são giradas).
   imagemBase?: string | null
   imagemSeta?: string | null
+  // Teclas do computador de cada lado ("W ↑"). Com elas, cada lado mostra a tecla no lugar da seta.
+  teclas?: Record<'cima' | 'baixo' | 'esquerda' | 'direita', string> | null
 }
 
 // Fração do raio a partir da qual um eixo liga. Abaixo disso o dedo está no "centro morto";
@@ -23,7 +25,7 @@ const PARADO: Direcao8 = { direita: 0, cima: 0 }
  * Direcional de 8 direções para toque. Arrastar o dedo sem soltar troca a direção, como num
  * controle de verdade; o dedo pode sair da área que o direcional continua com ele.
  */
-export function DirecionalToque({ aoMudar, rotulo, imagemBase, imagemSeta }: Props) {
+export function DirecionalToque({ aoMudar, rotulo, imagemBase, imagemSeta, teclas }: Props) {
   const [atual, setAtual] = useState<Direcao8>(PARADO)
   const dedo = useRef<number | null>(null)
 
@@ -84,9 +86,11 @@ export function DirecionalToque({ aoMudar, rotulo, imagemBase, imagemSeta }: Pro
         return (
           <span
             key={lado}
-            className={`direcional-toque__seta direcional-toque__seta--${lado}${ligado ? ' direcional-toque__seta--ligada' : ''}`}
+            className={`direcional-toque__seta direcional-toque__seta--${lado}${ligado ? ' direcional-toque__seta--ligada' : ''}${teclas ? ' direcional-toque__seta--tecla' : ''}`}
             aria-hidden="true"
-          />
+          >
+            {teclas?.[lado]}
+          </span>
         )
       })}
     </div>
