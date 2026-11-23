@@ -242,9 +242,16 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   o `voltar` fecha. **Quadro não é esconderijo**: abrir a modal e achar cartão no mesmo toque
   disputariam a tela, e fora dos esconderijos o sorteio dos 31 cartões não mudou.
   A modal (`src/features/rpg/entregas/ModalEntregas.tsx`) cobre a `.tela-rpg` inteira e esconde o
-  HUD; o conteúdo de cada quadro mora em `rpg.entregas.quadros.<id>` (`local` e, quando chegar,
-  `itens: [{ titulo, texto }]`). Sem `itens`, mostra o aviso provisório. **Lista vazia no JSON não
-  serve**: vira `never[]` no tipo das chaves e o typecheck estoura (TS2589).
+  HUD; o texto de cada quadro mora em `rpg.entregas.quadros.<id>` (`local` e, se houver,
+  `itens: [{ titulo, texto }]`). **Slides** (imagens 16:9) vêm por pasta, como os slots de arte:
+  `src/features/rpg/arte/entregas/<id>/`, na ordem do nome do arquivo (`slidesDasEntregas.ts`,
+  `import.meta.glob`), com texto alternativo em `rpg.entregas.quadros.<id>.slides.<nome>` nos três
+  idiomas (`tests/rpg.entregas.test.ts` confere). A modal mostra os slides se houver; senão, os
+  `itens`; senão, o aviso provisório. Hoje só a loja tem slides (os dois frames do Figma). Um slide por
+  vez, na largura toda, com a imagem inteira (`contain`): trilha com rolagem horizontal e encaixe
+  (arrastar no toque), setas na tela e ← → no teclado; o topo encolhe numa linha para a imagem
+  crescer. **Lista vazia no JSON não serve**: vira `never[]` no tipo das chaves e o typecheck
+  estoura (TS2589).
 - **Balões** (`src/engine/rpg/baloes.ts`): fechar o quadro solta `BALOES_POR_FESTA` em volta do
   jogador, em lugar livre, e grava `estado.festa` (cena, posição, tick). **Moram no motor**, e não
   na UI, porque dependem do jogador a cada tick (o empurrão) e precisam repetir igual com a mesma

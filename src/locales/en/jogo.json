@@ -269,12 +269,21 @@
           "local": "Banco PAN office"
         },
         "quadro_entregas_loja": {
-          "local": "Car dealership"
+          "local": "Car dealership",
+          "slides": {
+            "01-andrea-borba-gopan": "Andrea Borba, go!PAN: simulation with transparent insurance, award-winning application form, go!PAN commercial (moving off NPV), dealer autonomy and the PanOnline shutdown. Beside it, the GoPAN Veículos new proposal screen on a laptop.",
+            "02-roman-financiamento-c2c": "Roman, C2C Financing: journey and tests for a new product, Credit Letter and AutoPAN with change, insurance in the Formalizer, Pix and balance in after-sales, Vehicles Home and Move Brasil. Beside it, three app screens with the financing offer."
+          }
         },
         "quadro_entregas_feirao": {
           "local": "Mobiauto car fair"
         }
-      }
+      },
+      "carrossel": "carousel",
+      "slide": "slide",
+      "posicao": "Slide {{atual}} of {{total}}",
+      "anterior": "Previous slide",
+      "proximo": "Next slide"
     },
     "futebol": {
       "gol": "Gooooooaaaaalllll"
