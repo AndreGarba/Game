@@ -257,6 +257,11 @@
         "nome": "Dea",
         "titulo": "Responsável pelo B2B",
         "descricao": "Comprometida e proativa, nunca atrasa. Tem ótimo relacionamento com todas as áreas e é elogiada pelo time do BTG Cash."
+      },
+      "roman": {
+        "nome": "Roman",
+        "titulo": "Responsável pelo B2C",
+        "descricao": "Cuida do B2C de Veículos: tirou do zero o Financiamento C2C amarrando todas as áreas. Entregou Carta de Crédito, AutoPAN com troco, Pix no pós-vendas e a Home de Veículos."
       }
     },
     "teclas": {

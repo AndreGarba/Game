@@ -182,9 +182,10 @@ três quartos, centralizados com folga em cima: o card mostra o centro num quadr
 | `rogerio` | Rogério: cabelo curto grisalho, barba por fazer, óculos transparentes, camiseta preta com estampa laranja e azul-petróleo (sem personagem licenciado) | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
 | `fernanda` | Fernanda: cabelo até o ombro, castanho-claro com mechas loiras, regata branca com babado de renda, brincos pequenos | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
 | `dea` | Dea: cabelo longo e liso, loiro com raiz castanha, sorriso largo, jaqueta verde-oliva aberta sobre blusa branca | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
+| `roman` | Roman: cabelo curto castanho-escuro, camisa social azul-clara com botões e logo pequeno no peito | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
 
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
-(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, unhas, sorriso, brincos) ficam em `APARENCIAS.<id>` no
+(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos) ficam em `APARENCIAS.<id>` no
 `paleta.ts`.
 
 ---

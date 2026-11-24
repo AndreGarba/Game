@@ -257,6 +257,11 @@
         "nome": "Dea",
         "titulo": "B2B lead",
         "descricao": "Committed and proactive, she is never late. Has a great relationship with every team and is praised by the BTG Cash team."
+      },
+      "roman": {
+        "nome": "Roman",
+        "titulo": "B2C lead, Vehicles",
+        "descricao": "Owns B2C in Vehicles: built C2C Financing from scratch, bringing every team together. Shipped Credit Letter, AutoPAN with change, Pix in after-sales and the Vehicles Home."
       }
     },
     "teclas": {
