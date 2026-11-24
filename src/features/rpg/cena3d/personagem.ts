@@ -222,6 +222,18 @@ function jaquetaPorCima(f: Fabrica, a: Aparencia, jaqueta: { cor: string; bolso:
   }
 }
 
+// Camisa social: gola em V aberta mostrando o pescoço, as duas pontas da gola, os botões descendo
+// pela frente e o logo pequeno do lado esquerdo do peito.
+function camisaDeBotao(f: Fabrica, a: Aparencia, social: { botoes: string; logo: string }, corpo: THREE.Group) {
+  const topo = ALTURA_QUADRIL - 0.04 + 0.62
+  const pano = f.material(a.camisa)
+  const botao = f.material(social.botoes)
+  corpo.add(f.caixa(0.1, 0.07, 0.012, f.material(a.pele), { y: topo - 0.07, z: 0.151 }))
+  for (const lado of [-1, 1]) corpo.add(f.caixa(0.1, 0.05, 0.03, pano, { x: lado * 0.085, y: topo - 0.06, z: 0.16 }))
+  for (let i = 0; i < 4; i++) corpo.add(f.caixa(0.025, 0.025, 0.012, botao, { y: topo - 0.16 - i * 0.13, z: 0.157 }))
+  corpo.add(f.caixa(0.04, 0.025, 0.012, f.material(social.logo), { x: 0.14, y: topo - 0.2, z: 0.157 }))
+}
+
 // Regata: ombros de fora e decote em V de pele; o babado contorna o decote, desce pela frente e
 // sai da barra, um pouco mais largo que o tronco.
 function blusaRegata(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
@@ -297,6 +309,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   else if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
   else if (!a.careca) corpo.add(cabelo, nuca)
   if (a.jaquetaAberta) jaquetaPorCima(f, a, a.jaquetaAberta, corpo)
+  if (a.camisaSocial) camisaDeBotao(f, a, a.camisaSocial, corpo)
   if (a.sorriso) {
     corpo.add(
       f.caixa(0.2, 0.075, 0.01, olho, { y: ALTURA_OMBRO + 0.09, z: 0.192 }),

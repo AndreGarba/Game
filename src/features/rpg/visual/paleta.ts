@@ -187,6 +187,8 @@ export interface Aparencia {
   unhas?: string
   // Sorriso largo, mostrando os dentes (cor dos dentes).
   sorriso?: string
+  // Camisa social de manga longa: gola, carreira de botões e um logo pequeno no peito.
+  camisaSocial?: { botoes: string; logo: string }
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -232,6 +234,17 @@ export const APARENCIAS: Record<string, Aparencia> = {
     regata: true,
     babado: '#ffffff',
     brincos: '#d9a63a',
+  },
+  // Roman (foto em media/referencias): cabelo curto castanho-escuro, camisa social azul-clara de
+  // manga longa com botões e um logo pequeno azul no peito, calça escura.
+  roman: {
+    pele: '#e3ad86',
+    cabelo: '#3a2618',
+    camisa: '#8fb0e3',
+    calca: '#272a33',
+    sapato: '#1d1d20',
+    detalhe: null,
+    camisaSocial: { botoes: '#e6ecf5', logo: '#2b4f9e' },
   },
   // Dea (foto em media/referencias): cabelo longo e liso, loiro com raiz castanha, sorriso largo,
   // jaqueta utilitária verde-oliva aberta, blusa branca e unhas vermelhas.

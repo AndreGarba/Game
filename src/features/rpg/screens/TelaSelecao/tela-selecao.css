@@ -4,8 +4,8 @@
   container-type: size;
   position: relative;
   display: grid;
-  /* A coluna dos cards é a mais larga: com cinco ou mais pessoas, o nome ainda cabe no card. */
-  grid-template-columns: 9fr 11fr;
+  /* A coluna dos cards é a mais larga: com seis pessoas, o nome ainda cabe no card. */
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: var(--altura-tela, 100svh);
@@ -27,7 +27,7 @@
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
   padding-bottom: calc(var(--espaco-6) + var(--safe-base));
-  padding-left: var(--safe-esquerda);
+  padding-left: calc(var(--espaco-4) + var(--safe-esquerda));
 }
 
 .tela-selecao__vitrine {
@@ -44,7 +44,7 @@
   justify-content: center;
   gap: var(--espaco-2);
   min-height: 0;
-  padding: calc(var(--espaco-4) + var(--safe-topo)) calc(var(--espaco-8) + var(--safe-direita))
+  padding: calc(var(--espaco-4) + var(--safe-topo)) calc(var(--espaco-6) + var(--safe-direita))
     calc(var(--espaco-4) + var(--safe-base)) var(--espaco-4);
 }
 
@@ -99,15 +99,22 @@
 .tela-selecao__cards {
   display: flex;
   width: 100%;
-  gap: var(--espaco-2);
+  gap: var(--espaco-1);
   margin-bottom: var(--espaco-2);
+}
+
+.tela-selecao__confirmar {
+  /* A coluna do boneco é estreita: o botão encolhe em vez de vazar para a borda. */
+  min-width: 0;
+  padding-inline: var(--espaco-4);
+  white-space: nowrap;
 }
 
 .tela-selecao__botoes {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--espaco-3);
+  gap: var(--espaco-2);
 }
 
 .tela-selecao__card {
