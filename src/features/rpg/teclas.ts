@@ -1,7 +1,7 @@
 import type { DirecaoTela } from './direcao.ts'
 
 // Fonte única das teclas do RPG: quem lê o teclado (`useControlesRpg`) e quem mostra a tecla no
-// botão da tela (selos do HUD, `aria-keyshortcuts`) partem destas listas. A ordem importa: o selo
+// botão da tela (teclas escritas no HUD, `aria-keyshortcuts`) partem destas listas. A ordem importa: o botão
 // mostra as primeiras.
 
 export const TECLAS_DIRECAO: Record<string, [eixo: keyof DirecaoTela, valor: number]> = {
@@ -36,8 +36,8 @@ function nomeAria(codigo: string): string {
   return codigo
 }
 
-// Nome curto no selo. Só o Espaço tem nome por idioma; os outros são o que está escrito na tecla.
-function nomeNoSelo(codigo: string, espaco: string): string {
+// Nome curto no botão. Só o Espaço tem nome por idioma; os outros são o que está escrito na tecla.
+function nomeNoBotao(codigo: string, espaco: string): string {
   if (codigo === 'Space') return espaco
   if (codigo === 'Escape') return 'Esc'
   return SETAS[codigo] ?? nomeAria(codigo)
@@ -47,19 +47,29 @@ function semRepetir(nomes: string[]): string[] {
   return [...new Set(nomes)]
 }
 
-/** Texto do selo: as duas primeiras teclas do comando, como "Espaço / E". */
-export function seloDoComando(comando: ComandoComTecla, espaco: string, quantas = 2): string {
-  return semRepetir(TECLAS[comando].map((c) => nomeNoSelo(c, espaco)))
-    .slice(0, quantas)
-    .join(' / ')
+/** O que o botão mostra com teclado: as primeiras teclas do comando, uma por linha ("Espaço", "E"). */
+export function teclasDoComando(comando: ComandoComTecla, espaco: string, quantas = 2): string[] {
+  return semRepetir(TECLAS[comando].map((c) => nomeNoBotao(c, espaco))).slice(0, quantas)
 }
 
-/** Selo do direcional: as setas juntas e as letras juntas, "↑←↓→ / WASD". */
-export function seloDoDirecional(): string {
-  const codigos = Object.keys(TECLAS_DIRECAO)
-  const setas = codigos.filter((c) => SETAS[c]).map((c) => SETAS[c])
-  const letras = codigos.filter((c) => !SETAS[c]).map((c) => nomeAria(c))
-  return `${setas.join('')} / ${letras.join('')}`
+export type LadoDoDirecional = 'cima' | 'baixo' | 'esquerda' | 'direita'
+
+function ladoDaTecla([eixo, valor]: [keyof DirecaoTela, number]): LadoDoDirecional {
+  if (eixo === 'cima') return valor > 0 ? 'cima' : 'baixo'
+  return valor > 0 ? 'direita' : 'esquerda'
+}
+
+/** Cada lado do direcional com a letra e a seta do teclado, como "W ↑". */
+export function teclasDoDirecional(): Record<LadoDoDirecional, string> {
+  const porLado: Record<LadoDoDirecional, string[]> = { cima: [], baixo: [], esquerda: [], direita: [] }
+  const codigos = Object.keys(TECLAS_DIRECAO).sort((x, y) => Number(x in SETAS) - Number(y in SETAS))
+  for (const codigo of codigos) porLado[ladoDaTecla(TECLAS_DIRECAO[codigo]!)].push(SETAS[codigo] ?? nomeAria(codigo))
+  return {
+    cima: porLado.cima.join(' '),
+    baixo: porLado.baixo.join(' '),
+    esquerda: porLado.esquerda.join(' '),
+    direita: porLado.direita.join(' '),
+  }
 }
 
 export function atalhosDoComando(comando: ComandoComTecla): string {

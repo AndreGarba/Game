@@ -17,7 +17,7 @@ import { direcaoNoMundo } from '../../direcao.ts'
 import { ModalEntregas } from '../../entregas/ModalEntregas.tsx'
 import { TelaSelecao } from '../TelaSelecao/TelaSelecao.tsx'
 import { formatarTempo } from '../../tempo.ts'
-import { atalhosDoComando, seloDoComando, seloDoDirecional } from '../../teclas.ts'
+import { atalhosDoComando, teclasDoComando, teclasDoDirecional, type ComandoComTecla } from '../../teclas.ts'
 import { useControlesRpg } from '../../useControlesRpg.ts'
 import { useTemTeclado } from '../../useTemTeclado.ts'
 import { ARTE_HUD } from '../../visual/arteDoHud.ts'
@@ -184,7 +184,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar, abrirTroca, chutar)
   const temTeclado = useTemTeclado()
   const espaco = t('rpg.teclas.espaco')
-  const selo = (texto: string) => (temTeclado ? texto : null)
+  const teclasNoBotao = (comando: ComandoComTecla) => (temTeclado ? teclasDoComando(comando, espaco) : null)
 
   useEffect(() => {
     abafarMusica(fase !== 'jogando')
@@ -322,25 +322,27 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             title={t('rpg.controles.trocarPersonagem')}
             aria-keyshortcuts={atalhosDoComando('trocar')}
           >
-            <IconeTrocar />
-            {temTeclado && (
-              <span className="tela-rpg__selo-tecla tela-rpg__selo-tecla--pausa" aria-hidden="true">
-                {seloDoComando('trocar', espaco, 1)}
+            {temTeclado ? (
+              <span className="tela-rpg__tecla-icone" aria-hidden="true">
+                {teclasDoComando('trocar', espaco, 1)}
               </span>
+            ) : (
+              <IconeTrocar />
             )}
           </button>
           <button
-            className={`tela-rpg__pausa${ARTE_HUD.botaoPausa ? ' tela-rpg__pausa--arte' : ''}`}
-            style={comImagem(ARTE_HUD.botaoPausa)}
+            className={`tela-rpg__pausa${ARTE_HUD.botaoPausa && !temTeclado ? ' tela-rpg__pausa--arte' : ''}`}
+            style={temTeclado ? undefined : comImagem(ARTE_HUD.botaoPausa)}
             onClick={fase === 'pausado' ? continuar : pausar}
             aria-label={fase === 'pausado' ? t('continuar') : t('hud.pausar')}
             aria-keyshortcuts={atalhosDoComando('b')}
           >
-            {!ARTE_HUD.botaoPausa && <span aria-hidden="true">{fase === 'pausado' ? '▶' : 'II'}</span>}
-            {temTeclado && (
-              <span className="tela-rpg__selo-tecla tela-rpg__selo-tecla--pausa" aria-hidden="true">
-                {seloDoComando('b', espaco, 1)}
+            {temTeclado ? (
+              <span className="tela-rpg__tecla-icone" aria-hidden="true">
+                {teclasDoComando('b', espaco, 1)}
               </span>
+            ) : (
+              !ARTE_HUD.botaoPausa && <span aria-hidden="true">{fase === 'pausado' ? '▶' : 'II'}</span>
             )}
           </button>
 
@@ -351,7 +353,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               aria-live="polite"
             >
               <span className="tela-rpg__tecla" aria-hidden="true">
-                A
+                {temTeclado ? teclasDoComando('a', espaco, 1) : 'A'}
               </span>
               {textoDoAlvo(hud.alvo)}
             </p>
@@ -374,16 +376,12 @@ export function TelaRpg({ personagem }: { personagem: string }) {
           )}
 
           <div className="tela-rpg__direcional">
-            {temTeclado && (
-              <span className="tela-rpg__selo-tecla tela-rpg__selo-tecla--direcional" aria-hidden="true">
-                {seloDoDirecional()}
-              </span>
-            )}
             <DirecionalToque
               rotulo={t('rpg.controles.direcional')}
               aoMudar={(d) => (controles.direcaoToque.current = d)}
               imagemBase={ARTE_HUD.direcionalBase}
               imagemSeta={ARTE_HUD.direcionalSeta}
+              teclas={temTeclado ? teclasDoDirecional() : null}
             />
           </div>
           {hud.bolaPerto && !dialogo && (
@@ -393,7 +391,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
                 descricao={t('rpg.controles.chutar')}
                 aoApertar={chutar}
                 variante="secundario"
-                tecla={selo(seloDoComando('chute', espaco))}
+                teclas={teclasNoBotao('chute')}
                 atalhos={atalhosDoComando('chute')}
               />
             </div>
@@ -407,7 +405,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               variante="secundario"
               imagem={ARTE_HUD.botaoCorrer}
               imagemApertado={ARTE_HUD.botaoCorrerApertado}
-              tecla={selo(seloDoComando('correr', espaco))}
+              teclas={teclasNoBotao('correr')}
               atalhos={atalhosDoComando('correr')}
             />
             <BotaoToque
@@ -417,7 +415,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               variante="secundario"
               imagem={ARTE_HUD.botaoB}
               imagemApertado={ARTE_HUD.botaoBApertado}
-              tecla={selo(seloDoComando('b', espaco))}
+              teclas={teclasNoBotao('b')}
               atalhos={atalhosDoComando('b')}
             />
             <BotaoToque
@@ -427,7 +425,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               variante="perigo"
               imagem={ARTE_HUD.botaoSoco}
               imagemApertado={ARTE_HUD.botaoSocoApertado}
-              tecla={selo(seloDoComando('soco', espaco))}
+              teclas={teclasNoBotao('soco')}
               atalhos={atalhosDoComando('soco')}
             />
             <BotaoToque
@@ -436,7 +434,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               aoApertar={apertarA}
               imagem={ARTE_HUD.botaoA}
               imagemApertado={ARTE_HUD.botaoAApertado}
-              tecla={selo(seloDoComando('a', espaco))}
+              teclas={teclasNoBotao('a')}
               atalhos={atalhosDoComando('a')}
             />
           </div>

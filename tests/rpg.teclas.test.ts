@@ -1,20 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { atalhosDoComando, seloDoComando, seloDoDirecional, TECLAS, TECLAS_DIRECAO } from '../src/features/rpg/teclas.ts'
+import { atalhosDoComando, TECLAS, TECLAS_DIRECAO, teclasDoComando, teclasDoDirecional } from '../src/features/rpg/teclas.ts'
 import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
 describe('teclas do RPG nos botões do HUD', () => {
-  it('o selo mostra as duas primeiras teclas de cada comando, com o Espaço traduzido', () => {
-    expect(seloDoComando('a', pt.rpg.teclas.espaco)).toBe('Espaço / E')
-    expect(seloDoComando('a', en.rpg.teclas.espaco)).toBe('Space / E')
-    expect(seloDoComando('a', es.rpg.teclas.espaco)).toBe('Espacio / E')
-    expect(seloDoComando('b', 'Espaço')).toBe('Esc / Q')
-    expect(seloDoComando('b', 'Espaço', 1)).toBe('Esc')
-    expect(seloDoComando('soco', 'Espaço')).toBe('F / J')
-    // Shift esquerdo e direito são a mesma tecla no selo.
-    expect(seloDoComando('correr', 'Espaço')).toBe('Shift')
-    expect(seloDoDirecional()).toBe('↑←↓→ / WASD')
+  it('o botão mostra as duas primeiras teclas de cada comando, com o Espaço traduzido', () => {
+    expect(teclasDoComando('a', pt.rpg.teclas.espaco)).toEqual(['Espaço', 'E'])
+    expect(teclasDoComando('a', en.rpg.teclas.espaco)).toEqual(['Space', 'E'])
+    expect(teclasDoComando('a', es.rpg.teclas.espaco)).toEqual(['Espacio', 'E'])
+    expect(teclasDoComando('b', 'Espaço')).toEqual(['Esc', 'Q'])
+    expect(teclasDoComando('b', 'Espaço', 1)).toEqual(['Esc'])
+    expect(teclasDoComando('soco', 'Espaço')).toEqual(['F', 'J'])
+    // Shift esquerdo e direito são a mesma tecla no botão.
+    expect(teclasDoComando('correr', 'Espaço')).toEqual(['Shift'])
+    expect(teclasDoComando('trocar', 'Espaço')).toEqual(['C'])
+    expect(teclasDoComando('chute', 'Espaço')).toEqual(['R'])
+  })
+
+  it('cada lado do direcional mostra a letra e a seta', () => {
+    expect(teclasDoDirecional()).toEqual({ cima: 'W ↑', esquerda: 'A ←', baixo: 'S ↓', direita: 'D →' })
   })
 
   it('aria-keyshortcuts lista todas as teclas do comando, sem repetir', () => {
