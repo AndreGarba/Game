@@ -4,7 +4,8 @@
   container-type: size;
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* A coluna dos cards é a mais larga: com cinco ou mais pessoas, o nome ainda cabe no card. */
+  grid-template-columns: 9fr 11fr;
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: var(--altura-tela, 100svh);
@@ -81,15 +82,15 @@
   color: var(--cor-destaque);
 }
 
-/* Até três linhas: o texto de cada pessoa tem limite de tamanho (tests/rpg.elenco.test.ts). */
+/* Até quatro linhas: o texto de cada pessoa tem limite de tamanho (tests/rpg.elenco.test.ts). */
 .tela-selecao__descricao {
   display: -webkit-box;
   margin: 0;
-  min-height: calc(3lh);
+  min-height: calc(4lh);
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   font-size: var(--texto-1);
   line-height: 1.35;
   color: var(--cor-selecao-texto);
@@ -98,7 +99,7 @@
 .tela-selecao__cards {
   display: flex;
   width: 100%;
-  gap: var(--espaco-3);
+  gap: var(--espaco-2);
   margin-bottom: var(--espaco-2);
 }
 
@@ -146,9 +147,12 @@
 }
 
 .tela-selecao__card-nome {
-  font-size: var(--texto-3);
+  overflow: hidden;
+  font-size: var(--texto-1);
   font-weight: 900;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tela-selecao__dica {

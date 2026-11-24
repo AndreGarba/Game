@@ -177,6 +177,16 @@ export interface Aparencia {
   babado?: string
   // Brincos pequenos.
   brincos?: string
+  // Cabelo longo e liso, caindo na frente dos ombros até o peito: `cabelo` é a raiz (a calota) e
+  // `pontas` o comprimento. Troca a nuca curta.
+  cabeloLongo?: { pontas: string }
+  // Jaqueta aberta por cima da blusa (`camisa` vira a blusa que aparece no meio): manga comprida,
+  // bolsos no peito e barra até o quadril.
+  jaquetaAberta?: { cor: string; bolso: string }
+  // Unhas pintadas (cor do esmalte).
+  unhas?: string
+  // Sorriso largo, mostrando os dentes (cor dos dentes).
+  sorriso?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -222,6 +232,21 @@ export const APARENCIAS: Record<string, Aparencia> = {
     regata: true,
     babado: '#ffffff',
     brincos: '#d9a63a',
+  },
+  // Dea (foto em media/referencias): cabelo longo e liso, loiro com raiz castanha, sorriso largo,
+  // jaqueta utilitária verde-oliva aberta, blusa branca e unhas vermelhas.
+  dea: {
+    pele: '#efc19c',
+    cabelo: '#7a5a3a',
+    camisa: '#f4f1ea',
+    calca: '#3b4a63',
+    sapato: '#e7e0d4',
+    detalhe: null,
+    cabeloLongo: { pontas: '#e0c58c' },
+    jaquetaAberta: { cor: '#7d7b5d', bolso: '#6a684d' },
+    unhas: '#c62828',
+    sorriso: '#ffffff',
+    brincos: '#d9c9a0',
   },
   // Rogério (foto em media/referencias): cabelo curto grisalho, barba por fazer, óculos de armação
   // transparente, camiseta preta com estampa laranja e azul-petróleo no peito (padrão de chamas,

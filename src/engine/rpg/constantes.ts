@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-14'
+export const VERSAO_MUNDO = 'rpg-15'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
