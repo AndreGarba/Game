@@ -182,6 +182,46 @@ function cabeloAteOOmbro(f: Fabrica, a: Aparencia, mechas: string | null, corpo:
   }
 }
 
+// Cabelo longo: calota na cor da raiz; o comprimento, de outra cor, cai dos lados da cabeça, desce
+// pelas costas e passa na frente dos ombros até o peito (por fora do tronco, que é mais largo que a
+// cabeça).
+function cabeloComprido(f: Fabrica, a: Aparencia, pontas: string, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  const raiz = f.material(a.cabelo)
+  const fio = f.material(pontas)
+  corpo.add(
+    f.caixa(0.44, 0.14, 0.42, raiz, { y: y + 0.4 }),
+    f.caixa(0.46, 0.06, 0.06, raiz, { y: y + 0.4, z: 0.19 }),
+    f.caixa(0.46, 0.8, 0.12, fio, { y: y - 0.3, z: -0.17 }),
+  )
+  for (const lado of [-1, 1]) {
+    corpo.add(
+      f.caixa(0.06, 0.4, 0.3, fio, { x: lado * 0.225, y: y + 0.02, z: -0.03 }),
+      f.caixa(0.06, 0.08, 0.3, raiz, { x: lado * 0.225, y: y + 0.38, z: -0.03 }),
+      f.caixa(0.11, 0.36, 0.05, fio, { x: lado * 0.19, y: y - 0.32, z: 0.165 }),
+    )
+  }
+}
+
+// Jaqueta aberta: o tronco e as mangas na cor dela, a blusa numa faixa no meio da frente, dois
+// bolsos no peito e a barra descendo até o quadril.
+function jaquetaPorCima(f: Fabrica, a: Aparencia, jaqueta: { cor: string; bolso: string }, corpo: THREE.Group) {
+  const pano = f.material(jaqueta.cor)
+  const bolso = f.material(jaqueta.bolso)
+  const topo = ALTURA_QUADRIL - 0.04 + 0.62
+  corpo.add(
+    f.caixa(0.17, 0.62, 0.012, f.material(a.camisa), { y: ALTURA_QUADRIL - 0.04, z: 0.151 }),
+    f.caixa(0.54, 0.14, 0.32, pano, { y: ALTURA_QUADRIL - 0.16 }),
+    f.caixa(0.17, 0.14, 0.012, f.material(a.camisa), { y: ALTURA_QUADRIL - 0.16, z: 0.161 }),
+  )
+  for (const lado of [-1, 1]) {
+    corpo.add(
+      f.caixa(0.11, 0.1, 0.02, bolso, { x: lado * 0.17, y: topo - 0.3, z: 0.158 }),
+      f.caixa(0.03, 0.03, 0.02, f.material(a.camisa), { x: lado * 0.17, y: topo - 0.24, z: 0.165 }),
+    )
+  }
+}
+
 // Regata: ombros de fora e decote em V de pele; o babado contorna o decote, desce pela frente e
 // sai da barra, um pouco mais largo que o tronco.
 function blusaRegata(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
@@ -226,14 +266,19 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     for (const perna of [pernaE, pernaD]) perna.add(f.caixa(0.22, 0.04, 0.3, f.material(a.solado), { y: -0.66 - 0.072 - 0.02, z: 0.03 }))
   }
 
-  const manga = a.regata ? a.pele : a.camisa
-  const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, manga, a.pele, 0.15, 0.5, 0.14)
-  const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, manga, a.pele, 0.15, 0.5, 0.14)
+  const manga = a.jaquetaAberta ? a.jaquetaAberta.cor : a.regata ? a.pele : a.camisa
+  const larguraBraco = a.jaquetaAberta ? 0.17 : 0.15
+  const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
+  const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
+  if (a.unhas) {
+    const esmalte = f.material(a.unhas)
+    for (const braco of [bracoE, bracoD]) braco.add(f.caixa(0.13, 0.035, 0.012, esmalte, { y: -0.58, z: 0.033 + larguraBraco * 0.7 }))
+  }
   bracoE.position.set(-0.34, ALTURA_OMBRO, 0)
   bracoD.position.set(0.34, ALTURA_OMBRO, 0)
   if (a.relogio) bracoE.add(f.caixa(0.18, 0.06, 0.19, f.material(a.relogio), { y: -0.44 }))
 
-  const tronco = f.caixa(0.52, 0.62, 0.3, f.material(a.camisa), { y: ALTURA_QUADRIL - 0.04 })
+  const tronco = f.caixa(0.52, 0.62, 0.3, f.material(a.jaquetaAberta?.cor ?? a.camisa), { y: ALTURA_QUADRIL - 0.04 })
   const cabeca = f.caixa(0.4, 0.4, 0.38, f.material(a.pele), { y: ALTURA_OMBRO + 0.06 })
   const cabelo = f.caixa(0.44, 0.14, 0.42, f.material(a.cabelo), { y: ALTURA_OMBRO + 0.4 })
   const nuca = f.caixa(0.44, 0.3, 0.1, f.material(a.cabelo), { y: ALTURA_OMBRO + 0.18, z: -0.17 })
@@ -248,8 +293,16 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     f.caixa(0.06, 0.07, 0.02, olho, { x: -0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
     f.caixa(0.06, 0.07, 0.02, olho, { x: 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
   )
-  if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
+  if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, corpo)
+  else if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
   else if (!a.careca) corpo.add(cabelo, nuca)
+  if (a.jaquetaAberta) jaquetaPorCima(f, a, a.jaquetaAberta, corpo)
+  if (a.sorriso) {
+    corpo.add(
+      f.caixa(0.2, 0.075, 0.01, olho, { y: ALTURA_OMBRO + 0.09, z: 0.192 }),
+      f.caixa(0.17, 0.045, 0.012, f.material(a.sorriso), { y: ALTURA_OMBRO + 0.115, z: 0.196 }),
+    )
+  }
   if (a.regata) blusaRegata(f, a, corpo)
   if (a.brincos) {
     const ouro = f.material(a.brincos)

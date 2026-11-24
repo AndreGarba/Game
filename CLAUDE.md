@@ -115,9 +115,9 @@ com vista de prédios, parede azul na lateral e sala de reunião de vidro adesiv
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-14'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-15'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -151,16 +151,21 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   jeans escuro, relógio, tatuagem pequena no braço direito; foto em
   `media/referencias/personagem-rogerio.png`) e **Fernanda** (cabelo até o ombro, castanho-claro
   com mechas loiras; regata branca com babado de renda no decote e na barra; calça azul-marinho;
-  brincos; foto em `media/referencias/personagem-fernanda.png`). Estampa com personagem licenciado vira padrão de
+  brincos; foto em `media/referencias/personagem-fernanda.png`) e **Dea** (Andrea Borba,
+  responsável pelo B2B do go!PAN: cabelo longo e liso, loiro com raiz castanha; sorriso largo;
+  jaqueta utilitária verde-oliva aberta sobre blusa branca; unhas vermelhas; foto em
+  `media/referencias/personagem-dea.png`). Estampa com personagem licenciado vira padrão de
   cores (`estampaChamas`), nunca cópia da arte. Personagem novo é só dado: linha no `ELENCO`,
   `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
-  chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, regata, babado e
-  brincos são campos opcionais da `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
+  chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, cabelo longo com
+  raiz de outra cor, regata, babado, jaqueta aberta, unhas, sorriso e brincos são campos
+  opcionais da `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
   nos três idiomas e, se quiser, um retrato em `arte/retratos/<id>` (sem ele, o card mostra um
   retrato desenhado em 3D). O card mostra só o nome; o título e a descrição (pontos fortes e
   entregas da pessoa) ficam no bloco do escolhido, embaixo dos cards. Os textos ficam no i18n e não no
   `ELENCO` porque o motor não tem idioma. Limite: título até 30 caracteres e descrição até 210,
-  medidos para quatro cards em 16:9; `tests/rpg.elenco.test.ts` confere isso, a paleta e os nomes
+  medidos em 16:9 no bloco do escolhido, que mostra até quatro linhas (a coluna dos cards é a mais
+  larga da tela para o nome caber no card com cinco ou mais pessoas); `tests/rpg.elenco.test.ts` confere isso, a paleta e os nomes
   de todo o elenco. Os textos do time inteiro estão prontos em
   `docs/textos-selecao-personagens.md` na store (dado interno: vale o Cloudflare Access).
 - **Quem não foi escolhido anda pelo mapa** como figurante (`Figurante.elenco` com o id), com a
