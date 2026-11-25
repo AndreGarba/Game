@@ -341,7 +341,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   corpo.add(pernaE, pernaD, bracoE, bracoD, tronco, cabeca)
   for (const lado of [-1, 1]) {
     // Amendoado: mais largo e mais baixo, reto. Inclinar o canto de fora deixa o rosto bravo.
-    if (a.olhosAmendoados) corpo.add(f.caixa(0.07, 0.04, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.235, z: 0.2 }))
+    if (a.olhosAmendoados) corpo.add(f.caixa(0.08, 0.025, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.2425, z: 0.2 }))
     else corpo.add(f.caixa(0.06, 0.07, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }))
   }
   if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, corpo)
