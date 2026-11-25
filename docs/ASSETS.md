@@ -50,7 +50,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 | `concessionaria` | Loja de veículos (vitrine) | 2,15 : 1 (14 × 6,5 m) | 1792 × 832 | não |
 | `residencial` | Prédio residencial à esquerda | 0,61 : 1 (5,5 × 9 m) | 704 × 1152 | não |
 | `comercial` | Prédio comercial à direita | 0,96 : 1 (11,5 × 12 m) | 1472 × 1536 | não |
-| `torre` | As duas torres de vidro depois do feirão, em frente à Praça da Baleia (a mesma imagem nas duas) | 0,84 : 1 (13,5 × 16 m) | 1344 × 1600 | não |
+| `torre` | A torre de vidro na ponta da rua, depois do MASP | 0,84 : 1 (13,5 × 16 m) | 1344 × 1600 | não |
 
 As laterais e o telhado continuam com a cor da paleta (`COR_PREDIO` e `COR_TELHADO`).
 
@@ -74,7 +74,7 @@ mostra "BTG Pactual" em texto branco sobre marinho). O logo oficial do BTG Pactu
 | `pan` | Acima da porta do Banco PAN **e** na parede do fundo da agência PAN (logo PAN) | 4 : 1 (4,4 × 1,1 m na rua, 3,2 × 0,8 m na agência) | 1024 × 256 | sim (recorte da placa) |
 | `concessionaria` | Acima da porta da loja | 4 : 1 (6,4 × 1,6 m) | 1024 × 256 | sim |
 | `mobiauto` | Portal do feirão de seminovos, no fim da rua (logo Mobiauto, azul) | 4,6 : 1 (6 × 1,3 m) | 1200 × 260 | sim |
-| `rua` | Placa de rua "Av. Faria Lima" no primeiro poste | 4,5 : 1 (1,9 × 0,42 m) | 900 × 200 | sim |
+| `rua` | Placa de rua "Av. Faria Lista" no primeiro poste | 4,5 : 1 (1,9 × 0,42 m) | 900 × 200 | sim |
 | `praca` | Placa de pedra "Praça da Baleia" na entrada da praça (texto na face da frente) | 4,5 : 1 (2,5 × 0,56 m) | 900 × 200 | sim |
 | `entregas` | Letreiro "Entregas 2026" acima dos quatro quadros de aviso (escritórios BTG e PAN, loja, feirão) | 4 : 1 (2 a 2,4 × 0,5 m) | 1024 × 256 | sim |
 
@@ -118,6 +118,7 @@ a escala do desenho (tamanho do ladrilho, da pedra, das folhas de grama).
 | `carpete-pan` | Carpete cinza-escuro do escritório PAN | 2 × 2 m | 512 × 512 | não |
 | `piso-reuniao` | Piso de madeira da sala de reunião do escritório PAN | 2 × 2 m | 512 × 512 | não |
 | `piso-praca` | Piso de pedra clara da Praça da Baleia | 3 × 3 m | 512 × 512 | não |
+| `piso-masp` | Concreto do vão livre do MASP | 2 × 2 m | 512 × 512 | não |
 | `pedra-escura` | Faixas de pedra escura que cortam o piso da praça | 2 × 2 m | 512 × 512 | não |
 | `gramado` | Gramados da praça (mais escuros que a `grama` do fundo) | 4 × 4 m | 512 × 512 | não |
 
@@ -237,7 +238,8 @@ modal e não passa pelo canvas, então não precisa entrar na carga de arte do J
   modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo. Isso inclui os
   figurantes, o patinete elétrico, a tenda e as bandeiras do feirão, os carros que andam na
   avenida (o mesmo modelo `carro` do feirão, com luz de freio), as lixeiras, os bancos, as estações
-  de patinete e o monumento Baleia (esferas facetadas de aço, cores em `COR_BALEIA`). O cartão Ultra Blue 3D é uma
+  de patinete o monumento Baleia (esferas facetadas de aço, cores em `COR_BALEIA`) e o MASP (pórticos
+  vermelhos e caixa de vidro com caixilhos, cores em `COR_MASP`; não usa o slot de fachada). O cartão Ultra Blue 3D é uma
   placa fina (`cena3d/cartao.ts`) que só troca a face pela imagem do slot `hud/cartao-ultrablue`;
   o verso, a tarja e a borda são cores da paleta (`COR_CARTAO`). As cores dos figurantes
   (`figurante_1` a `figurante_8`) e do patinete ficam em `paleta.ts`.

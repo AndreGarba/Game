@@ -70,7 +70,7 @@
   },
   "rpg": {
     "cenas": {
-      "rua": "Faria Lima Avenue",
+      "rua": "Avenida Faria Lista",
       "agencia": "BTG Pactual Branch",
       "escritorio": "BTG Pactual Office",
       "concessionaria": "Car Dealership",
@@ -80,7 +80,7 @@
     "placas": {
       "banco": "BTG Pactual",
       "concessionaria": "CARS",
-      "rua": "Faria Lima Ave.",
+      "rua": "Av. Faria Lista",
       "mobiauto": "Mobiauto",
       "pan": "Banco PAN",
       "entregas": "Deliveries 2026",
@@ -226,7 +226,7 @@
       ],
       "baleia": [
         "The Whale: faceted stainless steel, full of triangles that shine in the sun.",
-        "Its head rests on the ground and its tail rises between the Faria Lima towers.",
+        "Its head rests on the ground and its tail rises between the Faria Lista towers.",
         "Someone left a note on the bench: “She seems to swim when you walk around her.”"
       ]
     },

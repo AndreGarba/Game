@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { FUNDO_GOL as FUNDO_DO_GOL, type Solido } from '../../../engine/rpg/index.ts'
-import { COR_BALEIA, COR_CARRO, COR_GOL, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
+import { COR_BALEIA, COR_CARRO, COR_MASP, COR_GOL, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
 import { criarPatinete } from './personagem.ts'
 import { fachadaProcedural, lateralProcedural, texturaDoSlot } from './texturas.ts'
@@ -171,6 +171,40 @@ const baleia: Construtor = (f, l, a, p) => {
   corpo.scale.set(l / 9, a / 5.5, p / 3)
   return grupo(corpo)
 }
+
+// MASP. Os pilares e as vigas dos pórticos são caixas vermelhas; a caixa de vidro (suspensa, posta
+// na altura certa por montarCena) tem laje de concreto embaixo e em cima e caixilhos verticais na
+// frente e nas pontas, como na foto.
+const pilarMasp: Construtor = (f, l, a, p) => f.caixa(l, a, p, f.material(COR_MASP.vermelho))
+
+const PASSO_CAIXILHO = 0.55
+const caixaMasp: Construtor = (f, l, a, p) => {
+  const concreto = f.material(COR_MASP.concreto)
+  const caixilho = f.material(COR_MASP.caixilho)
+  const laje = 0.45
+  const g = grupo(
+    f.caixa(l, laje, p, concreto),
+    f.caixa(l - 0.2, a - 2 * laje, p - 0.2, f.material(COR_MASP.vidro), { y: laje }),
+    f.caixa(l, laje + 0.25, p, f.material(COR_MASP.concretoClaro), { y: a - laje - 0.25 }),
+  )
+  const alturaVidro = a - 2 * laje - 0.25
+  for (let x = -l / 2 + PASSO_CAIXILHO; x < l / 2 - 0.1; x += PASSO_CAIXILHO) {
+    g.add(f.caixa(0.06, alturaVidro, 0.04, caixilho, { x, y: laje, z: p / 2 - 0.08 }))
+  }
+  for (const lado of [-1, 1]) {
+    for (let z = -p / 2 + PASSO_CAIXILHO; z < p / 2 - 0.1; z += PASSO_CAIXILHO) {
+      g.add(f.caixa(0.04, alturaVidro, 0.06, caixilho, { x: lado * (l / 2 - 0.08), y: laje, z }))
+    }
+  }
+  return g
+}
+
+// Hall de entrada no fundo do vão livre: concreto com uma faixa de vidro escuro de frente.
+const hallMasp: Construtor = (f, l, a, p) =>
+  grupo(
+    f.caixa(l, a, p, f.material(COR_MASP.concreto)),
+    f.caixa(l * 0.7, a * 0.7, 0.04, f.material(COR_MASP.hall), { z: p / 2 + 0.01 }),
+  )
 
 // Placa de pedra baixa da praça; o nome (traduzido) vai na face da frente, posto por montarCena.
 const placaPraca: Construtor = (f, l, a, p) =>
@@ -501,6 +535,10 @@ const CONSTRUTORES: Record<string, Construtor> = {
   baleia,
   'estacao-patinetes': estacaoPatinetes,
   'placa-praca': placaPraca,
+  'pilar-masp': pilarMasp,
+  'viga-masp': pilarMasp,
+  'masp-caixa': caixaMasp,
+  'masp-hall': hallMasp,
   gol,
   'rede-gol': () => new THREE.Group(),
   'quadro-entregas': quadroEntregas,

@@ -23,7 +23,7 @@ import { useTemTeclado } from '../../useTemTeclado.ts'
 import { ARTE_HUD } from '../../visual/arteDoHud.ts'
 import './tela-rpg.css'
 
-// `concluido`: achou os 31 cartões; o mundo para por trás da mensagem até continuar. `trocando`:
+// `concluido`: achou os 26 cartões; o mundo para por trás da mensagem até continuar. `trocando`:
 // a escolha de personagem está aberta por cima, com o mundo parado.
 type Fase = 'jogando' | 'pausado' | 'concluido' | 'trocando'
 

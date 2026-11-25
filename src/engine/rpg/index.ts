@@ -24,6 +24,7 @@ export type {
   Figurante,
   GrupoFigurantes,
   Letreiro,
+  Suspenso,
   EstadoMundo,
   IdCena,
   Interacao,

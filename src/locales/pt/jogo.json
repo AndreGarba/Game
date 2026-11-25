@@ -70,7 +70,7 @@
   },
   "rpg": {
     "cenas": {
-      "rua": "Avenida Faria Lima",
+      "rua": "Avenida Faria Lista",
       "agencia": "Agência BTG Pactual",
       "escritorio": "Escritório BTG Pactual",
       "concessionaria": "Loja de Veículos",
@@ -80,7 +80,7 @@
     "placas": {
       "banco": "BTG Pactual",
       "concessionaria": "VEÍCULOS",
-      "rua": "Av. Faria Lima",
+      "rua": "Av. Faria Lista",
       "mobiauto": "Mobiauto",
       "pan": "Banco PAN",
       "entregas": "Entregas 2026",
@@ -226,7 +226,7 @@
       ],
       "baleia": [
         "A Baleia: aço inox facetado, cheio de triângulos que brilham com o sol.",
-        "A cabeça descansa no chão e a cauda sobe entre as torres da Faria Lima.",
+        "A cabeça descansa no chão e a cauda sobe entre as torres da Faria Lista.",
         "Alguém deixou um bilhete no banco: “Ela parece nadar quando a gente anda em volta.”"
       ]
     },

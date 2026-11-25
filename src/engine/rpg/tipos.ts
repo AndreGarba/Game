@@ -74,6 +74,14 @@ export interface Decoracao extends Retangulo {
   nivel: number
 }
 
+// Peça suspensa (a caixa de vidro e as vigas do MASP): só desenho, o motor não colide com ela.
+// `y` é a altura da base e `altura`, a da peça.
+export interface Suspenso extends Retangulo {
+  visual: string
+  y: number
+  altura: number
+}
+
 // Letreiro em postes (placa de rua, portal do feirão). Só desenho: os postes, se baterem, são
 // sólidos à parte. `y` é a altura da base do painel.
 export interface Letreiro {
@@ -113,6 +121,7 @@ export interface Cena {
   npcs: Npc[]
   decoracoes: Decoracao[]
   letreiros?: Letreiro[]
+  suspensos?: Suspenso[]
   figurantes?: GrupoFigurantes[]
 }
 

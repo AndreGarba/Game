@@ -109,7 +109,7 @@ describe('cartões Ultra Blue', () => {
     expect(lugarParaRevistar(esc)).not.toBeNull()
   })
 
-  it('sorteio: 31 esconderijos distintos; a mesma semente repete, outra semente muda', () => {
+  it('sorteio: 26 esconderijos distintos; a mesma semente repete, outra semente muda', () => {
     const a = criarMundo(1234)
     const chaves = Object.keys(a.cartoes.escondidos)
     expect(chaves).toHaveLength(TOTAL_CARTOES)
@@ -183,7 +183,7 @@ describe('cartões Ultra Blue', () => {
     expect(ESCONDERIJOS.filter((e) => e.id === 'sofa_espera')).toHaveLength(2)
   })
 
-  it('acha os 31: a contagem chega a 31, o tempo é o tick do último, e nada muda depois', () => {
+  it('acha os 26: a contagem chega a 26, o tempo é o tick do último, e nada muda depois', () => {
     const e = criarMundo(98765)
     const escondidos = ESCONDERIJOS.filter((x) => e.cartoes.escondidos[x.chave])
     let ultimoTick = 0

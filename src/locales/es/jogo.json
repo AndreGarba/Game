@@ -70,7 +70,7 @@
   },
   "rpg": {
     "cenas": {
-      "rua": "Avenida Faria Lima",
+      "rua": "Avenida Faria Lista",
       "agencia": "Sucursal BTG Pactual",
       "escritorio": "Oficina BTG Pactual",
       "concessionaria": "Tienda de Autos",
@@ -80,7 +80,7 @@
     "placas": {
       "banco": "BTG Pactual",
       "concessionaria": "AUTOS",
-      "rua": "Av. Faria Lima",
+      "rua": "Av. Faria Lista",
       "mobiauto": "Mobiauto",
       "pan": "Banco PAN",
       "entregas": "Entregas 2026",
@@ -226,7 +226,7 @@
       ],
       "baleia": [
         "La Ballena: acero inoxidable facetado, lleno de triángulos que brillan con el sol.",
-        "La cabeza descansa en el suelo y la cola sube entre las torres de Faria Lima.",
+        "La cabeza descansa en el suelo y la cola sube entre las torres de Faria Lista.",
         "Alguien dejó una nota en el banco: “Parece nadar cuando caminas a su alrededor.”"
       ]
     },
