@@ -103,7 +103,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   const dialogos = t('rpg.dialogos', { returnObjects: true }) as unknown as Record<string, string[]>
   const placas = t('rpg.placas', { returnObjects: true }) as unknown as Record<string, string>
   // A placa é textura do canvas 3D: fica com o idioma de quando a tela abriu.
-  const [textosDaCena] = useState(() => ({ placas }))
+  const cartazes = t('rpg.manifestantes.placas', { returnObjects: true }) as unknown as string[]
+  const [textosDaCena] = useState(() => ({ placas, cartazes }))
 
   const mudarFase = useCallback((nova: Fase) => {
     faseRef.current = nova

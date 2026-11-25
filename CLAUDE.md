@@ -120,9 +120,9 @@ pt, en e es, inclusive o "Avenida" (`rpg.cenas.rua` e a placa `rpg.placas.rua`, 
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-17'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-21'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -358,6 +358,27 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   desenho, que o motor ignora. O hall fechado no fundo existe também para a caixa não esconder o
   jogador: com a câmera em (1, 1, 1), quem passa por baixo dali para a frente continua à vista.
   Pilares e hall estão em `NAO_ESCONDE`: são o prédio.
+- **Manifestantes do MASP** (`src/engine/rpg/manifestantes.ts`, `estado.manifestantes`): seis
+  pessoas paradas na frente do vão livre (`MANIFESTACAO.casas` em `cenas.ts`), cada uma com um
+  cartaz. Com o jogador dentro de `MANIFESTACAO.area` (`estado.protesto`), cada uma vai para a sua
+  vaga numa roda em volta dele (`RODA`, seis pontos a ~1,3 m escritos à mão, sem trigonometria) e o
+  segue a `VEL_MANIFESTANTE` (um pouco menos que o andar: correndo, ele os deixa); fora da área,
+  voltam para a casa a `VEL_MANIFESTANTE_VOLTA`. **Moram no motor**, como os carros, porque seguem
+  o jogador a cada tick, e **não gastam o `estado.rng`**: nada é sorteado (casa, aparência e
+  cartaz são fixos por id), então cartões, figurantes e o resto da partida saem iguais com ou sem
+  eles (há teste). **Não prendem o jogador:** ele os atravessa, como aos figurantes; eles batem nos
+  sólidos e nos carros. O alvo fica preso no `limite` (a borda de z para antes do asfalto: nunca
+  entram na faixa dos carros) e, atrás da linha da calçada, no `vao` (na frente do hall);
+  `MANIFESTACAO.paredes` são paredes só deles, que fecham os corredores das pontas do vão e o
+  feirão, onde ficavam presos. Travado num poste ou pilar (o passo reto não sai do lugar), anda de
+  lado por `TICKS_DESVIO_MANIFESTANTE`. Não conversam, não apanham, não viram alvo do A e não
+  escondem cartão. **Cartaz é só desenho** (`desenharManifestantes` no renderizador): braços para
+  cima, cabo e papelão de frente para a câmera (não gira com o corpo, para a frase ser lida),
+  balançando pelo pé do cabo com `Math.sin` do tempo (mais forte com o protesto). As frases moram
+  em `rpg.manifestantes.placas` (lista, na ordem do índice `placa`), nos três idiomas, e vão para
+  a textura por `TextosDaCena.cartazes` (`cartazProcedural`, até três linhas); cores em
+  `COR_CARTAZ`. Frase de cartaz é piada com o mundo do jogo (café, reunião, fila do banco,
+  patinete, crachá): nada político, partidário ou ofensivo.
 - **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
   aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor

@@ -380,6 +380,16 @@
     },
     "futebol": {
       "gol": "Gooooooaaaaalllll"
+    },
+    "manifestantes": {
+      "placas": [
+        "More coffee, fewer meetings!",
+        "This meeting could have been an email",
+        "Down with the bank line!",
+        "Scooters off the sidewalk!",
+        "Badges that work on the first try!",
+        "Free coffee on the 3rd floor now!"
+      ]
     }
   },
   "selecao": {

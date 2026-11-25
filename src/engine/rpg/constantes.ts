@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-20'
+export const VERSAO_MUNDO = 'rpg-21'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -134,3 +134,10 @@ export const MARGEM_FAIXA = 0.5
 export const MARGEM_FORA = 12
 // Buzina quando freia pelo jogador vindo a mais de metade da velocidade; no máximo uma a cada 2 s.
 export const TICKS_ENTRE_BUZINAS = 120
+
+// Manifestantes do MASP: atrás do jogador, a 3,3 m/s (um pouco menos que o andar, então ficam para
+// trás de quem anda e alcançam quem para; correndo, ele os deixa). Voltam para o vão sem pressa.
+export const VEL_MANIFESTANTE = 3.3 / TICKS_POR_SEGUNDO
+export const VEL_MANIFESTANTE_VOLTA = 1.6 / TICKS_POR_SEGUNDO
+// Travado num obstáculo, o manifestante anda de lado por estes ticks antes de tentar reto de novo.
+export const TICKS_DESVIO_MANIFESTANTE = 15

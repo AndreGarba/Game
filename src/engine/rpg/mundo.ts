@@ -2,6 +2,7 @@ import { criarRng } from '../rng.ts'
 import { passoBaloes, soltarBaloes } from './baloes.ts'
 import { bolaAoAlcance, chutarBola, criarBola, mirarNaBola, passoBola } from './bola.ts'
 import { caixaDoCarro, caixasDosCarros, criarCarros, passoCarros } from './carros.ts'
+import { criarManifestantes, passoManifestantes } from './manifestantes.ts'
 import { chaveDoEsconderijo, ehEsconderijo, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
@@ -89,6 +90,8 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     bola: criarBola(),
     carros,
     buzina: null,
+    manifestantes: criarManifestantes(),
+    protesto: false,
   }
 }
 
@@ -409,6 +412,7 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   passoBaloes(estado)
   passoBola(estado)
   passoCarros(estado)
+  passoManifestantes(estado)
 
   const c = estado.dialogo || estado.quadro || j.tombo > 0 || j.soco > 0 || j.chute > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null

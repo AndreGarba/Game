@@ -178,6 +178,27 @@ export interface DialogoAberto {
   origem: string
 }
 
+// Manifestante do vão livre do MASP. `placa` é o índice da frase do cartaz (a copy é da tela) e
+// `vaga`, o lugar dele na roda em volta do jogador.
+export interface Manifestante {
+  id: number
+  visual: string
+  placa: number
+  casaX: number
+  casaZ: number
+  x: number
+  z: number
+  xAnterior: number
+  zAnterior: number
+  dirX: number
+  dirZ: number
+  andando: boolean
+  fasePasso: number
+  // Ticks que faltam do contorno de um poste ou pilar, e para que lado (1 ou −1).
+  desvio: number
+  ladoDesvio: number
+}
+
 export interface Figurante extends Tombo {
   id: string
   visual: string
@@ -328,4 +349,7 @@ export interface EstadoMundo {
   carros: Carro[]
   // Tick da última buzina (um carro freou pelo jogador); a UI toca o som quando muda.
   buzina: number | null
+  manifestantes: Manifestante[]
+  // Jogador na área do MASP: os manifestantes cercam e seguem.
+  protesto: boolean
 }

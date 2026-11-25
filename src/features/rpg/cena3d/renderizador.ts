@@ -16,7 +16,7 @@ import {
   type IdCena,
   type Tombo,
 } from '../../../engine/rpg/index.ts'
-import { APARENCIAS, COR_ANEL_JOGADOR, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
+import { APARENCIAS, COR_ANEL_JOGADOR, COR_CARTAZ, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
 import { criarBola3d } from './bola3d.ts'
 import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
@@ -24,6 +24,7 @@ import { criarFesta3d } from './festa.ts'
 import { modeloDoSolido } from './modelos.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
 import { criarTeleporte3d } from './teleporte.ts'
+import { cartazProcedural } from './texturas.ts'
 import {
   anguloDaDirecao,
   animarPersonagem,
@@ -66,6 +67,16 @@ const DESCIDA_NO_DIALOGO = 1.4
 // Altura da prancha do patinete e o braço esticado até o guidão.
 const ELEVACAO_PATINETE = 0.16
 const BRACO_NO_GUIDAO = -1.05
+// Manifestante: braços para cima, segurando o cabo do cartaz acima da cabeça.
+const BRACO_NO_CARTAZ = -2.75
+// Balanço do cartaz (rad) e velocidade (rad/s); cada um num ritmo, pela fase do id.
+const BALANCO_CARTAZ = 0.26
+const RITMO_CARTAZ = 3.4
+// Cabo do cartaz: das mãos (ALTURA_MAOS) até o cartaz, que fica de frente para a câmera.
+const ALTURA_MAOS = 1.75
+const CABO_CARTAZ = 0.8
+const LARGURA_CARTAZ = 1.45
+const ALTURA_CARTAZ = 0.9
 // Piloto assustado: balança de lado, amortecendo até parar.
 const BALANCO_SUSTO = 0.14
 // Invulnerável depois do tombo: o anel pisca, 8 vezes por segundo.
@@ -167,6 +178,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   let patinetes = new Map<string, THREE.Group>()
   // Carros da avenida, por id: só existem com a rua montada.
   let carros = new Map<number, Carro3d>()
+  // Manifestantes do MASP, por id, com o cartaz (pivô no pé do cabo): só com a rua montada.
+  let manifestantes = new Map<number, { p: Personagem; cartaz: THREE.Group; pivo: THREE.Group }>()
   let largura = 1
   let altura = 1
   let tempo = 0
@@ -181,6 +194,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     figurantes = new Map()
     patinetes = new Map()
     carros = new Map()
+    manifestantes = new Map()
     idMontada = id
     ajustarCamera()
   }
@@ -307,7 +321,10 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       }
     }
 
-    if (estado.cena === 'rua') desenharCarros(estado, alfa)
+    if (estado.cena === 'rua') {
+      desenharCarros(estado, alfa)
+      desenharManifestantes(estado, alfa, dt)
+    }
 
     desenharCartao(estado, alfa)
     festa.desenhar(estado, dt, tempo, trocou)
@@ -364,6 +381,49 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       const x = c.xAnterior + (c.x - c.xAnterior) * alfa
       carro.raiz.position.set(x + COMPRIMENTO_CARRO / 2, 0, FAIXAS_CARROS[c.faixa]!.z + LARGURA_CARRO / 2)
       for (const luz of carro.freio) luz.visible = c.freando
+    }
+  }
+
+  // O cartaz não gira com o corpo: fica sempre de frente para a câmera, para a frase ser lida, e
+  // balança de um lado para o outro pelo pé do cabo. Só desenho: o motor não sabe do cartaz.
+  function criarManifestante3d(m: EstadoMundo['manifestantes'][number]) {
+    const p = criarPersonagem(fabricaCena, APARENCIAS[m.visual] ?? APARENCIAS.pedestre!, { leve: true })
+    p.angulo = anguloDaDirecao(m.dirX, m.dirZ)
+    const cores = COR_CARTAZ.cartazes[m.placa % COR_CARTAZ.cartazes.length]!
+    const frase = textos.cartazes[m.placa % Math.max(1, textos.cartazes.length)] ?? ''
+    const cartaz = new THREE.Group()
+    cartaz.rotation.y = Math.PI / 4
+    const pivo = new THREE.Group()
+    pivo.position.y = ALTURA_MAOS
+    cartaz.add(pivo)
+    pivo.add(fabricaCena.caixa(0.05, CABO_CARTAZ, 0.05, fabricaCena.material(COR_CARTAZ.cabo)))
+    const base = CABO_CARTAZ - 0.1
+    pivo.add(fabricaCena.caixa(LARGURA_CARTAZ, ALTURA_CARTAZ, 0.04, fabricaCena.material(cores.fundo), { y: base }))
+    const frente = fabricaCena.plano(LARGURA_CARTAZ * 0.98, ALTURA_CARTAZ * 0.96, fabricaCena.materialComTextura(cartazProcedural(frase, cores.fundo, cores.texto)))
+    frente.position.set(0, base + ALTURA_CARTAZ / 2, 0.025)
+    pivo.add(frente)
+    montada?.grupo.add(p.raiz, cartaz)
+    return { p, cartaz, pivo }
+  }
+
+  function desenharManifestantes(estado: EstadoMundo, alfa: number, dt: number) {
+    for (const m of estado.manifestantes) {
+      let d = manifestantes.get(m.id)
+      if (!d) {
+        d = criarManifestante3d(m)
+        manifestantes.set(m.id, d)
+      }
+      const mx = m.xAnterior + (m.x - m.xAnterior) * alfa
+      const mz = m.zAnterior + (m.z - m.zAnterior) * alfa
+      d.p.raiz.position.set(mx, 0, mz)
+      d.cartaz.position.set(mx, 0, mz)
+      zerarPoses(d.p)
+      animarPersonagem(d.p, m.fasePasso * RADIANOS_POR_TICK, m.andando, tempo + m.id, anguloDaDirecao(m.dirX, m.dirZ), dt)
+      d.p.bracos[0].rotation.x = BRACO_NO_CARTAZ
+      d.p.bracos[1].rotation.x = BRACO_NO_CARTAZ
+      // Mais animado quando cerca o jogador.
+      const forca = estado.protesto ? 1.4 : 1
+      d.pivo.rotation.z = Math.sin(tempo * RITMO_CARTAZ * forca + m.id * 1.7) * BALANCO_CARTAZ * forca
     }
   }
 
