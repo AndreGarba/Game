@@ -262,6 +262,71 @@
         "nome": "Roman",
         "titulo": "B2C lead, Vehicles",
         "descricao": "Committed and collaborative, he takes a product from scratch, bringing every team together. Gets great feedback from the Vehicles team."
+      },
+      "nath": {
+        "nome": "Nath",
+        "titulo": "Onboarding Architect",
+        "descricao": "Redesigned onboarding and cut 60% to 80% of the effort. Every day, 2 thousand allies fight by her side, and opening accounts and setting up powers became a quick move."
+      },
+      "day": {
+        "nome": "Day",
+        "titulo": "Multiverse Explorer",
+        "descricao": "Travels across different territories of the bank, connecting business needs, technology and user experience. Every new mission, a new universe to explore."
+      },
+      "bruno": {
+        "nome": "Bruno",
+        "titulo": "Salesforce Strategist",
+        "descricao": "Evolved Partners' Salesforce with a sharp Operational Flow, Call to Action and Relationship Cadence. Every Partner gains a heavyweight ally to conquer new territories."
+      },
+      "wesley": {
+        "nome": "Wesley",
+        "titulo": "Legal Unifier",
+        "descricao": "Joined the bank's legal systems into a single kingdom. His domain adds up to 254k+ cases and 569k+ tasks created, and where there was chaos, order now reigns."
+      },
+      "bob": {
+        "nome": "Bob",
+        "titulo": "Lord of Credit Risk",
+        "descricao": "Merged 5 systems into a single platform and rules R$ 360 bi in approved credit limits. With him in command, every risk decision is precise, fast and worthy of a legend."
+      },
+      "ju": {
+        "nome": "Ju",
+        "titulo": "Policy Architect",
+        "descricao": "Builds bridges over the challenges of the Credit Engine, turning mazes of rules into clear paths for sound decisions."
+      },
+      "fabio": {
+        "nome": "Fábio",
+        "titulo": "Conqueror of Systems",
+        "descricao": "7 years at BTG, he led the expansion of UX across the bank's back-office areas, going from 3 areas served in 2022 to 30+ by 2026."
+      },
+      "pedro": {
+        "nome": "Pedro",
+        "titulo": "The Funds Wizard",
+        "descricao": "For 5 years, flows, journeys or prototypes come out of his hat for 200+ devs and business teams everywhere. No set hours. That's how he helps BTG, a leader in funds, build this market."
+      },
+      "allexis": {
+        "nome": "Allexis",
+        "titulo": "Here comes a new challenger!",
+        "descricao": "New to the team, he joined to work on the Everest collections system and important projects like BNDU and Dívida Ativa."
+      },
+      "thamis": {
+        "nome": "Thamis",
+        "titulo": "Mars Sorceress 🪐",
+        "descricao": "Expanded the Mars ecosystem by evolving Visão 360, Mars App, Mars Web and MarsIA, connecting systems, financial data and AI. Turned complexity into solutions that simplify operations and decisions."
+      },
+      "renan": {
+        "nome": "Renan",
+        "titulo": "Guardian of Luxembourg",
+        "descricao": "Brings credit, collateral and approval together in a single view. With the power of simplicity, he conquered Luxembourg's booked credits and banished reconciliation chaos forever."
+      },
+      "fernando": {
+        "nome": "Fernando",
+        "titulo": "Portal Unifier",
+        "descricao": "Forged the IR Portal and Bookkeeping into a single kingdom. With 215+ clients, R$ 45 mm in yearly revenue and 5.9k visitors a month, he is the hero who rules capital markets."
+      },
+      "barranqueiro": {
+        "nome": "Barranqueiro",
+        "titulo": "Portfolio Guardian",
+        "descricao": "Owner of SINT's “what”: sets scope, priority and roadmap. Bridges UX, Product and IT, guards Monday and chases dates. Keeps the board clean, estimates honest and deadlines in sight."
       }
     },
     "teclas": {

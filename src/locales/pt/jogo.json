@@ -262,6 +262,71 @@
         "nome": "Roman",
         "titulo": "Responsável pelo B2C",
         "descricao": "Comprometido e colaborativo, conduz um produto do zero amarrando todas as áreas. Recebe ótimos feedbacks do time de Veículos."
+      },
+      "nath": {
+        "nome": "Nath",
+        "titulo": "Arquiteta do Onboarding",
+        "descricao": "Redesenhou o onboarding e cortou de 60% a 80% do esforço. Todo dia, 2 mil aliados lutam ao seu lado, e abrir contas e parametrizar poderes virou uma jogada veloz."
+      },
+      "day": {
+        "nome": "Day",
+        "titulo": "Exploradora do multiverso",
+        "descricao": "Percorre diferentes territórios do banco, conectando necessidade de negócio, tecnologia e experiência do usuário. Cada nova missão, um novo universo a desbravar."
+      },
+      "bruno": {
+        "nome": "Bruno",
+        "titulo": "Estrategista Salesforce",
+        "descricao": "Evoluiu o Salesforce dos Partners com Fluxo Operacional, Call to Action e Régua de Relacionamento afiados. Cada Partner ganha um aliado de peso para conquistar novos territórios."
+      },
+      "wesley": {
+        "nome": "Wesley",
+        "titulo": "Unificador do Jurídico",
+        "descricao": "Uniu os sistemas do jurídico do banco num só reino. Seu domínio soma +254 mil processos e +569 mil tarefas criadas, e onde havia caos agora reina a ordem."
+      },
+      "bob": {
+        "nome": "Bob",
+        "titulo": "Senhor do Risco de Crédito",
+        "descricao": "Fundiu 5 sistemas numa única plataforma e domina R$ 360 bi em limite de crédito aprovado. Com ele no comando, cada decisão de risco é precisa, rápida e digna de uma lenda."
+      },
+      "ju": {
+        "nome": "Ju",
+        "titulo": "Arquiteta das Políticas",
+        "descricao": "Constrói pontes sobre os desafios do Motor de Crédito, transformando labirintos de regras em caminhos claros para decisões assertivas."
+      },
+      "fabio": {
+        "nome": "Fábio",
+        "titulo": "Conquistador de sistemas",
+        "descricao": "Há 7 anos no BTG, liderou a expansão de UX nas áreas de backoffice do banco, saindo de 3 áreas atendidas em 2022 para +30 até 2026."
+      },
+      "pedro": {
+        "nome": "Pedro",
+        "titulo": "O Mágico de Funds",
+        "descricao": "Há 5 anos, da cartola saem fluxo, jornada ou protótipo pra mais de 200 devs e negócios pra todo lado. Sem hora marcada. É assim que ajudo o BTG, líder em fundos, a construir esse mercado."
+      },
+      "allexis": {
+        "nome": "Allexis",
+        "titulo": "Here comes a new challenger!",
+        "descricao": "Novo no time, entrou para atuar no sistema de cobrança Everest e projetos importantes como BNDU e Dívida Ativa."
+      },
+      "thamis": {
+        "nome": "Thamis",
+        "titulo": "Feiticeira do Mars 🪐",
+        "descricao": "Expandiu o ecossistema do Mars com a evolução do Visão 360, Mars App, Mars Web e MarsIA, conectando sistemas, dados financeiros e IA. Transformou complexidade em soluções que simplificam a operação e a decisão."
+      },
+      "renan": {
+        "nome": "Renan",
+        "titulo": "Guardião de Luxemburgo",
+        "descricao": "Une crédito, garantias e aprovação numa única visão. Com o poder da simplicidade, conquistou os créditos boletados de Luxemburgo e baniu o caos da conciliação para sempre."
+      },
+      "fernando": {
+        "nome": "Fernando",
+        "titulo": "Unificador de Portais",
+        "descricao": "Forjou o Portal IR e a Escrituração num só reino. Com +215 clientes, R$ 45 mm de faturamento ao ano e 5,9 mil visitantes por mês, é o herói que domina o mercado de capitais."
+      },
+      "barranqueiro": {
+        "nome": "Barranqueiro",
+        "titulo": "Guardião do Portfólio",
+        "descricao": "Dono do “o quê” de SINT: define escopo, prioridade e roadmap. Facilita entre UX, Produto e TI, guarda o Monday e cobra datas. Mantém o board limpo, as estimativas honestas e os prazos à vista."
       }
     },
     "teclas": {

@@ -173,19 +173,32 @@ Prompt de exemplo:
 Opcional. Um arquivo por personagem do elenco (`ELENCO` em `src/engine/rpg/elenco.ts`), com o
 **id** do personagem como nome. Sem arquivo, o card mostra um retrato desenhado em 3D na hora, com
 o mesmo boneco do jogo. Fundo opaco (o card não tem cor atrás). Rosto e ombros, de frente ou de
-três quartos, centralizados com folga em cima: o card mostra o centro num quadrado (corta um pouco em cima e embaixo), então deixe rosto e ombros no meio.
+três quartos, centralizados com folga em cima: o card mostra o centro num retângulo 4 : 3 (corta em cima e embaixo), então deixe rosto e ombros no meio.
 
 | Arquivo | O quê | Proporção | Tamanho sugerido | Na tela (referência 1280 × 720) |
 | --- | --- | --- | --- | --- |
-| `rici` | Rici: cabelo preto, tudo preto, tatuagens nos braços | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
-| `garba` | Garba: careca, barba castanha cheia, óculos de armação clara, camiseta vinho com "VANS" amarelo | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
-| `rogerio` | Rogério: cabelo curto grisalho, barba por fazer, óculos transparentes, camiseta preta com estampa laranja e azul-petróleo (sem personagem licenciado) | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
-| `fernanda` | Fernanda: cabelo até o ombro, castanho-claro com mechas loiras, regata branca com babado de renda, brincos pequenos | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
-| `dea` | Dea: cabelo longo e liso, loiro com raiz castanha, sorriso largo, jaqueta verde-oliva aberta sobre blusa branca | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
-| `roman` | Roman: cabelo curto castanho-escuro, camisa social azul-clara com botões e logo pequeno no peito | 4 : 5 | 512 × 640 | quadrado de ~120 px (centro da imagem) |
+| `rici` | Rici: cabelo preto, tudo preto, tatuagens nos braços | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `garba` | Garba: careca, barba castanha cheia, óculos de armação clara, camiseta vinho com "VANS" amarelo | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `rogerio` | Rogério: cabelo curto grisalho, barba por fazer, óculos transparentes, camiseta preta com estampa laranja e azul-petróleo (sem personagem licenciado) | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `fernanda` | Fernanda: cabelo até o ombro, castanho-claro com mechas loiras, regata branca com babado de renda, brincos pequenos | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `dea` | Dea: cabelo longo e liso, loiro com raiz castanha, sorriso largo, jaqueta verde-oliva aberta sobre blusa branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `roman` | Roman: cabelo curto castanho-escuro, camisa social azul-clara com botões e logo pequeno no peito | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `nath` | Nath: cabelo longo, liso e castanho-escuro, camisa verde de botão | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `day` | Day: cabelo acobreado até o ombro, camisa estampada aberta sobre blusa preta | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `bruno` | Bruno: cabelo e barba pretos, suéter polo cinza-escuro | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `wesley` | Wesley: barba, óculos pretos, blazer preto sobre camiseta cinza | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `bob` | Bob: barba ruiva cheia, sorriso, camisa social cinza-clara | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `ju` | Ju: cabelo longo castanho com pontas claras, regata preta, sorriso | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `fabio` | Fábio: óculos, jaqueta preta aberta, cachecol cinza-rosado | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `pedro` | Pedro: óculos escuros de lente azul, sorriso, camiseta marrom | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `allexis` | Allexis: cabelo preto, barba, camiseta branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `thamis` | Thamis: cabelo longo e preto, camiseta preta, batom escuro | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `renan` | Renan: barba castanha, camiseta preta, tatuagem pequena no braço | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `fernando` | Fernando: cabelo castanho-claro, suéter preto, sorriso | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `barranqueiro` | Barranqueiro: boné verde-acinzentado, barba grisalha rala, camiseta preta com estampa branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
-(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos) ficam em `APARENCIAS.<id>` no
+(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom) ficam em `APARENCIAS.<id>` no
 `paleta.ts`.
 
 ---
