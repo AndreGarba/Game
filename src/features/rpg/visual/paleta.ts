@@ -555,3 +555,16 @@ export const COR_VITRINE = {
   luzCeu: '#dfe9ff',
   luzChao: '#3a2f2a',
 }
+
+// Cartazes dos manifestantes do MASP, um por frase (na ordem de `rpg.manifestantes.placas`).
+export const COR_CARTAZ = {
+  cabo: '#b08455',
+  cartazes: [
+    { fundo: '#fff4d6', texto: '#d1342f' },
+    { fundo: '#ffffff', texto: '#1f3a93' },
+    { fundo: '#ffd84a', texto: '#1b1b1b' },
+    { fundo: '#e9f7ef', texto: '#147a3d' },
+    { fundo: '#ffe3ef', texto: '#a3195b' },
+    { fundo: '#d9ecff', texto: '#0b4f8a' },
+  ],
+}

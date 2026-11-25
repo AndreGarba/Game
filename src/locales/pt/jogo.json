@@ -380,6 +380,16 @@
     },
     "futebol": {
       "gol": "Gooooooollllllllll"
+    },
+    "manifestantes": {
+      "placas": [
+        "Mais café, menos reunião!",
+        "Essa reunião podia ser um e-mail",
+        "Abaixo a fila do caixa!",
+        "Patinete fora da calçada!",
+        "Crachá que abre a catraca de primeira!",
+        "Café grátis no 3º andar já!"
+      ]
     }
   },
   "selecao": {

@@ -13,6 +13,8 @@ import { placaProcedural, texturaDePiso, texturaDoSlot } from './texturas.ts'
 export interface TextosDaCena {
   // Texto provisório das placas, por variante (pan, banco, concessionaria, mobiauto, rua, entregas, praca).
   placas: Record<string, string>
+  // Frases dos cartazes dos manifestantes do MASP, pelo índice `placa` de cada um.
+  cartazes: string[]
 }
 
 export interface CenaMontada {

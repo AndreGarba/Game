@@ -65,6 +65,33 @@ export const PRACA = { x: 58, z: 21, largura: 22, profundidade: 22 }
 // o jogador: dali para a frente, a câmera vê quem passa por baixo.
 const MASP = { x: 77, largura: 13.5, profundidade: 8, pilar: 1.2, fundo: 3.8 }
 
+// Manifestantes do vão livre do MASP (manifestantes.ts). `casas`: onde cada um fica parado, na
+// frente do vão, longe o bastante da caixa de vidro para a câmera ver o cartaz. `area`: chegando
+// nela, eles cercam o jogador. `limite`: até onde vão atrás dele; a borda de z para antes do
+// asfalto, então nunca entram na faixa dos carros. `vao`: atrás da linha da calçada (z < 8), só
+// andam no vão, na frente do hall. `paredes`: fecham, só para eles, os corredores das pontas do
+// vão (entre os pilares, até o prédio e o feirão) e o feirão, onde ficavam presos: fora do vão,
+// só andam na calçada.
+export const MANIFESTACAO = {
+  area: { x: 74, z: 0, largura: 20, profundidade: 11.2 },
+  limite: { x: 73.5, z: 0, largura: 21, profundidade: 10.7 },
+  vao: { x: MASP.x + MASP.pilar, z: MASP.fundo, largura: MASP.largura - 2 * MASP.pilar, profundidade: MASP.profundidade - MASP.fundo },
+  paredes: [
+    { x: 70, z: 0, largura: MASP.x - 70, profundidade: MASP.profundidade },
+    { x: MASP.x, z: 0, largura: MASP.pilar, profundidade: MASP.profundidade - MASP.pilar },
+    { x: MASP.x + MASP.largura - MASP.pilar, z: 0, largura: MASP.pilar, profundidade: MASP.profundidade - MASP.pilar },
+  ],
+  casas: [
+    { x: 79.6, z: 6.4 },
+    { x: 81.4, z: 5.8 },
+    { x: 83.2, z: 6.4 },
+    { x: 85, z: 5.8 },
+    { x: 86.8, z: 6.4 },
+    { x: 88.4, z: 5.8 },
+  ],
+  visuais: ['figurante_3', 'figurante_6', 'figurante_1', 'figurante_5', 'figurante_2', 'figurante_4'],
+}
+
 function tracejadoDoMeio() {
   const saida = []
   for (let x = 1 - ALEM_DA_BORDA; x < LARGURA_RUA + ALEM_DA_BORDA; x += 5) {

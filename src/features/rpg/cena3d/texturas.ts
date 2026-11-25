@@ -114,6 +114,40 @@ export function lateralProcedural(variante: string, largura: number, altura: num
   return texturaDoCanvas(canvas)
 }
 
+/** Cartaz de manifestante: papelão com a frase quebrada em até três linhas, letra grossa. */
+export function cartazProcedural(texto: string, fundo: string, cor: string): THREE.Texture {
+  const [canvas, ctx] = canvasDe(512, 320)
+  ctx.fillStyle = fundo
+  ctx.fillRect(0, 0, 512, 320)
+  ctx.strokeStyle = cor
+  ctx.lineWidth = 10
+  ctx.strokeRect(14, 14, 484, 292)
+  ctx.fillStyle = cor
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  const palavras = texto.split(' ')
+  let tamanho = 76
+  let linhas: string[] = []
+  for (; tamanho >= 28; tamanho -= 4) {
+    ctx.font = `900 ${tamanho}px Nunito, system-ui, sans-serif`
+    linhas = []
+    let linha = ''
+    for (const p of palavras) {
+      const tentativa = linha ? `${linha} ${p}` : p
+      if (linha && ctx.measureText(tentativa).width > 440) {
+        linhas.push(linha)
+        linha = p
+      } else linha = tentativa
+    }
+    linhas.push(linha)
+    const larga = linhas.some((l) => ctx.measureText(l).width > 440)
+    if (!larga && linhas.length * tamanho * 1.1 <= 260) break
+  }
+  const passo = tamanho * 1.1
+  linhas.forEach((l, i) => ctx.fillText(l, 256, 160 + (i - (linhas.length - 1) / 2) * passo))
+  return texturaDoCanvas(canvas)
+}
+
 /** Placa com texto, enquanto a arte da placa não chega. */
 export function placaProcedural(texto: string, fundo: string, cor: string): THREE.Texture {
   const [canvas, ctx] = canvasDe(512, 128)
