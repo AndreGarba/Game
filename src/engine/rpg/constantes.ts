@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-19'
+export const VERSAO_MUNDO = 'rpg-20'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -68,7 +68,7 @@ export const ALCANCE_SOCO = 1
 export const COS_LEQUE_SOCO = 0.5
 
 // Cartões Ultra Blue escondidos pelo mapa, um por esconderijo, sorteados a cada partida.
-export const TOTAL_CARTOES = 31
+export const TOTAL_CARTOES = 26
 
 // Balões que caem ao fechar um quadro de entregas. Poucos por desempenho no celular: cada um é
 // uma malha no desenho. Passou de MAX_BALOES, o mais antigo some.
