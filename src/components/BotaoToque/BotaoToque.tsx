@@ -15,19 +15,22 @@ interface Props {
   // no lugar do rótulo e da arte (a arte traz a letra do toque desenhada).
   teclas?: string[] | null
   atalhos?: string
+  // Apertado por outro caminho (a tecla do computador): o botão afunda como no toque.
+  apertadoFora?: boolean
 }
 
 /**
  * Botão redondo de controle. Dispara no pressionar (pointerdown), não no soltar: o click do
  * navegador espera o dedo subir e, no celular, isso atrasa a ação.
  */
-export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 'primario', imagem, imagemApertado, teclas, atalhos }: Props) {
-  const [apertado, setApertado] = useState(false)
+export function BotaoToque({ rotulo, descricao, aoApertar, aoSoltar, variante = 'primario', imagem, imagemApertado, teclas, atalhos, apertadoFora = false }: Props) {
+  const [apertadoToque, setApertado] = useState(false)
   const soltar = () => {
-    if (!apertado) return
+    if (!apertadoToque) return
     setApertado(false)
     aoSoltar?.()
   }
+  const apertado = apertadoToque || apertadoFora
   const comTeclas = !!teclas && teclas.length > 0
   const arte = comTeclas ? null : apertado && imagemApertado ? imagemApertado : imagem
   const estilo = (arte ? { '--imagem': `url(${arte})` } : {}) as CSSProperties

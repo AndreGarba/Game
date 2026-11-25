@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { atalhosDoComando, TECLAS, TECLAS_DIRECAO, teclasDoComando, teclasDoDirecional } from '../src/features/rpg/teclas.ts'
+import { atalhosDoComando, oQueATeclaAperta, TECLAS, TECLAS_DIRECAO, teclasDoComando, teclasDoDirecional } from '../src/features/rpg/teclas.ts'
 import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
@@ -31,5 +31,15 @@ describe('teclas do RPG nos botões do HUD', () => {
   it('nenhuma tecla faz dois comandos', () => {
     const todas = [...Object.values(TECLAS).flat(), ...Object.keys(TECLAS_DIRECAO)]
     expect(new Set(todas).size).toBe(todas.length)
+  })
+
+  it('a tecla segurada afunda o botão do comando ou acende o lado do direcional', () => {
+    expect(oQueATeclaAperta('KeyE')).toEqual({ comando: 'a' })
+    expect(oQueATeclaAperta('Escape')).toEqual({ comando: 'b' })
+    expect(oQueATeclaAperta('ShiftRight')).toEqual({ comando: 'correr' })
+    expect(oQueATeclaAperta('KeyJ')).toEqual({ comando: 'soco' })
+    expect(oQueATeclaAperta('KeyW')).toEqual({ lado: 'cima' })
+    expect(oQueATeclaAperta('ArrowLeft')).toEqual({ lado: 'esquerda' })
+    expect(oQueATeclaAperta('KeyZ')).toBeNull()
   })
 })

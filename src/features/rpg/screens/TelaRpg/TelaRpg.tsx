@@ -19,6 +19,7 @@ import { TelaSelecao } from '../TelaSelecao/TelaSelecao.tsx'
 import { formatarTempo } from '../../tempo.ts'
 import { atalhosDoComando, teclasDoComando, teclasDoDirecional, type ComandoComTecla } from '../../teclas.ts'
 import { useControlesRpg } from '../../useControlesRpg.ts'
+import { useTeclasApertadas } from '../../useTeclasApertadas.ts'
 import { useTemTeclado } from '../../useTemTeclado.ts'
 import { ARTE_HUD } from '../../visual/arteDoHud.ts'
 import './tela-rpg.css'
@@ -76,6 +77,15 @@ function IconeTrocar() {
       <circle cx="17" cy="9" r="2.4" />
       <path d="M13.8 18c.3-2.5 1.6-4 3.7-4 2.2 0 3.8 1.7 4 4z" />
       <path d="M15 2.5h5l-1.6-1.6M20 2.5l-1.6 1.6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+// Alfinete de mapa da placa com o nome da cena.
+function IconeLugar() {
+  return (
+    <svg className="tela-rpg__icone-lugar" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 1.5a8 8 0 0 0-8 8c0 5.6 8 13 8 13s8-7.4 8-13a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
     </svg>
   )
 }
@@ -187,6 +197,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
 
   const controles = useControlesRpg(fase === 'jogando', apertarA, apertarB, socar, abrirTroca, chutar)
   const temTeclado = useTemTeclado()
+  const apertadas = useTeclasApertadas()
   const espaco = t('rpg.teclas.espaco')
   const teclasNoBotao = (comando: ComandoComTecla) => (temTeclado ? teclasDoComando(comando, espaco) : null)
 
@@ -301,21 +312,36 @@ export function TelaRpg({ personagem }: { personagem: string }) {
       {hud && !quadroAberto && (
         <div className="tela-rpg__hud">
           <div className="tela-rpg__topo">
-            <p className="tela-rpg__lugar">{cenas[hud.cena]}</p>
+            {/* `key` na cena: a placa entra de novo a cada troca de cena. */}
+            <p key={hud.cena} className="tela-rpg__lugar">
+              <IconeLugar />
+              <span className="tela-rpg__lugar-nome">{cenas[hud.cena]}</span>
+            </p>
+            {/* `key` no achado (não no número): o HUD volta a montar quando o quadro fecha, e o
+                contador não pode pular de novo sem cartão novo. */}
             <p
-              key={hud.achados}
-              className={`tela-rpg__cartoes${hud.achados > 0 ? ' tela-rpg__cartoes--somou' : ''}`}
+              key={aviso?.achou ? aviso.chave : 'parado'}
+              className={`tela-rpg__cartoes${aviso?.achou ? ' tela-rpg__cartoes--somou' : ''}`}
               aria-label={t('rpg.cartoes.contador', { achados: hud.achados, total: TOTAL_CARTOES })}
             >
-              <IconeCartao />
-              <span aria-hidden="true">
-                {numero(hud.achados)}/{numero(TOTAL_CARTOES)}
+              <span className="tela-rpg__cartoes-icone">
+                <IconeCartao />
               </span>
+              <span className="tela-rpg__cartoes-numero" aria-hidden="true">
+                {numero(hud.achados)}
+                <span className="tela-rpg__cartoes-total">/{numero(TOTAL_CARTOES)}</span>
+              </span>
+              {aviso?.achou && (
+                <span className="tela-rpg__mais-um" aria-hidden="true">
+                  {t('rpg.cartoes.maisUm')}
+                </span>
+              )}
             </p>
           </div>
 
           {aviso && (
             <div key={aviso.chave} className={`tela-rpg__aviso${aviso.achou ? '' : ' tela-rpg__aviso--nada'}`} role="status">
+              {aviso.achou && <span className="tela-rpg__aviso-raios" aria-hidden="true" />}
               {aviso.achou && <CartaoGirando classe="tela-rpg__aviso-cartao" />}
               <p className="tela-rpg__aviso-texto">{aviso.achou ? t('rpg.cartoes.encontrado') : t('rpg.cartoes.nada')}</p>
             </div>
@@ -326,7 +352,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             </p>
           )}
           <button
-            className="tela-rpg__trocar"
+            className={`tela-rpg__trocar${apertadas.comandos.has('trocar') ? ' tela-rpg__icone--apertado' : ''}`}
             onClick={abrirTroca}
             aria-label={t('rpg.controles.trocarPersonagem')}
             title={t('rpg.controles.trocarPersonagem')}
@@ -341,7 +367,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             )}
           </button>
           <button
-            className={`tela-rpg__pausa${ARTE_HUD.botaoPausa && !temTeclado ? ' tela-rpg__pausa--arte' : ''}`}
+            className={`tela-rpg__pausa${ARTE_HUD.botaoPausa && !temTeclado ? ' tela-rpg__pausa--arte' : ''}${apertadas.comandos.has('b') ? ' tela-rpg__icone--apertado' : ''}`}
             style={temTeclado ? undefined : comImagem(ARTE_HUD.botaoPausa)}
             onClick={fase === 'pausado' ? continuar : pausar}
             aria-label={fase === 'pausado' ? t('continuar') : t('hud.pausar')}
@@ -358,6 +384,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
 
           {hud.alvo && !dialogo && (
             <p
+              key={textoDoAlvo(hud.alvo)}
               className={`tela-rpg__acao${ARTE_HUD.balaoAcao ? ' tela-rpg__acao--arte' : ''}`}
               style={comImagem(ARTE_HUD.balaoAcao)}
               aria-live="polite"
@@ -365,7 +392,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               <span className="tela-rpg__tecla" aria-hidden="true">
                 {temTeclado ? teclasDoComando('a', espaco, 1) : 'A'}
               </span>
-              {textoDoAlvo(hud.alvo)}
+              <span className="tela-rpg__acao-texto">{textoDoAlvo(hud.alvo)}</span>
             </p>
           )}
 
@@ -392,6 +419,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               imagemBase={ARTE_HUD.direcionalBase}
               imagemSeta={ARTE_HUD.direcionalSeta}
               teclas={temTeclado ? teclasDoDirecional() : null}
+              ligadosFora={apertadas.lados}
             />
           </div>
           {hud.bolaPerto && !dialogo && (
@@ -402,6 +430,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
                 aoApertar={chutar}
                 variante="secundario"
                 teclas={teclasNoBotao('chute')}
+                apertadoFora={apertadas.comandos.has('chute')}
                 atalhos={atalhosDoComando('chute')}
               />
             </div>
@@ -416,6 +445,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               imagem={ARTE_HUD.botaoCorrer}
               imagemApertado={ARTE_HUD.botaoCorrerApertado}
               teclas={teclasNoBotao('correr')}
+              apertadoFora={apertadas.comandos.has('correr')}
               atalhos={atalhosDoComando('correr')}
             />
             <BotaoToque
@@ -426,6 +456,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               imagem={ARTE_HUD.botaoB}
               imagemApertado={ARTE_HUD.botaoBApertado}
               teclas={teclasNoBotao('b')}
+              apertadoFora={apertadas.comandos.has('b')}
               atalhos={atalhosDoComando('b')}
             />
             <BotaoToque
@@ -436,6 +467,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               imagem={ARTE_HUD.botaoSoco}
               imagemApertado={ARTE_HUD.botaoSocoApertado}
               teclas={teclasNoBotao('soco')}
+              apertadoFora={apertadas.comandos.has('soco')}
               atalhos={atalhosDoComando('soco')}
             />
             <BotaoToque
@@ -445,6 +477,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               imagem={ARTE_HUD.botaoA}
               imagemApertado={ARTE_HUD.botaoAApertado}
               teclas={teclasNoBotao('a')}
+              apertadoFora={apertadas.comandos.has('a')}
               atalhos={atalhosDoComando('a')}
             />
           </div>

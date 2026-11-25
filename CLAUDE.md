@@ -150,6 +150,21 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   **Só com teclado** (`useTemTeclado`): começa ligado com hover e ponteiro fino (mouse, trackpad),
   qualquer tecla liga e um toque na tela desliga. **Sem teclado (celular), os botões continuam
   com a letra, o símbolo ou o ícone de sempre**: botão sem nada não diz o que faz.
+- **HUD com cara de game** (`tela-rpg.css`, `BotaoToque`, `DirecionalToque`): toda peça do HUD
+ (placa da cena, contador de cartões, botões do topo, prompt de ação, avisos e diálogo) usa o
+ mesmo painel: degradê escuro, moldura dourada com contorno escuro por fora, brilho em cima e
+ sombra por dentro embaixo; texto em `--fonte-display` com contorno (`--sombra-texto-hud`, um
+ `text-shadow` em oito direções, porque `-webkit-text-stroke` come a letra por dentro). Cores e
+ medidas são tokens `--cor-hud-*`, `--borda-hud`, `--profundidade-botao` e `--contorno-texto`;
+ `--sombra-texto-hud` é declarada de novo na `.moldura-tela` porque o `var()` dentro de um token
+ se resolve onde ele é declarado. Botão tem espessura embaixo (`--profundidade-botao`) e afunda
+ quando apertado, **pelo toque ou pela tecla**: `useTeclasApertadas` (só desenho, não age; o
+ `useControlesRpg` continua sendo quem age) segue as teclas seguradas por `oQueATeclaAperta`
+ (`teclas.ts`) e passa `apertadoFora`/`ligadosFora` aos componentes. O prompt de ação fica acima
+ da fileira de botões, e não colado no fundo, para não encostar no » nem no A. O contador pula
+ e solta um "+1" pelo aviso do achado (`aviso.achou`), não pelo número: o HUD monta de novo
+ quando o quadro fecha, e pular de novo ali seria cartão que não existe. Slot de arte do HUD
+ continua tirando o painel (`--arte`). Não há componente de HUD de jogo no Orquestra.
 - **Elenco jogável** (`ELENCO` em `src/engine/rpg/elenco.ts`): depois do Jogar, a `TelaSelecao`
   (`src/features/rpg/screens/TelaSelecao/`) mostra um card por personagem e o escolhido em 3D num
   palco (`cena3d/vitrine.ts`); o id vai para `criarMundo(semente, personagem)` e fica em

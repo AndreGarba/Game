@@ -4,9 +4,14 @@
   position: relative;
   width: var(--tamanho-direcional);
   height: var(--tamanho-direcional);
+  border: var(--borda-hud) solid var(--cor-hud-contorno);
   border-radius: var(--raio-total);
-  background: var(--cor-controle-fundo);
-  box-shadow: var(--sombra-1);
+  background: radial-gradient(circle, var(--cor-hud-painel-topo) 0 34%, var(--cor-hud-painel-base) 72%);
+  box-shadow:
+    inset 0 0 0 var(--borda-hud) var(--cor-hud-brilho),
+    inset 0 calc(var(--borda-hud) * 2) calc(var(--borda-hud) * 3) var(--cor-hud-sombra-interna),
+    0 var(--profundidade-botao) 0 var(--cor-hud-contorno),
+    var(--sombra-hud);
   touch-action: none;
   pointer-events: auto;
   cursor: pointer;
@@ -26,7 +31,7 @@
   margin: calc(var(--tamanho-direcional) * -0.14);
   /* Seta para cima desenhada com a ponta de um triângulo; os outros lados giram esta. */
   clip-path: polygon(50% 8%, 92% 78%, 8% 78%);
-  background: var(--cor-controle-seta);
+  background: var(--cor-hud-tecla);
   transition: background 0.06s linear;
 }
 
@@ -68,9 +73,11 @@
   clip-path: none;
   border-radius: var(--raio-2);
   background: transparent;
-  color: var(--cor-texto);
+  color: var(--cor-hud-texto);
+  font-family: var(--fonte-display);
   font-size: var(--texto-tecla-direcional);
   font-weight: 900;
+  text-shadow: var(--sombra-texto-hud);
   white-space: nowrap;
 }
 
@@ -91,5 +98,5 @@
 }
 
 .direcional-toque__seta--tecla.direcional-toque__seta--ligada {
-  color: var(--cor-destaque);
+  color: var(--cor-hud-moldura);
 }
