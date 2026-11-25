@@ -5,7 +5,7 @@ import { obterContextoAudio } from './contextoAudio.ts'
  * desligar a música não emudece o jogo. Jogo novo troca por arquivos decodificados com
  * `decodificar` (contextoAudio.ts), baixados antes da partida.
  */
-export type Efeito = 'pulo' | 'moeda' | 'fim' | 'teleporte'
+export type Efeito = 'pulo' | 'moeda' | 'fim' | 'teleporte' | 'buzina'
 
 interface Bipe {
   tipo: OscillatorType
@@ -20,6 +20,7 @@ const BIPES: Record<Efeito, Bipe> = {
   moeda: { tipo: 'triangle', de: 990, para: 1320, duracao: 0.09, volume: 0.15 },
   fim: { tipo: 'sawtooth', de: 220, para: 70, duracao: 0.45, volume: 0.12 },
   teleporte: { tipo: 'sine', de: 180, para: 1800, duracao: 0.5, volume: 0.14 },
+  buzina: { tipo: 'square', de: 420, para: 390, duracao: 0.28, volume: 0.07 },
 }
 
 export function tocarEfeito(efeito: Efeito) {

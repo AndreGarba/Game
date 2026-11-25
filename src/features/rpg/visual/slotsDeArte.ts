@@ -41,4 +41,6 @@ export const METROS_POR_REPETICAO: Record<string, number> = {
   'piso-reuniao': 2,
   tapete: 3,
   plataforma: 5,
+  'piso-praca': 3,
+  gramado: 4,
 }

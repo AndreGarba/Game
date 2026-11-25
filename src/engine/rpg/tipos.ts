@@ -95,6 +95,8 @@ export interface GrupoFigurantes {
   visuais: string[]
   // Sem veículo, anda a pé.
   veiculo?: 'patinete'
+  // Atravessa a avenida: vai de uma ponta da área (uma calçada) à outra e espera lá.
+  travessia?: boolean
 }
 
 export interface Cena {
@@ -263,6 +265,29 @@ export interface Bola {
   ultimoGol: { tick: number; lado: LadoDoGol } | null
 }
 
+// Faixa da avenida por onde os carros andam: `z` é a borda de menor z da faixa ocupada pelo carro
+// e `sentido` é +1 (para +x) ou −1.
+export interface FaixaCarros {
+  z: number
+  sentido: number
+}
+
+// Carro andando na avenida (sempre na rua, mesmo com o jogador num interior). `x` é o canto de
+// menor x da caixa; a faixa dá o z. Não atropela: para antes de quem estiver na frente.
+export interface Carro {
+  id: number
+  faixa: number
+  // Cor (o desenho escolhe pela paleta).
+  variante: string
+  x: number
+  // Posição do tick anterior, para o desenho interpolar (igual a `x` quando reaparece).
+  xAnterior: number
+  // Metros por tick, nunca negativa.
+  vel: number
+  // Algo à frente dentro de DIST_FREIO: o desenho acende a luz de freio.
+  freando: boolean
+}
+
 // Dado puro: structuredClone copia o mundo inteiro.
 export interface EstadoMundo {
   versao: string
@@ -291,4 +316,7 @@ export interface EstadoMundo {
   proximoBalao: number
   festa: Festa | null
   bola: Bola
+  carros: Carro[]
+  // Tick da última buzina (um carro freou pelo jogador); a UI toca o som quando muda.
+  buzina: number | null
 }

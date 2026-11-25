@@ -1,3 +1,4 @@
+import { caixaDoCarro } from './carros.ts'
 import { BOCA_GOL, CAMPO, CENAS, FUNDO_GOL } from './cenas.ts'
 import { bloqueios, livre } from './colisao.ts'
 import {
@@ -115,15 +116,15 @@ function conduzir(estado: EstadoMundo) {
   if (vz !== 0 && (vz > 0 ? b.vz < vz : b.vz > vz)) b.vz = vz
 }
 
-// Move um eixo; bateu (sólido ou borda do mapa), fica onde estava e volta com QUIQUE_BOLA.
-function moverEixo(b: Bola, eixo: 'x' | 'z') {
+// Move um eixo; bateu (sólido, carro ou borda do mapa), fica onde estava e volta com QUIQUE_BOLA.
+function moverEixo(b: Bola, eixo: 'x' | 'z', carros: Retangulo[]) {
   const v = eixo === 'x' ? b.vx : b.vz
   if (v === 0) return
   const x = eixo === 'x' ? b.x + v : b.x
   const z = eixo === 'z' ? b.z + v : b.z
   const rua = CENAS.rua
   const dentro = x >= RAIO_BOLA && x <= rua.largura - RAIO_BOLA && z >= RAIO_BOLA && z <= rua.profundidade - RAIO_BOLA
-  if (dentro && livre(x, z, RAIO_BOLA, obstaculosDaRua())) {
+  if (dentro && livre(x, z, RAIO_BOLA, obstaculosDaRua()) && livre(x, z, RAIO_BOLA, carros)) {
     b.x = x
     b.z = z
     return
@@ -163,8 +164,9 @@ export function passoBola(estado: EstadoMundo): void {
     if (b.espera === 0) aoCentro(b)
   } else conduzir(estado)
   if (b.vx !== 0 || b.vz !== 0) {
-    moverEixo(b, 'x')
-    moverEixo(b, 'z')
+    const carros = estado.carros.map(caixaDoCarro)
+    moverEixo(b, 'x', carros)
+    moverEixo(b, 'z', carros)
     b.vx = frear(b.vx)
     b.vz = frear(b.vz)
   }

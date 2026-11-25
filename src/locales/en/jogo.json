@@ -83,7 +83,8 @@
       "rua": "Faria Lima Ave.",
       "mobiauto": "Mobiauto",
       "pan": "Banco PAN",
-      "entregas": "Deliveries 2026"
+      "entregas": "Deliveries 2026",
+      "praca": "Whale Square"
     },
     "nomes": {
       "pedestre": "Mrs. Cida",
@@ -106,7 +107,8 @@
       "totem_pan": "ticket kiosk",
       "caixa_eletronico_1": "ATM",
       "tv_reuniao": "meeting room TV",
-      "cafe_pan": "coffee"
+      "cafe_pan": "coffee",
+      "baleia": "the Whale monument"
     },
     "acao": {
       "entrar": "Enter: {{lugar}}",
@@ -221,6 +223,11 @@
       ],
       "cafe_pan": [
         "Freshly brewed coffee. The smell fills the office."
+      ],
+      "baleia": [
+        "The Whale: faceted stainless steel, full of triangles that shine in the sun.",
+        "Its head rests on the ground and its tail rises between the Faria Lima towers.",
+        "Someone left a note on the bench: “She seems to swim when you walk around her.”"
       ]
     },
     "cartoes": {

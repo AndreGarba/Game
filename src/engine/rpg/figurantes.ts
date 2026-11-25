@@ -5,6 +5,8 @@ import {
   ESPERA_FIGURANTE_MIN,
   ESPERA_PATINETE_MAX,
   ESPERA_PATINETE_MIN,
+  ESPERA_TRAVESSIA_MAX,
+  ESPERA_TRAVESSIA_MIN,
   PASSO_FIGURANTE,
   RAIO_FIGURANTE,
   TENTATIVAS_LUGAR,
@@ -36,17 +38,30 @@ function pontoLivre(rng: EstadoRng, area: Retangulo, obstaculos: Retangulo[]): {
   return null
 }
 
+// Travessia: o alvo fica na outra ponta da área (a outra calçada), em x sorteado.
+function pontoDoOutroLado(f: Figurante, area: Retangulo, rng: EstadoRng, obstaculos: Retangulo[]): { x: number; z: number } | null {
+  const r = RAIO_FIGURANTE
+  const z = f.z < area.z + area.profundidade / 2 ? area.z + area.profundidade - r : area.z + r
+  for (let i = 0; i < TENTATIVAS_LUGAR; i++) {
+    const x = entre(rng, area.x + r, area.x + area.largura - r)
+    if (livre(x, z, r, obstaculos)) return { x, z }
+  }
+  return null
+}
+
 function sortearAlvo(f: Figurante, grupo: GrupoFigurantes, rng: EstadoRng, obstaculos: Retangulo[]) {
-  const p = pontoLivre(rng, grupo.area, obstaculos)
+  const p = (grupo.travessia ? pontoDoOutroLado(f, grupo.area, rng, obstaculos) : null) ?? pontoLivre(rng, grupo.area, obstaculos)
   f.alvoX = p ? p.x : f.x
   f.alvoZ = p ? p.z : f.z
   f.ticksNoTrajeto = 0
 }
 
-function esperar(f: Figurante, rng: EstadoRng) {
+function esperar(f: Figurante, rng: EstadoRng, grupo: GrupoFigurantes | undefined) {
   f.espera = f.veiculo
     ? inteiroEntre(rng, ESPERA_PATINETE_MIN, ESPERA_PATINETE_MAX)
-    : inteiroEntre(rng, ESPERA_FIGURANTE_MIN, ESPERA_FIGURANTE_MAX)
+    : grupo?.travessia
+      ? inteiroEntre(rng, ESPERA_TRAVESSIA_MIN, ESPERA_TRAVESSIA_MAX)
+      : inteiroEntre(rng, ESPERA_FIGURANTE_MIN, ESPERA_FIGURANTE_MAX)
   f.andando = false
 }
 
@@ -78,10 +93,11 @@ function novoFigurante(id: string, visual: string, elenco: string | null, grupo:
 
 /**
  * Figurantes da cena. `elenco` traz os personagens jogáveis não escolhidos que estão nesta cena
- * (id → visual): entram depois da gente comum, a pé, no primeiro grupo que anda a pé.
+ * (id → visual): entram depois da gente comum, a pé, no primeiro grupo que anda a pé. `extras` são
+ * obstáculos que mudam de lugar (os carros da rua): ninguém nasce nem anda para dentro deles.
  */
-export function criarFigurantes(cena: Cena, rng: EstadoRng, elenco: { id: string; visual: string }[] = []): Figurante[] {
-  const obstaculos = bloqueios(cena)
+export function criarFigurantes(cena: Cena, rng: EstadoRng, elenco: { id: string; visual: string }[] = [], extras: Retangulo[] = []): Figurante[] {
+  const obstaculos = [...bloqueios(cena), ...extras]
   const saida: Figurante[] = []
   ;(cena.figurantes ?? []).forEach((grupo, g) => {
     for (let i = 0; i < grupo.quantidade; i++) {
@@ -106,9 +122,9 @@ export function criarFigurantes(cena: Cena, rng: EstadoRng, elenco: { id: string
 }
 
 
-export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: EstadoRng): void {
+export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: EstadoRng, extras: Retangulo[] = []): void {
   if (figurantes.length === 0) return
-  const obstaculos = bloqueios(cena)
+  const obstaculos = [...bloqueios(cena), ...extras]
   for (const f of figurantes) {
     f.xAnterior = f.x
     f.zAnterior = f.z
@@ -123,7 +139,7 @@ export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: Estado
         f.x = novo.x
         f.z = novo.z
       }
-      if (avancarTombo(f)) esperar(f, rng)
+      if (avancarTombo(f)) esperar(f, rng, grupo)
       continue
     }
     if (f.susto > 0) f.susto -= 1
@@ -137,7 +153,7 @@ export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: Estado
     const b = f.alvoZ - f.z
     const n = norma(a, b)
     if (n <= vel) {
-      esperar(f, rng)
+      esperar(f, rng, grupo)
       continue
     }
     const px = (vel * a) / n
@@ -149,7 +165,7 @@ export function passoFigurantes(figurantes: Figurante[], cena: Cena, rng: Estado
     f.ticksNoTrajeto += 1
     // Preso atrás de um móvel (ou andando demais): para um pouco e tenta outro caminho.
     if (andou < vel * 0.3 || f.ticksNoTrajeto > TICKS_MAX_TRAJETO) {
-      esperar(f, rng)
+      esperar(f, rng, grupo)
       continue
     }
     f.andando = true

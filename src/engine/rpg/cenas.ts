@@ -1,7 +1,8 @@
-import type { Cena, IdCena } from './tipos.ts'
+import type { Cena, FaixaCarros, IdCena } from './tipos.ts'
 
 // Mapa do protótipo: um trecho da Avenida Faria Lima com dois bancos lado a lado (Banco PAN e BTG
-// Pactual), a loja de veículos e, no fim da rua, o feirão de seminovos da Mobiauto a céu aberto.
+// Pactual), a loja de veículos, o feirão de seminovos da Mobiauto a céu aberto e, depois dele, do
+// outro lado da avenida, a Praça da Baleia. Carros andam pela avenida (estado, em carros.ts).
 // Cada banco tem agência e escritório interno, ligados por uma porta. Figurantes andam por calçadas, ciclofaixa e salas.
 // Medidas em metros. A rua corre ao longo de x; as fachadas ficam em z = 8, viradas para a câmera.
 // Aparência (`visual`, `variante`) é só nome: o desenho escolhe modelo, cor e textura por ele.
@@ -37,28 +38,59 @@ const VISUAIS_CLIENTES = ['figurante_1', 'figurante_3', 'figurante_5', 'figurant
 const VISUAIS_ESCRITORIO = ['figurante_7', 'figurante_8', 'figurante_5', 'figurante_2']
 const VISUAIS_ESCRITORIO_PAN = ['figurante_7', 'figurante_8', 'figurante_1', 'figurante_4']
 
+// Largura da rua e quanto as faixas de chão (calçadas, asfalto, ciclofaixa) passam das bordas do
+// mapa: os carros entram e saem de vista andando por elas. Só desenho: o jogador não sai do mapa.
+const LARGURA_RUA = 104
+const ALEM_DA_BORDA = 24
+
+// Faixas dos carros (borda de menor z da caixa do carro): mão para a esquerda perto dos prédios e
+// para a direita do lado do campo, uma de cada lado da linha tracejada (z = 14).
+export const FAIXAS_CARROS: readonly FaixaCarros[] = [
+  { z: 11.6, sentido: -1 },
+  { z: 14.6, sentido: 1 },
+]
+
+// Faixas de pedestre: a de sempre, perto da loja de veículos, e a da Praça da Baleia.
+const FAIXAS_DE_PEDESTRE = [31.5, 89.5]
+const LARGURA_FAIXA_PEDESTRE = 4
+
+// Praça da Baleia: depois do feirão Mobiauto, do outro lado da avenida (na tela, para baixo do
+// feirão). Piso de pedra, dois gramados nos cantos e a escultura no meio.
+export const PRACA = { x: 80, z: 21, largura: 22, profundidade: 22 }
+
+function tracejadoDoMeio() {
+  const saida = []
+  for (let x = 1 - ALEM_DA_BORDA; x < LARGURA_RUA + ALEM_DA_BORDA; x += 5) {
+    if (FAIXAS_DE_PEDESTRE.some((f) => x + 3 > f - 0.5 && x < f + LARGURA_FAIXA_PEDESTRE + 0.5)) continue
+    saida.push({ visual: 'faixa', x, z: 13.9, largura: 3, profundidade: 0.2, nivel: 2 })
+  }
+  return saida
+}
+
 const RUA: Cena = {
   id: 'rua',
-  largura: 77,
+  largura: LARGURA_RUA,
   profundidade: 45,
   interior: false,
   piso: 'grama',
   decoracoes: [
-    { visual: 'calcada', x: 0, z: 8, largura: 77, profundidade: 3, nivel: 1 },
-    { visual: 'asfalto', x: 0, z: 11, largura: 77, profundidade: 6, nivel: 1 },
-    { visual: 'calcada', x: 0, z: 17, largura: 77, profundidade: 3, nivel: 1 },
-    { visual: 'ciclofaixa', x: 0, z: 17.1, largura: 77, profundidade: 1, nivel: 2 },
+    { visual: 'calcada', x: -ALEM_DA_BORDA, z: 8, largura: LARGURA_RUA + 2 * ALEM_DA_BORDA, profundidade: 3, nivel: 1 },
+    { visual: 'asfalto', x: -ALEM_DA_BORDA, z: 11, largura: LARGURA_RUA + 2 * ALEM_DA_BORDA, profundidade: 6, nivel: 1 },
+    { visual: 'calcada', x: -ALEM_DA_BORDA, z: 17, largura: LARGURA_RUA + 2 * ALEM_DA_BORDA, profundidade: 3, nivel: 1 },
+    { visual: 'ciclofaixa', x: -ALEM_DA_BORDA, z: 17.1, largura: LARGURA_RUA + 2 * ALEM_DA_BORDA, profundidade: 1, nivel: 2 },
     { visual: 'piso-feirao', x: 56.5, z: 0, largura: 20.5, profundidade: 8, nivel: 1 },
     { visual: 'campo', ...CAMPO, nivel: 1 },
-    ...[1, 6, 11, 16, 21, 26, 39, 44, 49, 55, 60, 65, 70, 74].map((x) => ({ visual: 'faixa', x, z: 13.9, largura: 3, profundidade: 0.2, nivel: 2 })),
-    ...[11.4, 12.4, 13.4, 14.4, 15.4, 16.2].map((z) => ({
-      visual: 'faixa',
-      x: 31.5,
-      z,
-      largura: 4,
-      profundidade: 0.45,
-      nivel: 2,
-    })),
+    ...tracejadoDoMeio(),
+    ...FAIXAS_DE_PEDESTRE.flatMap((x) =>
+      [11.4, 12.4, 13.4, 14.4, 15.4, 16.2].map((z) => ({ visual: 'faixa', x, z, largura: LARGURA_FAIXA_PEDESTRE, profundidade: 0.45, nivel: 2 })),
+    ),
+    // Praça: pedra clara com faixas de pedra escura, gramados nos cantos e o caminho da calçada.
+    { visual: 'piso-praca', x: PRACA.x, z: PRACA.z - 1, largura: PRACA.largura, profundidade: PRACA.profundidade + 1, nivel: 1 },
+    ...[25.4, 38.4].map((z) => ({ visual: 'pedra-escura', x: PRACA.x, z, largura: PRACA.largura, profundidade: 0.5, nivel: 2 })),
+    { visual: 'pedra-escura', x: 84.3, z: PRACA.z, largura: 0.5, profundidade: PRACA.profundidade, nivel: 2 },
+    { visual: 'pedra-escura', x: 97.2, z: PRACA.z, largura: 0.5, profundidade: PRACA.profundidade, nivel: 2 },
+    { visual: 'gramado', x: PRACA.x, z: 36.6, largura: 6.4, profundidade: 6.4, nivel: 3 },
+    { visual: 'gramado', x: 95.6, z: PRACA.z, largura: 6.4, profundidade: 6.4, nivel: 3 },
   ],
   solidos: [
     { id: 'predio_residencial', visual: 'predio', variante: 'residencial', x: 0, z: 0, largura: 5.5, profundidade: 8, altura: 9 },
@@ -68,7 +100,10 @@ const RUA: Cena = {
     { id: 'lixeira', visual: 'lixeira', x: 27.3, z: 6.6, largura: 1.2, profundidade: 1, altura: 1.1 },
     { id: 'predio_concessionaria', visual: 'predio', variante: 'concessionaria', x: 29, z: 0, largura: 14, profundidade: 8, altura: 6.5 },
     { id: 'predio_comercial', visual: 'predio', variante: 'comercial', x: 43.5, z: 0, largura: 11.5, profundidade: 8, altura: 12 },
-    ...[3, 16.75, 28, 42, 52, 60, 72].map((x, i) => ({
+    // Torres de vidro depois do feirão, coladas: sem vão por onde entrar entre elas.
+    { id: 'predio_torre_1', visual: 'predio', variante: 'torre', x: 77, z: 0, largura: 13.5, profundidade: 8, altura: 16 },
+    { id: 'predio_torre_2', visual: 'predio', variante: 'torre', x: 90.5, z: 0, largura: 13.5, profundidade: 8, altura: 16 },
+    ...[3, 16.75, 28, 42, 52, 60, 72, 84, 96].map((x, i) => ({
       id: `poste_${i}`,
       visual: 'poste',
       x: x - 0.12,
@@ -77,7 +112,7 @@ const RUA: Cena = {
       profundidade: 0.24,
       altura: 4.5,
     })),
-    ...[4, 14, 23, 39, 47, 57, 67, 74].map((x, i) => ({
+    ...[4, 14, 23, 39, 47, 57, 67, 74, 83, 99].map((x, i) => ({
       id: `arvore_${i}`,
       visual: 'arvore',
       x: x - 0.25,
@@ -89,8 +124,53 @@ const RUA: Cena = {
     ...gol('esquerdo'),
     ...gol('direito'),
     { id: 'banco_praca', visual: 'banco', x: 30, z: 18.6, largura: 2, profundidade: 0.6, altura: 0.8 },
-    { id: 'carro_parado_1', visual: 'carro', variante: 'verde', x: 16, z: 11.5, largura: 4.2, profundidade: 1.8, altura: 1.5 },
-    { id: 'carro_parado_2', visual: 'carro', variante: 'branco', x: 44, z: 15, largura: 4.2, profundidade: 1.8, altura: 1.5, giro: 2 },
+    // Mobiliário da calçada: lixeiras ao lado dos postes e entre as árvores, bancos virados para a
+    // avenida e estações de patinete (os patinetes estacionados são desenho; o sólido é a estação).
+    ...[3.45, 28.45, 52.45, 72.45, 96.45].map((x, i) => ({
+      id: `lixeira_calcada_${i}`,
+      visual: 'lixeira',
+      variante: 'rua',
+      x,
+      z: 10.2,
+      largura: 0.5,
+      profundidade: 0.5,
+      altura: 0.95,
+    })),
+    ...[16.5, 36, 59.5, 70.5, 87].map((x, i) => ({
+      id: `lixeira_canteiro_${i}`,
+      visual: 'lixeira',
+      variante: 'rua',
+      x,
+      z: 18.35,
+      largura: 0.5,
+      profundidade: 0.5,
+      altura: 0.95,
+    })),
+    ...[9.5, 50.5, 62].map((x, i) => ({
+      id: `banco_calcada_${i}`,
+      visual: 'banco',
+      x,
+      z: 18.6,
+      largura: 2,
+      profundidade: 0.6,
+      altura: 0.8,
+      giro: 2,
+    })),
+    ...(
+      [
+        [13, 10.1],
+        [25.5, 18.3],
+        [76, 18.3],
+      ] as const
+    ).map(([x, z], i) => ({
+      id: `estacao_patinetes_${i}`,
+      visual: 'estacao-patinetes',
+      x,
+      z,
+      largura: 3,
+      profundidade: 0.9,
+      altura: 1.2,
+    })),
     // Feirão Mobiauto: carros de frente para a rua, tenda de vendas, bandeiras e o portal.
     ...(['vermelho', 'branco', 'azul', 'verde', 'amarelo'] as const).map((cor, i) => ({
       id: `feirao_carro_${i}`,
@@ -137,17 +217,57 @@ const RUA: Cena = {
       profundidade: 0.2,
       altura: 3.2,
     })),
+    // Praça da Baleia. A escultura é uma caixa só na colisão (não dá para passar por baixo do arco);
+    // o desenho faz a baleia facetada arqueada, cabeça em −x e cauda erguida em +x.
+    {
+      id: 'baleia',
+      visual: 'baleia',
+      x: 86.5,
+      z: 30.5,
+      largura: 9,
+      profundidade: 3,
+      altura: 5.5,
+      interacao: { tipo: 'olhar', dialogo: 'baleia', linhas: 3 },
+    },
+    // Placa baixa de pedra com o nome da praça, de frente para a câmera, ao lado da entrada.
+    { id: 'placa_praca', visual: 'placa-praca', x: 84.5, z: 20.4, largura: 2.8, profundidade: 0.35, altura: 0.9 },
+    ...(
+      [
+        [87.5, 27, 0],
+        [92.5, 27, 0],
+        [87.5, 36.4, 2],
+        [92.5, 36.4, 2],
+      ] as const
+    ).map(([x, z, giro], i) => ({ id: `banco_baleia_${i}`, visual: 'banco', x, z, largura: 2, profundidade: 0.6, altura: 0.8, giro })),
+    ...(
+      [
+        [82.5, 39.5],
+        [84.5, 41.5],
+        [97.5, 22.5],
+        [99.5, 24.5],
+        [100.5, 40.5],
+        [81.5, 23],
+      ] as const
+    ).map(([x, z], i) => ({ id: `arvore_praca_${i}`, visual: 'arvore', x: x - 0.25, z: z - 0.25, largura: 0.5, profundidade: 0.5, altura: 4.6 })),
+    ...(
+      [
+        [85.4, 26.9],
+        [96, 36.6],
+      ] as const
+    ).map(([x, z], i) => ({ id: `lixeira_praca_${i}`, visual: 'lixeira', variante: 'rua', x, z, largura: 0.5, profundidade: 0.5, altura: 0.95 })),
   ],
   letreiros: [
     { variante: 'rua', x: 3, z: 10.66, largura: 1.9, altura: 0.42, y: 3.2 },
     { variante: 'mobiauto', x: 66.5, z: 7.5, largura: 6, altura: 1.3, y: 3.1 },
   ],
   figurantes: [
-    { quantidade: 4, area: { x: 0, z: 8.6, largura: 77, profundidade: 2.3 }, visuais: VISUAIS_RUA },
-    { quantidade: 3, area: { x: 0, z: 18.2, largura: 77, profundidade: 1.8 }, visuais: VISUAIS_RUA },
-    { quantidade: 1, area: { x: 31.6, z: 11.3, largura: 3.8, profundidade: 5.6 }, visuais: VISUAIS_RUA },
+    { quantidade: 4, area: { x: 0, z: 8.6, largura: LARGURA_RUA, profundidade: 2.3 }, visuais: VISUAIS_RUA },
+    { quantidade: 3, area: { x: 0, z: 18.2, largura: LARGURA_RUA, profundidade: 1.8 }, visuais: VISUAIS_RUA },
+    { quantidade: 1, area: { x: 31.6, z: 9.4, largura: 3.8, profundidade: 9.5 }, visuais: VISUAIS_RUA, travessia: true },
     { quantidade: 4, area: { x: 56.8, z: 0.4, largura: 19.8, profundidade: 7.4 }, visuais: VISUAIS_RUA },
-    { quantidade: 3, area: { x: 0, z: 17.2, largura: 77, profundidade: 0.8 }, visuais: VISUAIS_RUA, veiculo: 'patinete' },
+    { quantidade: 3, area: { x: 0, z: 17.2, largura: LARGURA_RUA, profundidade: 0.8 }, visuais: VISUAIS_RUA, veiculo: 'patinete' },
+    { quantidade: 1, area: { x: 89.6, z: 9.4, largura: 3.8, profundidade: 9.5 }, visuais: VISUAIS_RUA, travessia: true },
+    { quantidade: 3, area: { x: PRACA.x + 0.3, z: PRACA.z + 0.3, largura: PRACA.largura - 0.6, profundidade: PRACA.profundidade - 0.6 }, visuais: VISUAIS_RUA },
   ],
   portas: [
     {

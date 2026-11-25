@@ -364,6 +364,9 @@ describe('mundo do RPG', () => {
     const sem = criarMundo()
     com.figurantes = com.figurantes.filter((f) => !f.veiculo)
     sem.figurantes = []
+    // Sem trânsito: o carro que para pelo pedestre mudaria a hora em que o jogador atravessa.
+    com.carros = []
+    sem.carros = []
     passeioLongo(com, (e) => {
       expect(e.alvo?.id ?? '').not.toContain('figurante')
     })
@@ -673,8 +676,9 @@ describe('mundo do RPG', () => {
     const e = criarMundo()
     const marcos: unknown[] = []
     const marcar = () => marcos.push(structuredClone(e))
-    // Atravessa a avenida, desce até a altura da bola e a conduz para a direita.
-    andar(e, 0, 1, 50)
+    // Atravessa a avenida de uma vez (os carros param), corre pela calçada do campo, desce até a
+    // altura da bola e a conduz para a direita.
+    for (let i = 0; i < 600 && e.jogador.z < 19.6; i++) andar(e, 0, 1, 1)
     andar(e, 1, 0, 114, true)
     // Na ciclofaixa, um patinete pode derrubar: anda até chegar, com limite.
     for (let i = 0; i < 900 && e.jogador.z < e.bola.z; i++) andar(e, 0, 1, 1, true)
@@ -720,14 +724,15 @@ describe('mundo do RPG', () => {
     apertarA(e)
     marcar()
     apertarB(e)
-    // Volta pela agência até a rua e entra na loja de veículos pela faixa.
+    // Volta pela agência até a rua e entra na loja de veículos pela calçada, colado nas fachadas
+    // (na beira da avenida, o carro que vem de frente para e fecha o caminho).
     andar(e, -1, 0, 70)
     andar(e, 0, 1, 200)
     apertarA(e)
     andar(e, 0, 1, 150)
     apertarA(e)
     marcar()
-    andar(e, 0, 1, 42)
+    andar(e, 0, -1, 7)
     andar(e, 1, 0, 100)
     andar(e, 1, 0, 76, true)
     andar(e, 0, -1, 60)
