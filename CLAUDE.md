@@ -191,7 +191,15 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   novo andava (`elencoNoMapa`), e se o novo estava nesta cena o antigo assume o figurante dele ali
   mesmo, na mesma posição (o figurante muda de id, `elenco_<antigo>`). Sem rng para a troca não
   mexer no resto da partida; ida e volta devolve o mapa de antes. O renderizador refaz o boneco do
-  jogador quando `jogador.visual` muda e tira da cena o figurante cujo id sumiu.
+  jogador quando `jogador.visual` muda e tira da cena o figurante cujo id sumiu. **O novo chega
+ por teletransporte** (`cena3d/teleporte.ts`, ~0,9 s): feixe de luz com degradê, dois anéis no
+ chão, faíscas subindo em espiral e o boneco crescendo de baixo para cima (escala do `corpo`, com
+ um leve passar do tamanho). É só desenho, em tempo real e disparado pela mudança de
+ `jogador.visual`: não mexe no motor nem no golden master. Faíscas sorteadas pelo hash `ruido`
+ (`cena3d/ruido.ts`, o mesmo do confete) com o tick como semente, sem `Math.random`; cores em
+ `COR_TELEPORTE`; tudo na `fabricaJogador`; sem luz nova, porque luz a mais recompila os shaders
+ da cena inteira. O som (`'teleporte'` em `efeitosSonoros.ts`, um oscilador subindo) toca quando
+ `trocarPersonagem` confirma a troca.
 - **O jogador** tem um anel laranja no chão (`COR_ANEL_JOGADOR`): o preto chapado do Rici some no
   asfalto e no meio dos figurantes. `tatuagem` (cor da tinta) liga o braço de manga curta em
   `personagem.ts`.

@@ -303,6 +303,15 @@ export const APARENCIAS: Record<string, Aparencia> = {
 // Anel no chão embaixo do jogador: de roupa preta, ele some no asfalto e no meio dos figurantes.
 export const COR_ANEL_JOGADOR = '#f76b15'
 
+// Teletransporte da troca de personagem: feixe e anel em ciano, núcleo branco e faíscas que
+// misturam o ciano com o laranja do anel do jogador.
+export const COR_TELEPORTE = {
+  feixe: '#38c8ff',
+  nucleo: '#e8fbff',
+  anel: '#5ad8ff',
+  faiscas: ['#9ff0ff', '#ffffff', '#38c8ff', '#f76b15'],
+}
+
 // Cartão Ultra Blue (BTG Pactual): metal azul escovado, chip prata e a bandeira Mastercard em dois
 // cinzas. Vale para o modelo 3D, a textura procedural da frente e o desenho do HUD.
 export const COR_CARTAO = {

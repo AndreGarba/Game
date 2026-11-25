@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import type { EstadoMundo, Festa } from '../../../engine/rpg/index.ts'
 import { COR_BALOES, COR_CONFETE, COR_FIO_BALAO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
+import { ruido } from './ruido.ts'
 
 // Festa de quando a modal das entregas fecha: os balões vêm do motor (posição, altura, cor) e só
 // ganham corpo aqui; o confete é só desenho, sorteado por um hash do tick da festa, sem mexer no
@@ -24,14 +25,6 @@ interface Balao3d {
   x: number
   y: number
   z: number
-}
-
-// Hash inteiro (mulberry32 de um passo) para sortear cada confete sem guardar estado.
-function ruido(n: number): number {
-  let t = (n + 0x6d2b79f5) | 0
-  t = Math.imul(t ^ (t >>> 15), t | 1)
-  t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
 }
 
 export function criarFesta3d(f: Fabrica, cena: THREE.Scene) {
