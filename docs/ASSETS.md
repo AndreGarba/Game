@@ -189,16 +189,16 @@ três quartos, centralizados com folga em cima: o card mostra o centro num retâ
 | `wesley` | Wesley: barba, óculos pretos, blazer preto sobre camiseta cinza | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `bob` | Bob: barba ruiva cheia, sorriso, camisa social cinza-clara | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `ju` | Ju: cabelo longo castanho com pontas claras, regata preta, sorriso | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
-| `fabio` | Fábio: óculos, jaqueta preta aberta, cachecol cinza-rosado | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `fabio` | Fábio: olhos amendoados, óculos, jaqueta preta aberta, cachecol cinza-rosado | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `pedro` | Pedro: óculos escuros de lente azul, sorriso, camiseta marrom | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
-| `allexis` | Allexis: cabelo preto, barba, camiseta branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `allexis` | Allexis: olhos amendoados, cabelo preto, barba, camiseta branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `thamis` | Thamis: cabelo longo e preto, camiseta preta, batom escuro | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `renan` | Renan: barba castanha, camiseta preta, tatuagem pequena no braço | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `fernando` | Fernando: cabelo castanho-claro, suéter preto, sorriso | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `barranqueiro` | Barranqueiro: boné verde-acinzentado, barba grisalha rala, camiseta preta com estampa branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
-(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom) ficam em `APARENCIAS.<id>` no
+(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom, olhos amendoados) ficam em `APARENCIAS.<id>` no
 `paleta.ts`.
 
 ---

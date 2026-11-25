@@ -338,16 +338,12 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   const cabelo = f.caixa(0.44, 0.14, 0.42, f.material(a.cabelo), { y: ALTURA_OMBRO + 0.4 })
   const nuca = f.caixa(0.44, 0.3, 0.1, f.material(a.cabelo), { y: ALTURA_OMBRO + 0.18, z: -0.17 })
   const olho = f.material('#1c1c1c')
-  corpo.add(
-    pernaE,
-    pernaD,
-    bracoE,
-    bracoD,
-    tronco,
-    cabeca,
-    f.caixa(0.06, 0.07, 0.02, olho, { x: -0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
-    f.caixa(0.06, 0.07, 0.02, olho, { x: 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }),
-  )
+  corpo.add(pernaE, pernaD, bracoE, bracoD, tronco, cabeca)
+  for (const lado of [-1, 1]) {
+    // Amendoado: mais largo e mais baixo, reto. Inclinar o canto de fora deixa o rosto bravo.
+    if (a.olhosAmendoados) corpo.add(f.caixa(0.08, 0.025, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.2425, z: 0.2 }))
+    else corpo.add(f.caixa(0.06, 0.07, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }))
+  }
   if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, corpo)
   else if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
   else if (!a.careca) corpo.add(cabelo, nuca)

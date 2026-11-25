@@ -203,6 +203,8 @@ export interface Aparencia {
   bone?: { cor: string; aba: string }
   // Boca com batom.
   batom?: string
+  // Olhos amendoados: um pouco mais largos e bem mais baixos que os de sempre.
+  olhosAmendoados?: boolean
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -368,8 +370,9 @@ export const APARENCIAS: Record<string, Aparencia> = {
     sorriso: '#ffffff',
     unhas: '#6e1a22',
   },
-  // Fábio: óculos, jaqueta preta aberta, cachecol cinza-rosado, jeans.
+  // Fábio: olhos amendoados, óculos, jaqueta preta aberta, cachecol cinza-rosado, jeans.
   fabio: {
+    olhosAmendoados: true,
     pele: '#e0a982',
     cabelo: '#141210',
     camisa: '#1c1d21',
@@ -394,8 +397,9 @@ export const APARENCIAS: Record<string, Aparencia> = {
     relogio: '#141414',
     sorriso: '#ffffff',
   },
-  // Allexis: cabelo preto, barba, camiseta branca.
+  // Allexis: olhos amendoados, cabelo preto, barba, camiseta branca.
   allexis: {
+    olhosAmendoados: true,
     pele: '#d6a27c',
     cabelo: '#121010',
     camisa: '#f2f2f2',

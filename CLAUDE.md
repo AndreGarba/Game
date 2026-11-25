@@ -169,7 +169,7 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
   chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, cabelo longo com
   raiz de outra cor, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga
-  curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné e batom são campos opcionais da
+  curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom e olhos amendoados são campos opcionais da
   `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
   nos três idiomas e, se quiser, um retrato em `arte/retratos/<id>` (sem ele, o card mostra um
   retrato desenhado em 3D). O card mostra só o nome; o título e a descrição ficam no bloco do
