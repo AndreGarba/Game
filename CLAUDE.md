@@ -102,7 +102,7 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
 ### O RPG isométrico (o que o Jogar abre hoje)
 
-Protótipo de RPG: o jogador anda pela Avenida Faria Lima (104 m), entra em dois bancos lado a lado
+Protótipo de RPG: o jogador anda pela Avenida Faria Lista (104 m), entra em dois bancos lado a lado
 (o Banco PAN, à esquerda, e o BTG Pactual) e numa loja de veículos; depois deles há o feirão de
 seminovos Mobiauto, a céu aberto (sem porta: é parte da cena `rua`), o MASP e uma torre de vidro
 e, do outro lado da avenida ("para baixo" na tela, em frente ao feirão e colada no campo de
@@ -115,6 +115,8 @@ atendimento) e, pela porta do fundo à direita, o `escritorio_pan`, open office 
 `media/referencias/escritorio-pan.png` na store: bancadas brancas compridas com dois monitores por
 lugar e cadeiras de malha (desenhadas dentro do retângulo da `bancada`), carpete escuro, janelões
 com vista de prédios, parede azul na lateral e sala de reunião de vidro adesivado com TV.
+**O nome é "Avenida Faria Lista"** (trocadilho com a Faria Lima): nome próprio, escrito igual em
+pt, en e es, inclusive o "Avenida" (`rpg.cenas.rua` e a placa `rpg.placas.rua`, "Av. Faria Lista").
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.

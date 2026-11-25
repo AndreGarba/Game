@@ -275,7 +275,7 @@ describe('mundo do RPG', () => {
     }
   })
 
-  it('no fim da Faria Lima, o feirão Mobiauto: entra a pé e fala com a vendedora', () => {
+  it('no fim da Faria Lista, o feirão Mobiauto: entra a pé e fala com a vendedora', () => {
     const e = criarMundo()
     andar(e, 0, -1, 22)
     andar(e, 1, 0, 482, true)

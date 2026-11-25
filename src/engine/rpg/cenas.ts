@@ -1,8 +1,8 @@
 import type { Cena, FaixaCarros, IdCena } from './tipos.ts'
 
-// Mapa do protótipo: um trecho da Avenida Faria Lima com dois bancos lado a lado (Banco PAN e BTG
-// Pactual), a loja de veículos, o feirão de seminovos da Mobiauto a céu aberto e, depois dele, do
-// outro lado da avenida, a Praça da Baleia. Carros andam pela avenida (estado, em carros.ts).
+// Mapa do protótipo: um trecho da Avenida Faria Lista (trocadilho com a Faria Lima) com dois bancos
+// lado a lado (Banco PAN e BTG Pactual), a loja de veículos, o feirão de seminovos da Mobiauto a céu
+// aberto, o MASP e, do outro lado da avenida, a Praça da Baleia. Carros andam pela avenida (estado, em carros.ts).
 // Cada banco tem agência e escritório interno, ligados por uma porta. Figurantes andam por calçadas, ciclofaixa e salas.
 // Medidas em metros. A rua corre ao longo de x; as fachadas ficam em z = 8, viradas para a câmera.
 // Aparência (`visual`, `variante`) é só nome: o desenho escolhe modelo, cor e textura por ele.
