@@ -273,7 +273,18 @@
       "provisorio": "Content coming soon: this board's deliveries will be posted here.",
       "quadros": {
         "quadro_entregas_btg": {
-          "local": "BTG Pactual office"
+          "local": "BTG Pactual office",
+          "slides": {
+            "01-bob-credit-risk-platform": "Bruno Bob Silva, Credit Risk Platform: credit risk analysis management, 5 systems unified and R$ 360 bn in approved credit limits. Beside it, the platform home screen on a laptop.",
+            "02-filipe-renegocie": "Filipe Neves, Renegocie: redesign of the renegotiation journey, 96 thousand monthly visitors on average, 154 thousand confirmed agreements and 351.6 million renegotiated. Beside it, the agreement screens on a phone and a laptop.",
+            "03-ju-tyr": "Juliana Mota, Tyr: credit policy management, more visibility and autonomy for Business and time savings for IT, and complex policies simplified into self-explanatory interfaces. Beside it, a policy decision flow on a laptop.",
+            "04-wes-elos": "Wesley Santos, ELOS: unification of the systems used by the bank legal team, over 254 thousand cases registered and over 569 thousand tasks created. Beside it, a case screen on a laptop.",
+            "05-pedro-reits": "Pedro Magalhães, Reits: modernization of the real estate fund (FII) system, leader in FII administration since 2012, an R$ 200 bn FII market with over 430 funds, and 275 funds administered by BTG. Beside it, the payment settlement screen on a laptop.",
+            "06-fernando-market-solutions": "Fernando Seleghini, Market Solutions: Investor Relations and Bookkeeping portals unified, over 215 clients, R$ 45 million in annual revenue and 5.9 thousand monthly visitors on average. Beside it, the quote and shareholder dashboard on a laptop.",
+            "07-bruno-muniz-salesforce": "Bruno Muniz, Salesforce for Partners: review and evolution of the Salesforce experience for Partners, and improvements to Operational Flow, Call to Action and the Relationship Cadence. Beside it, the CRM home screen on a laptop.",
+            "08-renan-marcal-fts": "Renan Marçal, FTS for Luxembourg: design of the booked credit journeys for Luxembourg, bringing credit, collateral and approval into a single view to simplify reconciliation. Beside it, the commitments screen on a laptop.",
+            "09-jeniffer-paiva-less": "Jeniffer Nath Paiva, LESS: Onboarding system redesign, 60% to 80% less effort to open accounts and configure them, and impact on 2 thousand daily users (BPOs and internal BTG Pactual teams). Beside it, the powers configuration screen on a laptop."
+          }
         },
         "quadro_entregas_pan": {
           "local": "Banco PAN office"

@@ -238,7 +238,21 @@ describe('slides da modal Entregas 2026', () => {
 
   it('a loja de veículos tem os dois frames do Figma, na ordem do nome do arquivo', () => {
     expect(slidesDoQuadro('quadro_entregas_loja').map((s) => s.nome)).toEqual(['01-andrea-borba-gopan', '02-roman-financiamento-c2c'])
-    expect(slidesDoQuadro('quadro_entregas_btg')).toEqual([])
+    expect(slidesDoQuadro('quadro_entregas_pan')).toEqual([])
+  })
+
+  it('o escritório do BTG tem os nove slides do Figma, na ordem da seção', () => {
+    expect(slidesDoQuadro('quadro_entregas_btg').map((s) => s.nome)).toEqual([
+      '01-bob-credit-risk-platform',
+      '02-filipe-renegocie',
+      '03-ju-tyr',
+      '04-wes-elos',
+      '05-pedro-reits',
+      '06-fernando-market-solutions',
+      '07-bruno-muniz-salesforce',
+      '08-renan-marcal-fts',
+      '09-jeniffer-paiva-less',
+    ])
   })
 
   it('pasta de slides só de quadro que existe, e todo slide tem texto alternativo nos três idiomas', () => {

@@ -258,7 +258,7 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   `src/features/rpg/arte/entregas/<id>/`, na ordem do nome do arquivo (`slidesDasEntregas.ts`,
   `import.meta.glob`), com texto alternativo em `rpg.entregas.quadros.<id>.slides.<nome>` nos três
   idiomas (`tests/rpg.entregas.test.ts` confere). A modal mostra os slides se houver; senão, os
-  `itens`; senão, o aviso provisório. Hoje só a loja tem slides (os dois frames do Figma). Um slide por
+  `itens`; senão, o aviso provisório. Hoje a loja tem 2 slides e o escritório do BTG tem 9, frames do Figma. Um slide por
   vez, na largura toda, com a imagem inteira (`contain`): trilha com rolagem horizontal e encaixe
   (arrastar no toque), setas na tela e ← → no teclado; o topo encolhe numa linha para a imagem
   crescer. **Lista vazia no JSON não serve**: vira `never[]` no tipo das chaves e o typecheck
