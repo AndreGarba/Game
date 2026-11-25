@@ -36,6 +36,7 @@ export const COR_PISO: Record<string, string> = {
   campo: '#5fa64a',
   // Praça da Baleia: pedra clara com faixas de pedra escura e gramados com meio-fio.
   'piso-praca': '#d9d4ca',
+  'piso-masp': '#b7b4ad',
   'pedra-escura': '#6f7378',
   gramado: '#5f9e45',
 }
@@ -134,6 +135,17 @@ export const COR_OBJETO = {
 
 // Baleia da praça: aço inox facetado, em dois tons para as facetas lerem de longe.
 export const COR_BALEIA = { aco: '#e3e8ee', acoSombra: '#b9c2cc', ventre: '#9aa4ae' }
+
+// MASP: pórticos de concreto pintado de vermelho, caixa de vidro azul com caixilhos escuros e lajes de
+// concreto aparente.
+export const COR_MASP = {
+  vermelho: '#d6262e',
+  vidro: '#2f6f93',
+  caixilho: '#1d3b4d',
+  concreto: '#8f8c86',
+  concretoClaro: '#a9a69f',
+  hall: '#3f5866',
+}
 
 // Quadro de avisos "Entregas 2026": moldura, cortiça e os papéis presos nela.
 export const COR_QUADRO = {

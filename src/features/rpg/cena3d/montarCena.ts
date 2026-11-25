@@ -211,6 +211,11 @@ export function montarCena(f: Fabrica, cena: Cena, textos: TextosDaCena): CenaMo
     if (s.visual === 'placa-praca') nomeNaPlaca(f, modelo, s, textos.placas.praca)
     grupo.add(modelo)
   }
+  for (const suspenso of cena.suspensos ?? []) {
+    const modelo = modeloDoSolido(f, { id: suspenso.visual, ...suspenso })
+    modelo.position.y = suspenso.y
+    grupo.add(modelo)
+  }
   for (const p of cena.portas) {
     if (cena.interior && p.z <= 0.01) continue
     if (cena.interior) grupo.add(saidaDoInterior(f, p))

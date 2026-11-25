@@ -104,8 +104,9 @@ alguém deixa de ler. Versão atual das regras: `VERSAO_REGRAS = 'exemplo-1'`.
 
 Protótipo de RPG: o jogador anda pela Avenida Faria Lima (104 m), entra em dois bancos lado a lado
 (o Banco PAN, à esquerda, e o BTG Pactual) e numa loja de veículos; depois deles há o feirão de
-seminovos Mobiauto, a céu aberto (sem porta: é parte da cena `rua`), duas torres de vidro e, do
-outro lado da avenida ("para baixo" na tela), a Praça da Baleia, com o monumento. Carros andam
+seminovos Mobiauto, a céu aberto (sem porta: é parte da cena `rua`), o MASP e uma torre de vidro
+e, do outro lado da avenida ("para baixo" na tela, em frente ao feirão e colada no campo de
+futebol), a Praça da Baleia, com o monumento. Carros andam
 nas duas faixas da avenida e param para quem atravessa.
 Cada banco tem duas cenas. BTG: a `agencia` (recepção, totem de senha, mesa do gerente) e, pela
 porta do fundo, o `escritorio` (baias com computador, divisória de vidro e área dos designers com
@@ -119,7 +120,7 @@ capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL públi
 regra de Cloudflare Access para marcas BTG/Pan.
 Versão do mundo: `VERSAO_MUNDO = 'rpg-17'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -250,7 +251,7 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   repetidos entre cenas) é todo sólido que não é prédio, nem o muro do beco, nem o vidro da sala de
   reunião do PAN, nem quadro de entregas ou a parede do feirão, e todo NPC, das seis cenas: 150
   hoje (lixeiras, bancos, estações de patinete, árvores e placa da praça e a Baleia entraram no
-  rpg-18; as torres de vidro são prédio). **Carro não esconde cartão:** mora no estado e anda. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
+  rpg-18; a torre de vidro e o MASP, pilares e hall, são prédio). **Carro não esconde cartão:** mora no estado e anda. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
   e o cartão sumiria com quem o levava. `criarMundo` esconde os cartões pelo `estado.rng` antes de
   sortear os figurantes; a `TelaRpg` passa uma semente nova (`crypto.getRandomValues`, no
   `controladorRpg`) a cada carga, e o motor segue determinístico para a mesma semente.
@@ -341,12 +342,20 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   `modelos.ts`. Regras em `tests/rpg.carros.test.ts`.
 - **Mobiliário de rua e Praça da Baleia** (`cenas.ts`): lixeiras laranja (`lixeira`, variante
   `rua`), bancos e estações de patinete (`estacao-patinetes`, com patinetes parados) nas duas
-  calçadas, todos fora do asfalto (há teste). Duas faixas de pedestre (x 31,5 e 89,5). A praça
-  (`PRACA`: x 80 a 102, z 21 a 43) fica em frente às torres, depois do feirão, do outro lado da
-  avenida: piso de pedra clara com faixas escuras, gramados, árvores, bancos, lixeiras, a placa
+  calçadas, todos fora do asfalto (há teste). Duas faixas de pedestre (x 31,5 e 67,5). A praça
+  (`PRACA`: x 58 a 80, z 21 a 43) fica do outro lado da avenida, em frente ao feirão, colada no
+  campo: entre o fundo do gol direito e a praça sobra um corredor de 2,5 m (há teste), para a bola
+  e o jogador chegarem atrás da rede. Tudo nela é posto relativo a `PRACA.x`: piso de pedra clara com faixas escuras, gramados, árvores, bancos, lixeiras, a placa
   `placa-praca` (nome em `rpg.placas.praca`) e o monumento `baleia` (aço facetado, cabeça no chão,
   corpo em arco, cauda alta; tirado de `media/referencias/monumento-baleia.png` na store), que se
   olha com o A (`rpg.dialogos.baleia`) e esconde cartão como qualquer objeto com diálogo.
+- **MASP** ao lado do feirão (`MASP` em `cenas.ts`, foto em `media/referencias/predio-masp.png` na
+  store): caixa de vidro azul suspensa por dois pórticos vermelhos, com **vão livre por onde se
+  anda**. Na colisão só contam os quatro pilares (`pilar-masp`) e o hall do fundo (`masp-hall`, z 0
+  a 3,8); a caixa e as vigas são `suspensos` da cena (`Suspenso`: retângulo com `y` e `altura`), só
+  desenho, que o motor ignora. O hall fechado no fundo existe também para a caixa não esconder o
+  jogador: com a câmera em (1, 1, 1), quem passa por baixo dali para a frente continua à vista.
+  Pilares e hall estão em `NAO_ESCONDE`: são o prédio.
 - **Colisão** um eixo de cada vez (desliza na parede; se sair de um sólido para dentro de outro,
   aquele eixo fica onde estava). **Interação**: o A vale para o elemento mais
   perto dentro de `ALCANCE_INTERACAO`, medido da borda do jogador à borda do elemento; o motor

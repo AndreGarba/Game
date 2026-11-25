@@ -23,8 +23,8 @@ export function chaveDoEsconderijo(cena: IdCena, id: string): string {
 // lixeira, fora do alcance do A (`tests/rpg.cartoes.test.ts` confere o alcance). Quadro de
 // entregas não esconde cartão: o A nele abre a modal, e um cartão aparecendo junto disputaria a
 // tela com ela. Gol e rede também ficam fora: o campo é para jogar bola. Fora da lista, quadros e
-// gols não mudam onde a mesma semente esconde os 31 cartões.
-const NAO_ESCONDE = new Set(['predio', 'muro', 'vidro-adesivado', 'parede-feirao', 'quadro-entregas', 'gol', 'rede-gol'])
+// gols não mudam onde a mesma semente esconde os 31 cartões. Pilares e hall do MASP são o prédio.
+const NAO_ESCONDE = new Set(['predio', 'muro', 'vidro-adesivado', 'parede-feirao', 'quadro-entregas', 'gol', 'rede-gol', 'pilar-masp', 'masp-hall'])
 
 function listarEsconderijos(): Esconderijo[] {
   const saida: Esconderijo[] = []

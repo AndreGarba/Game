@@ -1,7 +1,7 @@
 // Carros da avenida e a Praça da Baleia: trânsito determinístico, carro que para pelo jogador (sem
 // atropelar), lataria que bloqueia, buzina, e o mobiliário novo da rua.
 import { describe, expect, it } from 'vitest'
-import { CENAS, FAIXAS_CARROS, PRACA, type Carro, type Entrada, type EstadoMundo } from '../src/engine/rpg/index.ts'
+import { CAMPO, CENAS, FAIXAS_CARROS, FUNDO_GOL, PRACA, type Carro, type Entrada, type EstadoMundo } from '../src/engine/rpg/index.ts'
 import { caixaDoCarro, passoCarros } from '../src/engine/rpg/carros.ts'
 import { ESCONDERIJOS } from '../src/engine/rpg/cartoes.ts'
 import { sobrepoe } from '../src/engine/rpg/colisao.ts'
@@ -205,10 +205,17 @@ describe('mobiliário da rua e Praça da Baleia', () => {
     for (const s of rua.solidos) expect(s.z + s.profundidade <= 11 || s.z >= 17, s.id).toBe(true)
   })
 
-  it('a praça fica depois do feirão, do outro lado da avenida, e a Baleia está no meio dela', () => {
-    const fimDoFeirao = Math.max(...ids('feirao_').map((s) => s.x + s.largura))
-    expect(PRACA.x).toBeGreaterThan(fimDoFeirao)
+  it('a praça fica do outro lado da avenida, em frente ao feirão, colada no campo, e a Baleia está no meio dela', () => {
+    const feirao = ids('feirao_')
+    const inicioDoFeirao = Math.min(...feirao.map((s) => s.x))
+    const fimDoFeirao = Math.max(...feirao.map((s) => s.x + s.largura))
+    expect(PRACA.x).toBeGreaterThan(inicioDoFeirao)
+    expect(PRACA.x).toBeLessThan(fimDoFeirao)
     expect(PRACA.z).toBeGreaterThan(17)
+    // Atrás do gol direito sobra um corredor para chegar ao fundo da rede.
+    const fundoDoGol = CAMPO.x + CAMPO.largura + FUNDO_GOL + 0.1
+    expect(PRACA.x - fundoDoGol).toBeGreaterThanOrEqual(2)
+    expect(PRACA.x - fundoDoGol).toBeLessThanOrEqual(3)
     expect(PRACA.x + PRACA.largura).toBeLessThanOrEqual(rua.largura)
     expect(PRACA.z + PRACA.profundidade).toBeLessThanOrEqual(rua.profundidade)
     const baleia = rua.solidos.find((s) => s.id === 'baleia')!
@@ -218,15 +225,36 @@ describe('mobiliário da rua e Praça da Baleia', () => {
     expect(baleia.z).toBeGreaterThan(PRACA.z)
     expect(baleia.z + baleia.profundidade).toBeLessThan(PRACA.z + PRACA.profundidade)
     expect(ESCONDERIJOS.some((e) => e.chave === 'rua:baleia')).toBe(true)
-    // Torres de vidro depois do feirão são prédio: não se revistam.
-    expect(ESCONDERIJOS.some((e) => e.id.startsWith('predio_torre'))).toBe(false)
+    // A torre de vidro e o MASP são prédio: não se revistam.
+    expect(ESCONDERIJOS.some((e) => e.id.startsWith('predio_torre') || e.id.startsWith('masp_'))).toBe(false)
+  })
+
+  it('o MASP fica ao lado do feirão, e o vão livre embaixo da caixa de vidro é de andar', () => {
+    const fimDoFeirao = Math.max(...ids('feirao_').map((s) => s.x + s.largura))
+    const pilares = ids('masp_pilar_')
+    expect(pilares).toHaveLength(4)
+    expect(Math.min(...pilares.map((s) => s.x))).toBeGreaterThanOrEqual(fimDoFeirao)
+    expect(rua.solidos.some((s) => s.id === 'predio_torre_1')).toBe(false)
+    expect(rua.suspensos?.map((s) => s.visual)).toContain('masp-caixa')
+    const e = criarMundo()
+    e.figurantes = []
+    e.carros = []
+    jogadorEm(e, 84, 9.5)
+    andar(e, 0, -1, 200)
+    // Passa por baixo da caixa até o hall do fundo.
+    const hall = rua.solidos.find((s) => s.id === 'masp_hall')!
+    expect(e.jogador.z).toBeCloseTo(hall.z + hall.profundidade + RAIO_JOGADOR)
+    // E atravessa o vão inteiro, entre os pilares, até a torre vizinha.
+    andar(e, 1, 0, 200)
+    const torre = rua.solidos.find((s) => s.id === 'predio_torre_2')!
+    expect(e.jogador.x).toBeCloseTo(torre.x - RAIO_JOGADOR)
   })
 
   it('da calçada, atravessando pela faixa da praça, chega na Baleia e a vê', () => {
     const e = criarMundo()
     e.figurantes = []
     e.carros = []
-    jogadorEm(e, 91.5, 9.5)
+    jogadorEm(e, PRACA.x + 11.5, 9.5)
     andar(e, 0, 1, 400)
     // Entre os bancos da frente, até a lateral da escultura.
     expect(e.jogador.z).toBeCloseTo(30.5 - RAIO_JOGADOR)

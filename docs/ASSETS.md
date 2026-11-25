@@ -50,7 +50,7 @@ térreo. Deixe ali parede lisa ou vitrine.
 | `concessionaria` | Loja de veículos (vitrine) | 2,15 : 1 (14 × 6,5 m) | 1792 × 832 | não |
 | `residencial` | Prédio residencial à esquerda | 0,61 : 1 (5,5 × 9 m) | 704 × 1152 | não |
 | `comercial` | Prédio comercial à direita | 0,96 : 1 (11,5 × 12 m) | 1472 × 1536 | não |
-| `torre` | As duas torres de vidro depois do feirão, em frente à Praça da Baleia (a mesma imagem nas duas) | 0,84 : 1 (13,5 × 16 m) | 1344 × 1600 | não |
+| `torre` | A torre de vidro na ponta da rua, depois do MASP | 0,84 : 1 (13,5 × 16 m) | 1344 × 1600 | não |
 
 As laterais e o telhado continuam com a cor da paleta (`COR_PREDIO` e `COR_TELHADO`).
 
@@ -118,6 +118,7 @@ a escala do desenho (tamanho do ladrilho, da pedra, das folhas de grama).
 | `carpete-pan` | Carpete cinza-escuro do escritório PAN | 2 × 2 m | 512 × 512 | não |
 | `piso-reuniao` | Piso de madeira da sala de reunião do escritório PAN | 2 × 2 m | 512 × 512 | não |
 | `piso-praca` | Piso de pedra clara da Praça da Baleia | 3 × 3 m | 512 × 512 | não |
+| `piso-masp` | Concreto do vão livre do MASP | 2 × 2 m | 512 × 512 | não |
 | `pedra-escura` | Faixas de pedra escura que cortam o piso da praça | 2 × 2 m | 512 × 512 | não |
 | `gramado` | Gramados da praça (mais escuros que a `grama` do fundo) | 4 × 4 m | 512 × 512 | não |
 
@@ -237,7 +238,8 @@ modal e não passa pelo canvas, então não precisa entrar na carga de arte do J
   modelo 3D (`.glb`) por peça, não imagem 2D: fica para depois do protótipo. Isso inclui os
   figurantes, o patinete elétrico, a tenda e as bandeiras do feirão, os carros que andam na
   avenida (o mesmo modelo `carro` do feirão, com luz de freio), as lixeiras, os bancos, as estações
-  de patinete e o monumento Baleia (esferas facetadas de aço, cores em `COR_BALEIA`). O cartão Ultra Blue 3D é uma
+  de patinete o monumento Baleia (esferas facetadas de aço, cores em `COR_BALEIA`) e o MASP (pórticos
+  vermelhos e caixa de vidro com caixilhos, cores em `COR_MASP`; não usa o slot de fachada). O cartão Ultra Blue 3D é uma
   placa fina (`cena3d/cartao.ts`) que só troca a face pela imagem do slot `hud/cartao-ultrablue`;
   o verso, a tarja e a borda são cores da paleta (`COR_CARTAO`). As cores dos figurantes
   (`figurante_1` a `figurante_8`) e do patinete ficam em `paleta.ts`.
