@@ -30,18 +30,20 @@ function membro(f: Fabrica, cor: string, ponta: string, largura: number, comprim
 // Braço de camiseta: manga curta na cor da camisa, pele até a mão e tatuagens em tinta. Cada lado
 // tem um desenho, e as peças de tinta saem um pouco para fora do braço para não piscarem com a
 // pele (z-fighting). Grossas de propósito: na câmera isométrica um braço tem poucos pixels.
-function bracoTatuado(f: Fabrica, a: Aparencia, tinta: string, lado: -1 | 1): THREE.Group {
+// Sem tinta (`mangaCurta`), é só a manga curta e a pele.
+function bracoTatuado(f: Fabrica, a: Aparencia, tinta: string | null, lado: -1 | 1): THREE.Group {
   const pivo = new THREE.Group()
   const l = 0.15
   const comprimento = 0.5
   const manga = 0.16
   const pele = f.material(a.pele)
-  const t = f.material(tinta)
   pivo.add(
     f.caixa(l * 1.18, manga, l * 1.25, f.material(a.camisa), { y: -manga }),
     f.caixa(l, comprimento - manga, l * 1.1, pele, { y: -comprimento }),
     f.caixa(l * 1.05, 0.14, l * 1.4, pele, { y: -comprimento - 0.084, z: 0.03 }),
   )
+  if (!tinta) return pivo
+  const t = f.material(tinta)
   const anel = (y: number, altura: number) => f.caixa(l + 0.012, altura, l * 1.1 + 0.012, t, { y: -y })
   if (a.tatuagemPequena) {
     // Uma marca só, na face de fora do braço direito, logo abaixo da manga.
@@ -151,8 +153,10 @@ function detalhesDoRosto(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
         f.caixa(0.018, 0.115, 0.02, aro, { x: cx + 0.06, y: y + 0.18, z: zf }),
         f.caixa(0.014, 0.022, 0.2, aro, { x: lado * 0.206, y: y + 0.295, z: 0.1 }),
       )
+      if (a.lentes) corpo.add(f.caixa(0.11, 0.1, 0.012, f.material(a.lentes), { x: cx, y: y + 0.188, z: zf - 0.004 }))
     }
   }
+  if (a.batom) corpo.add(f.caixa(0.12, 0.035, 0.012, f.material(a.batom), { y: y + 0.1, z: 0.196 }))
 }
 
 // Cabelo médio: a mesma calota em cima, uma franja de lado, mechas caindo dos lados até o ombro
@@ -252,6 +256,44 @@ function blusaRegata(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
   )
 }
 
+// Perna de bermuda: pele até o tênis e a bermuda só na coxa, um pouco mais larga. A tatuagem é
+// uma faixa na canela e um desenho na face de fora, como nos braços.
+function pernaDeBermuda(f: Fabrica, a: Aparencia, lado: -1 | 1): THREE.Group {
+  const pivo = new THREE.Group()
+  const l = 0.2
+  const comprimento = 0.66
+  const coxa = 0.3
+  const pele = f.material(a.pele)
+  pivo.add(
+    f.caixa(l * 1.08, coxa, l * 1.18, f.material(a.calca), { y: -coxa }),
+    f.caixa(l * 0.85, comprimento - coxa, l * 0.95, pele, { y: -comprimento }),
+    f.caixa(l * 1.05, 0.12, l * 1.4, f.material(a.sapato), { y: -comprimento - 0.072, z: 0.03 }),
+  )
+  if (a.tatuagemPerna) {
+    const t = f.material(a.tatuagemPerna)
+    pivo.add(f.caixa(l * 0.85 + 0.012, 0.04, l * 0.95 + 0.012, t, { y: -0.52 }))
+    pivo.add(f.caixa(0.012, 0.16, l * 0.6, t, { x: lado * (l * 0.425 + 0.006), y: -0.48 }))
+  }
+  return pivo
+}
+
+// Cachecol: uma volta larga no pescoço e as duas pontas caindo na frente, sobre a jaqueta.
+function cachecol(f: Fabrica, cor: string, corpo: THREE.Group) {
+  const la = f.material(cor)
+  const topo = ALTURA_QUADRIL - 0.04 + 0.62
+  corpo.add(f.caixa(0.42, 0.1, 0.34, la, { y: topo - 0.06 }))
+  for (const lado of [-1, 1]) corpo.add(f.caixa(0.08, 0.5, 0.03, la, { x: lado * 0.07, y: topo - 0.52, z: 0.165 }))
+}
+
+// Boné: copa justa no alto da cabeça e a aba saindo para a frente.
+function bone(f: Fabrica, b: { cor: string; aba: string }, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  corpo.add(
+    f.caixa(0.45, 0.16, 0.43, f.material(b.cor), { y: y + 0.42 }),
+    f.caixa(0.4, 0.03, 0.18, f.material(b.aba), { y: y + 0.42, z: 0.27 }),
+  )
+}
+
 export interface OpcoesPersonagem {
   // Figurante: menos peças e sem sombra no mapa (só a redonda), para caber muitos no celular.
   leve?: boolean
@@ -270,8 +312,8 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   raiz.add(suporte)
   if (opcoes.leve) return personagemLeve(f, a, raiz, corpo)
 
-  const pernaE = membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
-  const pernaD = membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
+  const pernaE = a.bermuda ? pernaDeBermuda(f, a, -1) : membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
+  const pernaD = a.bermuda ? pernaDeBermuda(f, a, 1) : membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
   pernaE.position.set(-0.13, ALTURA_QUADRIL, 0)
   pernaD.position.set(0.13, ALTURA_QUADRIL, 0)
   if (a.solado) {
@@ -280,8 +322,9 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
 
   const manga = a.jaquetaAberta ? a.jaquetaAberta.cor : a.regata ? a.pele : a.camisa
   const larguraBraco = a.jaquetaAberta ? 0.17 : 0.15
-  const bracoE = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, -1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
-  const bracoD = a.tatuagem ? bracoTatuado(f, a, a.tatuagem, 1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
+  const curta = a.tatuagem || a.mangaCurta
+  const bracoE = curta ? bracoTatuado(f, a, a.tatuagem ?? null, -1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
+  const bracoD = curta ? bracoTatuado(f, a, a.tatuagem ?? null, 1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
   if (a.unhas) {
     const esmalte = f.material(a.unhas)
     for (const braco of [bracoE, bracoD]) braco.add(f.caixa(0.13, 0.035, 0.012, esmalte, { y: -0.58, z: 0.033 + larguraBraco * 0.7 }))
@@ -310,6 +353,8 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   else if (!a.careca) corpo.add(cabelo, nuca)
   if (a.jaquetaAberta) jaquetaPorCima(f, a, a.jaquetaAberta, corpo)
   if (a.camisaSocial) camisaDeBotao(f, a, a.camisaSocial, corpo)
+  if (a.cachecol) cachecol(f, a.cachecol, corpo)
+  if (a.bone) bone(f, a.bone, corpo)
   if (a.sorriso) {
     corpo.add(
       f.caixa(0.2, 0.075, 0.01, olho, { y: ALTURA_OMBRO + 0.09, z: 0.192 }),

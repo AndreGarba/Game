@@ -18,8 +18,13 @@ interface TextosDoPersonagem {
   descricao: string
 }
 
-const TECLAS_ANTERIOR = new Set(['ArrowLeft', 'ArrowUp', 'KeyA', 'KeyW'])
-const TECLAS_PROXIMO = new Set(['ArrowRight', 'ArrowDown', 'KeyD', 'KeyS'])
+// Cards por linha da grade. ← → andam um card; ↑ ↓ andam uma linha.
+const COLUNAS = 7
+
+const TECLAS_ANTERIOR = new Set(['ArrowLeft', 'KeyA'])
+const TECLAS_PROXIMO = new Set(['ArrowRight', 'KeyD'])
+const TECLAS_ACIMA = new Set(['ArrowUp', 'KeyW'])
+const TECLAS_ABAIXO = new Set(['ArrowDown', 'KeyS'])
 const TECLAS_CONFIRMAR = new Set(['Space', 'Enter', 'NumpadEnter', 'KeyE'])
 const TECLAS_VOLTAR = new Set(['Escape', 'KeyQ', 'Backspace'])
 
@@ -34,12 +39,24 @@ interface PropsTelaSelecao {
  * (ou toque no card) escolhem, A/Enter ou o botão confirmam; B/Esc e o Voltar são
  * `history.back()`: a camada é de quem abriu.
  */
+// Mesma coluna na linha de cima ou de baixo. Da última linha (incompleta) para baixo, volta para a
+// primeira; de cima da primeira, vai para a última linha que tem essa coluna.
+function linhaVizinha(i: number, sentido: 1 | -1, total: number): number {
+  const coluna = i % COLUNAS
+  const destino = i + sentido * COLUNAS
+  if (destino >= 0 && destino < total) return destino
+  if (sentido > 0) return coluna
+  const ultimaLinha = Math.floor((total - 1 - coluna) / COLUNAS)
+  return ultimaLinha * COLUNAS + coluna
+}
+
 export function TelaSelecao({ aoEscolher, troca }: PropsTelaSelecao) {
   const { t } = useTranslation()
   const textos = t('rpg.elenco', { returnObjects: true }) as unknown as Record<string, TextosDoPersonagem>
   const [indice, setIndice] = useState(() => (troca ? Math.max(0, ELENCO.findIndex((p) => p.id === troca.atual)) : 0))
   const [retratos, setRetratos] = useState<Record<string, string>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const cardsRef = useRef<HTMLDivElement>(null)
   const vitrineRef = useRef<ReturnType<typeof criarVitrine> | null>(null)
   const indiceRef = useRef(indice)
   indiceRef.current = indice
@@ -78,6 +95,19 @@ export function TelaSelecao({ aoEscolher, troca }: PropsTelaSelecao) {
     vitrineRef.current?.mostrar(escolhido.visual)
   }, [escolhido.visual])
 
+  // A grade rola quando não cabe na altura: o escolhido pelo teclado tem que ficar à vista. Rola só
+  // a grade (scrollIntoView também rolaria a tela e a moldura, que têm overflow escondido).
+  useEffect(() => {
+    const grade = cardsRef.current
+    const card = grade?.children[indice] as HTMLElement | undefined
+    if (!grade || !card) return
+    const folga = card.offsetHeight / 4
+    if (card.offsetTop - folga < grade.scrollTop) grade.scrollTop = card.offsetTop - folga
+    else if (card.offsetTop + card.offsetHeight + folga > grade.scrollTop + grade.clientHeight) {
+      grade.scrollTop = card.offsetTop + card.offsetHeight + folga - grade.clientHeight
+    }
+  }, [indice])
+
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       if (digitando(evento) || evento.repeat) return
@@ -89,6 +119,9 @@ export function TelaSelecao({ aoEscolher, troca }: PropsTelaSelecao) {
       } else if (TECLAS_PROXIMO.has(evento.code)) {
         evento.preventDefault()
         setIndice((i) => (i + 1) % total)
+      } else if (TECLAS_ACIMA.has(evento.code) || TECLAS_ABAIXO.has(evento.code)) {
+        evento.preventDefault()
+        setIndice((i) => linhaVizinha(i, TECLAS_ABAIXO.has(evento.code) ? 1 : -1, total))
       } else if (TECLAS_CONFIRMAR.has(evento.code) && !emBotao) {
         evento.preventDefault()
         confirmar(indiceRef.current)
@@ -124,7 +157,13 @@ export function TelaSelecao({ aoEscolher, troca }: PropsTelaSelecao) {
       <div className="tela-selecao__painel">
         <h1 className="tela-selecao__titulo">{t(troca ? 'selecao.tituloTroca' : 'selecao.titulo')}</h1>
         <p className="tela-selecao__nome">{textos[escolhido.id]?.nome}</p>
-        <div className="tela-selecao__cards" role="radiogroup" aria-label={t('selecao.titulo')}>
+        <div
+          ref={cardsRef}
+          className="tela-selecao__cards"
+          role="radiogroup"
+          aria-label={t('selecao.titulo')}
+          style={{ '--colunas': COLUNAS } as CSSProperties}
+        >
           {ELENCO.map((p, i) => {
             const imagem = urlDaArte('retratos', p.id) ?? retratos[p.id]
             return (

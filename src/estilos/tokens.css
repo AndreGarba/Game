@@ -43,7 +43,7 @@
   --raio-total: 999px;
 
   --largura-cartao: 22rem;
-  --largura-card-personagem: 113px;
+  --texto-card-personagem: 10px;
   --largura-janela: 24rem;
   --largura-botao-grande: 12rem;
 
@@ -137,7 +137,7 @@
   --largura-cartao: calc(var(--px) * 520);
   --largura-janela: calc(var(--px) * 560);
   --largura-botao-grande: calc(var(--px) * 280);
-  --largura-card-personagem: calc(var(--px) * 170);
+  --texto-card-personagem: calc(var(--px) * 13);
   --largura-entregas-item: calc(var(--px) * 360);
   --tamanho-entregas-ponto: calc(var(--px) * 14);
   --texto-gol: calc(var(--px) * 110);

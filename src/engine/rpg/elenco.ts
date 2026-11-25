@@ -19,6 +19,19 @@ export const ELENCO: readonly PersonagemJogavel[] = [
   { id: 'fernanda', visual: 'fernanda' },
   { id: 'dea', visual: 'dea' },
   { id: 'roman', visual: 'roman' },
+  { id: 'nath', visual: 'nath' },
+  { id: 'day', visual: 'day' },
+  { id: 'bruno', visual: 'bruno' },
+  { id: 'wesley', visual: 'wesley' },
+  { id: 'bob', visual: 'bob' },
+  { id: 'ju', visual: 'ju' },
+  { id: 'fabio', visual: 'fabio' },
+  { id: 'pedro', visual: 'pedro' },
+  { id: 'allexis', visual: 'allexis' },
+  { id: 'thamis', visual: 'thamis' },
+  { id: 'renan', visual: 'renan' },
+  { id: 'fernando', visual: 'fernando' },
+  { id: 'barranqueiro', visual: 'barranqueiro' },
 ]
 
 export const PERSONAGEM_PADRAO = ELENCO[0]!.id

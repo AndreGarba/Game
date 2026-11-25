@@ -115,9 +115,9 @@ com vista de prédios, parede azul na lateral e sala de reunião de vidro adesiv
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-16'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-17'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -160,18 +160,27 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   jaqueta utilitária verde-oliva aberta sobre blusa branca; unhas vermelhas; foto em
   `media/referencias/personagem-dea.png`) e **Roman** (responsável pelo B2C de Veículos: cabelo
   curto castanho-escuro, camisa social azul-clara de manga longa com botões e logo pequeno no
-  peito, calça escura; foto em `media/referencias/personagem-roman.png`). Estampa com personagem licenciado vira padrão de
+  peito, calça escura; foto em `media/referencias/personagem-roman.png`) e mais 13 pessoas do
+  time tiradas das fotos do Figma (**Nath, Day, Bruno, Wesley, Bob, Ju, Fábio, Pedro, Allexis,
+  Thamis, Renan, Fernando e Barranqueiro**; foto de cada uma em
+  `media/referencias/personagem-<id>.png`). Os textos dessas 13 vêm do Figma, reescritos só onde
+  passavam do limite. Estampa com personagem licenciado vira padrão de
   cores (`estampaChamas`), nunca cópia da arte. Personagem novo é só dado: linha no `ELENCO`,
   `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
   chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, cabelo longo com
-  raiz de outra cor, regata, babado, jaqueta aberta, camisa social, unhas, sorriso e brincos são campos
-  opcionais da `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
+  raiz de outra cor, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga
+  curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné e batom são campos opcionais da
+  `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
   nos três idiomas e, se quiser, um retrato em `arte/retratos/<id>` (sem ele, o card mostra um
-  retrato desenhado em 3D). O card mostra só o nome; o título e a descrição (pontos fortes e
-  entregas da pessoa) ficam no bloco do escolhido, embaixo dos cards. Os textos ficam no i18n e não no
+  retrato desenhado em 3D). O card mostra só o nome; o título e a descrição ficam no bloco do
+  escolhido, embaixo dos cards. **Os cards são uma grade de `COLUNAS` (7) por linha**
+  (`TelaSelecao.tsx`), nos dois terços da direita da tela: ← → andam um card, ↑ ↓ andam uma linha
+  (com volta), e o toque escolhe. Com 19 pessoas, as três linhas cabem sem rolar; se a grade
+  passar da altura, ela rola na vertical (toque arrasta) e o teclado traz o escolhido para a vista,
+  rolando só a grade. O retrato do card é 4 : 3 e o nome usa `--texto-card-personagem`: o nome
+  mais longo hoje, "Barranqueiro", ocupa o card inteiro. Os textos ficam no i18n e não no
   `ELENCO` porque o motor não tem idioma. Limite: título até 30 caracteres e descrição até 210,
-  medidos em 16:9 no bloco do escolhido, que mostra até quatro linhas (a coluna dos cards é a mais
-  larga da tela, 3 : 2, para o nome caber no card com seis pessoas); `tests/rpg.elenco.test.ts` confere isso, a paleta e os nomes
+  medidos em 16:9 no bloco do escolhido, que mostra até três linhas; `tests/rpg.elenco.test.ts` confere isso, a paleta e os nomes
   de todo o elenco. Os textos do time inteiro estão prontos em
   `docs/textos-selecao-personagens.md` na store (dado interno: vale o Cloudflare Access).
 - **Quem não foi escolhido anda pelo mapa** como figurante (`Figurante.elenco` com o id), com a

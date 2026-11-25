@@ -262,6 +262,71 @@
         "nome": "Roman",
         "titulo": "Responsable del B2C",
         "descricao": "Comprometido y colaborativo, lleva un producto desde cero uniendo a todas las áreas. Recibe excelentes comentarios del equipo de Vehículos."
+      },
+      "nath": {
+        "nome": "Nath",
+        "titulo": "Arquitecta del Onboarding",
+        "descricao": "Rediseñó el onboarding y redujo entre 60% y 80% del esfuerzo. Cada día, 2 mil aliados luchan a su lado, y abrir cuentas y parametrizar poderes se volvió una jugada veloz."
+      },
+      "day": {
+        "nome": "Day",
+        "titulo": "Exploradora del multiverso",
+        "descricao": "Recorre distintos territorios del banco, conectando necesidades de negocio, tecnología y experiencia del usuario. Cada nueva misión, un nuevo universo por descubrir."
+      },
+      "bruno": {
+        "nome": "Bruno",
+        "titulo": "Estratega de Salesforce",
+        "descricao": "Evolucionó el Salesforce de los Partners con Flujo Operativo, Call to Action y Cadencia de Relación afilados. Cada Partner gana un aliado de peso para conquistar nuevos territorios."
+      },
+      "wesley": {
+        "nome": "Wesley",
+        "titulo": "Unificador del Jurídico",
+        "descricao": "Unió los sistemas jurídicos del banco en un solo reino. Su dominio suma +254 mil procesos y +569 mil tareas creadas, y donde había caos ahora reina el orden."
+      },
+      "bob": {
+        "nome": "Bob",
+        "titulo": "Señor del Riesgo de Crédito",
+        "descricao": "Fusionó 5 sistemas en una única plataforma y domina R$ 360 mil mill. en límite de crédito aprobado. Con él al mando, cada decisión de riesgo es precisa, rápida y digna de leyenda."
+      },
+      "ju": {
+        "nome": "Ju",
+        "titulo": "Arquitecta de las Políticas",
+        "descricao": "Construye puentes sobre los desafíos del Motor de Crédito, transformando laberintos de reglas en caminos claros para decisiones acertadas."
+      },
+      "fabio": {
+        "nome": "Fábio",
+        "titulo": "Conquistador de sistemas",
+        "descricao": "Con 7 años en BTG, lideró la expansión de UX en las áreas de backoffice del banco, pasando de 3 áreas atendidas en 2022 a +30 hasta 2026."
+      },
+      "pedro": {
+        "nome": "Pedro",
+        "titulo": "El Mago de Funds",
+        "descricao": "Hace 5 años, de su sombrero salen flujos, jornadas o prototipos para más de 200 devs y negocios en todas partes. Sin horario. Así ayuda a BTG, líder en fondos, a construir ese mercado."
+      },
+      "allexis": {
+        "nome": "Allexis",
+        "titulo": "Here comes a new challenger!",
+        "descricao": "Nuevo en el equipo, llegó para trabajar en el sistema de cobranza Everest y en proyectos importantes como BNDU y Dívida Ativa."
+      },
+      "thamis": {
+        "nome": "Thamis",
+        "titulo": "Hechicera de Mars 🪐",
+        "descricao": "Expandió el ecosistema de Mars con Visão 360, Mars App, Mars Web y MarsIA, conectando sistemas, datos financieros e IA. Convirtió la complejidad en soluciones que simplifican la operación y la decisión."
+      },
+      "renan": {
+        "nome": "Renan",
+        "titulo": "Guardián de Luxemburgo",
+        "descricao": "Une crédito, garantías y aprobación en una única visión. Con el poder de la simplicidad, conquistó los créditos boletados de Luxemburgo y desterró el caos de la conciliación para siempre."
+      },
+      "fernando": {
+        "nome": "Fernando",
+        "titulo": "Unificador de Portales",
+        "descricao": "Forjó el Portal IR y la Escrituración en un solo reino. Con +215 clientes, R$ 45 mm de facturación al año y 5,9 mil visitantes al mes, es el héroe que domina el mercado de capitales."
+      },
+      "barranqueiro": {
+        "nome": "Barranqueiro",
+        "titulo": "Guardián del Portafolio",
+        "descricao": "Dueño del “qué” de SINT: define alcance, prioridad y roadmap. Facilita entre UX, Producto y TI, cuida el Monday y cobra fechas. Mantiene el board limpio, estimaciones honestas y plazos a la vista."
       }
     },
     "teclas": {

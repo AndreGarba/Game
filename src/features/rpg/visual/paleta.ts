@@ -189,6 +189,20 @@ export interface Aparencia {
   sorriso?: string
   // Camisa social de manga longa: gola, carreira de botões e um logo pequeno no peito.
   camisaSocial?: { botoes: string; logo: string }
+  // Camiseta de manga curta sem tatuagem (com `tatuagem`, a manga já é curta).
+  mangaCurta?: boolean
+  // Bermuda ou short: `calca` só na coxa e perna de pele até o tênis.
+  bermuda?: boolean
+  // Tatuagem nas pernas, que só aparece de bermuda: a cor da tinta.
+  tatuagemPerna?: string
+  // Cachecol em volta do pescoço, com as duas pontas caindo na frente.
+  cachecol?: string
+  // Lentes escuras nos óculos (precisa de `oculos`, que é a armação).
+  lentes?: string
+  // Boné com a aba para a frente, por cima do cabelo.
+  bone?: { cor: string; aba: string }
+  // Boca com batom.
+  batom?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -277,6 +291,170 @@ export const APARENCIAS: Record<string, Aparencia> = {
     barbaRala: true,
     oculos: '#e4e9ec',
     estampaChamas: { chama: '#f08a2c', moldura: '#2fa3b8' },
+    relogio: '#141414',
+  },
+  // Fotos do Figma do time, em media/referencias/personagem-<id>.png.
+  // Nath: cabelo longo, liso e castanho-escuro; camisa verde de botão.
+  nath: {
+    pele: '#d9a57f',
+    cabelo: '#2a1d17',
+    camisa: '#1f4a3a',
+    calca: '#2a2d35',
+    sapato: '#1c1c1e',
+    detalhe: null,
+    cabeloLongo: { pontas: '#3a2a20' },
+    camisaSocial: { botoes: '#173a2d', logo: '#1f4a3a' },
+  },
+  // Day: cabelo acobreado até o ombro, camisa estampada aberta sobre blusa preta, short preto e
+  // tatuagens nas pernas.
+  day: {
+    pele: '#efc7a8',
+    cabelo: '#b5562e',
+    camisa: '#18181b',
+    calca: '#141416',
+    sapato: '#2b2b2e',
+    detalhe: null,
+    cabeloOmbro: { mechas: '#d27a45' },
+    jaquetaAberta: { cor: '#7a3d5c', bolso: '#a8704a' },
+    bermuda: true,
+    tatuagemPerna: '#2f3b33',
+  },
+  // Bruno: cabelo e barba pretos, suéter polo cinza-escuro com botões, calça marrom.
+  bruno: {
+    pele: '#d9a07a',
+    cabelo: '#1a1412',
+    camisa: '#2c2f33',
+    calca: '#5a4636',
+    sapato: '#2a211a',
+    detalhe: null,
+    barba: '#1f1712',
+    camisaSocial: { botoes: '#3a3d42', logo: '#2c2f33' },
+  },
+  // Wesley: barba, óculos pretos, blazer preto aberto sobre camiseta cinza, relógio.
+  wesley: {
+    pele: '#e3b08c',
+    cabelo: '#1d1714',
+    camisa: '#c9ccd1',
+    calca: '#16171b',
+    sapato: '#111111',
+    detalhe: null,
+    barba: '#241a15',
+    oculos: '#151515',
+    jaquetaAberta: { cor: '#17181c', bolso: '#17181c' },
+    relogio: '#2a2a2a',
+  },
+  // Bob: barba ruiva cheia, sorriso, camisa social cinza-clara, calça cáqui.
+  bob: {
+    pele: '#e8b48f',
+    cabelo: '#7a4a2a',
+    camisa: '#c6ccd1',
+    calca: '#6b6459',
+    sapato: '#3a2e26',
+    detalhe: null,
+    barba: '#8a4f2a',
+    camisaSocial: { botoes: '#eef0f2', logo: '#c6ccd1' },
+    sorriso: '#ffffff',
+  },
+  // Ju: cabelo longo castanho com pontas claras, regata preta, sorriso, unhas vinho.
+  ju: {
+    pele: '#f0c3a0',
+    cabelo: '#5a3d28',
+    camisa: '#141416',
+    calca: '#141416',
+    sapato: '#1c1c1e',
+    detalhe: null,
+    cabeloLongo: { pontas: '#b08a5c' },
+    regata: true,
+    sorriso: '#ffffff',
+    unhas: '#6e1a22',
+  },
+  // Fábio: óculos, jaqueta preta aberta, cachecol cinza-rosado, jeans.
+  fabio: {
+    pele: '#e0a982',
+    cabelo: '#141210',
+    camisa: '#1c1d21',
+    calca: '#2f4a6e',
+    sapato: '#1a1a1a',
+    detalhe: null,
+    oculos: '#2a2a2a',
+    jaquetaAberta: { cor: '#121316', bolso: '#121316' },
+    cachecol: '#7a6a64',
+  },
+  // Pedro: óculos escuros de lente azul espelhada, camiseta marrom, calça cinza, relógio, sorriso.
+  pedro: {
+    pele: '#d39a72',
+    cabelo: '#141210',
+    camisa: '#4a3530',
+    calca: '#7d8188',
+    sapato: '#2a2a2a',
+    detalhe: null,
+    mangaCurta: true,
+    oculos: '#1b1b1b',
+    lentes: '#2f6fd6',
+    relogio: '#141414',
+    sorriso: '#ffffff',
+  },
+  // Allexis: cabelo preto, barba, camiseta branca.
+  allexis: {
+    pele: '#d6a27c',
+    cabelo: '#121010',
+    camisa: '#f2f2f2',
+    calca: '#3a3f4b',
+    sapato: '#f2f2f2',
+    detalhe: null,
+    mangaCurta: true,
+    barba: '#151210',
+  },
+  // Thamis: cabelo longo e preto, camiseta preta, batom escuro.
+  thamis: {
+    pele: '#efc8ae',
+    cabelo: '#1c1412',
+    camisa: '#141416',
+    calca: '#1f2733',
+    sapato: '#1c1c1e',
+    detalhe: null,
+    cabeloLongo: { pontas: '#2a1d17' },
+    mangaCurta: true,
+    batom: '#8a2a35',
+  },
+  // Renan: barba castanha, camiseta preta larga, tatuagem pequena no braço direito.
+  renan: {
+    pele: '#dba987',
+    cabelo: '#4a3424',
+    camisa: '#141416',
+    calca: '#18181b',
+    sapato: '#111111',
+    detalhe: null,
+    barba: '#5a3e2a',
+    tatuagem: '#2f3540',
+    tatuagemPequena: true,
+  },
+  // Fernando: cabelo castanho-claro, suéter preto, sorriso.
+  fernando: {
+    pele: '#f0c4a6',
+    cabelo: '#6b4a30',
+    camisa: '#16171b',
+    calca: '#1d2026',
+    sapato: '#141414',
+    detalhe: null,
+    sorriso: '#ffffff',
+  },
+  // Barranqueiro: boné verde-acinzentado, barba grisalha rala, camiseta preta com estampa branca,
+  // braços tatuados, bermuda preta, tênis cinza e relógio.
+  barranqueiro: {
+    pele: '#d9a57e',
+    cabelo: '#2a2520',
+    camisa: '#141416',
+    calca: '#141416',
+    sapato: '#6a6e76',
+    detalhe: null,
+    bone: { cor: '#4f5248', aba: '#44473e' },
+    barba: '#8b8580',
+    barbaRala: true,
+    tatuagem: '#2b3340',
+    estampa: { texto: 'ORIGINALS', cor: '#f4f4f0' },
+    bermuda: true,
+    solado: '#f2f2f2',
     relogio: '#141414',
   },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },

@@ -4,8 +4,8 @@
   container-type: size;
   position: relative;
   display: grid;
-  /* A coluna dos cards é a mais larga: com seis pessoas, o nome ainda cabe no card. */
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  /* A grade dos cards fica com dois terços da largura; o boneco, de pé, cabe no terço que sobra. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: var(--altura-tela, 100svh);
@@ -41,8 +41,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-  gap: var(--espaco-2);
+  gap: var(--espaco-1);
   min-height: 0;
   padding: calc(var(--espaco-4) + var(--safe-topo)) calc(var(--espaco-6) + var(--safe-direita))
     calc(var(--espaco-4) + var(--safe-base)) var(--espaco-4);
@@ -69,7 +68,7 @@
   flex-direction: column;
   gap: var(--espaco-1);
   width: 100%;
-  padding: var(--espaco-3) var(--espaco-4);
+  padding: var(--espaco-2) var(--espaco-4);
   border: 3px solid var(--cor-selecao-card-borda);
   border-radius: var(--raio-4);
   background: var(--cor-selecao-card);
@@ -82,36 +81,55 @@
   color: var(--cor-destaque);
 }
 
-/* Até quatro linhas: o texto de cada pessoa tem limite de tamanho (tests/rpg.elenco.test.ts). */
+/* Até três linhas: o texto de cada pessoa tem limite de 210 caracteres (tests/rpg.elenco.test.ts),
+   e com a grade nos dois terços da largura ele cabe em três. */
 .tela-selecao__descricao {
   display: -webkit-box;
   margin: 0;
-  min-height: calc(4lh);
+  min-height: calc(3lh);
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   font-size: var(--texto-1);
   line-height: 1.35;
   color: var(--cor-selecao-texto);
 }
 
+/* Grade de `--colunas` (TelaSelecao.tsx) com a altura que sobra no painel. Se não couber, rola
+   na vertical (toque arrasta, a roda do mouse rola) e o teclado leva o escolhido para a vista. O
+   respiro em volta é do card escolhido, que sobe um pouco, e do contorno de foco. */
 .tela-selecao__cards {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--colunas), minmax(0, 1fr));
+  align-content: start;
+  flex: 1 1 auto;
   width: 100%;
+  min-height: 0;
   gap: var(--espaco-1);
-  margin-bottom: var(--espaco-2);
+  padding: var(--espaco-2) var(--espaco-1);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cor-selecao-card-borda) transparent;
 }
 
 .tela-selecao__confirmar {
-  /* A coluna do boneco é estreita: o botão encolhe em vez de vazar para a borda. */
+  /* A coluna do boneco é estreita: o botão encolhe em vez de vazar para a borda, e com o nome
+     mais longo ("Jogar com Barranqueiro") o Voltar desce para a linha de baixo. */
   min-width: 0;
-  padding-inline: var(--espaco-4);
+  max-width: 100%;
+  overflow: hidden;
+  padding-inline: var(--espaco-3);
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .tela-selecao__botoes {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: var(--espaco-2);
@@ -121,10 +139,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--espaco-1);
-  /* Uma fileira só: com mais gente no elenco, os cards encolhem em vez de quebrar a linha. */
-  flex: 0 1 var(--largura-card-personagem);
   min-width: 0;
-  padding: var(--espaco-1) var(--espaco-1) var(--espaco-2);
+  padding: var(--espaco-1);
   border: 3px solid var(--cor-selecao-card-borda);
   border-radius: var(--raio-4);
   background: var(--cor-selecao-card);
@@ -147,15 +163,16 @@
 .tela-selecao__retrato {
   display: block;
   width: 100%;
-  /* Quadrado no card para sobrar altura ao texto; o retrato 4 : 5 é cortado no centro. */
-  aspect-ratio: 1 / 1;
+  /* Mais largo que alto: a terceira linha da grade aparece pela metade e mostra que a grade rola.
+     O retrato 4 : 5 é cortado no centro. */
+  aspect-ratio: 4 / 3;
   border-radius: var(--raio-2);
   background: var(--cor-selecao-card) var(--imagem, none) center / cover no-repeat;
 }
 
 .tela-selecao__card-nome {
   overflow: hidden;
-  font-size: var(--texto-1);
+  font-size: var(--texto-card-personagem);
   font-weight: 900;
   text-align: center;
   text-overflow: ellipsis;
