@@ -1,6 +1,7 @@
 import { criarRng } from '../rng.ts'
 import { passoBaloes, soltarBaloes } from './baloes.ts'
 import { bolaAoAlcance, chutarBola, criarBola, mirarNaBola, passoBola } from './bola.ts'
+import { caixaDoCarro, caixasDosCarros, criarCarros, passoCarros } from './carros.ts'
 import { chaveDoEsconderijo, ehEsconderijo, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
@@ -52,6 +53,8 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
   // Ordem fixa no rng: cartões, a cena de cada personagem não escolhido, figurantes.
   const cartoes = esconderCartoes(rng)
   const elencoNoMapa = espalharElenco(escolhido.id, rng)
+  const carros = criarCarros()
+  const caixas = carros.map(caixaDoCarro)
   return {
     versao: VERSAO_MUNDO,
     tick: 0,
@@ -74,7 +77,7 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     dialogo: null,
     trocasDeCena: 0,
     rng,
-    figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng, elencoNaCena(elencoNoMapa, CENA_INICIAL)),
+    figurantes: criarFigurantes(CENAS[CENA_INICIAL], rng, elencoNaCena(elencoNoMapa, CENA_INICIAL), CENA_INICIAL === 'rua' ? caixas : []),
     npcsDerrubados: {},
     cartoes,
     personagem: escolhido.id,
@@ -84,6 +87,8 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     proximoBalao: 1,
     festa: null,
     bola: criarBola(),
+    carros,
+    buzina: null,
   }
 }
 
@@ -120,9 +125,10 @@ function sinal(n: number): number {
   return n > 0 ? 1 : n < 0 ? -1 : 0
 }
 
+// O jogador bate nos carros como num sólido (eles param antes dele, então nunca o empurram).
 function mover(estado: EstadoMundo, cena: Cena, passoX: number, passoZ: number) {
   const j = estado.jogador
-  const novo = moverCaixa(cena, bloqueios(cena), RAIO_JOGADOR, j.x, j.z, passoX, passoZ)
+  const novo = moverCaixa(cena, [...bloqueios(cena), ...caixasDosCarros(estado)], RAIO_JOGADOR, j.x, j.z, passoX, passoZ)
   j.x = novo.x
   j.z = novo.z
 }
@@ -199,7 +205,7 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.jogador.andando = false
     estado.jogador.correndo = false
     estado.trocasDeCena += 1
-    estado.figurantes = criarFigurantes(CENAS[d.cena], estado.rng, elencoNaCena(estado.elencoNoMapa, d.cena))
+    estado.figurantes = criarFigurantes(CENAS[d.cena], estado.rng, elencoNaCena(estado.elencoNoMapa, d.cena), caixasDosCarros(estado))
     estado.npcsDerrubados = {}
     return
   }
@@ -396,12 +402,13 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
     if (entrada.interagir) interagir(estado, cenaAtual(estado))
   }
 
-  passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng)
+  passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng, caixasDosCarros(estado))
   if (j.soco === TICKS_SOCO_IMPACTO) golpear(estado)
   if (j.chute === TICKS_CHUTE_IMPACTO) chutarBola(estado)
   atropelar(estado)
   passoBaloes(estado)
   passoBola(estado)
+  passoCarros(estado)
 
   const c = estado.dialogo || estado.quadro || j.tombo > 0 || j.soco > 0 || j.chute > 0 ? null : maisPerto(estado, cenaAtual(estado), j.x, j.z)
   estado.alvo = c ? c.alvo : null

@@ -83,7 +83,8 @@
       "rua": "Av. Faria Lima",
       "mobiauto": "Mobiauto",
       "pan": "Banco PAN",
-      "entregas": "Entregas 2026"
+      "entregas": "Entregas 2026",
+      "praca": "Plaza de la Ballena"
     },
     "nomes": {
       "pedestre": "Doña Cida",
@@ -106,7 +107,8 @@
       "totem_pan": "tótem de turnos",
       "caixa_eletronico_1": "cajero automático",
       "tv_reuniao": "TV de la sala de reuniones",
-      "cafe_pan": "café"
+      "cafe_pan": "café",
+      "baleia": "monumento Ballena"
     },
     "acao": {
       "entrar": "Entrar: {{lugar}}",
@@ -221,6 +223,11 @@
       ],
       "cafe_pan": [
         "Café recién hecho. El aroma llena la oficina."
+      ],
+      "baleia": [
+        "La Ballena: acero inoxidable facetado, lleno de triángulos que brillan con el sol.",
+        "La cabeza descansa en el suelo y la cola sube entre las torres de Faria Lima.",
+        "Alguien dejó una nota en el banco: “Parece nadar cuando caminas a su alrededor.”"
       ]
     },
     "cartoes": {

@@ -1,10 +1,10 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-17'
+export const VERSAO_MUNDO = 'rpg-18'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
 
-// 3,6 m/s: passo de caminhada rápida, para atravessar a rua (77 m) em ~21 s.
+// 3,6 m/s: passo de caminhada rápida, para atravessar a rua (104 m) em ~29 s.
 export const VEL_ANDAR = 3.6 / TICKS_POR_SEGUNDO
 
 // Correndo (botão de correr segurado): 6,3 m/s, 1,75× o andar.
@@ -36,6 +36,9 @@ export const ESPERA_FIGURANTE_MIN = 30
 export const ESPERA_FIGURANTE_MAX = 180
 export const ESPERA_PATINETE_MIN = 6
 export const ESPERA_PATINETE_MAX = 40
+// Quem atravessa na faixa de pedestre espera na calçada de 3 a 8 s antes de voltar.
+export const ESPERA_TRAVESSIA_MIN = 180
+export const ESPERA_TRAVESSIA_MAX = 480
 // Trajeto que passa disso (preso atrás de um móvel) desiste e sorteia outro alvo.
 export const TICKS_MAX_TRAJETO = 600
 // Tentativas de achar lugar livre ao nascer ou ao sortear o alvo.
@@ -114,3 +117,20 @@ export const TICKS_CHUTE = 22
 export const FATOR_CONDUCAO = 1.2
 export const TICKS_VOLTA_GOL = 150
 export const TICKS_VOLTA_FORA = 60
+
+// Carros da avenida: 25 km/h, chegam a essa velocidade em ~1,5 s. Freiam aos poucos a partir de
+// DIST_FREIO do que estiver à frente (jogador, pedestre, bola, outro carro) e param a DIST_PARADA,
+// sem nunca encostar; no fim da frenagem chegam devagar (VEL_APROXIMACAO) em vez de rastejar.
+// MARGEM_FAIXA conta quem está na beira da faixa, entrando nela, como já dentro.
+export const COMPRIMENTO_CARRO = 4.2
+export const LARGURA_CARRO = 1.8
+export const VEL_CARRO = 7 / TICKS_POR_SEGUNDO
+export const ACEL_CARRO = VEL_CARRO / 90
+export const VEL_APROXIMACAO = 0.02
+export const DIST_FREIO = 6
+export const DIST_PARADA = 1.2
+export const MARGEM_FAIXA = 0.5
+// Fora do mapa, o carro segue até MARGEM_FORA além da borda e reaparece do outro lado.
+export const MARGEM_FORA = 12
+// Buzina quando freia pelo jogador vindo a mais de metade da velocidade; no máximo uma a cada 2 s.
+export const TICKS_ENTRE_BUZINAS = 120

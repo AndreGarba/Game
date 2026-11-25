@@ -83,7 +83,8 @@
       "rua": "Av. Faria Lima",
       "mobiauto": "Mobiauto",
       "pan": "Banco PAN",
-      "entregas": "Entregas 2026"
+      "entregas": "Entregas 2026",
+      "praca": "Praça da Baleia"
     },
     "nomes": {
       "pedestre": "Dona Cida",
@@ -106,7 +107,8 @@
       "totem_pan": "totem de senhas",
       "caixa_eletronico_1": "caixa eletrônico",
       "tv_reuniao": "TV da sala de reunião",
-      "cafe_pan": "café"
+      "cafe_pan": "café",
+      "baleia": "monumento Baleia"
     },
     "acao": {
       "entrar": "Entrar: {{lugar}}",
@@ -221,6 +223,11 @@
       ],
       "cafe_pan": [
         "Café passado na hora. O cheiro toma o escritório."
+      ],
+      "baleia": [
+        "A Baleia: aço inox facetado, cheio de triângulos que brilham com o sol.",
+        "A cabeça descansa no chão e a cauda sobe entre as torres da Faria Lima.",
+        "Alguém deixou um bilhete no banco: “Ela parece nadar quando a gente anda em volta.”"
       ]
     },
     "cartoes": {

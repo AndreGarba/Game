@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { FUNDO_GOL as FUNDO_DO_GOL, type Solido } from '../../../engine/rpg/index.ts'
-import { COR_CARRO, COR_GOL, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
+import { COR_BALEIA, COR_CARRO, COR_GOL, COR_OBJETO as C, COR_PAREDE_FEIRAO, COR_PREDIO, COR_QUADRO, COR_TELHADO } from '../visual/paleta.ts'
 import type { Fabrica } from './fabrica.ts'
+import { criarPatinete } from './personagem.ts'
 import { fachadaProcedural, lateralProcedural, texturaDoSlot } from './texturas.ts'
 
 // Um construtor por `visual` do mapa. Cada um monta o modelo no espaço local: base em y = 0,
@@ -92,11 +93,88 @@ const banco: Construtor = (f, l, _a, p) => {
   )
 }
 
-const lixeira: Construtor = (f, l, a, p) =>
-  grupo(
+// Variante `rua`: papeleira laranja num poste fino; sem variante, a caçamba verde do beco.
+const lixeira: Construtor = (f, l, a, p, variante) => {
+  if (variante === 'rua') {
+    const haste = f.cilindro(0.04, a * 0.55, f.material(C.metalEscuro), 6)
+    haste.position.y = a * 0.275
+    const cesto = f.cilindro(Math.min(l, p) * 0.42, a * 0.5, f.material(C.lixeiraRua), 10)
+    cesto.position.y = a * 0.68
+    const aro = f.cilindro(Math.min(l, p) * 0.45, 0.05, f.material(C.metalEscuro), 10)
+    aro.position.y = a - 0.04
+    return grupo(haste, cesto, aro)
+  }
+  return grupo(
     f.caixa(l, a * 0.85, p, f.material(C.lixeira)),
     f.caixa(l + 0.06, a * 0.15, p + 0.06, f.material(C.metalEscuro), { y: a * 0.85 }),
   )
+}
+
+// Estação de patinetes: base no chão, totem com tela na ponta e uma fila de patinetes estacionados
+// de frente para a câmera (o mesmo modelo dos patinetes que andam na ciclofaixa).
+const estacaoPatinetes: Construtor = (f, l, a, p) => {
+  const base = f.material(C.estacaoPatinetes)
+  const g = grupo(
+    f.caixa(l, 0.06, p, base),
+    f.caixa(0.28, a, 0.3, base, { x: -l / 2 + 0.16, z: -p / 2 + 0.17 }),
+    f.caixa(0.2, 0.26, 0.02, f.material(C.patineteDetalhe, { emissivo: true }), { x: -l / 2 + 0.16, y: a * 0.62, z: -p / 2 + 0.33 }),
+    f.caixa(l - 0.4, 0.08, 0.06, f.material(C.metal), { x: 0.18, y: 0.45, z: -p / 2 + 0.06 }),
+  )
+  const vagas = Math.max(1, Math.floor((l - 0.4) / 0.6))
+  for (let i = 0; i < vagas; i++) {
+    const patinete = criarPatinete(f, C.patinete, C.patineteDetalhe)
+    patinete.position.set(-l / 2 + 0.7 + i * 0.6, 0.04, 0)
+    g.add(patinete)
+  }
+  return g
+}
+
+// Baleia da praça (foto em media/referencias/monumento-baleia.png na store): corpo de aço facetado
+// feito de icosaedros esticados ao longo de um arco, cabeça grande apoiada em −x, o corpo afinando
+// até quase o chão no meio e a cauda subindo em +x com as nadadeiras abertas no alto. Medidas para
+// 9 × 5,5 × 3 m; outro tamanho escala o grupo.
+const SEGMENTOS_BALEIA: [number, number, number, number, number][] = [
+  [-2.6, 1.75, 1.95, 1.75, 1.45],
+  [-1.3, 1.75, 1.5, 1.4, 1.2],
+  [-0.4, 1.6, 1.25, 1.1, 1.0],
+  [0.4, 1.5, 1.05, 0.9, 0.85],
+  [1.15, 1.5, 0.9, 0.75, 0.72],
+  [1.8, 1.65, 0.75, 0.62, 0.6],
+  [2.35, 1.95, 0.62, 0.55, 0.5],
+  [2.8, 2.4, 0.5, 0.55, 0.44],
+  [3.15, 2.95, 0.42, 0.55, 0.38],
+  [3.45, 3.5, 0.35, 0.55, 0.32],
+  [3.7, 4.0, 0.28, 0.5, 0.26],
+]
+const baleia: Construtor = (f, l, a, p) => {
+  const geo = f.guardar(new THREE.IcosahedronGeometry(1, 1))
+  const aco = f.material(COR_BALEIA.aco)
+  const sombra = f.material(COR_BALEIA.acoSombra)
+  const corpo = new THREE.Group()
+  const peca = (material: THREE.Material, x: number, y: number, z: number, sx: number, sy: number, sz: number, rx = 0, rz = 0) => {
+    const m = new THREE.Mesh(geo, material)
+    m.position.set(x, y, z)
+    m.scale.set(sx, sy, sz)
+    m.rotation.set(rx, 0, rz)
+    m.castShadow = true
+    m.receiveShadow = true
+    corpo.add(m)
+  }
+  SEGMENTOS_BALEIA.forEach(([x, y, rx, ry, rz]) => peca(aco, x, y, 0, rx, ry, rz))
+  // Ventre mais escuro sob a cabeça, onde o arco abre.
+  peca(f.material(COR_BALEIA.ventre), -2.3, 1.0, 0, 1.3, 0.6, 1.1)
+  for (const lado of [-1, 1]) {
+    // Nadadeira peitoral e as duas metades da cauda, abertas em leque.
+    peca(sombra, -1.2, 0.95, lado * 1.15, 0.75, 0.12, 0.45, lado * 0.5, 0.3)
+    peca(aco, 4.2, 4.45, lado * 0.8, 0.95, 0.14, 0.75, lado * -0.3, 0.45)
+  }
+  corpo.scale.set(l / 9, a / 5.5, p / 3)
+  return grupo(corpo)
+}
+
+// Placa de pedra baixa da praça; o nome (traduzido) vai na face da frente, posto por montarCena.
+const placaPraca: Construtor = (f, l, a, p) =>
+  grupo(f.caixa(l, a, p, f.material(C.pedraPlaca)), f.caixa(l + 0.08, 0.06, p + 0.08, f.material(COR_PREDIO.praca!.detalhe), { y: a - 0.06 }))
 
 const muro: Construtor = (f, l, a, p) => f.caixa(l, a, p, f.material(C.muro))
 
@@ -420,6 +498,9 @@ const gol: Construtor = (f, l, a, p, variante) => {
 }
 
 const CONSTRUTORES: Record<string, Construtor> = {
+  baleia,
+  'estacao-patinetes': estacaoPatinetes,
+  'placa-praca': placaPraca,
   gol,
   'rede-gol': () => new THREE.Group(),
   'quadro-entregas': quadroEntregas,

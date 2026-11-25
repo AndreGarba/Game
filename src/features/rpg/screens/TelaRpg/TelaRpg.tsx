@@ -208,6 +208,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     let tempoAviso: ReturnType<typeof setTimeout> | undefined
     let tempoGol: ReturnType<typeof setTimeout> | undefined
     let ultimoGol = -1
+    let ultimaBuzina: number | null = null
     const controlador = criarControladorRpg({
       desenhar: renderizador.desenhar,
       direcao: () => direcaoNoMundo(controles.direcao()),
@@ -237,6 +238,11 @@ export function TelaRpg({ personagem }: { personagem: string }) {
           setGol(golFeito.tick)
           clearTimeout(tempoGol)
           tempoGol = setTimeout(() => setGol(null), MS_GOL)
+        }
+        // Um carro freou pelo jogador: o motor marca o tick, a tela só toca.
+        if (estado.buzina !== null && estado.buzina !== ultimaBuzina) {
+          ultimaBuzina = estado.buzina
+          tocarEfeito('buzina')
         }
         if (novo.concluidoEm !== null && anterior?.concluidoEm === null) {
           tocarEfeito('fim')

@@ -34,6 +34,10 @@ export const COR_PISO: Record<string, string> = {
   'carpete-pan': '#565b63',
   'piso-reuniao': '#b88a5a',
   campo: '#5fa64a',
+  // Praça da Baleia: pedra clara com faixas de pedra escura e gramados com meio-fio.
+  'piso-praca': '#d9d4ca',
+  'pedra-escura': '#6f7378',
+  gramado: '#5f9e45',
 }
 
 // Campo de futebol: listras mais claras no gramado e as linhas; gol com trave branca e rede.
@@ -54,6 +58,10 @@ export const COR_PREDIO: Record<string, { parede: string; janela: string; detalh
   rua: { parede: '#ffffff', janela: '#ffffff', detalhe: '#1b4f9c', placa: '#1b4f9c', textoPlaca: '#ffffff' },
   concessionaria: { parede: '#f2f2f2', janela: '#7ec3e6', detalhe: '#d6402f', placa: '#d6402f', textoPlaca: '#ffffff' },
   comercial: { parede: '#c7a7c9', janela: '#5d6c8f', detalhe: '#6b4a72', placa: '#6b4a72', textoPlaca: '#ffffff' },
+  // Torres de vidro depois do feirão, como as da foto da Baleia.
+  torre: { parede: '#9cc3dc', janela: '#2d5f86', detalhe: '#e9eef2', placa: '#2d5f86', textoPlaca: '#ffffff' },
+  // Placa de pedra da Praça da Baleia.
+  praca: { parede: '#8e8a84', janela: '#ffffff', detalhe: '#5c5953', placa: '#3d4146', textoPlaca: '#f4f1ea' },
 }
 
 export const COR_TELHADO = '#5b5f66'
@@ -64,6 +72,7 @@ export const COR_CARRO: Record<string, string> = {
   amarelo: '#f2b81d',
   verde: '#3f9a63',
   branco: '#eef0f2',
+  cinza: '#8d939b',
 }
 
 export const COR_OBJETO = {
@@ -91,6 +100,13 @@ export const COR_OBJETO = {
   balcaoTampo: '#6b4a32',
   agua: '#7fc8f0',
   lixeira: '#3f7f4f',
+  // Papeleira laranja das calçadas de São Paulo, num poste fino.
+  lixeiraRua: '#f07f1f',
+  // Estação de patinetes: base escura com a faixa verde dos patinetes.
+  estacaoPatinetes: '#2b2f36',
+  luzFreio: '#ff2b2b',
+  lanterna: '#8a1f1f',
+  pedraPlaca: '#8e8a84',
   muro: '#b3a89a',
   parede: '#efe7da',
   rodape: '#8a7d6b',
@@ -115,6 +131,9 @@ export const COR_OBJETO = {
   predioJanela: '#7f93a8',
   predioJanelaEscuro: '#5d7086',
 }
+
+// Baleia da praça: aço inox facetado, em dois tons para as facetas lerem de longe.
+export const COR_BALEIA = { aco: '#e3e8ee', acoSombra: '#b9c2cc', ventre: '#9aa4ae' }
 
 // Quadro de avisos "Entregas 2026": moldura, cortiça e os papéis presos nela.
 export const COR_QUADRO = {

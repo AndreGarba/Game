@@ -1,6 +1,9 @@
 import * as THREE from 'three'
 import {
   CENAS,
+  COMPRIMENTO_CARRO,
+  FAIXAS_CARROS,
+  LARGURA_CARRO,
   TICKS_CAINDO,
   TICKS_LEVANTANDO,
   TICKS_NO_CHAO,
@@ -18,6 +21,7 @@ import { criarBola3d } from './bola3d.ts'
 import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
 import { criarFesta3d } from './festa.ts'
+import { modeloDoSolido } from './modelos.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
 import { criarTeleporte3d } from './teleporte.ts'
 import {
@@ -74,6 +78,12 @@ const SUBIDA_CARTAO = 1.1
 const GIRO_CARTAO_POR_TICK = 0.16
 // Topo de uma pessoa, de onde o cartão sai quando o esconderijo é NPC.
 const ALTURA_PESSOA = 1.8
+const ALTURA_CARRO = 1.5
+
+interface Carro3d {
+  raiz: THREE.Object3D
+  freio: THREE.Object3D[]
+}
 
 // Altura do topo e centro do esconderijo onde o cartão foi achado.
 function origemDoCartao(cena: IdCena, id: string): { x: number; y: number; z: number } | null {
@@ -155,6 +165,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   // Figurantes da cena montada, por id. Nascem com a cena e morrem com a fábrica dela.
   let figurantes = new Map<string, Personagem>()
   let patinetes = new Map<string, THREE.Group>()
+  // Carros da avenida, por id: só existem com a rua montada.
+  let carros = new Map<number, Carro3d>()
   let largura = 1
   let altura = 1
   let tempo = 0
@@ -168,6 +180,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     cena.add(montada.grupo)
     figurantes = new Map()
     patinetes = new Map()
+    carros = new Map()
     idMontada = id
     ajustarCamera()
   }
@@ -294,6 +307,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       }
     }
 
+    if (estado.cena === 'rua') desenharCarros(estado, alfa)
+
     desenharCartao(estado, alfa)
     festa.desenhar(estado, dt, tempo, trocou)
     bola.desenhar(estado, dt, trocou)
@@ -309,6 +324,47 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     sol.target.position.copy(alvoCamera)
 
     renderizador.render(cena, camera)
+  }
+
+  // O modelo é o mesmo dos carros parados do mapa, virado para o sentido da faixa, com as
+  // lanternas de trás acendendo quando o motor diz que o carro está freando.
+  function criarCarro3d(c: EstadoMundo['carros'][number]): Carro3d {
+    const sentido = FAIXAS_CARROS[c.faixa]!.sentido
+    const raiz = modeloDoSolido(fabricaCena, {
+      id: `carro_${c.id}`,
+      visual: 'carro',
+      variante: c.variante,
+      x: 0,
+      z: 0,
+      largura: COMPRIMENTO_CARRO,
+      profundidade: LARGURA_CARRO,
+      altura: ALTURA_CARRO,
+      giro: sentido > 0 ? 0 : 2,
+    })
+    const apagada = fabricaCena.material(COR_OBJETO.lanterna)
+    const acesa = fabricaCena.material(COR_OBJETO.luzFreio, { emissivo: true })
+    const freio: THREE.Object3D[] = []
+    for (const z of [-LARGURA_CARRO * 0.32, LARGURA_CARRO * 0.32]) {
+      raiz.add(fabricaCena.caixa(0.06, 0.14, 0.3, apagada, { x: -COMPRIMENTO_CARRO / 2 - 0.02, y: ALTURA_CARRO * 0.36, z }))
+      const luz = fabricaCena.caixa(0.06, 0.14, 0.3, acesa, { x: -COMPRIMENTO_CARRO / 2 - 0.04, y: ALTURA_CARRO * 0.36, z })
+      raiz.add(luz)
+      freio.push(luz)
+    }
+    montada?.grupo.add(raiz)
+    return { raiz, freio }
+  }
+
+  function desenharCarros(estado: EstadoMundo, alfa: number) {
+    for (const c of estado.carros) {
+      let carro = carros.get(c.id)
+      if (!carro) {
+        carro = criarCarro3d(c)
+        carros.set(c.id, carro)
+      }
+      const x = c.xAnterior + (c.x - c.xAnterior) * alfa
+      carro.raiz.position.set(x + COMPRIMENTO_CARRO / 2, 0, FAIXAS_CARROS[c.faixa]!.z + LARGURA_CARRO / 2)
+      for (const luz of carro.freio) luz.visible = c.freando
+    }
   }
 
   function desenharCartao(estado: EstadoMundo, alfa: number) {

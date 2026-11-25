@@ -11,7 +11,7 @@ import { placaProcedural, texturaDePiso, texturaDoSlot } from './texturas.ts'
 // placas, letreiros e NPCs. Os figurantes mudam de lugar a cada tick e ficam no renderizador. Tudo sai dos dados da cena; nada aqui decide regra.
 
 export interface TextosDaCena {
-  // Texto provisório das placas, por variante (pan, banco, concessionaria, mobiauto, rua, entregas).
+  // Texto provisório das placas, por variante (pan, banco, concessionaria, mobiauto, rua, entregas, praca).
   placas: Record<string, string>
 }
 
@@ -176,6 +176,14 @@ function letreiroDasEntregas(f: Fabrica, modelo: THREE.Object3D, s: Solido, text
   modelo.add(placa)
 }
 
+// Nome da praça na face da frente da placa de pedra (a que a câmera vê).
+function nomeNaPlaca(f: Fabrica, modelo: THREE.Object3D, s: Solido, texto: string | undefined) {
+  if (!texto) return
+  const placa = placaComTexto(f, 'praca', texto, s.largura * 0.9, s.altura * 0.62)
+  placa.position.set(0, s.altura * 0.48, s.profundidade / 2 + 0.01)
+  modelo.add(placa)
+}
+
 function saidaDoInterior(f: Fabrica, porta: Porta): THREE.Object3D {
   return faixaDeChao(f, 'saida', porta.x, porta.z, porta.largura, porta.profundidade, 0.03)
 }
@@ -200,6 +208,7 @@ export function montarCena(f: Fabrica, cena: Cena, textos: TextosDaCena): CenaMo
   for (const s of cena.solidos) {
     const modelo = modeloDoSolido(f, s)
     if (s.visual === 'quadro-entregas') letreiroDasEntregas(f, modelo, s, textos.placas.entregas)
+    if (s.visual === 'placa-praca') nomeNaPlaca(f, modelo, s, textos.placas.praca)
     grupo.add(modelo)
   }
   for (const p of cena.portas) {
