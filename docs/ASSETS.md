@@ -201,11 +201,13 @@ alternativo** em `rpg.entregas.quadros.<id>.slides.<nome sem extensão>`, nos tr
 | Subpasta (id do quadro) | Onde | Proporção | Tamanho | Formato |
 | --- | --- | --- | --- | --- |
 | `quadro_entregas_loja` | Loja de veículos: `01-andrea-borba-gopan`, `02-roman-financiamento-c2c` (frames do Figma) | 16 : 9 | 2560 × 1440 | WebP, sem transparência |
-| `quadro_entregas_btg`, `quadro_entregas_pan`, `quadro_entregas_feirao` | Escritórios BTG e PAN, feirão | 16 : 9 | 2560 × 1440 | WebP |
+| `quadro_entregas_btg` | Escritório do BTG: nove slides, `01-bob-credit-risk-platform` a `09-jeniffer-paiva-less` (frames da seção 3 do Figma, na ordem dela) | 16 : 9 | 2560 × 1440 | WebP, sem transparência |
+| `quadro_entregas_pan`, `quadro_entregas_feirao` | Escritório do PAN, feirão | 16 : 9 | 2560 × 1440 | WebP |
 
 2560 × 1440 é o dobro da tela de referência: nítido na moldura até 1440p sem passar de 4096 px.
 Exporte em PNG e converta para WebP (qualidade ~88). Os dois frames da loja ficaram com 400 e
-520 KB, e tudo entra no precache da PWA, cujo teto é de 3 MB por arquivo. A imagem é `<img>` na
+520 KB; os nove do BTG somam 3,9 MB (de 414 a 476 KB cada). Tudo entra no precache da PWA, que
+aceita até 3 MB por arquivo, então cada slide pesa no download da primeira abertura. A imagem é `<img>` na
 modal e não passa pelo canvas, então não precisa entrar na carga de arte do Jogar.
 
 ---
