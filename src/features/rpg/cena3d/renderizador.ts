@@ -19,6 +19,7 @@ import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
 import { criarFesta3d } from './festa.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
+import { criarTeleporte3d } from './teleporte.ts'
 import {
   anguloDaDirecao,
   animarPersonagem,
@@ -146,6 +147,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   cena.add(cartao)
   const festa = criarFesta3d(fabricaJogador, cena)
   const bola = criarBola3d(fabricaJogador, cena)
+  const teleporte = criarTeleporte3d(fabricaJogador, cena)
 
   let fabricaCena = new Fabrica()
   let montada: CenaMontada | null = null
@@ -197,7 +199,10 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     if (trocou) trocarCena(estado.cena)
 
     const j = estado.jogador
-    if (j.visual !== visualAtual) trocarBoneco(j.visual)
+    if (j.visual !== visualAtual) {
+      trocarBoneco(j.visual)
+      teleporte.disparar(tempo, estado.tick)
+    }
     // Logo depois da troca, a posição anterior é da outra cena: sem interpolar.
     const x = trocou ? j.x : quadro.xAnterior + (j.x - quadro.xAnterior) * alfa
     const z = trocou ? j.z : quadro.zAnterior + (j.z - quadro.zAnterior) * alfa
@@ -216,6 +221,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       animarChute(jogador, Math.min(1, (j.chute - 1 + alfa) / (TICKS_CHUTE - 1)), (TICKS_CHUTE_IMPACTO - 1) / (TICKS_CHUTE - 1))
     }
     if (jogador.anel) jogador.anel.visible = j.invulneravel === 0 || Math.floor(tempo * PISCADAS_POR_SEGUNDO * 2) % 2 === 0
+    teleporte.desenhar(tempo, x, z, jogador)
 
     for (const { npc, personagem } of montada?.npcs.values() ?? []) {
       // Quem está falando vira para o jogador; depois volta para a pose do mapa.

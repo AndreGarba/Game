@@ -175,7 +175,10 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   const escolherNaTroca = useCallback(
     (id: string) => {
       const controlador = controladorRef.current
-      if (controlador?.trocarPersonagem(id)) setHud(hudDe(controlador.estado))
+      if (controlador?.trocarPersonagem(id)) {
+        tocarEfeito('teleporte')
+        setHud(hudDe(controlador.estado))
+      }
       continuar()
     },
     [continuar],
