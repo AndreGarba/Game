@@ -234,6 +234,7 @@
       "contador": "{{achados}} de {{total}} cartões Ultra Blue",
       "encontrado": "Cartão Ultra Blue encontrado!",
       "nada": "Nada aqui.",
+      "maisUm": "+1",
       "dica": "Os {{total}} cartões Ultra Blue estão escondidos em objetos e pessoas, em lugares novos a cada vez que o jogo abre. Chegue perto e aperte A para procurar.",
       "concluidoTitulo": "Objetivo concluído",
       "concluido": "Você encontrou todos os cartões Ultra Blue em {{tempo}}. Parabéns!",

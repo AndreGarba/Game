@@ -14,6 +14,8 @@ interface Props {
   imagemSeta?: string | null
   // Teclas do computador de cada lado ("W ↑"). Com elas, cada lado mostra a tecla no lugar da seta.
   teclas?: Record<'cima' | 'baixo' | 'esquerda' | 'direita', string> | null
+  // Lados apertados por outro caminho (as teclas do computador): acendem como no toque.
+  ligadosFora?: ReadonlySet<'cima' | 'baixo' | 'esquerda' | 'direita'>
 }
 
 // Fração do raio a partir da qual um eixo liga. Abaixo disso o dedo está no "centro morto";
@@ -25,7 +27,7 @@ const PARADO: Direcao8 = { direita: 0, cima: 0 }
  * Direcional de 8 direções para toque. Arrastar o dedo sem soltar troca a direção, como num
  * controle de verdade; o dedo pode sair da área que o direcional continua com ele.
  */
-export function DirecionalToque({ aoMudar, rotulo, imagemBase, imagemSeta, teclas }: Props) {
+export function DirecionalToque({ aoMudar, rotulo, imagemBase, imagemSeta, teclas, ligadosFora }: Props) {
   const [atual, setAtual] = useState<Direcao8>(PARADO)
   const dedo = useRef<number | null>(null)
 
@@ -79,6 +81,7 @@ export function DirecionalToque({ aoMudar, rotulo, imagemBase, imagemSeta, tecla
     >
       {(['cima', 'direita', 'baixo', 'esquerda'] as const).map((lado) => {
         const ligado =
+          !!ligadosFora?.has(lado) ||
           (lado === 'cima' && atual.cima === 1) ||
           (lado === 'baixo' && atual.cima === -1) ||
           (lado === 'direita' && atual.direita === 1) ||

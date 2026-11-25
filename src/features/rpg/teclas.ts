@@ -72,6 +72,16 @@ export function teclasDoDirecional(): Record<LadoDoDirecional, string> {
   }
 }
 
+/** O que a tecla aperta no HUD: um comando, um lado do direcional, ou nada. */
+export function oQueATeclaAperta(codigo: string): { comando: ComandoComTecla } | { lado: LadoDoDirecional } | null {
+  const direcao = TECLAS_DIRECAO[codigo]
+  if (direcao) return { lado: ladoDaTecla(direcao) }
+  for (const comando of Object.keys(TECLAS) as ComandoComTecla[]) {
+    if ((TECLAS[comando] as readonly string[]).includes(codigo)) return { comando }
+  }
+  return null
+}
+
 export function atalhosDoComando(comando: ComandoComTecla): string {
   return semRepetir(TECLAS[comando].map(nomeAria)).join(' ')
 }

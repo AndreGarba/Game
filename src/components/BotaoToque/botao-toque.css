@@ -1,24 +1,51 @@
+/* Botão de controle com relevo de game: face em degradê com brilho em cima, anel escuro e uma
+   borda de baixo (--profundidade-botao) que dá a espessura. Apertado, a face desce e a borda some.
+   Cada variante só troca as três cores (--botao-claro, --botao, --botao-escuro). */
 .botao-toque {
+  --botao-claro: var(--cor-destaque-claro);
+  --botao: var(--cor-destaque);
+  --botao-escuro: var(--cor-destaque-escuro);
   position: relative;
   display: grid;
   place-items: center;
   width: var(--tamanho-botao-acao);
   height: var(--tamanho-botao-acao);
   padding: 0;
-  border: 3px solid var(--cor-controle-borda);
+  border: var(--borda-hud) solid var(--botao-escuro);
   border-radius: var(--raio-total);
-  color: var(--cor-destaque-texto);
+  background: radial-gradient(circle at 50% 28%, var(--botao-claro), var(--botao) 58%, var(--botao-escuro));
+  color: var(--cor-hud-texto);
+  font-family: var(--fonte-display);
   font-size: var(--texto-4);
   font-weight: 900;
-  box-shadow: var(--sombra-1);
+  text-shadow: var(--sombra-texto-hud);
+  box-shadow:
+    inset 0 var(--borda-hud) 0 var(--cor-hud-brilho),
+    inset 0 calc(var(--borda-hud) * -1.5) 0 var(--cor-hud-sombra-interna),
+    0 var(--profundidade-botao) 0 var(--botao-escuro),
+    var(--sombra-hud);
   touch-action: none;
   pointer-events: auto;
   cursor: pointer;
-  transition: transform 0.06s ease-out;
+  transition:
+    transform 0.05s ease-out,
+    box-shadow 0.05s ease-out,
+    filter 0.05s ease-out;
+}
+
+/* Brilho de vidro na metade de cima da face. */
+.botao-toque::before {
+  content: '';
+  position: absolute;
+  inset: 8% 18% 52%;
+  border-radius: var(--raio-total);
+  background: linear-gradient(var(--cor-hud-brilho), transparent);
+  pointer-events: none;
 }
 
 /* Com teclado, as teclas no centro do botão, uma por linha; duas linhas ficam menores. */
 .botao-toque__teclas {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,29 +59,50 @@
   font-size: var(--texto-tecla-botao-duas);
 }
 
-.botao-toque--primario {
-  background: var(--cor-destaque);
-}
-
 .botao-toque--secundario {
-  background: var(--cor-controle-secundario);
+  --botao-claro: var(--cor-controle-secundario-claro);
+  --botao: var(--cor-controle-secundario);
+  --botao-escuro: var(--cor-controle-secundario-escuro);
 }
 
 .botao-toque--perigo {
-  background: var(--cor-perigo);
+  --botao-claro: var(--cor-perigo-claro);
+  --botao: var(--cor-perigo);
+  --botao-escuro: var(--cor-perigo-escuro);
 }
 
 .botao-toque--arte {
   border: 0;
   background: var(--imagem) center / contain no-repeat;
   box-shadow: none;
+  text-shadow: none;
+}
+
+.botao-toque--arte::before {
+  content: none;
 }
 
 .botao-toque--apertado {
+  transform: translateY(var(--profundidade-botao));
+  filter: brightness(1.12);
+  box-shadow:
+    inset 0 calc(var(--borda-hud) * 1.5) 0 var(--cor-hud-sombra-interna),
+    0 0 0 var(--botao-escuro);
+}
+
+.botao-toque--arte.botao-toque--apertado {
   transform: scale(0.9);
+  filter: none;
+  box-shadow: none;
 }
 
 .botao-toque:focus-visible {
-  outline: 3px solid var(--cor-superficie);
-  outline-offset: 2px;
+  outline: var(--borda-hud) solid var(--cor-hud-moldura);
+  outline-offset: var(--borda-hud);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .botao-toque {
+    transition: none;
+  }
 }

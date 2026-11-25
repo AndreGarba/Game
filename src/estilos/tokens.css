@@ -86,7 +86,42 @@
   --contorno-gol: 2px;
 
   --cor-ultrablue: #24406b;
+  --cor-ultrablue-claro: #3b68a8;
+  --cor-ultrablue-escuro: #12233d;
   --cor-ultrablue-texto: #ffffff;
+
+  /* HUD do RPG com cara de game: painel escuro com brilho em cima, moldura dourada, texto branco
+     com contorno escuro e botões com uma borda de baixo (a "espessura") que some ao apertar. */
+  --fonte-display: 'Nunito', 'Arial Rounded MT Bold', 'Arial Black', system-ui, sans-serif;
+  --cor-hud-painel-topo: rgba(38, 54, 92, 0.94);
+  --cor-hud-painel-base: rgba(12, 19, 37, 0.94);
+  --cor-hud-moldura: #f2c14e;
+  --cor-hud-moldura-escura: #8a5a0b;
+  --cor-hud-brilho: rgba(255, 255, 255, 0.3);
+  --cor-hud-sombra-interna: rgba(0, 0, 0, 0.5);
+  --cor-hud-texto: #ffffff;
+  --cor-hud-contorno: #0b1222;
+  --cor-hud-tecla: #f4f6fb;
+  --cor-hud-tecla-lado: #8c97aa;
+  --cor-hud-raio: rgba(242, 193, 78, 0.55);
+  --cor-destaque-escuro: #a9420a;
+  --cor-destaque-claro: #ff9a52;
+  --cor-perigo-escuro: #9b2227;
+  --cor-perigo-claro: #ff7a7e;
+  --cor-controle-secundario-claro: #6f7d92;
+  --cor-controle-secundario-escuro: #222a36;
+  --borda-hud: 3px;
+  --profundidade-botao: 5px;
+  --contorno-texto: 2px;
+  --texto-placa: 15px;
+  --texto-contador: 26px;
+  --texto-aviso-cartao: 22px;
+  --tamanho-icone-contador: 40px;
+  --sombra-hud: 0 3px 0 rgba(0, 0, 0, 0.35), 0 6px 14px rgba(0, 0, 0, 0.3);
+  --sombra-texto-hud: var(--contorno-texto) 0 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) 0 0 var(--cor-hud-contorno),
+    0 var(--contorno-texto) 0 var(--cor-hud-contorno), 0 calc(var(--contorno-texto) * -1) 0 var(--cor-hud-contorno),
+    var(--contorno-texto) var(--contorno-texto) 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) var(--contorno-texto) 0 var(--cor-hud-contorno),
+    0 calc(var(--contorno-texto) * 2) 0 var(--cor-hud-contorno);
 
   --sombra-1: 0 2px 8px rgba(0, 0, 0, 0.15);
   --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -142,4 +177,19 @@
   --tamanho-entregas-ponto: calc(var(--px) * 14);
   --texto-gol: calc(var(--px) * 110);
   --contorno-gol: calc(var(--px) * 3);
+
+  --borda-hud: calc(var(--px) * 4);
+  --profundidade-botao: calc(var(--px) * 7);
+  --contorno-texto: calc(var(--px) * 2.5);
+  --texto-placa: calc(var(--px) * 22);
+  --texto-contador: calc(var(--px) * 38);
+  --texto-aviso-cartao: calc(var(--px) * 32);
+  --tamanho-icone-contador: calc(var(--px) * 58);
+  --sombra-hud: 0 calc(var(--px) * 4) 0 rgba(0, 0, 0, 0.35), 0 calc(var(--px) * 9) calc(var(--px) * 20) rgba(0, 0, 0, 0.3);
+  /* Repetida aqui porque o var() de um token se resolve onde ele é declarado: a de :root ficaria
+     com o contorno de fora da moldura. */
+  --sombra-texto-hud: var(--contorno-texto) 0 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) 0 0 var(--cor-hud-contorno),
+    0 var(--contorno-texto) 0 var(--cor-hud-contorno), 0 calc(var(--contorno-texto) * -1) 0 var(--cor-hud-contorno),
+    var(--contorno-texto) var(--contorno-texto) 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) var(--contorno-texto) 0 var(--cor-hud-contorno),
+    0 calc(var(--contorno-texto) * 2) 0 var(--cor-hud-contorno);
 }

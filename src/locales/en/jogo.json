@@ -234,6 +234,7 @@
       "contador": "{{achados}} of {{total}} Ultra Blue cards",
       "encontrado": "Ultra Blue card found!",
       "nada": "Nothing here.",
+      "maisUm": "+1",
       "dica": "The {{total}} Ultra Blue cards are hidden in objects and people, in new places every time the game opens. Get close and press A to search.",
       "concluidoTitulo": "Objective complete",
       "concluido": "You found all the Ultra Blue cards in {{tempo}}. Congratulations!",
