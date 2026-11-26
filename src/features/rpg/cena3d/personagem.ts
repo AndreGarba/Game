@@ -294,11 +294,61 @@ function cachecol(f: Fabrica, cor: string, corpo: THREE.Group) {
 }
 
 // Boné: copa justa no alto da cabeça e a aba saindo para a frente.
-function bone(f: Fabrica, b: { cor: string; aba: string }, corpo: THREE.Group) {
+function bone(f: Fabrica, b: { cor: string; aba: string; marca?: string }, corpo: THREE.Group) {
   const y = ALTURA_OMBRO
   corpo.add(
     f.caixa(0.45, 0.16, 0.43, f.material(b.cor), { y: y + 0.42 }),
     f.caixa(0.4, 0.03, 0.18, f.material(b.aba), { y: y + 0.42, z: 0.27 }),
+  )
+  if (b.marca) corpo.add(f.caixa(0.08, 0.1, 0.012, f.material(b.marca), { y: y + 0.46, z: 0.221 }))
+}
+
+// Cacheado: tufos em cima e na frente da calota, saindo um pouco dela.
+function cachos(f: Fabrica, a: Aparencia, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  const fio = f.material(a.cabelo)
+  for (const x of [-0.14, 0, 0.14]) {
+    for (const z of [-0.12, 0.03, 0.16]) corpo.add(f.caixa(0.12, 0.06, 0.12, fio, { x: x + z * 0.15, y: y + 0.52, z }))
+    corpo.add(f.caixa(0.1, 0.07, 0.04, fio, { x: x + 0.03, y: y + 0.42, z: 0.22 }))
+  }
+}
+
+// Grisalho nas laterais da barba cheia, na frente e nos lados da mandíbula, longe da boca.
+function fiosGrisalhos(f: Fabrica, cor: string, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  const fio = f.material(cor)
+  for (const lado of [-1, 1]) {
+    corpo.add(
+      f.caixa(0.04, 0.1, 0.012, fio, { x: lado * 0.17, y: y + 0.05, z: 0.206 }),
+      f.caixa(0.012, 0.1, 0.06, fio, { x: lado * 0.221, y: y + 0.05, z: 0.12 }),
+    )
+  }
+}
+
+// Puffer: uma capa mais larga que o tronco, com as costuras dos gomos em volta; aberta, a
+// camiseta aparece numa faixa no meio, com o bloco da estampa.
+function jaquetaPuffer(f: Fabrica, a: Aparencia, p: NonNullable<Aparencia['puffer']>, corpo: THREE.Group) {
+  const base = ALTURA_QUADRIL - 0.08
+  const gomo = f.material(p.gomos)
+  corpo.add(f.caixa(0.57, 0.66, 0.35, f.material(p.cor), { y: base }))
+  for (let i = 1; i <= 3; i++) corpo.add(f.caixa(0.58, 0.02, 0.36, gomo, { y: base + i * 0.16 }))
+  corpo.add(f.caixa(0.44, 0.07, 0.36, f.material(p.cor), { y: base + 0.62 }))
+  if (!p.aberta) return
+  corpo.add(f.caixa(0.15, 0.6, 0.012, f.material(a.camisa), { y: base + 0.02, z: 0.178 }))
+  if (p.estampa) corpo.add(f.caixa(0.1, 0.16, 0.012, f.material(p.estampa), { y: base + 0.2, z: 0.186 }))
+}
+
+// Vestido longo: a saia desce do quadril até o tornozelo, um pouco mais larga na barra, e o
+// decote em V de pele no peito.
+function vestidoLongo(f: Fabrica, a: Aparencia, cor: string, corpo: THREE.Group) {
+  const pano = f.material(cor)
+  const pele = f.material(a.pele)
+  const topo = ALTURA_QUADRIL - 0.04 + 0.62
+  corpo.add(
+    f.caixa(0.54, 0.6, 0.34, pano, { y: 0.18 }),
+    f.caixa(0.58, 0.08, 0.38, pano, { y: 0.12 }),
+    f.caixa(0.15, 0.09, 0.012, pele, { y: topo - 0.09, z: 0.151 }),
+    f.caixa(0.08, 0.07, 0.012, pele, { y: topo - 0.16, z: 0.151 }),
   )
 }
 
@@ -328,14 +378,18 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     for (const perna of [pernaE, pernaD]) perna.add(f.caixa(0.22, 0.04, 0.3, f.material(a.solado), { y: -0.66 - 0.072 - 0.02, z: 0.03 }))
   }
 
-  const manga = a.jaquetaAberta ? a.jaquetaAberta.cor : a.regata ? a.pele : a.camisa
-  const larguraBraco = a.jaquetaAberta ? 0.17 : 0.15
+  const manga = a.puffer ? a.puffer.cor : a.jaquetaAberta ? a.jaquetaAberta.cor : a.regata ? a.pele : a.camisa
+  const larguraBraco = a.puffer ? 0.19 : a.jaquetaAberta ? 0.17 : 0.15
   const curta = a.tatuagem || a.mangaCurta
   const bracoE = curta ? bracoTatuado(f, a, a.tatuagem ?? null, -1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
   const bracoD = curta ? bracoTatuado(f, a, a.tatuagem ?? null, 1) : membro(f, manga, a.pele, larguraBraco, 0.5, 0.14)
   if (a.unhas) {
     const esmalte = f.material(a.unhas)
     for (const braco of [bracoE, bracoD]) braco.add(f.caixa(0.13, 0.035, 0.012, esmalte, { y: -0.58, z: 0.033 + larguraBraco * 0.7 }))
+  }
+  if (a.puffer) {
+    const gomo = f.material(a.puffer.gomos)
+    for (const braco of [bracoE, bracoD]) for (const y of [-0.17, -0.34]) braco.add(f.caixa(0.2, 0.02, 0.22, gomo, { y }))
   }
   bracoE.position.set(-0.34, ALTURA_OMBRO, 0)
   bracoD.position.set(0.34, ALTURA_OMBRO, 0)
@@ -355,7 +409,10 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, a.cabeloLongo.risca ?? false, corpo)
   else if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
   else if (!a.careca) corpo.add(cabelo, nuca)
+  if (a.cacheado) cachos(f, a, corpo)
   if (a.jaquetaAberta) jaquetaPorCima(f, a, a.jaquetaAberta, corpo)
+  if (a.puffer) jaquetaPuffer(f, a, a.puffer, corpo)
+  if (a.vestido) vestidoLongo(f, a, a.vestido, corpo)
   if (a.camisaSocial) camisaDeBotao(f, a, a.camisaSocial, corpo)
   if (a.cachecol) cachecol(f, a.cachecol, corpo)
   if (a.bone) bone(f, a.bone, corpo)
@@ -371,6 +428,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     for (const lado of [-1, 1]) corpo.add(f.caixa(0.035, 0.04, 0.03, ouro, { x: lado * 0.2, y: ALTURA_OMBRO + 0.12, z: 0.135 }))
   }
   detalhesDoRosto(f, a, corpo)
+  if (a.barba && a.barbaGrisalha) fiosGrisalhos(f, a.barbaGrisalha, corpo)
   if (a.estampa) {
     const placa = estampa(f, a.estampa.texto, a.estampa.cor, 0.36)
     placa.position.set(0, ALTURA_QUADRIL + 0.42, 0.151)

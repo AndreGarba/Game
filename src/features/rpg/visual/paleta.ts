@@ -230,12 +230,23 @@ export interface Aparencia {
   cachecol?: string
   // Lentes escuras nos óculos (precisa de `oculos`, que é a armação).
   lentes?: string
-  // Boné com a aba para a frente, por cima do cabelo.
-  bone?: { cor: string; aba: string }
+  // Boné com a aba para a frente, por cima do cabelo; `marca` é um bloco de cor na frente da copa
+  // (padrão de cores, nunca o logo do time).
+  bone?: { cor: string; aba: string; marca?: string }
   // Boca com batom.
   batom?: string
   // Olhos amendoados: um pouco mais largos e bem mais baixos que os de sempre.
   olhosAmendoados?: boolean
+  // Cabelo curto cacheado: tufos em cima da calota.
+  cacheado?: boolean
+  // Fios grisalhos na barba cheia (a cor dos fios).
+  barbaGrisalha?: string
+  // Jaqueta puffer: tronco e mangas mais grossos, com as costuras dos gomos. Aberta, mostra a
+  // camiseta (`camisa`) no meio, com um bloco de `estampa` se houver.
+  puffer?: { cor: string; gomos: string; aberta?: boolean; estampa?: string }
+  // Vestido longo até o tornozelo, com decote em V (`camisa` e `calca` ficam por baixo: use a
+  // cor do vestido na camisa e a pele na calça, que aparece no passo).
+  vestido?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -505,6 +516,62 @@ export const APARENCIAS: Record<string, Aparencia> = {
     batom: '#b3122a',
     brincos: '#d9a63a',
     jaquetaAberta: { cor: '#7d6e60', bolso: '#7d6e60' },
+  },
+  // Igor: cabelo preto curto e cacheado, barba cheia, pele morena clara, jaqueta branca de
+  // botões aberta sobre camiseta azul-clara, calça preta.
+  igor: {
+    pele: '#c28a66',
+    cabelo: '#141012',
+    camisa: '#a9c6e0',
+    calca: '#16161a',
+    sapato: '#202022',
+    detalhe: null,
+    cacheado: true,
+    barba: '#1a1412',
+    sorriso: '#f4f1ea',
+    jaquetaAberta: { cor: '#eeeae2', bolso: '#e0dbd0' },
+  },
+  // Paraguay: cabelo castanho-escuro, óculos, barba, jaqueta puffer preta fechada, blusa e calça
+  // pretas.
+  paraguay: {
+    pele: '#e0a882',
+    cabelo: '#2e2018',
+    camisa: '#18181c',
+    calca: '#141418',
+    sapato: '#1a1a1c',
+    detalhe: null,
+    barba: '#2e2018',
+    oculos: '#2a2a2a',
+    puffer: { cor: '#1c1c21', gomos: '#0e0e10' },
+  },
+  // Denise: cabelo castanho longo, com as pontas mais claras; vestido longo vinho com decote em V
+  // e manga curta; sandálias claras.
+  denise: {
+    pele: '#e8b896',
+    cabelo: '#4a2e1e',
+    camisa: '#6e1a2a',
+    calca: '#e8b896',
+    sapato: '#e8d8c0',
+    detalhe: null,
+    cabeloLongo: { pontas: '#a8743f' },
+    mangaCurta: true,
+    vestido: '#6e1a2a',
+  },
+  // Renan Martins: boné preto com bloco amarelo na frente, óculos de armação escura, barba cheia
+  // castanha com fios grisalhos, jaqueta puffer cinza-escuro aberta sobre camiseta preta com
+  // estampa amarela.
+  renan_martins: {
+    pele: '#e2ab88',
+    cabelo: '#3a2a20',
+    camisa: '#141416',
+    calca: '#2b3545',
+    sapato: '#1c1c1e',
+    detalhe: null,
+    barba: '#4a3426',
+    barbaGrisalha: '#9a948c',
+    oculos: '#1e1e20',
+    bone: { cor: '#141416', aba: '#141416', marca: '#f2c230' },
+    puffer: { cor: '#3a3d44', gomos: '#26282d', aberta: true, estampa: '#f2c230' },
   },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
   figurante_2: { pele: '#6b4430', cabelo: '#111111', camisa: '#f2f2f2', calca: '#4a4f57', sapato: '#1e1e1e', detalhe: null },

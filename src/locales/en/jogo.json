@@ -340,6 +340,26 @@
         "nome": "Camille",
         "titulo": "More Fairy",
         "descricao": "Works on the More project, the bank's offshore onboarding, connecting people, processes and technology."
+      },
+      "igor": {
+        "nome": "Igor",
+        "titulo": "Payroll Loans Reference",
+        "descricao": "Technical reference for Payroll Loans UX, with a strategic view of the business. Supported three onboardings this year."
+      },
+      "paraguay": {
+        "nome": "Paraguay",
+        "titulo": "Team designer",
+        "descricao": "Part of the bank's design team."
+      },
+      "denise": {
+        "nome": "Denise",
+        "titulo": "Voice of the bot",
+        "descricao": "The only bot and WhatsApp designer for Payroll Loans and Vehicles at the same time. Entrepreneurial, builds journeys from scratch."
+      },
+      "renan_martins": {
+        "nome": "Renan Martins",
+        "titulo": "Orquestra Ambassador",
+        "descricao": "Joined in April and quickly became part of the team. Ambassador of Orquestra, the bank's design system, in Payroll Loans."
       }
     },
     "teclas": {
