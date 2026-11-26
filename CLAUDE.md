@@ -35,6 +35,10 @@ Como começar um jogo novo e **a lista do que renomear**: [`README.md`](README.m
   Build que falha deixa o site parado na última versão, sem aviso para o jogador: o PR mergeado
   não aparece no ar e o painel continua mostrando o deploy anterior. `workers_dev` é `true` porque
   o dono ligou a URL no painel; o deploy aplica o valor do arquivo, então `false` aqui desliga a URL.
+  Build do Workers Builds que falha sem mudança de dependência (nem `package.json`, nem
+  `package-lock.json`, nem Node) se refaz com um novo merge na `main`: é o push que dispara o build.
+  Deploy manual pelo painel não substitui o build pelo Git: publica fora do caminho de merge, e o
+  próximo push sobrescreve o que ele subiu.
 - **API:** Supabase Edge Functions (`supabase/functions/`), na mesma região do banco.
 - **Testes:** Vitest, com golden master no motor
 - **Lint:** oxlint
