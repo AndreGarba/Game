@@ -43,6 +43,15 @@
   pointer-events: none;
 }
 
+/* Desenhado pode ser menor que o dedo (HUD compacto); a área de toque não: a folga invisível
+   cresce até --toque-minimo. */
+.botao-toque::after {
+  content: '';
+  position: absolute;
+  inset: min(0px, calc((var(--tamanho-botao-acao) - var(--toque-minimo)) / 2 - var(--borda-hud)));
+  border-radius: var(--raio-total);
+}
+
 /* Com teclado, as teclas no centro do botão, uma por linha; duas linhas ficam menores. */
 .botao-toque__teclas {
   position: relative;
