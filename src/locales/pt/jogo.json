@@ -335,6 +335,31 @@
         "nome": "Barranqueiro",
         "titulo": "Guardião do Portfólio",
         "descricao": "Dono do “o quê” de SINT: define escopo, prioridade e roadmap. Facilita entre UX, Produto e TI, guarda o Monday e cobra datas. Mantém o board limpo, as estimativas honestas e os prazos à vista."
+      },
+      "camille": {
+        "nome": "Camille",
+        "titulo": "Fada do More",
+        "descricao": "Atua no projeto More, o onboarding offshore do banco, conectando pessoas, processos e tecnologia."
+      },
+      "igor": {
+        "nome": "Igor",
+        "titulo": "Referência do Consignado",
+        "descricao": "Referência técnica de UX Consignado, com visão estratégica do negócio. Apoiou três onboardings no ano."
+      },
+      "paraguay": {
+        "nome": "Paraguay",
+        "titulo": "Designer do time",
+        "descricao": "Faz parte do time de design do banco."
+      },
+      "denise": {
+        "nome": "Denise",
+        "titulo": "Voz do bot",
+        "descricao": "Única designer de bot e WhatsApp em Consignado e Veículos ao mesmo tempo. Empreendedora, cria jornadas do zero."
+      },
+      "renan_martins": {
+        "nome": "Renan Martins",
+        "titulo": "Embaixador do Orquestra",
+        "descricao": "Chegou em abril e se integrou rápido ao time. Embaixador do Orquestra, o design system do banco, em Consignado."
       }
     },
     "teclas": {

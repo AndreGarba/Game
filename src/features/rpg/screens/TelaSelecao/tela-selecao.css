@@ -170,13 +170,18 @@
   background: var(--cor-selecao-card) var(--imagem, none) center / cover no-repeat;
 }
 
+/* Nome com sobrenome ("Renan Martins") quebra em duas linhas em vez de virar reticências; a
+   linha da grade estica todos os cards dela juntos. */
 .tela-selecao__card-nome {
+  display: -webkit-box;
   overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin-inline: calc(var(--espaco-1) * -1);
+  line-height: 1.15;
   font-size: var(--texto-card-personagem);
   font-weight: 900;
   text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .tela-selecao__dica {

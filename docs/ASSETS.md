@@ -202,9 +202,14 @@ três quartos, centralizados com folga em cima: o card mostra o centro num retâ
 | `renan` | Renan: barba castanha, camiseta preta, tatuagem pequena no braço | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `fernando` | Fernando: cabelo castanho-claro, suéter preto, sorriso | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `barranqueiro` | Barranqueiro: boné verde-acinzentado, barba grisalha rala, camiseta preta com estampa branca | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `camille` | Camille: cabelo preto, liso e repartido ao meio, batom vermelho, brincos dourados, blazer marrom-acinzentado aberto sobre blusa preta | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `igor` | Igor: cabelo preto curto e cacheado, barba cheia, jaqueta branca aberta sobre camiseta azul-clara | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `paraguay` | Paraguay: cabelo castanho-escuro, óculos, barba, jaqueta puffer preta | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `denise` | Denise: cabelo castanho longo com pontas claras, vestido longo vinho com decote em V | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `renan_martins` | Renan Martins: boné preto, óculos escuros, barba castanha grisalha, puffer cinza aberta sobre camiseta preta | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
-(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom, olhos amendoados) ficam em `APARENCIAS.<id>` no
+(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo (com ou sem risca ao meio), regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom, olhos amendoados, cabelo cacheado, barba grisalha, jaqueta puffer, vestido longo) ficam em `APARENCIAS.<id>` no
 `paleta.ts`.
 
 ---
