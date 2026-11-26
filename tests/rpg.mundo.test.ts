@@ -50,7 +50,9 @@ function bloqueado(cena: Cena, x: number, z: number): boolean {
   )
 }
 
-describe('mundo do RPG', () => {
+// Simulam o mundo tick a tick (alguns, duas vezes): passam de 1,5 s na máquina local, e o runner do
+// CI, mais lento, estourou os 5 s padrão do Vitest.
+describe('mundo do RPG', { timeout: 20_000 }, () => {
   it('começa na rua, parado', () => {
     const e = criarMundo()
     expect(e.cena).toBe('rua')

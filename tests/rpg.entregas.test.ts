@@ -98,7 +98,9 @@ function diantedoQuadro(q: (typeof QUADROS)[number]): EstadoMundo {
 
 const quadroDoFeirao = () => QUADROS.find((q) => q.solido.id === 'quadro_entregas_feirao')!
 
-describe('quadros Entregas 2026', () => {
+// Simulam o mundo tick a tick (alguns, duas vezes): passam de 1,5 s na máquina local, e o runner do
+// CI, mais lento, estourou os 5 s padrão do Vitest.
+describe('quadros Entregas 2026', { timeout: 20_000 }, () => {
   it('quatro quadros: escritório do BTG, escritório do PAN, loja de veículos e feirão (na rua)', () => {
     expect(QUADROS.map((q) => q.cena).sort()).toEqual(['concessionaria', 'escritorio', 'escritorio_pan', 'rua'])
     expect(new Set(QUADROS.map((q) => q.solido.id)).size).toBe(4)
