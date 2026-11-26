@@ -124,9 +124,9 @@ pt, en e es, inclusive o "Avenida" (`rpg.cenas.rua` e a placa `rpg.placas.rua`, 
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-23'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-24'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille, Igor, Paraguay, Denise e Renan Martins no elenco; rpg-23: caneta de Mounjaro na mesa da rosquinha, 149 esconderijos) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille, Igor, Paraguay, Denise e Renan Martins no elenco; rpg-23: caneta de Mounjaro na mesa da rosquinha, 149 esconderijos; rpg-24: Filipe no elenco) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -200,18 +200,20 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   blusa preta; foto em `media/referencias/personagem-camille.png`) e, da foto em grupo
   `media/referencias/personagens-igor-paraguay-renan-denise.png`, **Igor, Paraguay, Denise e
   Renan Martins**. O Renan Martins (`renan_martins`) é outra pessoa, não o `renan` do Figma: o
-  card mostra o sobrenome para não confundir os dois. Estampa com personagem licenciado vira padrão de
+  card mostra o sobrenome para não confundir os dois. O **Filipe** não tem foto: a cabeça vai num
+  saco de pão de papel pardo com dois buracos para os olhos (`sacoDePao`, que esconde cabelo e
+  rosto), com roupa neutra (camiseta cinza, jeans, tênis branco). Estampa com personagem licenciado vira padrão de
   cores (`estampaChamas`), nunca cópia da arte. Personagem novo é só dado: linha no `ELENCO`,
   `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
   chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, cabelo longo com
   raiz de outra cor e risca ao meio, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga
-  curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné (com marca em bloco de cor), batom, olhos amendoados, cabelo cacheado, barba grisalha, jaqueta puffer e vestido longo são campos opcionais da
+  curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné (com marca em bloco de cor), batom, olhos amendoados, cabelo cacheado, barba grisalha, jaqueta puffer, vestido longo e saco de pão na cabeça são campos opcionais da
   `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
   nos três idiomas e, se quiser, um retrato em `arte/retratos/<id>` (sem ele, o card mostra um
   retrato desenhado em 3D). O card mostra só o nome; o título e a descrição ficam no bloco do
-  escolhido, embaixo dos cards. **Os cards são uma grade de `COLUNAS` (8) por linha**
+  escolhido, embaixo dos cards. **Os cards são uma grade de `COLUNAS` (9) por linha**
   (`TelaSelecao.tsx`), nos dois terços da direita da tela: ← → andam um card, ↑ ↓ andam uma linha
-  (com volta), e o toque escolhe. Com 24 pessoas, as três linhas cabem sem rolar; se a grade
+  (com volta), e o toque escolhe. Com 25 pessoas (cabem 27), as três linhas cabem sem rolar; se a grade
   passar da altura, ela rola na vertical (toque arrasta) e o teclado traz o escolhido para a vista,
   rolando só a grade. O retrato do card é 4 : 3 e o nome usa `--texto-card-personagem`: o nome
   mais longo hoje, "Barranqueiro", ocupa o card inteiro, por cima do padding lateral. Nome com

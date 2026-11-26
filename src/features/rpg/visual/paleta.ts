@@ -271,6 +271,9 @@ export interface Aparencia {
   // Vestido longo até o tornozelo, com decote em V (`camisa` e `calca` ficam por baixo: use a
   // cor do vestido na camisa e a pele na calça, que aparece no passo).
   vestido?: string
+  // Saco de pão de papel pardo cobrindo a cabeça inteira, com a boca dobrada e dois buracos para
+  // os olhos. Esconde cabelo e rosto (barba, óculos, boca).
+  sacoDePao?: { papel: string; dobra: string }
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -596,6 +599,18 @@ export const APARENCIAS: Record<string, Aparencia> = {
     oculos: '#1e1e20',
     bone: { cor: '#141416', aba: '#141416', marca: '#f2c230' },
     puffer: { cor: '#3a3d44', gomos: '#26282d', aberta: true, estampa: '#f2c230' },
+  },
+  // Filipe: sem foto; a cabeça vai num saco de pão de papel pardo e a roupa é neutra (camiseta
+  // cinza, jeans, tênis branco).
+  filipe: {
+    pele: '#e0a882',
+    cabelo: '#3a2a20',
+    camisa: '#8a8d92',
+    calca: '#3e4f66',
+    sapato: '#e6e6e6',
+    detalhe: null,
+    solado: '#c9c9c9',
+    sacoDePao: { papel: '#c49a64', dobra: '#a97f4c' },
   },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
   figurante_2: { pele: '#6b4430', cabelo: '#111111', camisa: '#f2f2f2', calca: '#4a4f57', sapato: '#1e1e1e', detalhe: null },

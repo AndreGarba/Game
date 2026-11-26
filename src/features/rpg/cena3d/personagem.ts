@@ -338,6 +338,23 @@ function jaquetaPuffer(f: Fabrica, a: Aparencia, p: NonNullable<Aparencia['puffe
   if (p.estampa) corpo.add(f.caixa(0.1, 0.16, 0.012, f.material(p.estampa), { y: base + 0.2, z: 0.186 }))
 }
 
+// Saco de pão: um pouco maior que a cabeça com o cabelo, a boca dobrada para fora embaixo, vincos
+// do papel na frente e dois buracos escuros para os olhos.
+function sacoNaCabeca(f: Fabrica, saco: { papel: string; dobra: string }, corpo: THREE.Group) {
+  const y = ALTURA_OMBRO
+  const papel = f.material(saco.papel)
+  const dobra = f.material(saco.dobra)
+  const buraco = f.material('#1a120c')
+  corpo.add(
+    f.caixa(0.48, 0.58, 0.46, papel, { y: y + 0.02 }),
+    f.caixa(0.52, 0.06, 0.5, dobra, { y: y + 0.01 }),
+    f.caixa(0.012, 0.3, 0.012, dobra, { x: -0.16, y: y + 0.24, z: 0.236 }),
+    f.caixa(0.012, 0.22, 0.012, dobra, { x: 0.15, y: y + 0.08, z: 0.236 }),
+    f.caixa(0.2, 0.012, 0.012, dobra, { x: 0.05, y: y + 0.5, z: 0.236 }),
+  )
+  for (const lado of [-1, 1]) corpo.add(f.caixa(0.08, 0.07, 0.012, buraco, { x: lado * 0.09, y: y + 0.28, z: 0.236 }))
+}
+
 // Vestido longo: a saia desce do quadril até o tornozelo, um pouco mais larga na barra, e o
 // decote em V de pele no peito.
 function vestidoLongo(f: Fabrica, a: Aparencia, cor: string, corpo: THREE.Group) {
@@ -406,7 +423,8 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     if (a.olhosAmendoados) corpo.add(f.caixa(0.08, 0.025, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.2425, z: 0.2 }))
     else corpo.add(f.caixa(0.06, 0.07, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }))
   }
-  if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, a.cabeloLongo.risca ?? false, corpo)
+  if (a.sacoDePao) sacoNaCabeca(f, a.sacoDePao, corpo)
+  else if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, a.cabeloLongo.risca ?? false, corpo)
   else if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
   else if (!a.careca) corpo.add(cabelo, nuca)
   if (a.cacheado) cachos(f, a, corpo)
@@ -427,8 +445,8 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     const ouro = f.material(a.brincos)
     for (const lado of [-1, 1]) corpo.add(f.caixa(0.035, 0.04, 0.03, ouro, { x: lado * 0.2, y: ALTURA_OMBRO + 0.12, z: 0.135 }))
   }
-  detalhesDoRosto(f, a, corpo)
-  if (a.barba && a.barbaGrisalha) fiosGrisalhos(f, a.barbaGrisalha, corpo)
+  if (!a.sacoDePao) detalhesDoRosto(f, a, corpo)
+  if (a.barba && a.barbaGrisalha && !a.sacoDePao) fiosGrisalhos(f, a.barbaGrisalha, corpo)
   if (a.estampa) {
     const placa = estampa(f, a.estampa.texto, a.estampa.cor, 0.36)
     placa.position.set(0, ALTURA_QUADRIL + 0.42, 0.151)

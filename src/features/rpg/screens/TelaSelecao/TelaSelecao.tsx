@@ -19,7 +19,7 @@ interface TextosDoPersonagem {
 }
 
 // Cards por linha da grade. ← → andam um card; ↑ ↓ andam uma linha.
-const COLUNAS = 8
+const COLUNAS = 9
 
 const TECLAS_ANTERIOR = new Set(['ArrowLeft', 'KeyA'])
 const TECLAS_PROXIMO = new Set(['ArrowRight', 'KeyD'])
