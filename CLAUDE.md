@@ -381,7 +381,8 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   campo: entre o fundo do gol direito e a praça sobra um corredor de 2,5 m (há teste), para a bola
   e o jogador chegarem atrás da rede. Tudo nela é posto relativo a `PRACA.x`: piso de pedra clara com faixas escuras, gramados, árvores, bancos, lixeiras, a placa
   `placa-praca` (nome em `rpg.placas.praca`) e o monumento `baleia` (aço facetado, cabeça no chão,
-  corpo em arco, cauda alta; tirado de `media/referencias/monumento-baleia.png` na store), que se
+  corpo em arco, cauda alta; tirado de `media/referencias/monumento-baleia.png` na store; com um
+  gorro de Papai Noel no alto da cabeça, `gorroDaBaleia` em `modelos.ts`, só desenho), que se
   olha com o A (`rpg.dialogos.baleia`) e esconde cartão como qualquer objeto com diálogo.
 - **MASP** ao lado do feirão (`MASP` em `cenas.ts`, foto em `media/referencias/predio-masp.png` na
   store): caixa de vidro azul suspensa por dois pórticos vermelhos, com **vão livre por onde se

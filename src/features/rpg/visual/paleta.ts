@@ -134,7 +134,14 @@ export const COR_OBJETO = {
 }
 
 // Baleia da praça: aço inox facetado, em dois tons para as facetas lerem de longe.
-export const COR_BALEIA = { aco: '#e3e8ee', acoSombra: '#b9c2cc', ventre: '#9aa4ae' }
+export const COR_BALEIA = {
+  aco: '#e3e8ee',
+  acoSombra: '#b9c2cc',
+  ventre: '#9aa4ae',
+  // Gorro de Papai Noel no alto da cabeça.
+  gorro: '#d1262c',
+  gorroBarra: '#f7f7f4',
+}
 
 // MASP: pórticos de concreto pintado de vermelho, caixa de vidro azul com caixilhos escuros e lajes de
 // concreto aparente.
