@@ -209,8 +209,8 @@ export interface Aparencia {
   // Brincos pequenos.
   brincos?: string
   // Cabelo longo e liso, caindo na frente dos ombros até o peito: `cabelo` é a raiz (a calota) e
-  // `pontas` o comprimento. Troca a nuca curta.
-  cabeloLongo?: { pontas: string }
+  // `pontas` o comprimento; `risca` reparte o cabelo ao meio. Troca a nuca curta.
+  cabeloLongo?: { pontas: string; risca?: boolean }
   // Jaqueta aberta por cima da blusa (`camisa` vira a blusa que aparece no meio): manga comprida,
   // bolsos no peito e barra até o quadril.
   jaquetaAberta?: { cor: string; bolso: string }
@@ -491,6 +491,20 @@ export const APARENCIAS: Record<string, Aparencia> = {
     bermuda: true,
     solado: '#f2f2f2',
     relogio: '#141414',
+  },
+  // Camille: cabelo preto, liso, abaixo do ombro e repartido ao meio; batom vermelho; brincos
+  // dourados; blazer marrom-acinzentado aberto sobre blusa preta.
+  camille: {
+    pele: '#c99475',
+    cabelo: '#141012',
+    camisa: '#141416',
+    calca: '#1e1e22',
+    sapato: '#1a1a1c',
+    detalhe: null,
+    cabeloLongo: { pontas: '#141012', risca: true },
+    batom: '#b3122a',
+    brincos: '#d9a63a',
+    jaquetaAberta: { cor: '#7d6e60', bolso: '#7d6e60' },
   },
   figurante_1: { pele: '#f0c9a0', cabelo: '#3b2a1e', camisa: '#e0703a', calca: '#2f3b52', sapato: '#2a2a2a', detalhe: null },
   figurante_2: { pele: '#6b4430', cabelo: '#111111', camisa: '#f2f2f2', calca: '#4a4f57', sapato: '#1e1e1e', detalhe: null },

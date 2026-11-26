@@ -335,6 +335,11 @@
         "nome": "Barranqueiro",
         "titulo": "Portfolio Guardian",
         "descricao": "Owner of SINT's “what”: sets scope, priority and roadmap. Bridges UX, Product and IT, guards Monday and chases dates. Keeps the board clean, estimates honest and deadlines in sight."
+      },
+      "camille": {
+        "nome": "Camille",
+        "titulo": "More Fairy",
+        "descricao": "Works on the More project, the bank's offshore onboarding, connecting people, processes and technology."
       }
     },
     "teclas": {

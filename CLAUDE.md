@@ -124,9 +124,9 @@ pt, en e es, inclusive o "Avenida" (`rpg.cenas.rua` e a placa `rpg.placas.rua`, 
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-21'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-22'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille no elenco) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -195,11 +195,13 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   time tiradas das fotos do Figma (**Nath, Day, Bruno, Wesley, Bob, Ju, Fábio, Pedro, Allexis,
   Thamis, Renan, Fernando e Barranqueiro**; foto de cada uma em
   `media/referencias/personagem-<id>.png`). Os textos dessas 13 vêm do Figma, reescritos só onde
-  passavam do limite. Estampa com personagem licenciado vira padrão de
+  passavam do limite. Depois entrou a **Camille** (cabelo preto, liso, abaixo do ombro e
+  repartido ao meio; batom vermelho; brincos dourados; blazer marrom-acinzentado aberto sobre
+  blusa preta; foto em `media/referencias/personagem-camille.png`). Estampa com personagem licenciado vira padrão de
   cores (`estampaChamas`), nunca cópia da arte. Personagem novo é só dado: linha no `ELENCO`,
   `APARENCIAS.<visual>` em `paleta.ts` (careca, barba, barba rala, óculos, estampa de texto ou de
   chamas, solado, relógio, tatuagem pequena, cabelo até o ombro com mechas, cabelo longo com
-  raiz de outra cor, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga
+  raiz de outra cor e risca ao meio, regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga
   curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom e olhos amendoados são campos opcionais da
   `Aparencia`), `rpg.elenco.<id>.nome`, `.titulo` e `.descricao`
   nos três idiomas e, se quiser, um retrato em `arte/retratos/<id>` (sem ele, o card mostra um

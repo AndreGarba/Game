@@ -335,6 +335,11 @@
         "nome": "Barranqueiro",
         "titulo": "Guardián del Portafolio",
         "descricao": "Dueño del “qué” de SINT: define alcance, prioridad y roadmap. Facilita entre UX, Producto y TI, cuida el Monday y cobra fechas. Mantiene el board limpio, estimaciones honestas y plazos a la vista."
+      },
+      "camille": {
+        "nome": "Camille",
+        "titulo": "Hada de More",
+        "descricao": "Trabaja en el proyecto More, el onboarding offshore del banco, conectando personas, procesos y tecnología."
       }
     },
     "teclas": {

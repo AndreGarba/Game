@@ -189,7 +189,8 @@ function cabeloAteOOmbro(f: Fabrica, a: Aparencia, mechas: string | null, corpo:
 // Cabelo longo: calota na cor da raiz; o comprimento, de outra cor, cai dos lados da cabeça, desce
 // pelas costas e passa na frente dos ombros até o peito (por fora do tronco, que é mais largo que a
 // cabeça).
-function cabeloComprido(f: Fabrica, a: Aparencia, pontas: string, corpo: THREE.Group) {
+// Com `risca`, uma linha de pele no meio da calota e da franja: o cabelo repartido ao meio.
+function cabeloComprido(f: Fabrica, a: Aparencia, pontas: string, risca: boolean, corpo: THREE.Group) {
   const y = ALTURA_OMBRO
   const raiz = f.material(a.cabelo)
   const fio = f.material(pontas)
@@ -198,6 +199,13 @@ function cabeloComprido(f: Fabrica, a: Aparencia, pontas: string, corpo: THREE.G
     f.caixa(0.46, 0.06, 0.06, raiz, { y: y + 0.4, z: 0.19 }),
     f.caixa(0.46, 0.8, 0.12, fio, { y: y - 0.3, z: -0.17 }),
   )
+  if (risca) {
+    const pele = f.material(a.pele)
+    corpo.add(
+      f.caixa(0.03, 0.012, 0.26, pele, { y: y + 0.535, z: 0.09 }),
+      f.caixa(0.03, 0.06, 0.012, pele, { y: y + 0.4, z: 0.222 }),
+    )
+  }
   for (const lado of [-1, 1]) {
     corpo.add(
       f.caixa(0.06, 0.4, 0.3, fio, { x: lado * 0.225, y: y + 0.02, z: -0.03 }),
@@ -344,7 +352,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
     if (a.olhosAmendoados) corpo.add(f.caixa(0.08, 0.025, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.2425, z: 0.2 }))
     else corpo.add(f.caixa(0.06, 0.07, 0.02, olho, { x: lado * 0.09, y: ALTURA_OMBRO + 0.22, z: 0.2 }))
   }
-  if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, corpo)
+  if (a.cabeloLongo) cabeloComprido(f, a, a.cabeloLongo.pontas, a.cabeloLongo.risca ?? false, corpo)
   else if (a.cabeloOmbro) cabeloAteOOmbro(f, a, a.cabeloOmbro.mechas, corpo)
   else if (!a.careca) corpo.add(cabelo, nuca)
   if (a.jaquetaAberta) jaquetaPorCima(f, a, a.jaquetaAberta, corpo)
