@@ -168,8 +168,41 @@ const baleia: Construtor = (f, l, a, p) => {
     peca(sombra, -1.2, 0.95, lado * 1.15, 0.75, 0.12, 0.45, lado * 0.5, 0.3)
     peca(aco, 4.2, 4.45, lado * 0.8, 0.95, 0.14, 0.75, lado * -0.3, 0.45)
   }
+  corpo.add(gorroDaBaleia(f))
   corpo.scale.set(l / 9, a / 5.5, p / 3)
   return grupo(corpo)
+}
+
+// Gorro de Papai Noel no topo da cabeça (y 3,5 do primeiro segmento), afundado um pouco para não
+// flutuar: barra branca, dois cones vermelhos de poucos lados, o de cima tombado para o lado da
+// cauda, e o pompom na ponta. Só desenho: a colisão da baleia não muda.
+function gorroDaBaleia(f: Fabrica): THREE.Group {
+  const vermelho = f.material(COR_BALEIA.gorro)
+  const branco = f.material(COR_BALEIA.gorroBarra)
+  const facetado = (malha: THREE.Mesh) => {
+    malha.castShadow = true
+    return malha
+  }
+  const gorro = new THREE.Group()
+  gorro.position.set(-2.75, 3.3, 0)
+  gorro.rotation.set(0.12, 0, -0.18)
+  const barra = facetado(new THREE.Mesh(f.guardar(new THREE.CylinderGeometry(0.98, 1.02, 0.34, 9)), branco))
+  barra.position.y = 0.17
+  gorro.add(barra)
+  const base = facetado(new THREE.Mesh(f.guardar(new THREE.CylinderGeometry(0.58, 0.9, 0.95, 7)), vermelho))
+  base.position.y = 0.8
+  gorro.add(base)
+  const dobra = new THREE.Group()
+  dobra.position.y = 1.25
+  dobra.rotation.z = -0.8
+  const ponta = facetado(new THREE.Mesh(f.guardar(new THREE.ConeGeometry(0.58, 1.5, 7)), vermelho))
+  ponta.position.y = 0.72
+  dobra.add(ponta)
+  const pompom = facetado(new THREE.Mesh(f.guardar(new THREE.IcosahedronGeometry(0.26, 0)), branco))
+  pompom.position.y = 1.5
+  dobra.add(pompom)
+  gorro.add(dobra)
+  return gorro
 }
 
 // MASP. Os pilares e as vigas dos pórticos são caixas vermelhas; a caixa de vidro (suspensa, posta
