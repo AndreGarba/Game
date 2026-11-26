@@ -323,7 +323,7 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   (`cena3d/caneta.ts`, cores em `COR_CANETA`) sai de cima da rosquinha girando, como o cartão; a
   `TelaRpg` reage à mudança de `estado.caneta` com o efeito `'caneta'` e o aviso com a caneta
   balançando (`CanetaBalancando`, `src/features/rpg/caneta/`), o nome (`rpg.caneta.nome`) e a
-  frase `rpg.caneta.encontrada` ("Você achou a caneta do Rici e perdeu 70kgs"), pelos 4 s do
+  frase `rpg.caneta.encontrada` ("Você achou a caneta e perdeu 72kgs"), pelos 4 s do
   efeito. Regras em `tests/rpg.caneta.test.ts`.
 - **Quadros "Entregas 2026"** (sólidos `quadro-entregas` com `interacao: { tipo: 'quadro' }`):
   um no escritório do BTG, um no do PAN (parede azul, girado), um na loja de veículos e um no
