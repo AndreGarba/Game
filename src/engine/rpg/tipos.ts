@@ -166,6 +166,9 @@ export interface JogadorRpg extends Tombo {
   recargaSoco: number
   // Ticks desde que apertou o chute (1 a TICKS_CHUTE); 0 = não está chutando.
   chute: number
+  // Ticks que faltam do efeito da caneta de Mounjaro (TICKS_CANETA no tick do achado; 0 = normal).
+  // Só desenho: o quadrado de colisão não muda.
+  fino: number
 }
 
 export type FaseTombo = 'de-pe' | 'caindo' | 'no-chao' | 'levantando'
@@ -352,4 +355,7 @@ export interface EstadoMundo {
   manifestantes: Manifestante[]
   // Jogador na área do MASP: os manifestantes cercam e seguem.
   protesto: boolean
+  // Tick em que achou a caneta de Mounjaro pela última vez: a UI mostra o aviso quando muda e o
+  // desenho tira daqui o afinar e a volta ao normal.
+  caneta: number | null
 }

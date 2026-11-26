@@ -602,6 +602,10 @@ const AGENCIA_PAN: Cena = {
   figurantes: [{ quantidade: 3, area: { x: 0.8, z: 4.4, largura: 12.8, profundidade: 5.2 }, visuais: VISUAIS_CLIENTES }],
 }
 
+// A bancada da primeira fileira, à esquerda (a da rosquinha vinho em cima): revistar ali acha a
+// caneta de Mounjaro, e não cartão (`cartoes.ts` a tira dos esconderijos).
+export const MESA_DA_CANETA = { cena: 'escritorio_pan', id: 'bancada_pan_0' } as const satisfies { cena: IdCena; id: string }
+
 // Escritório do Banco PAN, no espírito da foto de referência: open office com fileiras longas de
 // mesas brancas (dois monitores por lugar, cadeiras de malha), carpete escuro, janelões com vista
 // de prédios no fundo, parede azul na lateral e a sala de reunião de vidro adesivado à esquerda.
@@ -633,6 +637,7 @@ const ESCRITORIO_PAN: Cena = {
       [6, 13].map((x, lado) => ({
         id: `bancada_pan_${fileira * 2 + lado}`,
         visual: 'bancada',
+        ...(`bancada_pan_${fileira * 2 + lado}` === MESA_DA_CANETA.id ? { variante: 'rosquinha' } : {}),
         x,
         z,
         largura: 5.4,

@@ -236,6 +236,7 @@
   --tamanho-botao-icone: max(calc(var(--px) * 42), var(--botao-icone-minimo));
   --tamanho-direcional: max(calc(var(--px) * 128), var(--direcional-minimo));
   --largura-cartao-aviso: calc(var(--px) * 60);
+  --largura-caneta-aviso: calc(var(--px) * 110);
   --altura-dialogo: calc(var(--px) * 110);
   --sombra-hud: 0 calc(var(--px) * 2.5) 0 rgba(0, 0, 0, 0.35), 0 calc(var(--px) * 5) calc(var(--px) * 12) rgba(0, 0, 0, 0.3);
   /* Mesmo motivo da moldura: o contorno mudou aqui, então a sombra do texto é declarada de novo. */

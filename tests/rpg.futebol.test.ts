@@ -60,9 +60,9 @@ describe('campo de futebol', () => {
     expect(e.jogador.z).toBeGreaterThan(CENTRO.z)
   })
 
-  it('gol e rede não escondem cartão: continuam 26 cartões e 150 esconderijos', () => {
+  it('gol e rede não escondem cartão: continuam 26 cartões e 149 esconderijos (a mesa da caneta também não esconde)', () => {
     expect(TOTAL_CARTOES).toBe(26)
-    expect(ESCONDERIJOS).toHaveLength(150)
+    expect(ESCONDERIJOS).toHaveLength(149)
     expect(ESCONDERIJOS.some((s) => s.id.startsWith('gol_'))).toBe(false)
   })
 

@@ -3,7 +3,7 @@ import { passoBaloes, soltarBaloes } from './baloes.ts'
 import { bolaAoAlcance, chutarBola, criarBola, mirarNaBola, passoBola } from './bola.ts'
 import { caixaDoCarro, caixasDosCarros, criarCarros, passoCarros } from './carros.ts'
 import { criarManifestantes, passoManifestantes } from './manifestantes.ts'
-import { chaveDoEsconderijo, ehEsconderijo, esconderCartoes, revistar } from './cartoes.ts'
+import { chaveDoEsconderijo, ehEsconderijo, ehMesaDaCaneta, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
 import { bloqueios, moverCaixa } from './colisao.ts'
 import {
@@ -17,6 +17,7 @@ import {
   RAIO_JOGADOR,
   RAIO_NPC,
   SEMENTE_PADRAO,
+  TICKS_CANETA,
   TICKS_INVULNERAVEL,
   TICKS_RECARGA_SOCO,
   TICKS_SOCO,
@@ -73,6 +74,7 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
       soco: 0,
       recargaSoco: 0,
       chute: 0,
+      fino: 0,
     },
     alvo: null,
     dialogo: null,
@@ -92,6 +94,7 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     buzina: null,
     manifestantes: criarManifestantes(),
     protesto: false,
+    caneta: null,
   }
 }
 
@@ -171,6 +174,9 @@ function candidatos(estado: EstadoMundo, cena: Cena, x: number, z: number): Cand
   for (const s of cena.solidos) {
     if (s.interacao) {
       saida.push({ alvo: { id: s.id, tipo: s.interacao.tipo }, interacao: s.interacao, d2: distancia2(x, z, s) })
+    } else if (ehMesaDaCaneta(cena.id, s.id)) {
+      // Fino, a mesa não é alvo: a caneta só volta depois de o efeito acabar.
+      if (estado.jogador.fino === 0) saida.push({ alvo: { id: s.id, tipo: 'revistar' }, interacao: { tipo: 'olhar' }, d2: distancia2(x, z, s) })
     } else if (ehEsconderijo(cena.id, s.id) && !estado.cartoes.revistados[chaveDoEsconderijo(cena.id, s.id)]) {
       // Revistado, o objeto sem diálogo deixa de ser alvo: não tem mais nada ali.
       saida.push({ alvo: { id: s.id, tipo: 'revistar' }, interacao: { tipo: 'olhar' }, d2: distancia2(x, z, s) })
@@ -216,6 +222,11 @@ function interagir(estado: EstadoMundo, cena: Cena) {
     estado.quadro = c.alvo.id
     estado.jogador.andando = false
     estado.jogador.correndo = false
+    return
+  }
+  if (ehMesaDaCaneta(estado.cena, c.alvo.id)) {
+    estado.caneta = estado.tick
+    estado.jogador.fino = TICKS_CANETA
     return
   }
   // O A revista e conversa no mesmo toque: o cartão aparece e o diálogo abre embaixo dele.
@@ -354,6 +365,8 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   const derrubado = j.tombo > 0
   if (!derrubado && j.invulneravel > 0) j.invulneravel -= 1
   if (j.recargaSoco > 0) j.recargaSoco -= 1
+  // Conta em qualquer situação (caído, no diálogo, no quadro): são 4 s de jogo, não de andar.
+  if (j.fino > 0) j.fino -= 1
 
   if (derrubado) {
     passoTombo(estado)

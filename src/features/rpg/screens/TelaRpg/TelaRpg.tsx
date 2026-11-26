@@ -4,12 +4,13 @@ import { BotaoToque } from '../../../../components/BotaoToque/BotaoToque.tsx'
 import { DirecionalToque } from '../../../../components/DirecionalToque/DirecionalToque.tsx'
 import { IconeBola } from '../../../../components/IconeBola/IconeBola.tsx'
 import { IconeSoco } from '../../../../components/IconeSoco/IconeSoco.tsx'
-import { personagemDoElenco, TOTAL_CARTOES, type Alvo, type DialogoAberto, type EstadoMundo, type IdCena } from '../../../../engine/rpg/index.ts'
+import { personagemDoElenco, TICKS_CANETA, TICKS_POR_SEGUNDO, TOTAL_CARTOES, type Alvo, type DialogoAberto, type EstadoMundo, type IdCena } from '../../../../engine/rpg/index.ts'
 import { localeAtual } from '../../../../i18n/index.ts'
 import { densidadeDoJogo } from '../../../jogo/densidade.ts'
 import { abafarMusica } from '../../../musica/tocadorMusica.ts'
 import { tocarEfeito } from '../../../som/efeitosSonoros.ts'
 import { useVoltarNativoEmCamadas } from '../../../navegacao/useVoltarNativoEmCamadas.ts'
+import { CanetaBalancando } from '../../caneta/CanetaMounjaro.tsx'
 import { CartaoGirando, IconeCartao } from '../../cartao/CartaoUltrablue.tsx'
 import { criarRenderizador } from '../../cena3d/renderizador.ts'
 import { criarControladorRpg, type ControladorRpg } from '../../controladorRpg.ts'
@@ -43,14 +44,17 @@ interface Hud {
 }
 
 // Aviso da última revista: `chave` é o tick dela, para o React refazer a animação a cada achado.
+// `caneta`: a mesa da rosquinha, que dá a caneta de Mounjaro em vez de cartão.
 interface Aviso {
   chave: number
-  achou: boolean
+  tipo: 'cartao' | 'nada' | 'caneta'
 }
 
 // Quanto tempo o aviso de cartão (ou de "nada aqui") fica na tela.
 const MS_AVISO_ACHOU = 2600
 const MS_AVISO_NADA = 1200
+// O aviso da caneta dura o efeito inteiro (TICKS_CANETA, 4 s).
+const MS_AVISO_CANETA = (TICKS_CANETA / TICKS_POR_SEGUNDO) * 1000
 // Quanto tempo o "Gooool" fica na tela (a bola volta ao centro um pouco depois).
 const MS_GOL = 2400
 
@@ -217,6 +221,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
 
     let anterior: Hud | null = null
     let ultimaRevista = -1
+    let ultimaCaneta: number | null = null
     let tempoAviso: ReturnType<typeof setTimeout> | undefined
     let tempoGol: ReturnType<typeof setTimeout> | undefined
     let ultimoGol = -1
@@ -238,10 +243,17 @@ export function TelaRpg({ personagem }: { personagem: string }) {
           // Vazio com diálogo (NPC, totem): a conversa já responde, sem aviso por cima.
           if (revista.achou || !estado.dialogo) {
             if (revista.achou) tocarEfeito('moeda')
-            setAviso({ chave: revista.tick, achou: revista.achou })
+            setAviso({ chave: revista.tick, tipo: revista.achou ? 'cartao' : 'nada' })
             clearTimeout(tempoAviso)
             tempoAviso = setTimeout(() => setAviso(null), revista.achou ? MS_AVISO_ACHOU : MS_AVISO_NADA)
           }
+        }
+        if (estado.caneta !== null && estado.caneta !== ultimaCaneta) {
+          ultimaCaneta = estado.caneta
+          tocarEfeito('caneta')
+          setAviso({ chave: estado.caneta, tipo: 'caneta' })
+          clearTimeout(tempoAviso)
+          tempoAviso = setTimeout(() => setAviso(null), MS_AVISO_CANETA)
         }
         const golFeito = estado.bola.ultimoGol
         if (golFeito && golFeito.tick !== ultimoGol) {
@@ -320,8 +332,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
             {/* `key` no achado (não no número): o HUD volta a montar quando o quadro fecha, e o
                 contador não pode pular de novo sem cartão novo. */}
             <p
-              key={aviso?.achou ? aviso.chave : 'parado'}
-              className={`tela-rpg__cartoes${aviso?.achou ? ' tela-rpg__cartoes--somou' : ''}`}
+              key={aviso?.tipo === 'cartao' ? aviso.chave : 'parado'}
+              className={`tela-rpg__cartoes${aviso?.tipo === 'cartao' ? ' tela-rpg__cartoes--somou' : ''}`}
               aria-label={t('rpg.cartoes.contador', { achados: hud.achados, total: TOTAL_CARTOES })}
             >
               <span className="tela-rpg__cartoes-icone">
@@ -331,7 +343,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
                 {numero(hud.achados)}
                 <span className="tela-rpg__cartoes-total">/{numero(TOTAL_CARTOES)}</span>
               </span>
-              {aviso?.achou && (
+              {aviso?.tipo === 'cartao' && (
                 <span className="tela-rpg__mais-um" aria-hidden="true">
                   {t('rpg.cartoes.maisUm')}
                 </span>
@@ -340,10 +352,18 @@ export function TelaRpg({ personagem }: { personagem: string }) {
           </div>
 
           {aviso && (
-            <div key={aviso.chave} className={`tela-rpg__aviso${aviso.achou ? '' : ' tela-rpg__aviso--nada'}`} role="status">
-              {aviso.achou && <span className="tela-rpg__aviso-raios" aria-hidden="true" />}
-              {aviso.achou && <CartaoGirando classe="tela-rpg__aviso-cartao" />}
-              <p className="tela-rpg__aviso-texto">{aviso.achou ? t('rpg.cartoes.encontrado') : t('rpg.cartoes.nada')}</p>
+            <div key={`${aviso.tipo}${aviso.chave}`} className={`tela-rpg__aviso tela-rpg__aviso--${aviso.tipo}`} role="status">
+              {aviso.tipo !== 'nada' && <span className="tela-rpg__aviso-raios" aria-hidden="true" />}
+              {aviso.tipo === 'cartao' && <CartaoGirando classe="tela-rpg__aviso-cartao" />}
+              {aviso.tipo === 'caneta' && <CanetaBalancando classe="tela-rpg__aviso-caneta" />}
+              {aviso.tipo === 'caneta' ? (
+                <div className="tela-rpg__aviso-textos">
+                  <p className="tela-rpg__aviso-item">{t('rpg.caneta.nome')}</p>
+                  <p className="tela-rpg__aviso-texto">{t('rpg.caneta.encontrada')}</p>
+                </div>
+              ) : (
+                <p className="tela-rpg__aviso-texto">{aviso.tipo === 'cartao' ? t('rpg.cartoes.encontrado') : t('rpg.cartoes.nada')}</p>
+              )}
             </div>
           )}
           {gol !== null && (

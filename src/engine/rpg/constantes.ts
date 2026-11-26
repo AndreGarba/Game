@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-22'
+export const VERSAO_MUNDO = 'rpg-23'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -69,6 +69,10 @@ export const COS_LEQUE_SOCO = 0.5
 
 // Cartões Ultra Blue escondidos pelo mapa, um por esconderijo, sorteados a cada partida.
 export const TOTAL_CARTOES = 26
+
+// Caneta de Mounjaro (a mesa da rosquinha, no escritório do PAN): o jogador fica fino por 4 s.
+// Só depois disso a mesa volta a ser alvo do A e a caneta pode ser achada de novo.
+export const TICKS_CANETA = 4 * TICKS_POR_SEGUNDO
 
 // Balões que caem ao fechar um quadro de entregas. Poucos por desempenho no celular: cada um é
 // uma malha no desenho. Passou de MAX_BALOES, o mais antigo some.

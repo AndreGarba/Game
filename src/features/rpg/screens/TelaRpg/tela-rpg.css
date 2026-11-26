@@ -578,6 +578,43 @@
   color: var(--cor-hud-tecla);
 }
 
+/* Caneta de Mounjaro: caneta à esquerda, nome em cima e a frase embaixo (longa: numa tela
+   estreita, quebra em vez de passar da borda). Os raios ficam atrás da caneta. */
+.tela-rpg__aviso--caneta {
+  /* Com `left: 50%`, o aviso só teria a metade direita da tela para crescer. */
+  width: max-content;
+  max-width: 92%;
+}
+
+.tela-rpg__aviso--caneta .tela-rpg__aviso-raios {
+  left: calc(var(--espaco-3) + var(--largura-caneta-aviso) / 2);
+}
+
+.tela-rpg__aviso-caneta {
+  position: relative;
+  flex: none;
+  width: var(--largura-caneta-aviso);
+}
+
+.tela-rpg__aviso-textos {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.tela-rpg__aviso-item {
+  margin: 0;
+  font-size: var(--texto-2);
+  color: var(--cor-hud-tecla);
+  text-transform: uppercase;
+}
+
+.tela-rpg__aviso--caneta .tela-rpg__aviso-texto {
+  white-space: normal;
+  line-height: 1.15;
+}
+
 .tela-rpg__concluido-cartao {
   width: 30cqh;
   margin: var(--espaco-2) 0;

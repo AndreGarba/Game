@@ -1,5 +1,5 @@
 import { inteiroEntre, type EstadoRng } from '../rng.ts'
-import { CENAS } from './cenas.ts'
+import { CENAS, MESA_DA_CANETA } from './cenas.ts'
 import { TOTAL_CARTOES } from './constantes.ts'
 import type { Cartoes, IdCena } from './tipos.ts'
 
@@ -26,11 +26,16 @@ export function chaveDoEsconderijo(cena: IdCena, id: string): string {
 // gols não mudam onde a mesma semente esconde os 26 cartões. Pilares e hall do MASP são o prédio.
 const NAO_ESCONDE = new Set(['predio', 'muro', 'vidro-adesivado', 'parede-feirao', 'quadro-entregas', 'gol', 'rede-gol', 'pilar-masp', 'masp-hall'])
 
+// A mesa da rosquinha guarda a caneta de Mounjaro: cartão ali disputaria o mesmo A com ela.
+export function ehMesaDaCaneta(cena: IdCena, id: string): boolean {
+  return cena === MESA_DA_CANETA.cena && id === MESA_DA_CANETA.id
+}
+
 function listarEsconderijos(): Esconderijo[] {
   const saida: Esconderijo[] = []
   for (const cena of Object.values(CENAS)) {
     for (const s of cena.solidos) {
-      if (!NAO_ESCONDE.has(s.visual)) saida.push({ chave: chaveDoEsconderijo(cena.id, s.id), cena: cena.id, id: s.id, tipo: 'solido' })
+      if (!NAO_ESCONDE.has(s.visual) && !ehMesaDaCaneta(cena.id, s.id)) saida.push({ chave: chaveDoEsconderijo(cena.id, s.id), cena: cena.id, id: s.id, tipo: 'solido' })
     }
     for (const n of cena.npcs) saida.push({ chave: chaveDoEsconderijo(cena.id, n.id), cena: cena.id, id: n.id, tipo: 'npc' })
   }

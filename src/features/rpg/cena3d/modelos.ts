@@ -401,7 +401,46 @@ function cadeiraDeMalha(f: Fabrica, x: number, z: number, angulo: number): THREE
 // Bancada do open office (foto de referência): tampo branco comprido, dois monitores pretos por
 // lugar dos dois lados, cadeiras de malha branca e uma planta no meio. O retângulo do mapa inclui
 // a fila de cadeiras de cada lado.
-const bancada: Construtor = (f, l, a, p) => {
+// Rosquinha deitada, com a base em y = 0: massa, cobertura vinho por cima e granulado. Maior que
+// uma de verdade (40 cm), senão some na câmera do escritório.
+const RAIO_ROSQUINHA = 0.14
+export const Z_ROSQUINHA = 0.3
+const TUBO_ROSQUINHA = 0.07
+const GRANULADO: [number, number][] = [[0.2, 0], [1.1, 1], [1.9, 2], [2.8, 0], [3.6, 1], [4.5, 2], [5.4, 0]]
+function rosquinha(f: Fabrica): THREE.Group {
+  const anel = (tubo: number, cor: string, y: number, achatar: number) => {
+    const m = new THREE.Mesh(f.guardar(new THREE.TorusGeometry(RAIO_ROSQUINHA, tubo, 6, 14)), f.material(cor))
+    m.rotation.x = -Math.PI / 2
+    m.scale.z = achatar
+    m.position.y = y
+    m.castShadow = true
+    return m
+  }
+  const g = grupo(
+    anel(TUBO_ROSQUINHA, C.rosquinhaMassa, TUBO_ROSQUINHA * 0.8, 0.8),
+    anel(TUBO_ROSQUINHA * 1.04, C.rosquinhaCobertura, TUBO_ROSQUINHA * 1.05, 0.55),
+  )
+  for (const [angulo, cor] of GRANULADO) {
+    const pedaco = f.caixa(0.035, 0.015, 0.012, f.material(C.rosquinhaGranulado[cor]!), {
+      x: Math.cos(angulo) * RAIO_ROSQUINHA,
+      y: TUBO_ROSQUINHA * 1.45,
+      z: Math.sin(angulo) * RAIO_ROSQUINHA,
+    })
+    pedaco.rotation.y = angulo * 2
+    g.add(pedaco)
+  }
+  return g
+}
+
+// Onde fica a planta (e a rosquinha) no tampo de uma bancada de largura `l`: x local, a partir
+// do centro. O renderizador tira daqui o ponto de onde a caneta sai.
+export function xDaPlantaNaBancada(l: number): number {
+  const lugares = Math.max(1, Math.floor(l / 1.2))
+  const passo = l / lugares
+  return -l / 2 + passo * (Math.floor(lugares / 2) + 1)
+}
+
+const bancada: Construtor = (f, l, a, p, variante) => {
   const tampo = f.material(C.mesaBranca)
   const pe = f.material(C.mesaBranca)
   const tela = f.material(C.tela)
@@ -432,6 +471,8 @@ const bancada: Construtor = (f, l, a, p) => {
       const folhas = f.bola(0.2, f.material(C.folha))
       folhas.position.set(x + passo / 2, a + 0.45, 0)
       g.add(f.cilindro(0.08, 0.2, f.material('#ffffff'), 6).translateX(x + passo / 2).translateY(a + 0.1), folhas)
+      // A mesa da caneta: a rosquinha fica na frente da planta, do lado da câmera.
+      if (variante === 'rosquinha') g.add(rosquinha(f).translateX(xDaPlantaNaBancada(l)).translateY(a).translateZ(Z_ROSQUINHA))
     }
   }
   return g
