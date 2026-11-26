@@ -4,6 +4,7 @@ import {
   COMPRIMENTO_CARRO,
   FAIXAS_CARROS,
   LARGURA_CARRO,
+  MESA_DA_CANETA,
   TICKS_CAINDO,
   TICKS_LEVANTANDO,
   TICKS_NO_CHAO,
@@ -18,10 +19,12 @@ import {
 } from '../../../engine/rpg/index.ts'
 import { APARENCIAS, COR_ANEL_JOGADOR, COR_CARTAZ, COR_CEU, COR_OBJETO, LUZ } from '../visual/paleta.ts'
 import { criarBola3d } from './bola3d.ts'
+import { criarCaneta3d } from './caneta.ts'
 import { criarCartao3d } from './cartao.ts'
 import { Fabrica } from './fabrica.ts'
 import { criarFesta3d } from './festa.ts'
-import { modeloDoSolido } from './modelos.ts'
+import { escalaDoFino } from './fino.ts'
+import { modeloDoSolido, xDaPlantaNaBancada, Z_ROSQUINHA } from './modelos.ts'
 import { montarCena, type CenaMontada, type TextosDaCena } from './montarCena.ts'
 import { criarTeleporte3d } from './teleporte.ts'
 import { cartazProcedural } from './texturas.ts'
@@ -87,6 +90,8 @@ const TOMBO_PATINETE = 1.45
 const TICKS_CARTAO = 100
 const SUBIDA_CARTAO = 1.1
 const GIRO_CARTAO_POR_TICK = 0.16
+// A caneta sobe deitada de lado, para não parecer um poste saindo da mesa.
+const INCLINACAO_CANETA = 0.5
 // Topo de uma pessoa, de onde o cartão sai quando o esconderijo é NPC.
 const ALTURA_PESSOA = 1.8
 const ALTURA_CARRO = 1.5
@@ -166,6 +171,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   }
   const cartao = criarCartao3d(fabricaJogador)
   cena.add(cartao)
+  const caneta = criarCaneta3d(fabricaJogador)
+  cena.add(caneta)
   const festa = criarFesta3d(fabricaJogador, cena)
   const bola = criarBola3d(fabricaJogador, cena)
   const teleporte = criarTeleporte3d(fabricaJogador, cena)
@@ -248,7 +255,13 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
       animarChute(jogador, Math.min(1, (j.chute - 1 + alfa) / (TICKS_CHUTE - 1)), (TICKS_CHUTE_IMPACTO - 1) / (TICKS_CHUTE - 1))
     }
     if (jogador.anel) jogador.anel.visible = j.invulneravel === 0 || Math.floor(tempo * PISCADAS_POR_SEGUNDO * 2) % 2 === 0
+    jogador.corpo.scale.setScalar(1)
     teleporte.desenhar(tempo, x, z, jogador)
+    // Por cima do teleporte (que também mexe na escala): trocar de personagem fino continua fino.
+    if (estado.caneta !== null) {
+      const fino = escalaDoFino(estado.tick - estado.caneta - 1 + alfa)
+      jogador.corpo.scale.multiply(new THREE.Vector3(fino.largura, fino.altura, fino.profundidade))
+    }
 
     for (const { npc, personagem } of montada?.npcs.values() ?? []) {
       // Quem está falando vira para o jogador; depois volta para a pose do mapa.
@@ -327,6 +340,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     }
 
     desenharCartao(estado, alfa)
+    desenharCaneta(estado, alfa)
     festa.desenhar(estado, dt, tempo, trocou)
     bola.desenhar(estado, dt, trocou)
 
@@ -440,6 +454,23 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     cartao.position.set(origem.x, origem.y + 0.35 + SUBIDA_CARTAO * sobe, origem.z)
     cartao.rotation.y = t * GIRO_CARTAO_POR_TICK
     cartao.scale.setScalar(Math.max(0.001, escala))
+  }
+
+  // A caneta sai da mesa como o cartão sai do esconderijo, inclinada e girando.
+  function desenharCaneta(estado: EstadoMundo, alfa: number) {
+    const t = estado.caneta === null ? TICKS_CARTAO : estado.tick - estado.caneta + alfa
+    const mesa = CENAS[MESA_DA_CANETA.cena].solidos.find((s) => s.id === MESA_DA_CANETA.id)
+    const origem = mesa && estado.cena === MESA_DA_CANETA.cena && t < TICKS_CARTAO ? origemDoCartao(MESA_DA_CANETA.cena, MESA_DA_CANETA.id) : null
+    caneta.visible = origem !== null
+    if (!origem || !mesa) return
+    // Sai de cima da rosquinha (a bancada não gira).
+    origem.x += xDaPlantaNaBancada(mesa.largura)
+    origem.z += Z_ROSQUINHA
+    const sobe = 1 - (1 - Math.min(1, (t / TICKS_CARTAO) * 2.5)) ** 3
+    const escala = Math.min(1, t / 10, (TICKS_CARTAO - t) / 15)
+    caneta.position.set(origem.x, origem.y + 0.6 + SUBIDA_CARTAO * sobe, origem.z)
+    caneta.rotation.set(0, t * GIRO_CARTAO_POR_TICK, INCLINACAO_CANETA)
+    caneta.scale.setScalar(Math.max(0.001, escala))
   }
 
   function destruir() {

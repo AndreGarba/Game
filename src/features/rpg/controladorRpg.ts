@@ -29,7 +29,7 @@ function sementeNova(): number {
 
 function assinaturaDoHud(e: EstadoMundo): string {
   const dialogo = e.dialogo ? `${e.dialogo.id}:${e.dialogo.linha}` : ''
-  return `${e.personagem}|${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.quadro ?? ''}|${e.bola.aoAlcance ? 1 : 0}|${e.bola.gols}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}|${e.buzina ?? ''}`
+  return `${e.personagem}|${e.cena}|${e.alvo?.id ?? ''}|${dialogo}|${e.quadro ?? ''}|${e.bola.aoAlcance ? 1 : 0}|${e.bola.gols}|${e.cartoes.achados}|${e.cartoes.ultimaRevista?.tick ?? ''}|${e.buzina ?? ''}|${e.caneta ?? ''}`
 }
 
 export function criarControladorRpg(opcoes: OpcoesControladorRpg) {

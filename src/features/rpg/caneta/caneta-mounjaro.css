@@ -1,0 +1,37 @@
+/* Caneta do aviso: a largura vem de quem usa (proporção 320 : 80). Entra girando e balança como
+   numa mola, de tempos em tempos. */
+.caneta-mounjaro {
+  aspect-ratio: 320 / 80;
+}
+
+.caneta-mounjaro__balanco {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(var(--sombra-1));
+  animation: caneta-mounjaro-balanca 1.6s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+}
+
+.caneta-mounjaro__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes caneta-mounjaro-balanca {
+  0% {
+    transform: rotate(-18deg) scale(0.85, 1.15);
+  }
+  30% {
+    transform: rotate(10deg) scale(1.12, 0.9);
+  }
+  55%,
+  100% {
+    transform: rotate(-6deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caneta-mounjaro__balanco {
+    animation: none;
+  }
+}

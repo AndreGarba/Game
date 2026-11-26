@@ -124,9 +124,9 @@ pt, en e es, inclusive o "Avenida" (`rpg.cenas.rua` e a placa `rpg.placas.rua`, 
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-22'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-23'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille, Igor, Paraguay, Denise e Renan Martins no elenco) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille, Igor, Paraguay, Denise e Renan Martins no elenco; rpg-23: caneta de Mounjaro na mesa da rosquinha, 149 esconderijos) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -283,8 +283,8 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
 - **Cartões Ultra Blue** (`src/engine/rpg/cartoes.ts`): `TOTAL_CARTOES` (26) escondidos, no
   máximo um por esconderijo. Esconderijo (`ESCONDERIJOS`, chave `cena:id`, porque há ids
   repetidos entre cenas) é todo sólido que não é prédio, nem o muro do beco, nem o vidro da sala de
-  reunião do PAN, nem quadro de entregas ou a parede do feirão, e todo NPC, das seis cenas: 150
-  hoje (lixeiras, bancos, estações de patinete, árvores e placa da praça e a Baleia entraram no
+  reunião do PAN, nem quadro de entregas ou a parede do feirão, nem a mesa da caneta, e todo NPC,
+  das seis cenas: 149 hoje (lixeiras, bancos, estações de patinete, árvores e placa da praça e a Baleia entraram no
   rpg-18; a torre de vidro e o MASP, pilares e hall, são prédio). **Carro não esconde cartão:** mora no estado e anda. **Figurante não esconde cartão:** os da cena são sorteados de novo a cada troca,
   e o cartão sumiria com quem o levava. `criarMundo` esconde os cartões pelo `estado.rng` antes de
   sortear os figurantes; a `TelaRpg` passa uma semente nova (`crypto.getRandomValues`, no
@@ -302,6 +302,29 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   `concluidoEm` (pausa o mundo e mostra o objetivo concluído). O cartão 3D sai do esconderijo
   girando (`cena3d/cartao.ts`); frente pelo slot `hud/cartao-ultrablue`, cores em `COR_CARTAO`.
   Os textos impressos no cartão (`MARCAS_DO_CARTAO`) são marca, não copy: não se traduzem.
+- **Caneta de Mounjaro** (`MESA_DA_CANETA` em `cenas.ts`: a `bancada_pan_0`, primeira fileira do
+  `escritorio_pan`, à esquerda, a da planta mais perto do janelão). A bancada tem `variante:
+  'rosquinha'`, e o modelo põe uma rosquinha vinho na frente da planta (`rosquinha` em
+  `modelos.ts`, cores `rosquinha*` no `COR_OBJETO`); é só desenho. **Revistar essa mesa, e só
+  ela, acha a caneta, nunca cartão**: ela sai dos `ESCONDERIJOS` (`ehMesaDaCaneta`), para o mesmo
+  A não disputar caneta e cartão, e por isso o sorteio dos cartões mudou no rpg-23. O alvo é o
+  `revistar` de sempre ("Procurar o cartão"). O A grava `estado.caneta` (o tick do achado) e põe
+  `jogador.fino` em `TICKS_CANETA` (240 ticks, 4 s), que desconta um por tick em qualquer
+  situação (caído, no diálogo, no quadro), e não gasta o `estado.rng`. **Pode ser achada de novo,
+  toda vez, depois de o efeito acabar**: com `fino > 0` a mesa não é alvo; no tick em que zera, volta
+  a ser. Trocar de personagem fino continua fino (o `fino` é do jogador, não do boneco). Só
+  desenho: a colisão do jogador não muda. **O afinar é do desenho** (`cena3d/fino.ts`,
+  `escalaDoFino`): a escala do `corpo` sai de `estado.tick − estado.caneta − 1 + alfa`, com uma
+  mola amortecida (`Math.exp`/`cos`, permitidos fora do motor) que leva a largura a `LARGURA_FINO`
+  (0,12) por potência, e não por reta, para nunca passar de zero quando a mola passa do alvo; o
+  boneco estica na altura enquanto afina. Passados os `TICKS_CANETA`, outra mola o devolve, alargando
+  além do normal e achatando antes de assentar, e em 1,2 s volta à escala 1. A escala vai por cima
+  da do teleporte (o renderizador zera, o teleporte escreve, a caneta multiplica). A caneta 3D
+  (`cena3d/caneta.ts`, cores em `COR_CANETA`) sai de cima da rosquinha girando, como o cartão; a
+  `TelaRpg` reage à mudança de `estado.caneta` com o efeito `'caneta'` e o aviso com a caneta
+  balançando (`CanetaBalancando`, `src/features/rpg/caneta/`), o nome (`rpg.caneta.nome`) e a
+  frase `rpg.caneta.encontrada` ("Você achou a caneta do Rici e perdeu 70kgs"), pelos 4 s do
+  efeito. Regras em `tests/rpg.caneta.test.ts`.
 - **Quadros "Entregas 2026"** (sólidos `quadro-entregas` com `interacao: { tipo: 'quadro' }`):
   um no escritório do BTG, um no do PAN (parede azul, girado), um na loja de veículos e um no
   feirão, preso na **parede do fundo do feirão** (`parede_feirao`, z 0 a 0,3, na borda do mapa;

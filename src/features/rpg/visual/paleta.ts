@@ -131,6 +131,23 @@ export const COR_OBJETO = {
   ceuJanela: '#bcd9ee',
   predioJanela: '#7f93a8',
   predioJanelaEscuro: '#5d7086',
+  // Rosquinha da mesa da caneta: massa dourada, cobertura vinho e granulado.
+  rosquinhaMassa: '#d9a05b',
+  rosquinhaCobertura: '#7b1e3a',
+  rosquinhaGranulado: ['#f7f1e3', '#f2b81d', '#ff8fb1'],
+}
+
+// Caneta de Mounjaro (injetor de dose única): corpo cinza-claro, tampa e base mais escuras, a
+// janelinha do remédio e o botão roxo. Vale para o modelo 3D e o desenho do aviso no HUD.
+export const COR_CANETA = {
+  corpo: '#e8ebef',
+  sombra: '#b8bfc8',
+  tampa: '#8e97a3',
+  janela: '#9fd8e8',
+  botao: '#7a4fb3',
+  faixa: '#7a4fb3',
+  contorno: '#4a5260',
+  brilho: '#ffffff',
 }
 
 // Baleia da praça: aço inox facetado, em dois tons para as facetas lerem de longe.

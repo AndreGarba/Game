@@ -240,6 +240,10 @@
       "concluido": "Encontraste todas las tarjetas Ultra Blue en {{tempo}}. ¡Felicidades!",
       "continuar": "Seguir explorando"
     },
+    "caneta": {
+      "nome": "Pluma de Mounjaro",
+      "encontrada": "Encontraste la pluma de Rici y perdiste 70kgs"
+    },
     "elenco": {
       "rici": {
         "nome": "Rici",

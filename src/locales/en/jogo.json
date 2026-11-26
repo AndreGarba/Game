@@ -240,6 +240,10 @@
       "concluido": "You found all the Ultra Blue cards in {{tempo}}. Congratulations!",
       "continuar": "Keep exploring"
     },
+    "caneta": {
+      "nome": "Mounjaro pen",
+      "encontrada": "You found Rici's pen and lost 70kgs"
+    },
     "elenco": {
       "rici": {
         "nome": "Rici",
