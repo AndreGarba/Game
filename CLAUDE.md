@@ -165,6 +165,13 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
  e solta um "+1" pelo aviso do achado (`aviso.achou`), não pelo número: o HUD monta de novo
  quando o quadro fecha, e pular de novo ali seria cartão que não existe. Slot de arte do HUD
  continua tirando o painel (`--arte`). Não há componente de HUD de jogo no Orquestra.
+ **O HUD tem escala própria, menor** (bloco `.moldura-tela .tela-rpg__hud` em `tokens.css`,
+ uns dois terços da das telas): espaços, textos, borda, botões e direcional são redefinidos ali,
+ e a pausa, a troca de personagem e a modal ficam com a escala normal. Num HUD grande, a
+ moldura dourada tampava a rua. Texto e botões têm piso em px (`--texto-hud-minimo`,
+ `--botao-acao-minimo`…), porque no celular deitado `--px` é ~0,54. O botão desenhado pode ser
+ menor que o dedo, mas a área de toque não: um `::after` invisível cresce até `--toque-minimo`
+ (44 px), descontada a borda.
 - **Elenco jogável** (`ELENCO` em `src/engine/rpg/elenco.ts`): depois do Jogar, a `TelaSelecao`
   (`src/features/rpg/screens/TelaSelecao/`) mostra um card por personagem e o escolhido em 3D num
   palco (`cena3d/vitrine.ts`); o id vai para `criarMundo(semente, personagem)` e fica em

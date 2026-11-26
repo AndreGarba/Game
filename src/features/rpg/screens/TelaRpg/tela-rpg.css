@@ -204,6 +204,14 @@
   transition: transform 0.05s ease-out;
 }
 
+/* Desenhado pode ser menor que o dedo; a área de toque não. */
+.tela-rpg__pausa::after,
+.tela-rpg__trocar::after {
+  content: '';
+  position: absolute;
+  inset: min(0px, calc((var(--tamanho-botao-icone) - var(--toque-minimo)) / 2 - var(--borda-hud)));
+}
+
 .tela-rpg__pausa {
   right: calc(var(--espaco-4) + var(--safe-direita));
   /* Acima do véu da pausa: o HUD não cria contexto de empilhamento. */
@@ -316,7 +324,7 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-2);
-  max-width: 50cqw;
+  max-width: 40cqw;
   margin: 0;
   padding: var(--espaco-1) var(--espaco-4) var(--espaco-1) var(--espaco-1);
   border-radius: var(--raio-total);
@@ -391,7 +399,7 @@
   /* Quatro botões (», B, soco e A) com três vãos, mais a margem da tela e um respiro. */
   right: calc(var(--tamanho-botao-acao) * 4 + var(--espaco-3) * 3 + var(--espaco-4) * 2 + var(--safe-direita));
   bottom: calc(var(--espaco-3) + var(--safe-base));
-  min-height: 24cqh;
+  min-height: var(--altura-dialogo);
   padding: var(--espaco-4) var(--espaco-4) var(--espaco-3);
   border-radius: var(--raio-2);
   text-shadow: none;
@@ -534,8 +542,8 @@
 .tela-rpg__aviso-raios {
   position: absolute;
   top: 50%;
-  left: calc(var(--espaco-3) + 6.5cqh);
-  width: 34cqh;
+  left: calc(var(--espaco-3) + var(--largura-cartao-aviso) / 2);
+  width: calc(var(--largura-cartao-aviso) * 2.6);
   aspect-ratio: 1;
   border-radius: var(--raio-total);
   background: repeating-conic-gradient(var(--cor-hud-raio) 0 10deg, transparent 10deg 30deg);
@@ -553,7 +561,7 @@
 
 .tela-rpg__aviso-cartao {
   position: relative;
-  width: 13cqh;
+  width: var(--largura-cartao-aviso);
 }
 
 .tela-rpg__aviso-texto {
