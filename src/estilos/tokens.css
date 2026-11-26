@@ -126,6 +126,14 @@
   --sombra-1: 0 2px 8px rgba(0, 0, 0, 0.15);
   --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.25);
 
+  /* Piso do HUD no celular: abaixo disso o texto deixa de ser lido e o dedo erra o botão. */
+  --texto-hud-minimo: 10px;
+  --texto-hud-minimo-forte: 11px;
+  --toque-minimo: 44px;
+  --botao-acao-minimo: 40px;
+  --botao-icone-minimo: 32px;
+  --direcional-minimo: 88px;
+
   --safe-topo: env(safe-area-inset-top, 0px);
   --safe-base: env(safe-area-inset-bottom, 0px);
   --safe-esquerda: env(safe-area-inset-left, 0px);
@@ -188,6 +196,49 @@
   --sombra-hud: 0 calc(var(--px) * 4) 0 rgba(0, 0, 0, 0.35), 0 calc(var(--px) * 9) calc(var(--px) * 20) rgba(0, 0, 0, 0.3);
   /* Repetida aqui porque o var() de um token se resolve onde ele é declarado: a de :root ficaria
      com o contorno de fora da moldura. */
+  --sombra-texto-hud: var(--contorno-texto) 0 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) 0 0 var(--cor-hud-contorno),
+    0 var(--contorno-texto) 0 var(--cor-hud-contorno), 0 calc(var(--contorno-texto) * -1) 0 var(--cor-hud-contorno),
+    var(--contorno-texto) var(--contorno-texto) 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) var(--contorno-texto) 0 var(--cor-hud-contorno),
+    0 calc(var(--contorno-texto) * 2) 0 var(--cor-hud-contorno);
+}
+
+/* Escala própria do HUD do RPG, uns dois terços da escala das telas: o HUD fica por cima do jogo
+   e não pode tampar a rua. Vale só dentro de .tela-rpg__hud (a pausa, a troca de personagem e a
+   modal de entregas ficam com a escala normal). Texto e botões têm piso em px: no celular deitado
+   --px é ~0,54, e sem piso a placa ficaria ilegível e o botão menor que o dedo. O botão desenhado
+   pode ficar abaixo de --toque-minimo; a área de toque não (folga invisível no próprio botão). */
+.moldura-tela .tela-rpg__hud {
+  --espaco-1: calc(var(--px) * 4);
+  --espaco-2: calc(var(--px) * 8);
+  --espaco-3: calc(var(--px) * 12);
+  --espaco-4: calc(var(--px) * 16);
+  --espaco-6: calc(var(--px) * 24);
+  --espaco-8: calc(var(--px) * 32);
+  --raio-2: calc(var(--px) * 8);
+
+  --texto-1: max(calc(var(--px) * 13), var(--texto-hud-minimo));
+  --texto-2: max(calc(var(--px) * 14), var(--texto-hud-minimo));
+  --texto-3: max(calc(var(--px) * 16), var(--texto-hud-minimo-forte));
+  --texto-4: max(calc(var(--px) * 20), var(--texto-hud-minimo-forte));
+  --texto-placa: max(calc(var(--px) * 14), var(--texto-hud-minimo));
+  --texto-contador: max(calc(var(--px) * 22), var(--texto-hud-minimo-forte));
+  --texto-aviso-cartao: max(calc(var(--px) * 20), var(--texto-hud-minimo-forte));
+  --texto-tecla-botao: max(calc(var(--px) * 17), var(--texto-hud-minimo));
+  --texto-tecla-botao-duas: max(calc(var(--px) * 13), var(--texto-hud-minimo));
+  --texto-tecla-icone: max(calc(var(--px) * 12), var(--texto-hud-minimo));
+  --texto-tecla-direcional: max(calc(var(--px) * 16), var(--texto-hud-minimo));
+
+  --borda-hud: calc(var(--px) * 2.5);
+  --profundidade-botao: calc(var(--px) * 4);
+  --contorno-texto: calc(var(--px) * 1.6);
+  --tamanho-icone-contador: calc(var(--px) * 36);
+  --tamanho-botao-acao: max(calc(var(--px) * 62), var(--botao-acao-minimo));
+  --tamanho-botao-icone: max(calc(var(--px) * 42), var(--botao-icone-minimo));
+  --tamanho-direcional: max(calc(var(--px) * 128), var(--direcional-minimo));
+  --largura-cartao-aviso: calc(var(--px) * 60);
+  --altura-dialogo: calc(var(--px) * 110);
+  --sombra-hud: 0 calc(var(--px) * 2.5) 0 rgba(0, 0, 0, 0.35), 0 calc(var(--px) * 5) calc(var(--px) * 12) rgba(0, 0, 0, 0.3);
+  /* Mesmo motivo da moldura: o contorno mudou aqui, então a sombra do texto é declarada de novo. */
   --sombra-texto-hud: var(--contorno-texto) 0 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) 0 0 var(--cor-hud-contorno),
     0 var(--contorno-texto) 0 var(--cor-hud-contorno), 0 calc(var(--contorno-texto) * -1) 0 var(--cor-hud-contorno),
     var(--contorno-texto) var(--contorno-texto) 0 var(--cor-hud-contorno), calc(var(--contorno-texto) * -1) var(--contorno-texto) 0 var(--cor-hud-contorno),
