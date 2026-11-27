@@ -87,6 +87,7 @@
       "praca": "Praça da Baleia"
     },
     "nomes": {
+      "livia": "Livia",
       "pedestre": "Dona Cida",
       "recepcionista": "Júlia",
       "vendedor": "Marcos",
@@ -133,6 +134,14 @@
       "chutar": "Chutar"
     },
     "dialogos": {
+      "livia": [
+        "Palmeiras",
+        "Verdão",
+        "Palmeiras",
+        "Vai Palmeiras",
+        "Mancha Verde",
+        "Palestra Itália"
+      ],
       "pedestre": [
         "Bom dia! Você é novo no bairro?",
         "Aquele é o BTG Pactual, na porta azul. A loja de carros é logo ao lado.",
@@ -409,7 +418,9 @@
       "proximo": "Próximo slide"
     },
     "futebol": {
-      "gol": "Gooooooollllllllll"
+      "gol": "Gooooooollllllllll",
+      "golLivia": "Gol da Livia!",
+      "defesa": "Defesa da Livia!"
     },
     "manifestantes": {
       "placas": [

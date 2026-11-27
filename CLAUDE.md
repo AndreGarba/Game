@@ -124,9 +124,9 @@ pt, en e es, inclusive o "Avenida" (`rpg.cenas.rua` e a placa `rpg.placas.rua`, 
 Porta na parede do fundo de um interior (`z = 0`) é desenhada como porta na parede; nas outras, um
 capacho de saída. **Marca BTG Pactual é interna:** antes de ligar a URL pública do Worker, vale a
 regra de Cloudflare Access para marcas BTG/Pan.
-Versão do mundo: `VERSAO_MUNDO = 'rpg-23'` (rpg-2: botão de correr; rpg-3: banco com agência e
+Versão do mundo: `VERSAO_MUNDO = 'rpg-24'` (rpg-2: botão de correr; rpg-3: banco com agência e
 escritório; rpg-4: Faria Lima, feirão e figurantes; rpg-5: patinete derruba o jogador; rpg-6:
-soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille, Igor, Paraguay, Denise e Renan Martins no elenco; rpg-23: caneta de Mounjaro na mesa da rosquinha, 149 esconderijos) (`src/engine/rpg/constantes.ts`).
+soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogério no elenco; rpg-10: Fernanda no elenco; rpg-11: Banco PAN, rua com 77 m; rpg-12: quadros Entregas 2026 e balões; rpg-13: trocar de personagem no meio da partida; rpg-14: campo de futebol; rpg-15: Dea no elenco; rpg-16: Roman no elenco; rpg-17: mais 13 pessoas do time no elenco; rpg-18: carros na avenida, mobiliário de rua e Praça da Baleia, rua com 104 m; rpg-19: praça ao lado do campo e MASP no lugar da torre ao lado do feirão; rpg-20: 26 cartões em vez de 31; rpg-21: manifestantes no vão do MASP; rpg-22: Camille, Igor, Paraguay, Denise e Renan Martins no elenco; rpg-23: caneta de Mounjaro na mesa da rosquinha, 149 esconderijos; rpg-24: Livia no campo de futebol) (`src/engine/rpg/constantes.ts`).
 
 - **O motor do mundo** (`src/engine/rpg/`, barrel próprio em `engine/rpg/index.ts`) segue as regras
   técnicas abaixo: passo fixo, só aritmética básica (a diagonal usa `FATOR_DIAGONAL` escrito à
@@ -139,7 +139,8 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   (zonas com `destino`), `npcs` (bloqueiam num quadrado de `RAIO_NPC`) e `decoracoes` (chão).
 - **Entrada por tick** (`Entrada`): `dx`/`dz` em −1, 0 ou 1 já em eixos do mundo, `correr`
   enquanto o botão » (ou Shift) está segurado, e `interagir`/`voltar`/`socar`/`chutar` só no tick
-  em que o botão desceu (soco: botão do punho ou F/J; chute: botão da bola ou R). Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência
+  em que o botão desceu (soco: botão do punho ou F/J; chute: botão da bola ou R); `clicarLivia`
+  é o toque ou clique do ponteiro em cima da Livia, que a tela resolve projetando o boneco dela. Velocidades (`VEL_ANDAR`, `VEL_CORRER`) e cadência
   do passo (`PASSO_ANDANDO`, `PASSO_CORRENDO`, somadas em `jogador.fasePasso`) ficam em
   `constantes.ts`; o desenho só lê `fasePasso` e `correndo`. O d-pad é da tela: "cima" é andar
   para −x e −z, e quem converte é `direcaoNoMundo` (`src/features/rpg/direcao.ts`), não o motor.
@@ -376,10 +377,45 @@ soco; rpg-7: cartões Ultra Blue; rpg-8: seleção de personagens; rpg-9: Rogér
   ela estiver atrás ou de lado (`mirarNaBola`) e acerta no tick `TICKS_CHUTE_IMPACTO`, até
   `TICKS_CHUTE` (`jogador.chute`, animação `animarChute` em `personagem.ts`). No impacto vale o
   `ALCANCE_IMPACTO_CHUTE`, maior, porque a bola conduzida ainda anda durante a puxada da perna. A
-  bola inteira além da linha, entre as traves, é **gol**: soma `bola.gols`, grava `ultimoGol` e
-  `estado.festa` (o mesmo confete dos balões) e volta ao centro depois de `TICKS_VOLTA_GOL`; saiu
-  pelas linhas, volta depois de `TICKS_VOLTA_FORA`. A `TelaRpg` reage a `ultimoGol` com a
-  mensagem `rpg.futebol.gol` ("Gooooooollllllllll"). Figurante não toca na bola.
+  bola inteira além da linha, entre as traves, é **gol** de quem a tocou por último de propósito
+  (`bola.autor`: chute ou condução). Do jogador, soma `bola.gols` e grava `estado.festa` (o mesmo
+  confete dos balões); da Livia, soma `livia.gols`, sem confete. Os dois gravam `ultimoGol` (com o
+  `autor`) e a bola volta ao centro depois de `TICKS_VOLTA_GOL`; saiu pelas linhas, volta depois
+  de `TICKS_VOLTA_FORA`. A `TelaRpg` reage a `ultimoGol` com a mensagem `rpg.futebol.gol`
+  ("Gooooooollllllllll") ou `rpg.futebol.golLivia`. Figurante não toca na bola.
+- **Livia** (`src/engine/rpg/livia.ts`, `estado.livia`): NPC do campo, **não é do elenco** (não
+  entra no `ELENCO` nem na seleção, e não esconde cartão). Cabelo longo e liso, castanho-claro com
+  as pontas mais claras, pele clara, uniforme do Palmeiras **só nas cores** (`APARENCIAS.livia`:
+  camisa verde-escura com gola em V, calção branco, meião verde; `golaV` e `meiao` são campos da
+  `Aparencia`), sem escudo nem marca; foto em `media/referencias/npc-livia.png` na store. **Mora
+  no motor**, como a bola: rouba, conduz, chuta e defende a cada tick, e o lance precisa repetir
+  igual. Não gasta o `estado.rng` (há teste) e é só `+ − × ÷` (distâncias pelo maior eixo ou pela
+  `norma` octogonal). **Fica sempre dentro do campo**, a `RAIO_LIVIA` das linhas; o jogador a
+  atravessa, como aos figurantes. Roda antes da bola em `passo`.
+  - **Sem lance**, guarda: entre a bola e o gol mais perto dela, a `DIST_GUARDA` da bola; com a
+    bola perto do gol, fica na meta, no meio do caminho entre a bola e o centro do gol.
+  - **Rouba** quando o jogador está a até `DIST_PRESSAO` da bola (vai pegar ou conduz) ou a bola
+    solta passa a até `DIST_BOLA_SOLTA` dela: corre a `VEL_LIVIA` (mais que o andar, menos que o
+    correr) para trás da bola em relação ao gol que ataca, conduz a bola nesse rumo e, a até
+    `DIST_CHUTE_LIVIA` da linha, chuta (`VEL_CHUTE_LIVIA`, para o canto longe do jogador,
+    `MIRA_LIVIA`). Conduzindo andando, o jogador quase sempre perde a bola; correndo, ganha dela.
+    Perde a posse com a bola a mais de `DIST_PERDEU`.
+  - **Defende** o chute do jogador: fica parada `TICKS_REACAO_LIVIA` (o tempo de reação) e
+    depois corre para a linha do chute. Defesa é a bola encostar nela (`ALCANCE_DEFESA_LIVIA`)
+    ainda rápida (`VEL_DEFESA_MIN`): volta com `REBOTE_LIVIA`, soma `livia.defesas` e grava
+    `livia.ultimaDefesa`, que a `TelaRpg` mostra como `rpg.futebol.defesa`. Depois de chutar ou
+    defender, espera `TICKS_RECARGA_LIVIA`. **É vencível**: o chute reto nela é defendido, o de
+    perto na diagonal para o canto entra (há teste dos dois).
+  - **Fala** pelo A de perto ou pelo toque nela de qualquer distância (`clicarLivia`;
+    `tocouNaLivia` no renderizador, com cursor de mão em cima dela): as seis falas de
+    `rpg.dialogos.livia`, em sequência, **iguais em pt, en e es** (nomes próprios e grito de
+    torcida; há teste). Conversando, ela para e vira para o jogador.
+  - **Soco**: cai como um NPC, pela linha do tempo do tombo, e no chão não rouba, não defende e
+    não conversa; solta a bola. Gol feito com ela no chão vale.
+  - Com o jogador fora da rua, ela não joga. Os testes de futebol (`tests/rpg.futebol.test.ts`)
+    a tiram do lance com recarga infinita, para medir a bola sozinha; as regras dela ficam em
+    `tests/rpg.livia.test.ts`, e o golden master do mundo tem um lance dela (rouba, faz gol e
+    conversa pelo clique).
 - **Carros** (`src/engine/rpg/carros.ts`, `estado.carros`): **moram no motor**, porque param
   pelo jogador a cada tick e o trânsito precisa repetir igual. Seis carros fixos (cor e posição de
   saída em `criarCarros`), três por faixa (`FAIXAS_CARROS` em `cenas.ts`: z 11,6 indo para −x, z 14,6

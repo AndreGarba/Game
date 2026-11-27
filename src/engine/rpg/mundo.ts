@@ -2,6 +2,7 @@ import { criarRng } from '../rng.ts'
 import { passoBaloes, soltarBaloes } from './baloes.ts'
 import { bolaAoAlcance, chutarBola, criarBola, mirarNaBola, passoBola } from './bola.ts'
 import { caixaDoCarro, caixasDosCarros, criarCarros, passoCarros } from './carros.ts'
+import { conversarComLivia, criarLivia, derrubarLivia, FALAS_LIVIA, ID_LIVIA, liviaDePe, passoLivia } from './livia.ts'
 import { criarManifestantes, passoManifestantes } from './manifestantes.ts'
 import { chaveDoEsconderijo, ehEsconderijo, ehMesaDaCaneta, esconderCartoes, revistar } from './cartoes.ts'
 import { CENA_INICIAL, CENAS, POSICAO_INICIAL } from './cenas.ts'
@@ -40,7 +41,7 @@ export { faseDoTombo } from './tombo.ts'
 // no lugar. Só aritmética básica, como o motor do template: o mesmo log de entradas dá sempre o
 // mesmo mundo, em qualquer aparelho.
 
-export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+export const ENTRADA_PARADA: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 
 // O elenco que não foi escolhido e está nesta cena, para entrar entre os figurantes.
 function elencoNaCena(elencoNoMapa: Record<string, IdCena>, cena: IdCena) {
@@ -90,6 +91,7 @@ export function criarMundo(semente = SEMENTE_PADRAO, personagem = PERSONAGEM_PAD
     proximoBalao: 1,
     festa: null,
     bola: criarBola(),
+    livia: criarLivia(),
     carros,
     buzina: null,
     manifestantes: criarManifestantes(),
@@ -168,6 +170,15 @@ function candidatos(estado: EstadoMundo, cena: Cena, x: number, z: number): Cand
     saida.push({
       alvo: { id: n.id, tipo: 'conversa' },
       interacao: { tipo: 'conversa', dialogo: n.dialogo, linhas: n.linhas },
+      d2: distancia2(x, z, caixa),
+    })
+  }
+  if (cena.id === 'rua' && liviaDePe(estado)) {
+    const l = estado.livia
+    const caixa = { x: l.x - RAIO_NPC, z: l.z - RAIO_NPC, largura: 2 * RAIO_NPC, profundidade: 2 * RAIO_NPC }
+    saida.push({
+      alvo: { id: ID_LIVIA, tipo: 'conversa' },
+      interacao: { tipo: 'conversa', dialogo: ID_LIVIA, linhas: FALAS_LIVIA },
       d2: distancia2(x, z, caixa),
     })
   }
@@ -286,6 +297,7 @@ interface AlvoSoco {
   d2: number
   figurante?: Figurante
   npc?: string
+  livia?: true
 }
 
 // O mais perto, de pé, num leque à frente do jogador: figurante ou NPC. Empate: figurante antes.
@@ -307,6 +319,7 @@ function alvoDoSoco(estado: EstadoMundo, ux: number, uz: number): AlvoSoco | nul
   for (const n of cenaAtual(estado).npcs) {
     if (!estado.npcsDerrubados[n.id]) considerar(n.x, n.z, { tombo: { tombo: 0, tomboX: 0, tomboZ: 0 }, npc: n.id })
   }
+  if (liviaDePe(estado)) considerar(estado.livia.x, estado.livia.z, { tombo: estado.livia, livia: true })
   return melhor
 }
 
@@ -317,6 +330,10 @@ function golpear(estado: EstadoMundo) {
   const uz = diagonal ? j.dirZ * FATOR_DIAGONAL : j.dirZ
   const alvo = alvoDoSoco(estado, ux, uz)
   if (!alvo) return
+  if (alvo.livia) {
+    derrubarLivia(estado, ux, uz)
+    return
+  }
   derrubar(alvo.tombo, ux, uz)
   if (alvo.npc) estado.npcsDerrubados[alvo.npc] = alvo.tombo
   const f = alvo.figurante
@@ -416,6 +433,7 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
       j.fasePasso += j.correndo ? PASSO_CORRENDO : PASSO_ANDANDO
     }
     if (entrada.interagir) interagir(estado, cenaAtual(estado))
+    else if (entrada.clicarLivia) conversarComLivia(estado)
   }
 
   passoFigurantes(estado.figurantes, cenaAtual(estado), estado.rng, caixasDosCarros(estado))
@@ -423,6 +441,7 @@ export function passoMundo(estado: EstadoMundo, entrada: Entrada): void {
   if (j.chute === TICKS_CHUTE_IMPACTO) chutarBola(estado)
   atropelar(estado)
   passoBaloes(estado)
+  passoLivia(estado)
   passoBola(estado)
   passoCarros(estado)
   passoManifestantes(estado)

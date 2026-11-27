@@ -30,7 +30,7 @@ import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 
 function andar(estado: EstadoMundo, dx: number, dz: number, ticks: number, correr = false) {
   for (let i = 0; i < ticks; i++) passoMundo(estado, { ...PARADO, dx, dz, correr })
@@ -695,6 +695,32 @@ describe('mundo do RPG', { timeout: 20_000 }, () => {
     expect(e.bola.ultimoGol?.lado).toBe('direito')
     marcar()
     andar(e, 0, 0, 160)
+    marcar()
+    expect(marcos).toMatchSnapshot()
+  })
+
+  it('golden master: a Livia rouba a bola de quem conduz andando, faz gol e conversa pelo clique', () => {
+    const e = criarMundo()
+    const marcos: unknown[] = []
+    const marcar = () => marcos.push(structuredClone(e))
+    // Como no passeio do gol: atravessa a avenida e desce até a altura da bola.
+    for (let i = 0; i < 600 && e.jogador.z < 19.6; i++) andar(e, 0, 1, 1)
+    andar(e, 1, 0, 114, true)
+    for (let i = 0; i < 900 && e.jogador.z < e.bola.z; i++) andar(e, 0, 1, 1, true)
+    marcar()
+    // Conduz andando para a esquerda, para cima dela: ela rouba e leva a bola para o outro gol.
+    for (let i = 0; i < 400 && e.bola.autor !== 'livia'; i++) andar(e, -1, 0, 1)
+    expect(e.bola.autor).toBe('livia')
+    marcar()
+    for (let i = 0; i < 900 && !e.bola.ultimoGol; i++) andar(e, 1, 0, 1)
+    expect(e.bola.ultimoGol?.autor).toBe('livia')
+    marcar()
+    // Clique de longe: abre a conversa; o A passa as seis falas.
+    passoMundo(e, { ...PARADO, clicarLivia: true })
+    marcar()
+    for (let i = 0; i < 6; i++) apertarA(e)
+    expect(e.dialogo).toBeNull()
+    andar(e, 0, 0, 120)
     marcar()
     expect(marcos).toMatchSnapshot()
   })

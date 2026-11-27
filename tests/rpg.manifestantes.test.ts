@@ -5,7 +5,7 @@ import { MANIFESTACAO, type Entrada, type EstadoMundo } from '../src/engine/rpg/
 import { RAIO_FIGURANTE } from '../src/engine/rpg/constantes.ts'
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 const andar = (e: EstadoMundo, dx: number, dz: number, ticks: number, correr = false) => {
   for (let i = 0; i < ticks; i++) passoMundo(e, { ...PARADO, dx, dz, correr })
 }

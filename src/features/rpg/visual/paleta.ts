@@ -271,6 +271,10 @@ export interface Aparencia {
   // Vestido longo até o tornozelo, com decote em V (`camisa` e `calca` ficam por baixo: use a
   // cor do vestido na camisa e a pele na calça, que aparece no passo).
   vestido?: string
+  // Gola em V da camisa de futebol: o V de pele no peito e o friso da gola (esta cor).
+  golaV?: string
+  // Meião: cobre a canela da perna de bermuda (esta cor), até perto do joelho.
+  meiao?: string
 }
 
 export const APARENCIAS: Record<string, Aparencia> = {
@@ -616,6 +620,23 @@ export const APARENCIAS: Record<string, Aparencia> = {
   coordenadora_pan: { pele: '#f2c9a8', cabelo: '#d8b46a', camisa: '#0a3d73', calca: '#2a2f3a', sapato: '#1e1e1e', detalhe: null },
   dev_pan: { pele: '#c48a64', cabelo: '#141414', camisa: '#1c1c20', calca: '#3a4d6b', sapato: '#f2f2f2', detalhe: null, barba: '#141414', barbaRala: true },
   vendedor: { pele: '#c68a62', cabelo: '#2a2a2a', camisa: '#d6402f', calca: '#222831', sapato: '#111111', detalhe: '#f2b81d' },
+  // Livia, a NPC do campo: cabelo longo e liso, castanho-claro com as pontas mais claras, pele
+  // clara, uniforme verde do Palmeiras só nas cores (camisa verde-escura de gola em V, calção
+  // branco, meião verde), sem escudo nem marca.
+  livia: {
+    pele: '#f2cdb0',
+    cabelo: '#7a5634',
+    camisa: '#0f5a3c',
+    calca: '#f3f3ef',
+    sapato: '#16181a',
+    detalhe: null,
+    cabeloLongo: { pontas: '#caa070' },
+    mangaCurta: true,
+    bermuda: true,
+    solado: '#f3f3ef',
+    golaV: '#f3f3ef',
+    meiao: '#0f5a3c',
+  },
 }
 
 // Anel no chão embaixo do jogador: de roupa preta, ele some no asfalto e no meio dos figurantes.

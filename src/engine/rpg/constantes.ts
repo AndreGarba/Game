@@ -1,5 +1,5 @@
 // Constantes do mundo do RPG. Mudou uma → sobe VERSAO_MUNDO e atualiza o golden master.
-export const VERSAO_MUNDO = 'rpg-23'
+export const VERSAO_MUNDO = 'rpg-24'
 
 export const TICKS_POR_SEGUNDO = 60
 export const DT = 1 / TICKS_POR_SEGUNDO
@@ -145,3 +145,32 @@ export const VEL_MANIFESTANTE = 3.3 / TICKS_POR_SEGUNDO
 export const VEL_MANIFESTANTE_VOLTA = 1.6 / TICKS_POR_SEGUNDO
 // Travado num obstáculo, o manifestante anda de lado por estes ticks antes de tentar reto de novo.
 export const TICKS_DESVIO_MANIFESTANTE = 15
+
+// Livia, a NPC do campo (livia.ts). Corre a 4,8 m/s: alcança quem anda conduzindo (3,6 m/s) e fica
+// para trás de quem corre (6,3 m/s). Volta para a meta trotando.
+export const VEL_LIVIA = 4.8 / TICKS_POR_SEGUNDO
+export const VEL_LIVIA_TROTE = 2.4 / TICKS_POR_SEGUNDO
+export const RAIO_LIVIA = 0.3
+// Centro dela ao centro da bola, no maior eixo: toca (rouba ou conduz) e defende (se estica um pouco).
+export const ALCANCE_TOQUE_LIVIA = 0.55
+export const ALCANCE_DEFESA_LIVIA = 0.7
+// Sai para roubar com o jogador a até DIST_PRESSAO da bola; bola solta a até DIST_BOLA_SOLTA dela,
+// pega mesmo sem ninguém perto. Conduzindo, a bola a mais de DIST_PERDEU dela é posse perdida.
+export const DIST_PRESSAO = 5
+export const DIST_BOLA_SOLTA = 3
+export const DIST_PERDEU = 2.5
+// Chuta para o gol quando a bola está a até DIST_CHUTE_LIVIA da linha, mirando o canto longe do
+// jogador; o chute dela (20 m/s) é mais fraco que o do jogador.
+export const DIST_CHUTE_LIVIA = 10
+export const VEL_CHUTE_LIVIA = 0.34
+export const MIRA_LIVIA = 1.7
+// Bola do jogador mais rápida que isso é chute: ela defende em vez de roubar. Reage TICKS_REACAO_LIVIA
+// depois do chute (0,25 s) e não alcança o canto: é vencível. A defesa devolve REBOTE_LIVIA da velocidade.
+export const VEL_DEFESA_MIN = 0.2
+export const TICKS_REACAO_LIVIA = 15
+export const REBOTE_LIVIA = 0.3
+export const TICKS_RECARGA_LIVIA = 40
+// Sem lance, espera a DIST_GUARDA da bola, entre ela e o gol que defende; com a bola perto do gol,
+// na meta, RECUO_LIVIA à frente da linha, entre as traves.
+export const DIST_GUARDA = 4
+export const RECUO_LIVIA = 0.8

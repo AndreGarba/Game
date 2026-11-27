@@ -13,6 +13,7 @@ import {
   TICKS_CHUTE,
   TICKS_CHUTE_IMPACTO,
   TICKS_SUSTO_PATINETE,
+  ID_LIVIA,
   type EstadoMundo,
   type IdCena,
   type Tombo,
@@ -94,6 +95,14 @@ const GIRO_CARTAO_POR_TICK = 0.16
 const INCLINACAO_CANETA = 0.5
 // Topo de uma pessoa, de onde o cartão sai quando o esconderijo é NPC.
 const ALTURA_PESSOA = 1.8
+// Livia defendendo: braços abertos esperando o chute e, na defesa, um pulo com os braços no alto.
+const BRACOS_ABERTOS = 0.75
+const BRACOS_NO_ALTO = -2.9
+const TICKS_PULO_DEFESA = 24
+const ALTURA_PULO_DEFESA = 0.35
+// Toque na Livia: a caixa dela na tela, dos pés ao alto da cabeça, com folga para o dedo.
+const ALTURA_LIVIA = 2
+const FOLGA_TOQUE = 14
 const ALTURA_CARRO = 1.5
 
 interface Carro3d {
@@ -187,6 +196,10 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
   let carros = new Map<number, Carro3d>()
   // Manifestantes do MASP, por id, com o cartaz (pivô no pé do cabo): só com a rua montada.
   let manifestantes = new Map<number, { p: Personagem; cartaz: THREE.Group; pivo: THREE.Group }>()
+  // A Livia, só com a rua montada; `posLivia` é onde ela foi desenhada, para o toque.
+  let livia: Personagem | null = null
+  const posLivia = new THREE.Vector3()
+  let liviaNaTela = false
   let largura = 1
   let altura = 1
   let tempo = 0
@@ -202,6 +215,8 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     patinetes = new Map()
     carros = new Map()
     manifestantes = new Map()
+    livia = null
+    liviaNaTela = false
     idMontada = id
     ajustarCamera()
   }
@@ -337,6 +352,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     if (estado.cena === 'rua') {
       desenharCarros(estado, alfa)
       desenharManifestantes(estado, alfa, dt)
+      desenharLivia(estado, alfa, dt, x, z)
     }
 
     desenharCartao(estado, alfa)
@@ -441,6 +457,55 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     }
   }
 
+  // Boneco completo, como o elenco no mapa: é uma só e precisa ser reconhecível.
+  function desenharLivia(estado: EstadoMundo, alfa: number, dt: number, jx: number, jz: number) {
+    const l = estado.livia
+    if (!livia) {
+      livia = criarPersonagem(fabricaCena, APARENCIAS.livia!)
+      livia.angulo = anguloDaDirecao(l.dirX, l.dirZ)
+      montada?.grupo.add(livia.raiz)
+    }
+    const lx = l.xAnterior + (l.x - l.xAnterior) * alfa
+    const lz = l.zAnterior + (l.z - l.zAnterior) * alfa
+    livia.raiz.position.set(lx, 0, lz)
+    posLivia.set(lx, 0, lz)
+    liviaNaTela = true
+    const conversa = estado.dialogo?.origem === ID_LIVIA
+    const angulo = l.tombo > 0 ? anguloDaDirecao(-l.tomboX, -l.tomboZ) : conversa ? Math.atan2(jx - lx, jz - lz) : anguloDaDirecao(l.dirX, l.dirZ)
+    animarPersonagem(livia, l.fasePasso * RADIANOS_POR_TICK, l.andando, tempo + 7, angulo, dt, l.correndo)
+    zerarPoses(livia)
+    const desdeDefesa = l.ultimaDefesa === null ? TICKS_PULO_DEFESA : estado.tick - l.ultimaDefesa + alfa
+    if (l.tombo > 0) {
+      const { fase, queda } = poseDoTombo(l, alfa)
+      animarTombo(livia, fase, queda, tempo + 7)
+    } else if (l.chute > 0) {
+      animarChute(livia, Math.min(1, (l.chute - 1 + alfa) / (TICKS_CHUTE - 1)), (TICKS_CHUTE_IMPACTO - 1) / (TICKS_CHUTE - 1))
+    } else if (desdeDefesa < TICKS_PULO_DEFESA) {
+      const u = desdeDefesa / TICKS_PULO_DEFESA
+      livia.raiz.position.y = 4 * u * (1 - u) * ALTURA_PULO_DEFESA
+      for (const braco of livia.bracos) braco.rotation.x = BRACOS_NO_ALTO
+      livia.bracos[0]!.rotation.z = -BRACOS_ABERTOS * 0.4
+      livia.bracos[1]!.rotation.z = BRACOS_ABERTOS * 0.4
+    } else if (l.modo === 'defesa') {
+      livia.bracos[0]!.rotation.z = -BRACOS_ABERTOS
+      livia.bracos[1]!.rotation.z = BRACOS_ABERTOS
+    }
+  }
+
+  // O toque (em pixels do canvas, como o `clientWidth`) caiu na Livia? Projeta os pés e o alto
+  // da cabeça e aceita um retângulo em volta dos dois, com folga para o dedo.
+  function tocouNaLivia(px: number, py: number): boolean {
+    if (!liviaNaTela || idMontada !== 'rua') return false
+    const tela = (v: THREE.Vector3) => {
+      const p = v.clone().project(camera)
+      return { x: ((p.x + 1) / 2) * largura, y: ((1 - p.y) / 2) * altura }
+    }
+    const pes = tela(posLivia)
+    const cabeca = tela(posLivia.clone().setY(ALTURA_LIVIA))
+    const meiaLargura = (pes.y - cabeca.y) * 0.22 + FOLGA_TOQUE
+    return Math.abs(px - pes.x) <= meiaLargura && py >= cabeca.y - FOLGA_TOQUE && py <= pes.y + FOLGA_TOQUE
+  }
+
   function desenharCartao(estado: EstadoMundo, alfa: number) {
     const r = estado.cartoes.ultimaRevista
     const t = r ? estado.tick - r.tick + alfa : TICKS_CARTAO
@@ -480,7 +545,7 @@ export function criarRenderizador(canvas: HTMLCanvasElement, textos: TextosDaCen
     renderizador.dispose()
   }
 
-  return { desenhar, redimensionar, destruir }
+  return { desenhar, redimensionar, destruir, tocouNaLivia }
 }
 
 export type RenderizadorRpg = ReturnType<typeof criarRenderizador>

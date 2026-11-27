@@ -87,6 +87,7 @@
       "praca": "Whale Square"
     },
     "nomes": {
+      "livia": "Livia",
       "pedestre": "Mrs. Cida",
       "recepcionista": "Julia",
       "vendedor": "Mark",
@@ -133,6 +134,14 @@
       "chutar": "Kick"
     },
     "dialogos": {
+      "livia": [
+        "Palmeiras",
+        "Verdão",
+        "Palmeiras",
+        "Vai Palmeiras",
+        "Mancha Verde",
+        "Palestra Itália"
+      ],
       "pedestre": [
         "Good morning! Are you new in the neighborhood?",
         "That is BTG Pactual, the blue door. The car shop is right next to it.",
@@ -409,7 +418,9 @@
       "proximo": "Next slide"
     },
     "futebol": {
-      "gol": "Gooooooaaaaalllll"
+      "gol": "Gooooooaaaaalllll",
+      "golLivia": "Livia scores!",
+      "defesa": "Livia saves!"
     },
     "manifestantes": {
       "placas": [

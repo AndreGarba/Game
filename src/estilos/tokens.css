@@ -84,6 +84,9 @@
   /* "Gooool" no meio da tela quando a bola entra. */
   --texto-gol: 72px;
   --contorno-gol: 2px;
+  /* Gol e defesa da Livia, no verde do uniforme dela. */
+  --texto-lance-livia: 52px;
+  --cor-livia: #3fbf7a;
 
   --cor-ultrablue: #24406b;
   --cor-ultrablue-claro: #3b68a8;
@@ -184,6 +187,7 @@
   --largura-entregas-item: calc(var(--px) * 360);
   --tamanho-entregas-ponto: calc(var(--px) * 14);
   --texto-gol: calc(var(--px) * 110);
+  --texto-lance-livia: calc(var(--px) * 80);
   --contorno-gol: calc(var(--px) * 3);
 
   --borda-hud: calc(var(--px) * 4);

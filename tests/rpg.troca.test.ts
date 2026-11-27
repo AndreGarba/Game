@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { trocarPersonagem, type Entrada, type EstadoMundo, type IdCena } from '../src/engine/rpg/index.ts'
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 
 function sementeCom(id: string, cena: IdCena, personagem: string): number {
   for (let s = 1; s < 500; s++) if (criarMundo(s, personagem).elencoNoMapa[id] === cena) return s

@@ -6,9 +6,11 @@ export { BOCA_GOL, CAMPO, CENAS, CENA_INICIAL, FAIXAS_CARROS, FUNDO_GOL, MANIFES
 export { CORES_BALAO } from './baloes.ts'
 export { ESCONDERIJOS, chaveDoEsconderijo, type Esconderijo } from './cartoes.ts'
 export { CENAS_DO_ELENCO, ELENCO, PERSONAGEM_PADRAO, personagemDoElenco, type PersonagemJogavel } from './elenco.ts'
+export { FALAS_LIVIA, ID_LIVIA } from './livia.ts'
 export { criarMundo, cenaAtual, faseDoTombo, passoMundo, trocarPersonagem, ENTRADA_PARADA } from './mundo.ts'
 export type {
   Alvo,
+  AutorDaBola,
   Balao,
   Bola,
   Carro,
@@ -31,6 +33,8 @@ export type {
   Interacao,
   JogadorRpg,
   LadoDoGol,
+  Livia,
+  ModoLivia,
   Npc,
   Porta,
   Retangulo,
