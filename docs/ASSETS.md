@@ -207,10 +207,10 @@ três quartos, centralizados com folga em cima: o card mostra o centro num retâ
 | `paraguay` | Paraguay: cabelo castanho-escuro, óculos, barba, jaqueta puffer preta | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `denise` | Denise: cabelo castanho longo com pontas claras, vestido longo vinho com decote em V | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 | `renan_martins` | Renan Martins: boné preto, óculos escuros, barba castanha grisalha, puffer cinza aberta sobre camiseta preta | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
-| `filipe` | Filipe: sem foto; saco de pão de papel pardo na cabeça, camiseta cinza, jeans | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
+| `felipe` | Felipe Neves: boneco de neve, nariz de cenoura, cachecol vermelho, braços de galho | 4 : 5 | 512 × 640 | ~88 × 66 px (centro da imagem, 4 : 3) |
 
 O boneco 3D de cada um (no palco da seleção e no mapa) continua em código: as cores e os detalhes
-(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo (com ou sem risca ao meio), regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom, olhos amendoados, cabelo cacheado, barba grisalha, jaqueta puffer, vestido longo, saco de pão) ficam em `APARENCIAS.<id>` no
+(careca, barba cheia ou rala, óculos, estampa da camiseta, solado, relógio, tatuagens, cabelo até o ombro ou longo (com ou sem risca ao meio), regata, babado, jaqueta aberta, camisa social, unhas, sorriso, brincos, manga curta, bermuda, tatuagem na perna, cachecol, lentes escuras, boné, batom, olhos amendoados, cabelo cacheado, barba grisalha, jaqueta puffer, vestido longo, boneco de neve) ficam em `APARENCIAS.<id>` no
 `paleta.ts`.
 
 ---
