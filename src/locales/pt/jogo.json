@@ -364,6 +364,11 @@
         "nome": "Renan Martins",
         "titulo": "Embaixador do Orquestra",
         "descricao": "Chegou em abril e se integrou rápido ao time. Embaixador do Orquestra, o design system do banco, em Consignado."
+      },
+      "felipe": {
+        "nome": "Felipe Neves",
+        "titulo": "Mestre da Renegociação",
+        "descricao": "Reescreveu a jornada de renegociação e virou lenda: 96 mil visitantes por mês, 154 mil acordos selados e R$ 351,6 milhões em dívidas transformadas em recomeços épicos."
       }
     },
     "teclas": {

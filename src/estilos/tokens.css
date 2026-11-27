@@ -180,7 +180,7 @@
   --largura-cartao: calc(var(--px) * 520);
   --largura-janela: calc(var(--px) * 560);
   --largura-botao-grande: calc(var(--px) * 280);
-  --texto-card-personagem: calc(var(--px) * 12);
+  --texto-card-personagem: calc(var(--px) * 11);
   --largura-entregas-item: calc(var(--px) * 360);
   --tamanho-entregas-ponto: calc(var(--px) * 14);
   --texto-gol: calc(var(--px) * 110);

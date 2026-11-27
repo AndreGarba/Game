@@ -37,6 +37,7 @@ export const ELENCO: readonly PersonagemJogavel[] = [
   { id: 'paraguay', visual: 'paraguay' },
   { id: 'denise', visual: 'denise' },
   { id: 'renan_martins', visual: 'renan_martins' },
+  { id: 'felipe', visual: 'felipe' },
 ]
 
 export const PERSONAGEM_PADRAO = ELENCO[0]!.id

@@ -368,6 +368,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   suporte.position.y = opcoes.elevacao ?? 0
   suporte.add(corpo)
   raiz.add(suporte)
+  if (a.bonecoDeNeve) return bonecoDeNeve(f, a, a.bonecoDeNeve, raiz, corpo, opcoes)
   if (opcoes.leve) return personagemLeve(f, a, raiz, corpo)
 
   const pernaE = a.bermuda ? pernaDeBermuda(f, a, -1) : membro(f, a.calca, a.sapato, 0.2, 0.66, 0.12)
@@ -459,6 +460,81 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   }
 
   return { raiz, corpo, pernas: [pernaE, pernaD], bracos: [bracoE, bracoD], angulo: 0, anel }
+}
+
+// Boneco de neve com os mesmos pivôs dos outros: as pernas são dois tocos de neve que saem por
+// baixo da bola de baixo no passo, e os braços de galho balançam no ombro. O galho abre para fora
+// num grupo de dentro, porque `zerarPoses` zera o z do pivô a cada quadro.
+function bonecoDeNeve(
+  f: Fabrica,
+  a: Aparencia,
+  b: NonNullable<Aparencia['bonecoDeNeve']>,
+  raiz: THREE.Group,
+  corpo: THREE.Group,
+  opcoes: OpcoesPersonagem,
+): Personagem {
+  const neve = f.material(b.neve)
+  const carvao = f.material(b.carvao)
+  const galho = f.material(b.galho)
+  const bola = (raio: number, y: number) => {
+    const m = new THREE.Mesh(f.guardar(new THREE.IcosahedronGeometry(raio, 1)), neve)
+    m.position.y = y
+    m.castShadow = true
+    m.receiveShadow = true
+    return m
+  }
+  const pernas = [-1, 1].map((lado) => {
+    const pivo = new THREE.Group()
+    pivo.position.set(lado * 0.14, 0.34, 0)
+    pivo.add(f.caixa(0.18, 0.34, 0.24, neve, { y: -0.34, z: 0.04 }))
+    return pivo
+  }) as [THREE.Group, THREE.Group]
+  const bracos = [-1, 1].map((lado) => {
+    const pivo = new THREE.Group()
+    pivo.position.set(lado * 0.27, 1.12, 0)
+    const aberto = new THREE.Group()
+    aberto.rotation.z = lado * 0.9
+    const graveto = f.caixa(0.03, 0.14, 0.03, galho, { x: lado * 0.04, y: -0.4, z: 0.02 })
+    graveto.rotation.z = lado * -0.7
+    aberto.add(f.caixa(0.045, 0.5, 0.045, galho, { y: -0.5 }), graveto)
+    pivo.add(aberto)
+    return pivo
+  }) as [THREE.Group, THREE.Group]
+  const cenoura = new THREE.Mesh(f.guardar(new THREE.ConeGeometry(0.045, 0.22, 6)), f.material(b.cenoura))
+  cenoura.rotation.x = Math.PI / 2
+  cenoura.position.set(0, 1.42, 0.3)
+  corpo.add(...pernas, ...bracos, bola(0.42, 0.44), bola(0.31, 0.98), bola(0.24, 1.44), cenoura)
+  for (const lado of [-1, 1]) {
+    corpo.add(f.caixa(0.06, 0.06, 0.04, carvao, { x: lado * 0.09, y: 1.48, z: 0.2 }))
+    corpo.add(f.caixa(0.035, 0.035, 0.03, carvao, { x: lado * 0.075, y: 1.32, z: 0.205 }))
+  }
+  corpo.add(f.caixa(0.035, 0.035, 0.03, carvao, { y: 1.3, z: 0.215 }))
+  for (const [y, z] of [[1.1, 0.27], [0.97, 0.3], [0.84, 0.28], [0.6, 0.39]] as const) {
+    corpo.add(f.caixa(0.06, 0.06, 0.04, carvao, { y, z }))
+  }
+  if (a.cachecol) {
+    const la = f.material(a.cachecol)
+    corpo.add(
+      f.caixa(0.44, 0.08, 0.42, la, { y: 1.2 }),
+      f.caixa(0.09, 0.3, 0.03, la, { x: 0.1, y: 0.94, z: 0.27 }),
+    )
+  }
+  const sombra = f.plano(0.9, 0.9, f.guardar(new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.18 })))
+  sombra.rotation.x = -Math.PI / 2
+  sombra.position.y = 0.03
+  sombra.receiveShadow = false
+  raiz.add(sombra)
+  let anel: THREE.Mesh | undefined
+  if (opcoes.anel) {
+    anel = new THREE.Mesh(
+      f.guardar(new THREE.RingGeometry(0.5, 0.6, 28)),
+      f.guardar(new THREE.MeshBasicMaterial({ color: opcoes.anel, transparent: true, opacity: 0.8, depthWrite: false })),
+    )
+    anel.rotation.x = -Math.PI / 2
+    anel.position.y = 0.035
+    raiz.add(anel)
+  }
+  return { raiz, corpo, pernas, bracos, angulo: 0, anel }
 }
 
 function personagemLeve(f: Fabrica, a: Aparencia, raiz: THREE.Group, corpo: THREE.Group): Personagem {
