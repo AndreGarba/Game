@@ -57,6 +57,13 @@ const MS_AVISO_NADA = 1200
 const MS_AVISO_CANETA = (TICKS_CANETA / TICKS_POR_SEGUNDO) * 1000
 // Quanto tempo o "Gooool" fica na tela (a bola volta ao centro um pouco depois).
 const MS_GOL = 2400
+const MS_DEFESA = 1400
+
+// Grito do campo: gol do jogador, gol da Livia ou defesa dela. `chave` é o tick do lance.
+interface Lance {
+  chave: number
+  tipo: 'gol' | 'golLivia' | 'defesa'
+}
 
 function hudDe(e: EstadoMundo): Hud {
   return {
@@ -105,8 +112,8 @@ export function TelaRpg({ personagem }: { personagem: string }) {
   const [fase, setFase] = useState<Fase>('jogando')
   const [hud, setHud] = useState<Hud | null>(null)
   const [aviso, setAviso] = useState<Aviso | null>(null)
-  // Tick do último gol, para o React refazer a animação a cada gol.
-  const [gol, setGol] = useState<number | null>(null)
+  const [lance, setLance] = useState<Lance | null>(null)
+  const renderizadorRef = useRef<ReturnType<typeof criarRenderizador> | null>(null)
   // Pediu para fechar o quadro e o motor ainda não rodou o tick: um segundo B ou voltar não pode
   // tirar outra camada do histórico (a do jogo).
   const [fechandoQuadro, setFechandoQuadro] = useState(false)
@@ -214,6 +221,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     const canvas = canvasRef.current
     if (!canvas) return
     const renderizador = criarRenderizador(canvas, textosDaCena, personagemDoElenco(personagem).visual)
+    renderizadorRef.current = renderizador
     const ajustarTamanho = () => renderizador.redimensionar(canvas.clientWidth, canvas.clientHeight, densidadeDoJogo())
     ajustarTamanho()
     const observador = new ResizeObserver(ajustarTamanho)
@@ -225,6 +233,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
     let tempoAviso: ReturnType<typeof setTimeout> | undefined
     let tempoGol: ReturnType<typeof setTimeout> | undefined
     let ultimoGol = -1
+    let ultimaDefesa: number | null = null
     let ultimaBuzina: number | null = null
     const controlador = criarControladorRpg({
       desenhar: renderizador.desenhar,
@@ -259,9 +268,17 @@ export function TelaRpg({ personagem }: { personagem: string }) {
         if (golFeito && golFeito.tick !== ultimoGol) {
           ultimoGol = golFeito.tick
           tocarEfeito('fim')
-          setGol(golFeito.tick)
+          setLance({ chave: golFeito.tick, tipo: golFeito.autor === 'livia' ? 'golLivia' : 'gol' })
           clearTimeout(tempoGol)
-          tempoGol = setTimeout(() => setGol(null), MS_GOL)
+          tempoGol = setTimeout(() => setLance(null), MS_GOL)
+        }
+        const defesa = estado.livia.ultimaDefesa
+        if (defesa !== null && defesa !== ultimaDefesa) {
+          ultimaDefesa = defesa
+          tocarEfeito('pulo')
+          setLance({ chave: defesa, tipo: 'defesa' })
+          clearTimeout(tempoGol)
+          tempoGol = setTimeout(() => setLance(null), MS_DEFESA)
         }
         // Um carro freou pelo jogador: o motor marca o tick, a tela só toca.
         if (estado.buzina !== null && estado.buzina !== ultimaBuzina) {
@@ -298,9 +315,25 @@ export function TelaRpg({ personagem }: { personagem: string }) {
       observador.disconnect()
       document.removeEventListener('visibilitychange', aoMudarVisibilidade)
       controlador.desligar()
+      renderizadorRef.current = null
       renderizador.destruir()
     }
   }, [controles, mudarFase, textosDaCena, personagem])
+
+  // Toque ou clique na Livia abre a conversa de qualquer distância; quem decide é o motor.
+  function naLivia(evento: React.PointerEvent<HTMLCanvasElement>) {
+    const caixa = evento.currentTarget.getBoundingClientRect()
+    return renderizadorRef.current?.tocouNaLivia(evento.clientX - caixa.left, evento.clientY - caixa.top) ?? false
+  }
+
+  function aoTocarNoCanvas(evento: React.PointerEvent<HTMLCanvasElement>) {
+    if (faseRef.current === 'jogando' && naLivia(evento)) controladorRef.current?.enviar('clicarLivia')
+  }
+
+  function aoPassarNoCanvas(evento: React.PointerEvent<HTMLCanvasElement>) {
+    if (evento.pointerType !== 'mouse') return
+    evento.currentTarget.classList.toggle('tela-rpg__canvas--livia', naLivia(evento))
+  }
 
   function textoDoAlvo(alvo: Alvo): string {
     if (alvo.tipo === 'porta') {
@@ -318,7 +351,7 @@ export function TelaRpg({ personagem }: { personagem: string }) {
 
   return (
     <div className="tela-rpg">
-      <canvas ref={canvasRef} className="tela-rpg__canvas" />
+      <canvas ref={canvasRef} className="tela-rpg__canvas" onPointerDown={aoTocarNoCanvas} onPointerMove={aoPassarNoCanvas} />
       {hud && <div key={hud.trocasDeCena} className="tela-rpg__transicao" aria-hidden="true" />}
 
       {hud && !quadroAberto && (
@@ -366,9 +399,9 @@ export function TelaRpg({ personagem }: { personagem: string }) {
               )}
             </div>
           )}
-          {gol !== null && (
-            <p key={gol} className="tela-rpg__gol" role="status">
-              {t('rpg.futebol.gol')}
+          {lance && (
+            <p key={`${lance.tipo}${lance.chave}`} className={`tela-rpg__gol tela-rpg__gol--${lance.tipo}`} role="status">
+              {t(`rpg.futebol.${lance.tipo}`)}
             </p>
           )}
           <button

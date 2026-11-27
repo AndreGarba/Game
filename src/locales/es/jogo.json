@@ -87,6 +87,7 @@
       "praca": "Plaza de la Ballena"
     },
     "nomes": {
+      "livia": "Livia",
       "pedestre": "Doña Cida",
       "recepcionista": "Julia",
       "vendedor": "Marcos",
@@ -133,6 +134,14 @@
       "chutar": "Patear"
     },
     "dialogos": {
+      "livia": [
+        "Palmeiras",
+        "Verdão",
+        "Palmeiras",
+        "Vai Palmeiras",
+        "Mancha Verde",
+        "Palestra Itália"
+      ],
       "pedestre": [
         "¡Buenos días! ¿Eres nuevo en el barrio?",
         "Ese es el BTG Pactual, la puerta azul. La tienda de autos está al lado.",
@@ -409,7 +418,9 @@
       "proximo": "Siguiente diapositiva"
     },
     "futebol": {
-      "gol": "Gooooooollllllllll"
+      "gol": "Gooooooollllllllll",
+      "golLivia": "¡Gol de Livia!",
+      "defesa": "¡Atajada de Livia!"
     },
     "manifestantes": {
       "placas": [

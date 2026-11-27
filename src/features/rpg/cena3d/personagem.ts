@@ -277,6 +277,13 @@ function pernaDeBermuda(f: Fabrica, a: Aparencia, lado: -1 | 1): THREE.Group {
     f.caixa(l * 0.85, comprimento - coxa, l * 0.95, pele, { y: -comprimento }),
     f.caixa(l * 1.05, 0.12, l * 1.4, f.material(a.sapato), { y: -comprimento - 0.072, z: 0.03 }),
   )
+  if (a.meiao) {
+    const meiao = f.material(a.meiao)
+    pivo.add(
+      f.caixa(l * 0.85 + 0.014, 0.28, l * 0.95 + 0.014, meiao, { y: -comprimento + 0.06 }),
+      f.caixa(l * 0.85 + 0.02, 0.035, l * 0.95 + 0.02, f.material(a.solado ?? a.meiao), { y: -comprimento + 0.32 }),
+    )
+  }
   if (a.tatuagemPerna) {
     const t = f.material(a.tatuagemPerna)
     pivo.add(f.caixa(l * 0.85 + 0.012, 0.04, l * 0.95 + 0.012, t, { y: -0.52 }))
@@ -352,6 +359,25 @@ function vestidoLongo(f: Fabrica, a: Aparencia, cor: string, corpo: THREE.Group)
   )
 }
 
+// Gola em V: o V de pele no peito, como o do vestido, com o friso da gola em volta do pescoço e
+// descendo pelas duas bordas do V.
+function golaEmV(f: Fabrica, a: Aparencia, cor: string, corpo: THREE.Group) {
+  const pele = f.material(a.pele)
+  const friso = f.material(cor)
+  const topo = ALTURA_QUADRIL - 0.04 + 0.62
+  corpo.add(
+    f.caixa(0.15, 0.08, 0.012, pele, { y: topo - 0.08, z: 0.151 }),
+    f.caixa(0.08, 0.07, 0.012, pele, { y: topo - 0.15, z: 0.151 }),
+    f.caixa(0.3, 0.03, 0.31, friso, { y: topo - 0.025 }),
+  )
+  for (const lado of [-1, 1]) {
+    const borda = f.caixa(0.03, 0.17, 0.014, friso)
+    borda.position.set(lado * 0.055, topo - 0.11, 0.158)
+    borda.rotation.z = -lado * 0.45
+    corpo.add(borda)
+  }
+}
+
 export interface OpcoesPersonagem {
   // Figurante: menos peças e sem sombra no mapa (só a redonda), para caber muitos no celular.
   leve?: boolean
@@ -413,6 +439,7 @@ export function criarPersonagem(f: Fabrica, a: Aparencia, opcoes: OpcoesPersonag
   if (a.jaquetaAberta) jaquetaPorCima(f, a, a.jaquetaAberta, corpo)
   if (a.puffer) jaquetaPuffer(f, a, a.puffer, corpo)
   if (a.vestido) vestidoLongo(f, a, a.vestido, corpo)
+  if (a.golaV) golaEmV(f, a, a.golaV, corpo)
   if (a.camisaSocial) camisaDeBotao(f, a, a.camisaSocial, corpo)
   if (a.cachecol) cachecol(f, a.cachecol, corpo)
   if (a.bone) bone(f, a.bone, corpo)

@@ -9,7 +9,7 @@ import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 import { criarRng } from '../src/engine/rng.ts'
 import { formatarTempo } from '../src/features/rpg/tempo.ts'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 const apertarA = (e: EstadoMundo) => passoMundo(e, { ...PARADO, interagir: true })
 const apertarB = (e: EstadoMundo) => passoMundo(e, { ...PARADO, voltar: true })
 

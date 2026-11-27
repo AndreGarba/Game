@@ -19,7 +19,7 @@ import en from '../src/locales/en/jogo.json'
 import es from '../src/locales/es/jogo.json'
 import pt from '../src/locales/pt/jogo.json'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 const apertarA = (e: EstadoMundo) => passoMundo(e, { ...PARADO, interagir: true })
 const apertarB = (e: EstadoMundo) => passoMundo(e, { ...PARADO, voltar: true })
 const esperar = (e: EstadoMundo, ticks: number) => {

@@ -26,10 +26,10 @@ import type { Bola, EstadoMundo, LadoDoGol, Retangulo } from './tipos.ts'
 // altura, com atrito; quica nos sólidos (traves e redes inclusive) e nas bordas do mapa. Não
 // sorteia nada, então não gasta o `estado.rng`.
 
-const CENTRO_X = CAMPO.x + CAMPO.largura / 2
-const CENTRO_Z = CAMPO.z + CAMPO.profundidade / 2
-const BOCA_Z0 = CENTRO_Z - BOCA_GOL / 2
-const BOCA_Z1 = CENTRO_Z + BOCA_GOL / 2
+export const CENTRO_X = CAMPO.x + CAMPO.largura / 2
+export const CENTRO_Z = CAMPO.z + CAMPO.profundidade / 2
+export const BOCA_Z0 = CENTRO_Z - BOCA_GOL / 2
+export const BOCA_Z1 = CENTRO_Z + BOCA_GOL / 2
 
 let obstaculos: Retangulo[] | null = null
 function obstaculosDaRua(): Retangulo[] {
@@ -38,7 +38,7 @@ function obstaculosDaRua(): Retangulo[] {
 }
 
 export function criarBola(): Bola {
-  return { x: CENTRO_X, z: CENTRO_Z, vx: 0, vz: 0, espera: 0, aoAlcance: false, gols: 0, ultimoGol: null }
+  return { x: CENTRO_X, z: CENTRO_Z, vx: 0, vz: 0, espera: 0, aoAlcance: false, gols: 0, ultimoGol: null, autor: null, chutadaEm: null }
 }
 
 function aoCentro(b: Bola) {
@@ -46,6 +46,13 @@ function aoCentro(b: Bola) {
   b.z = CENTRO_Z
   b.vx = 0
   b.vz = 0
+  b.autor = null
+  b.chutadaEm = null
+}
+
+/** Velocidade da bola no maior eixo (m/tick), sem raiz. */
+export function rapidezDaBola(b: Bola): number {
+  return Math.max(b.vx < 0 ? -b.vx : b.vx, b.vz < 0 ? -b.vz : b.vz)
 }
 
 // Atrito proporcional mais um freio constante; o freio nunca inverte o sentido.
@@ -97,6 +104,8 @@ export function chutarBola(estado: EstadoMundo): void {
   const fator = j.dirX !== 0 && j.dirZ !== 0 ? FATOR_DIAGONAL : 1
   estado.bola.vx = j.dirX * fator * VEL_CHUTE
   estado.bola.vz = j.dirZ * fator * VEL_CHUTE
+  estado.bola.autor = 'jogador'
+  estado.bola.chutadaEm = estado.tick
 }
 
 // Andando contra a bola (quadrado contra quadrado, como o atropelamento), ela sai na frente.
@@ -112,8 +121,16 @@ function conduzir(estado: EstadoMundo) {
   // Só acelera: a bola que já vai mais rápido para o mesmo lado (um chute) segue o chute.
   const vx = j.dirX * fator
   const vz = j.dirZ * fator
-  if (vx !== 0 && (vx > 0 ? b.vx < vx : b.vx > vx)) b.vx = vx
-  if (vz !== 0 && (vz > 0 ? b.vz < vz : b.vz > vz)) b.vz = vz
+  let tocou = false
+  if (vx !== 0 && (vx > 0 ? b.vx < vx : b.vx > vx)) {
+    b.vx = vx
+    tocou = true
+  }
+  if (vz !== 0 && (vz > 0 ? b.vz < vz : b.vz > vz)) {
+    b.vz = vz
+    tocou = true
+  }
+  if (tocou) b.autor = 'jogador'
 }
 
 // Move um eixo; bateu (sólido, carro ou borda do mapa), fica onde estava e volta com QUIQUE_BOLA.
@@ -173,10 +190,16 @@ export function passoBola(estado: EstadoMundo): void {
   if (b.espera === 0) {
     const lado = golDe(b)
     if (lado) {
-      b.gols += 1
-      b.ultimoGol = { tick: estado.tick, lado }
+      // Gol é de quem tocou por último de propósito: o chute do jogador que a Livia desviou para
+      // dentro continua do jogador. Só o gol do jogador solta o confete.
+      const autor = b.autor ?? 'jogador'
+      if (autor === 'livia') estado.livia.gols += 1
+      else {
+        b.gols += 1
+        estado.festa = { cena: 'rua', x: b.x, z: b.z, tick: estado.tick }
+      }
+      b.ultimoGol = { tick: estado.tick, lado, autor }
       b.espera = TICKS_VOLTA_GOL
-      estado.festa = { cena: 'rua', x: b.x, z: b.z, tick: estado.tick }
     } else if (foraDoCampo(b)) b.espera = TICKS_VOLTA_FORA
   }
   b.aoAlcance = bolaAoAlcance(estado)

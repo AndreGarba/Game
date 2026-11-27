@@ -14,17 +14,19 @@ import {
 } from '../src/engine/rpg/constantes.ts'
 import { criarMundo, passoMundo } from '../src/engine/rpg/mundo.ts'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 const chutar = (e: EstadoMundo) => passoMundo(e, { ...PARADO, chutar: true })
 const esperar = (e: EstadoMundo, ticks: number) => {
   for (let i = 0; i < ticks; i++) passoMundo(e, PARADO)
 }
 const CENTRO = { x: CAMPO.x + CAMPO.largura / 2, z: CAMPO.z + CAMPO.profundidade / 2 }
 
-// Rua sem figurantes, jogador e bola onde o teste quiser.
+// Rua sem figurantes, jogador e bola onde o teste quiser. A Livia fica fora do lance (não toca na
+// bola): as regras dela estão em rpg.livia.test.ts.
 function noCampo(jogador: { x: number; z: number; dirX: number; dirZ: number }, bola: { x: number; z: number }): EstadoMundo {
   const e = criarMundo(7)
   e.figurantes = []
+  e.livia.recarga = Number.MAX_SAFE_INTEGER
   Object.assign(e.jogador, jogador)
   e.bola.x = bola.x
   e.bola.z = bola.z

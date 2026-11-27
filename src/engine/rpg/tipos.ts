@@ -137,6 +137,8 @@ export interface Entrada {
   socar: boolean
   // Chute na bola (R ou o botão do HUD): também só no tick em que chega. Campo novo entra no fim.
   chutar: boolean
+  // Clique (ou toque) na Livia: abre a conversa de qualquer distância, na rua. Só no tick em que chega.
+  clicarLivia: boolean
 }
 
 // Derrubado (por patinete ou soco): ticks desde a queda (1 a TICKS_TOMBO, 0 = de pé) e o sentido
@@ -284,6 +286,9 @@ export interface Alvo {
 
 export type LadoDoGol = 'esquerdo' | 'direito'
 
+// Quem tocou a bola por último de propósito (chute ou condução); a defesa da Livia não conta.
+export type AutorDaBola = 'jogador' | 'livia'
+
 // Bola do campo de futebol (sempre na rua). `espera` conta os ticks até voltar ao centro depois
 // de um gol ou de sair do campo; enquanto conta, não marca outro gol.
 export interface Bola {
@@ -294,8 +299,46 @@ export interface Bola {
   espera: number
   // Ao alcance do chute agora: o HUD mostra o botão R só assim.
   aoAlcance: boolean
+  // Gols do jogador (os da Livia ficam em `livia.gols`).
   gols: number
-  ultimoGol: { tick: number; lado: LadoDoGol } | null
+  ultimoGol: { tick: number; lado: LadoDoGol; autor: AutorDaBola } | null
+  // Último toque de propósito, e o tick do último chute do jogador (a Livia reage a ele).
+  autor: AutorDaBola | null
+  chutadaEm: number | null
+}
+
+// O que a Livia está fazendo neste tick (o desenho e os testes leem; o motor recalcula a cada tick).
+//   meta:      parada na frente do gol mais perto da bola, acompanhando a bola em z.
+//   pressao:   correndo para roubar a bola de quem vai pegar ou conduz.
+//   conducao:  com a bola, levando-a para o gol que ataca (`ataca`).
+//   chute:     chutando para o gol.
+//   defesa:    correndo para a linha do chute do jogador.
+//   conversa:  parada, falando com o jogador.
+//   caida:     derrubada por soco.
+export type ModoLivia = 'meta' | 'pressao' | 'conducao' | 'chute' | 'defesa' | 'conversa' | 'caida'
+
+// Livia, a NPC do campo de futebol (não é do elenco). Mora no motor, como a bola: rouba, conduz,
+// chuta e defende a cada tick, e tudo precisa repetir igual. Fica sempre dentro do campo.
+export interface Livia extends Tombo {
+  x: number
+  z: number
+  xAnterior: number
+  zAnterior: number
+  dirX: number
+  dirZ: number
+  andando: boolean
+  correndo: boolean
+  fasePasso: number
+  modo: ModoLivia
+  // Ticks desde que começou o chute (1 a TICKS_CHUTE); 0 = não está chutando.
+  chute: number
+  // Gol que ela ataca enquanto está com a bola; null sem a posse.
+  ataca: LadoDoGol | null
+  // Ticks em que não toca na bola (depois de chutar ou defender).
+  recarga: number
+  gols: number
+  defesas: number
+  ultimaDefesa: number | null
 }
 
 // Faixa da avenida por onde os carros andam: `z` é a borda de menor z da faixa ocupada pelo carro
@@ -349,6 +392,7 @@ export interface EstadoMundo {
   proximoBalao: number
   festa: Festa | null
   bola: Bola
+  livia: Livia
   carros: Carro[]
   // Tick da última buzina (um carro freou pelo jogador); a UI toca o som quando muda.
   buzina: number | null

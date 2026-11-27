@@ -303,6 +303,17 @@
   animation: tela-rpg-gol 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
 }
 
+/* Lance da Livia: menor que o gol do jogador e no verde do uniforme dela. */
+.tela-rpg__gol--golLivia,
+.tela-rpg__gol--defesa {
+  color: var(--cor-livia);
+  font-size: var(--texto-lance-livia);
+}
+
+.tela-rpg__canvas--livia {
+  cursor: pointer;
+}
+
 @keyframes tela-rpg-gol {
   from {
     opacity: 0;

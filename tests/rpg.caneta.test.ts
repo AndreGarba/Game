@@ -8,7 +8,7 @@ import { RAIO_JOGADOR } from '../src/engine/rpg/constantes.ts'
 import { criarMundo, passoMundo, trocarPersonagem } from '../src/engine/rpg/mundo.ts'
 import { escalaDoFino } from '../src/features/rpg/cena3d/fino.ts'
 
-const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false }
+const PARADO: Entrada = { dx: 0, dz: 0, correr: false, interagir: false, voltar: false, socar: false, chutar: false, clicarLivia: false }
 const apertarA = (e: EstadoMundo) => passoMundo(e, { ...PARADO, interagir: true })
 const esperar = (e: EstadoMundo, ticks: number) => {
   for (let i = 0; i < ticks; i++) passoMundo(e, PARADO)
